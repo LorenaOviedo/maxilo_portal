@@ -1,0 +1,219 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sección del formulario*/
+.login-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background-color: #ffffff;
+}
+
+.logo-container {
+    margin-bottom: 30px;
+}
+
+.logo {
+    width: 180px;
+    height: auto;
+}
+
+.welcome-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #008B8B;
+    margin-bottom: 40px;
+    letter-spacing: 2px;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 400px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 30px;
+}
+
+.form-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border-left: 4px solid #c62828;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 15px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #fafafa;
+}
+
+.form-input::placeholder {
+    color: #999999;
+}
+
+.form-input:focus {
+    border-color: #008B8B;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(0, 139, 139, 0.1);
+}
+
+.form-input.error {
+    border-color: #c62828;
+}
+
+.error-field {
+    display: block;
+    color: #c62828;
+    font-size: 13px;
+    margin-top: 5px;
+    min-height: 18px;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #008B8B;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-submit:hover {
+    background-color: #006666;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 139, 139, 0.2);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+.btn-submit:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.link-recuperar {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #008B8B;
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.link-recuperar:hover {
+    color: #006666;
+    text-decoration: underline;
+}
+
+/*Sección de imagen*/
+.image-box {
+    flex: 1;
+    background-image: url('../img/login_maxilo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.image-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 139, 139, 0.3), rgba(0, 102, 102, 0.5));
+}
+
+/*RESPONSIVE */
+@media (max-width: 968px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .image-box {
+        display: none;
+    }
+    
+    .login-box {
+        flex: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-box {
+        padding: 20px;
+    }
+    
+    .welcome-title {
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+    
+    .form-container {
+        padding: 20px;
+    }
+    
+    .logo {
+        width: 140px;
+    }
+}
