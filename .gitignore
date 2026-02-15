@@ -1,0 +1,146 @@
+# ==========================================
+# Sistema Maxilofacial Texcoco - .gitignore
+# ==========================================
+
+# ==========================================
+# ARCHIVOS DE CONFIGURACIÓN
+# ==========================================
+.env
+.env.local
+.env.production
+.env.backup
+
+# ==========================================
+# BASES DE DATOS
+# ==========================================
+*.sql
+*.sqlite
+*.db
+backups/
+dumps/
+
+# ==========================================
+# ARCHIVOS SUBIDOS POR USUARIOS
+# ==========================================
+uploads/*
+!uploads/.gitkeep
+!uploads/README.md
+
+# Archivos temporales de uploads
+tmp/
+temp/
+
+# ==========================================
+# LOGS Y CACHÉ
+# ==========================================
+*.log
+logs/
+cache/
+storage/
+
+# ==========================================
+# ARCHIVOS DEL SISTEMA OPERATIVO
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+
+# ==========================================
+# IDEs Y EDITORES
+# ==========================================
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# PHPStorm / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# NetBeans
+nbproject/
+
+# Eclipse
+.project
+.buildpath
+.settings/
+
+# Vim
+*.swp
+*.swo
+*~
+
+# ==========================================
+# COMPOSER (si usas PHP Composer)
+# ==========================================
+/vendor/
+composer.lock
+composer.phar
+
+# ==========================================
+# NODE (si usas Node.js)
+# ==========================================
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# ==========================================
+# ARCHIVOS DE RESPALDO
+# ==========================================
+*.backup
+*.bak
+*.old
+*.orig
+
+# ==========================================
+# ARCHIVOS DE SESIÓN
+# ==========================================
+sessions/
+*.sess
+
+# ==========================================
+# CERTIFICADOS Y LLAVES
+# ==========================================
+*.pem
+*.key
+*.crt
+*.cert
+ssl/
+
+# ==========================================
+# DOCUMENTACIÓN GENERADA
+# ==========================================
+docs/generated/
+phpdoc/
+
+# ==========================================
+# TESTING
+# ==========================================
+phpunit.xml
+.phpunit.result.cache
+coverage/
+
+# ==========================================
+# OTROS
+# ==========================================
+.htaccess.backup
+error_log
+php_errors.log

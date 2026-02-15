@@ -1,0 +1,248 @@
+# ==========================================
+# Sistema Maxilofacial Texcoco
+# Configuración de Apache
+# ==========================================
+
+# ==========================================
+# PROTECCIÓN DE ARCHIVOS SENSIBLES
+# ==========================================
+
+# Denegar acceso a archivos .env
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Denegar acceso a archivos de configuración
+<FilesMatch "^(\.env|\.env\..*|\.git.*|\.htaccess|composer\.(json|lock)|package(-lock)?\.json)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Proteger archivos PHP de configuración
+<FilesMatch "^(database|config|Env)\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ==========================================
+# SEGURIDAD GENERAL
+# ==========================================
+
+# Deshabilitar listado de directorios
+Options -Indexes
+
+# Seguir enlaces simbólicos
+Options +FollowSymLinks
+
+# Prevenir acceso a archivos de respaldo
+<FilesMatch "\.(bak|backup|old|orig|save|swp|swo)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Proteger archivos de log
+<FilesMatch "\.log$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ==========================================
+# HEADERS DE SEGURIDAD
+# ==========================================
+
+<IfModule mod_headers.c>
+    # Prevenir ataques XSS
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Prevenir clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # Prevenir MIME type sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Referrer policy
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Content Security Policy (ajustar según necesidades)
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://www.google.com;"
+    
+    # Prevenir leakage de información del servidor
+    Header unset X-Powered-By
+    Header unset Server
+</IfModule>
+
+# ==========================================
+# FORZAR HTTPS (Descomentar después de configurar SSL)
+# ==========================================
+
+# <IfModule mod_rewrite.c>
+#     RewriteEngine On
+#     RewriteCond %{HTTPS} off
+#     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
+
+# ==========================================
+# REESCRITURA DE URLs
+# ==========================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Redirigir www a non-www (descomentar si lo necesitas)
+    # RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+    # RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+    
+    # Prevenir acceso directo a carpeta config
+    RewriteRule ^config/ - [F,L]
+    
+    # Prevenir acceso directo a carpeta database
+    RewriteRule ^database/ - [F,L]
+    
+    # Prevenir acceso directo a carpeta includes (si existe)
+    RewriteRule ^includes/ - [F,L]
+</IfModule>
+
+# ==========================================
+# COMPRESIÓN GZIP
+# ==========================================
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE font/truetype
+    AddOutputFilterByType DEFLATE font/opentype
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ==========================================
+# CACHÉ DEL NAVEGADOR
+# ==========================================
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Imágenes
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    
+    # CSS y JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    
+    # Fuentes
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    
+    # HTML
+    ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# ==========================================
+# LÍMITES DE UPLOAD
+# ==========================================
+
+# Aumentar límite de upload (ajustar según necesidades)
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+php_value max_execution_time 300
+php_value max_input_time 300
+
+# ==========================================
+# CONFIGURACIÓN DE PHP
+# ==========================================
+
+# Ocultar versión de PHP
+php_flag expose_php Off
+
+# Configuración de sesiones
+php_value session.cookie_httponly 1
+php_value session.cookie_secure 1
+php_value session.use_only_cookies 1
+
+# Deshabilitar funciones peligrosas de PHP
+# (Ajustar según necesidades - algunas pueden ser necesarias)
+# php_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,show_source"
+
+# ==========================================
+# ERRORES DE PHP (Solo en desarrollo)
+# ==========================================
+
+# En PRODUCCIÓN usar:
+php_flag display_errors Off
+php_flag display_startup_errors Off
+php_value error_reporting 0
+
+# En DESARROLLO descomentar:
+# php_flag display_errors On
+# php_flag display_startup_errors On
+# php_value error_reporting E_ALL
+
+# ==========================================
+# PROTECCIÓN DE DIRECTORIOS ESPECÍFICOS
+# ==========================================
+
+# Proteger carpeta uploads
+<Directory "uploads">
+    # Permitir solo ciertos tipos de archivos
+    <FilesMatch "\.(jpg|jpeg|png|gif|pdf|doc|docx|xls|xlsx)$">
+        Order allow,deny
+        Allow from all
+    </FilesMatch>
+    
+    # Denegar ejecución de PHP
+    <FilesMatch "\.php$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</Directory>
+
+# ==========================================
+# CÓDIGOS DE ERROR PERSONALIZADOS (Opcional)
+# ==========================================
+
+# ErrorDocument 400 /errors/400.html
+# ErrorDocument 401 /errors/401.html
+# ErrorDocument 403 /errors/403.html
+# ErrorDocument 404 /errors/404.html
+# ErrorDocument 500 /errors/500.html
+
+# ==========================================
+# PROTECCIÓN CONTRA HOTLINKING (Opcional)
+# ==========================================
+
+# <IfModule mod_rewrite.c>
+#     RewriteCond %{HTTP_REFERER} !^$
+#     RewriteCond %{HTTP_REFERER} !^https?://(www\.)?tudominio\.com [NC]
+#     RewriteRule \.(jpg|jpeg|png|gif|pdf)$ - [F,L]
+# </IfModule>
+
+# ==========================================
+# NOTAS IMPORTANTES
+# ==========================================
+
+# 1. Después de configurar SSL, descomenta la sección "FORZAR HTTPS"
+# 2. Ajusta los límites de upload según tus necesidades
+# 3. En producción, asegúrate de tener display_errors Off
+# 4. Revisa los logs regularmente
+# 5. Mantén este archivo actualizado
+
+# ==========================================
+# FIN DE CONFIGURACIÓN
+# ==========================================
