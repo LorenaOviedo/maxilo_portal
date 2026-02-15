@@ -1,4 +1,3 @@
-<?php echo "DEPLOY 14 FEB 2026 - PRUEBA"; ?>
 <?php
 session_start();
 
