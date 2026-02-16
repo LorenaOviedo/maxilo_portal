@@ -184,6 +184,20 @@ body {
     background: linear-gradient(135deg, rgba(0, 139, 139, 0.3), rgba(0, 102, 102, 0.5));
 }
 
+/* Estilos para reCAPTCHA */
+.g-recaptcha {
+    display: flex;
+    justify-content: center;
+    transform: scale(0.95);
+    transform-origin: center;
+}
+
+@media (max-width: 768px) {
+    .g-recaptcha {
+        transform: scale(0.85);
+    }
+}
+
 /*RESPONSIVE */
 @media (max-width: 968px) {
     .container {
