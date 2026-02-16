@@ -185,17 +185,15 @@ body {
 }
 
 /* Estilos para reCAPTCHA */
-.recaptchaContainer {
+.form-group .g-recaptcha {
     display: flex;
     justify-content: center;
-    transform: scale(0.95);
-    transform-origin: center;
+    align-items: center;
+    margin: 20px auto;
 }
 
-@media (max-width: 768px) {
-    .recaptchaContainer {
-        transform: scale(0.85);
-    }
+.g-recaptcha > div {
+    margin: 0 auto;
 }
 
 /*RESPONSIVE */
