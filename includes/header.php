@@ -27,7 +27,7 @@ foreach ($nombres as $nombre) {
     <title><?php echo $page_title ?? SITE_NAME; ?> - <?php echo SITE_NAME; ?></title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="<?php echo asset('img/favicon.png'); ?>">
+    <link rel="icon" type="image/png" href="<?php echo asset('img/logo_maxilo.png'); ?>">
     
     <!-- CSS general -->
     <link rel="stylesheet" href="<?php echo asset('css/dashboard.css'); ?>?v=<?php echo SITE_VERSION; ?>">
@@ -40,7 +40,7 @@ foreach ($nombres as $nombre) {
     <?php endif; ?>
     
     <!-- Paquete de iconos -->
-    <link rel="stylesheet" href="https://use.hugeicons.com/font/icons.css">
+    <link rel="stylesheet" href="https://cdn.hugeicons.com/font/hgi-stroke.css">
     
     <!-- CSS -->
     <?php if (isset($additional_css)): ?>
