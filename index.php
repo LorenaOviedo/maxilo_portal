@@ -27,12 +27,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $auth = new AuthController();
     $resultado = $auth->login($_POST['usuario'], $_POST['password']);
     
-    if ($resultado['success']) {
-        header('Location: views/dashboard.php');
-        exit;
-    } else {
-        $error = $resultado['message'];
-    }
+if ($resultado['success']) {
+    // TEMPORALMENTE COMENTADO PARA TESTING
+    // header('Location: views/dashboard.php');
+    // exit;
+    
+    echo "<h2>✅ LOGIN EXITOSO</h2>";
+    echo "<pre>";
+    print_r($resultado);
+    echo "</pre>";
+    echo "<h3>Datos de sesión:</h3>";
+    echo "<pre>";
+    print_r($_SESSION);
+    echo "</pre>";
+    echo "<p><a href='views/dashboard.php'>Ir al dashboard manualmente</a></p>";
+    exit;
+} else {
+    $error = $resultado['message'];
+}
 }
 ?>
 <!DOCTYPE html>
