@@ -1,12 +1,10 @@
 <?php
+//Incluir configuración
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../controllers/AuthController.php';
 
 session_start();
-
-//Incluir configuración
-require_once '../config/config.php';
-require_once '../controllers/AuthController.php';
 
 $auth = new AuthController();
 
