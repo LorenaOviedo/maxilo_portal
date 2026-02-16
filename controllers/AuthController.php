@@ -10,7 +10,6 @@ class AuthController {
     private $tiempoBloqueo = 900; // 15 minutos en segundos
     
     public function __construct() {
-        $database = new Database();
         $this->db = getDB();
         $this->userModel = new User($this->db);
     }
