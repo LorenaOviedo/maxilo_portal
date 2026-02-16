@@ -185,7 +185,7 @@ body {
 }
 
 /* Estilos para reCAPTCHA */
-recaptchaContainer {
+.recaptchaContainer {
     display: flex;
     justify-content: center;
     transform: scale(0.95);
@@ -193,7 +193,7 @@ recaptchaContainer {
 }
 
 @media (max-width: 768px) {
-    recaptchaContainer {
+    .recaptchaContainer {
         transform: scale(0.85);
     }
 }
