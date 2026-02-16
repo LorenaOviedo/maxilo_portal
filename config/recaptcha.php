@@ -1,9 +1,7 @@
 <?php
 /**
- * Configuración de Google reCAPTCHA
+ * Configuración de Google reCAPTCHA v2
  * Sistema Maxilofacial Texcoco
- * 
- * Utiliza variables de entorno para mayor seguridad
  */
 
 require_once __DIR__ . '/Env.php';
@@ -28,9 +26,8 @@ class ReCaptcha {
         // Verificar que estén configuradas
         if (empty(self::$siteKey) || empty(self::$secretKey)) {
             if (Env::get('APP_ENV') !== 'production') {
-                throw new Exception("reCAPTCHA no configurado. Por favor configura RECAPTCHA_SITE_KEY y RECAPTCHA_SECRET_KEY en .env");
+                error_log("WARNING: reCAPTCHA no configurado en .env");
             }
-            error_log("WARNING: reCAPTCHA no configurado");
         }
     }
     
@@ -62,15 +59,17 @@ class ReCaptcha {
      * @return array Resultado de la verificación
      */
     public static function verify($response, $remoteIp = null) {
+        // Verificar que se haya enviado el token
         if (empty($response)) {
             return [
                 'success' => false,
-                'error' => 'Por favor completa el reCAPTCHA'
+                'error' => 'Por favor completa la verificación reCAPTCHA'
             ];
         }
         
         $secretKey = self::getSecretKey();
         
+        // Si no hay secret key configurada
         if (empty($secretKey)) {
             // En desarrollo, permitir continuar sin reCAPTCHA
             if (Env::get('APP_ENV') !== 'production') {
@@ -79,7 +78,7 @@ class ReCaptcha {
             }
             return [
                 'success' => false,
-                'error' => 'reCAPTCHA no configurado'
+                'error' => 'reCAPTCHA no está configurado correctamente'
             ];
         }
         
@@ -111,42 +110,43 @@ class ReCaptcha {
             error_log("Error al verificar reCAPTCHA: No se pudo conectar con Google");
             return [
                 'success' => false,
-                'error' => 'Error al verificar reCAPTCHA. Intenta nuevamente.'
+                'error' => 'Error al verificar reCAPTCHA. Por favor intenta nuevamente.'
             ];
         }
         
         $resultJson = json_decode($result, true);
         
         if (!isset($resultJson['success'])) {
-            error_log("Error al verificar reCAPTCHA: Respuesta inválida");
+            error_log("Error al verificar reCAPTCHA: Respuesta inválida de Google");
             return [
                 'success' => false,
-                'error' => 'Error al verificar reCAPTCHA'
+                'error' => 'Error al verificar reCAPTCHA. Por favor intenta nuevamente.'
             ];
         }
         
         if (!$resultJson['success']) {
             $errorCodes = isset($resultJson['error-codes']) ? $resultJson['error-codes'] : [];
-            error_log("reCAPTCHA falló: " . implode(', ', $errorCodes));
+            error_log("reCAPTCHA falló. Códigos de error: " . implode(', ', $errorCodes));
             
             return [
                 'success' => false,
-                'error' => 'Verificación de reCAPTCHA falló. Por favor intenta nuevamente.',
+                'error' => 'La verificación reCAPTCHA falló. Por favor intenta nuevamente.',
                 'error_codes' => $errorCodes
             ];
         }
         
+        // Verificación exitosa
         return [
             'success' => true,
-            'score' => isset($resultJson['score']) ? $resultJson['score'] : null,
-            'action' => isset($resultJson['action']) ? $resultJson['action'] : null
+            'challenge_ts' => isset($resultJson['challenge_ts']) ? $resultJson['challenge_ts'] : null,
+            'hostname' => isset($resultJson['hostname']) ? $resultJson['hostname'] : null
         ];
     }
     
     /**
      * Renderizar el widget de reCAPTCHA
      * 
-     * @param array $options Opciones adicionales
+     * @param array $options Opciones adicionales (theme, size, callback)
      * @return string HTML del widget
      */
     public static function render($options = []) {
@@ -154,7 +154,7 @@ class ReCaptcha {
         
         if (empty($siteKey)) {
             if (Env::get('APP_ENV') !== 'production') {
-                return '<div class="alert alert-warning">reCAPTCHA no configurado (modo desarrollo)</div>';
+                return '<div style="padding: 10px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404;">⚠️ reCAPTCHA no configurado (modo desarrollo)</div>';
             }
             return '';
         }
@@ -175,22 +175,6 @@ class ReCaptcha {
         $html .= '></div>';
         
         return $html;
-    }
-    
-    /**
-     * Incluir script de reCAPTCHA
-     * 
-     * @param string $lang Idioma (opcional)
-     * @return string HTML del script
-     */
-    public static function script($lang = 'es') {
-        $siteKey = self::getSiteKey();
-        
-        if (empty($siteKey)) {
-            return '';
-        }
-        
-        return '<script src="https://www.google.com/recaptcha/api.js?hl=' . htmlspecialchars($lang) . '" async defer></script>';
     }
 }
 
@@ -213,22 +197,18 @@ function verificarRecaptcha() {
 
 /**
  * Renderizar widget de reCAPTCHA
+ * 
+ * @param array $options Opciones (theme: light|dark, size: normal|compact)
+ * @return string HTML del widget
  */
 function renderRecaptcha($options = []) {
     return ReCaptcha::render($options);
 }
 
-/**
- * Incluir script de reCAPTCHA
- */
-function incluirScriptRecaptcha($lang = 'es') {
-    return ReCaptcha::script($lang);
-}
-
-// ==================== CONSTANTES LEGACY ====================
+// ==================== CONSTANTE LEGACY ====================
 
 /**
  * NOTA: Mantener por compatibilidad
- * En código nuevo, usa ReCaptcha::getSiteKey()
  */
 define('RECAPTCHA_SITE_KEY', ReCaptcha::getSiteKey());
+?>
