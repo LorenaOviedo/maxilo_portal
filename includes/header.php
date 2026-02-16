@@ -40,7 +40,7 @@ foreach ($nombres as $nombre) {
     <?php endif; ?>
     
     <!-- Paquete de iconos -->
-    <link rel="stylesheet" href="https://cdn.hugeicons.com/font/hgi-stroke.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
     
     <!-- CSS -->
     <?php if (isset($additional_css)): ?>
