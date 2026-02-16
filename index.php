@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <!-- AGREGAR ESTO: Widget de reCAPTCHA -->
-                    <div class="form-group" style="margin: 20px 0;">
+                    <div class="form-group" id="recaptchaContainer" style="margin: 20px 0;">
                         <?php
                         require_once 'config/recaptcha.php';
                         echo renderRecaptcha();
