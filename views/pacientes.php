@@ -141,7 +141,7 @@ include '../includes/sidebar.php';
                                             onclick='verPaciente(<?php echo json_encode($paciente); ?>)'
                                             
                                         >
-                                            <i class="hgi hgi-stroke hgi-view"></i>
+                                            <i class="ri-eye-line"></i>
                                         </button>
                                         <button 
                                             type="button" 
@@ -149,7 +149,7 @@ include '../includes/sidebar.php';
                                             title="Editar paciente"
                                             onclick="editarRegistro('<?php echo $paciente['numero']; ?>', '<?php echo view_url('paciente_form.php'); ?>')"
                                         >
-                                            <i class="hgi hgi-stroke hgi-pencil-edit-02"></i>
+                                            <i class="ri-edit-box-line"></i>
                                         </button>
                                         <button 
                                             type="button" 
@@ -157,7 +157,7 @@ include '../includes/sidebar.php';
                                             title="Eliminar paciente"
                                             onclick="eliminarRegistro('<?php echo $paciente['numero']; ?>', null, '¿Eliminar el paciente <?php echo htmlspecialchars($paciente['nombre']); ?>?')"
                                         >
-                                            <i class="hgi hgi-stroke hgi-delete-02"></i>
+                                            <i class="ri-delete-bin-6-line"></i>
                                         </button>
                                     </div>
                                 </td>

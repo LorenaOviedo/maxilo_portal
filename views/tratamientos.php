@@ -151,7 +151,7 @@ include '../includes/sidebar.php';
                                             title="Editar tratamiento"
                                             onclick="editarRegistro('<?php echo $tratamiento['numero']; ?>', '<?php echo view_url('tratamiento_form.php'); ?>')"
                                         >
-                                            <i class="hgi hgi-stroke hgi-pencil-edit-02"></i>
+                                            <i class="ri-edit-box-line"></i>
                                         </button>
                                         <button 
                                             type="button" 
@@ -159,7 +159,7 @@ include '../includes/sidebar.php';
                                             title="Eliminar tratamiento"
                                             onclick="eliminarRegistro('<?php echo $tratamiento['numero']; ?>', null, '¿Eliminar el tratamiento <?php echo htmlspecialchars($tratamiento['nombre']); ?>?')"
                                         >
-                                            <i class="hgi hgi-stroke hgi-delete-02"></i>
+                                            <i class="ri-delete-bin-6-line"></i>
                                         </button>
                                     </div>
                                 </td>
