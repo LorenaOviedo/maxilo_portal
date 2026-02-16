@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/config/database.php';
+
 session_start();
 
 // Procesar logout si se recibe el parámetro
