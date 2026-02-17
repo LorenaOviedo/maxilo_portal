@@ -184,17 +184,17 @@ body {
     background: linear-gradient(135deg, rgba(0, 139, 139, 0.3), rgba(0, 102, 102, 0.5));
 }
 
-/* Estilos para reCAPTCHA */
-.recaptcha-container {
+/* Estilos para reCAPTCHA 
+.form-group .g-recaptcha {
     display: flex !important;
     justify-content: center;
     align-items: center;
     margin: 20px auto;
 }
 
-.recaptcha-container .g-recaptcha {
+.g-recaptcha > div {
     margin: 0 auto;
-}
+}*/
 
 /*RESPONSIVE */
 @media (max-width: 968px) {
