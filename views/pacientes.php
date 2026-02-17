@@ -75,11 +75,11 @@ include '../includes/sidebar.php';
                     >
                 </div>
                 <button type="button" class="btn-search">
-                    <i class="fas fa-search"></i>
+                    <i class="ri-search-line"></i>
                     Buscar
                 </button>
                 <button type="button" class="btn-add-new" onclick="window.location.href='<?php echo view_url('paciente_form.php'); ?>'">
-                    <i class="fas fa-plus"></i>
+                    <i class="ri-add-line"></i>
                     Agregar nuevo
                 </button>
             </div>
@@ -105,7 +105,7 @@ include '../includes/sidebar.php';
                             <td colspan="9">
                                 <div class="empty-state">
                                     <div class="empty-state-icon">
-                                        <i class="fas fa-folder-open"></i>
+                                        <i class="ri-folder-open-line"></i>
                                     </div>
                                     <h3 class="empty-state-title">No hay pacientes registrados</h3>
                                     <p class="empty-state-text">Comienza agregando tu primer paciente</p>
@@ -172,11 +172,11 @@ include '../includes/sidebar.php';
             <?php if (!empty($pacientes)): ?>
             <div class="pagination">
                 <button class="pagination-btn" disabled>
-                    <i class="fas fa-chevron-left"></i> Anterior
+                    <i class="ri-arrow-left-line"></i> Anterior
                 </button>
                 <span class="pagination-info">Página 1 de 1</span>
                 <button class="pagination-btn" disabled>
-                    Siguiente <i class="fas fa-chevron-right"></i>
+                    Siguiente <i class="ri-arrow-right-line"></i>
                 </button>
             </div>
             <?php endif; ?>
