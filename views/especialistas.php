@@ -129,22 +129,6 @@ include '../includes/sidebar.php';
                                         <span class="badge badge-inactive">INACTIVO</span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="col-price"><?php echo htmlspecialchars($especialista['precio']); ?></td>
-                                <td class="col-time text-center"><?php echo htmlspecialchars($especialista['tiempo']); ?></td>
-                                <td class="col-authorization text-center">
-                                    <?php if ($especialista['autorizacion'] === 'SI'): ?>
-                                        <span class="badge badge-yes">SI</span>
-                                    <?php else: ?>
-                                        <span class="badge badge-no">NO</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="col-status text-center">
-                                    <?php if ($especialista['estatus'] === 'ACTIVO'): ?>
-                                        <span class="badge badge-active">ACTIVO</span>
-                                    <?php else: ?>
-                                        <span class="badge badge-inactive">INACTIVO</span>
-                                    <?php endif; ?>
-                                </td>
                                 <td class="col-actions">
                                     <div class="action-buttons">
                                         <button 
