@@ -192,7 +192,7 @@ body {
     margin: 15px 0;
 }
 
-.recaptcha-wrapper .g-recaptcha {
+.recaptcha-wrapper .g-recaptcha .div{
     display: inline-block;
 }
 
