@@ -91,8 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span class="error-field" id="passwordError"></span>
                     </div>
 
-                    <!-- AGREGAR ESTO: Widget de reCAPTCHA -->
-                    <div class="form-group" style="margin: 20px 0;">
+                    <!-- Widget de RECAPTCHA -->
+                    <div class="form-group">
                         <?php
                         require_once 'config/recaptcha.php';
                         echo renderRecaptcha();
