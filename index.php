@@ -92,12 +92,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <!-- Widget de RECAPTCHA -->
-                    <div class="recaptcha-wrapper">
+                    
                         <?php
                         require_once 'config/recaptcha.php';
                         echo renderRecaptcha();
                         ?>
-                    </div>
+                    
 
                     <button type="submit" class="btn-submit">Ingresar</button>
 
