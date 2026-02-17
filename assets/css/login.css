@@ -186,9 +186,14 @@ body {
 
 /* reCAPTCHA */
 .recaptcha-wrapper {
+    width: 100%;
     display: flex;
     justify-content: center;
-    margin: 25px 0;
+    margin: 15px 0;
+}
+
+.recaptcha-wrapper .g-recaptcha {
+    display: inline-block;
 }
 
 /*RESPONSIVE */
