@@ -138,8 +138,7 @@ include '../includes/sidebar.php';
                                             type="button" 
                                             class="btn-action btn-view" 
                                             title="Ver paciente"
-                                            onclick='verPaciente(<?php echo json_encode($paciente); ?>)'
-                                            
+                                            onclick='verPaciente(<?php echo json_encode($paciente); ?>)'    
                                         >
                                             <i class="ri-eye-line"></i>
                                         </button>

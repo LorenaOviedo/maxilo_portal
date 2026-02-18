@@ -48,8 +48,8 @@ function is_active($page) {
                     </a>
                 </li>
                 
-                <li class="menu-item <?php echo is_active('compras'); ?>">
-                    <a href="<?php echo view_url('compras.php'); ?>">
+                <li class="menu-item <?php echo is_active('compras_proveedores'); ?>">
+                    <a href="<?php echo view_url('compras_proveedores.php'); ?>">
                         <span class="menu-icon"><i class="ri-store-2-line"></i></span>
                         <span class="menu-text">Compras y proveedores</span>
                     </a>

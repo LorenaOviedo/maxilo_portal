@@ -133,6 +133,14 @@ include '../includes/sidebar.php';
                                     <div class="action-buttons">
                                         <button 
                                             type="button" 
+                                            class="btn-action btn-view" 
+                                            title="Ver especialista"
+                                            onclick='verEspecialista(<?php echo json_encode($especialista); ?>)'    
+                                        >
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button 
+                                            type="button" 
                                             class="btn-action btn-edit" 
                                             title="Editar especialista"
                                             onclick="editarRegistro('<?php echo $especialista['numero']; ?>', '<?php echo view_url('especialista_form.php'); ?>')"
