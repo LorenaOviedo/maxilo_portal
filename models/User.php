@@ -16,7 +16,7 @@ class User {
         
         $stmt = $this->conn->prepare($query);
         
-        // Usar dos parámetros separados con el mismo valor - para evitar confusiones en la consulta
+        // Usar dos parámetros separados con el mismo valor - para evitar confusiones en la consulta --
         $stmt->bindValue(':username', $identifier, PDO::PARAM_STR);
         $stmt->bindValue(':email', $identifier, PDO::PARAM_STR);
         

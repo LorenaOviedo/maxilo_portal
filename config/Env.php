@@ -1,21 +1,15 @@
 <?php
-/**
- * Gestor de Variables de Entorno
- * Sistema Maxilofacial Texcoco
- * 
- * Carga y gestiona variables de entorno desde archivo .env
- */
+//Gestor de Variables de Entorno
+//Carga y gestiona variables de entorno desde archivo .env
+
 
 class Env {
     
-    /**
-     * Variables de entorno cargadas
-     */
+    //Variables de entorno cargadas
     private static $variables = [];
     
-    /**
-     * Indica si ya se cargó el archivo .env
-     */
+    //Indica si ya se cargó el archivo .env
+     
     private static $loaded = false;
     
     /**
@@ -25,7 +19,7 @@ class Env {
      * @return bool True si se cargó correctamente
      */
     public static function load($path = null) {
-        // Si ya se cargó, no volver a cargar
+        // Si ya se cargó, no se vuelve a cargar
         if (self::$loaded) {
             return true;
         }
@@ -62,7 +56,7 @@ class Env {
                 $key = trim($key);
                 $value = trim($value);
                 
-                // Remover comillas si existen
+                // Remover comillas
                 $value = self::removeQuotes($value);
                 
                 // Guardar en array y en $_ENV
@@ -101,23 +95,20 @@ class Env {
         return $default;
     }
     
-    /**
-     * Obtener valor como string
-     */
+    //Obtener valor como string
+    
     public static function getString($key, $default = '') {
         return (string) self::get($key, $default);
     }
     
-    /**
-     * Obtener valor como integer
-     */
+    //Obtener valor como integer
+    
     public static function getInt($key, $default = 0) {
         return (int) self::get($key, $default);
     }
     
-    /**
-     * Obtener valor como boolean
-     */
+    //Obtener valor como boolean
+
     public static function getBool($key, $default = false) {
         $value = self::get($key, $default);
         
@@ -130,23 +121,20 @@ class Env {
         return in_array($value, ['true', '1', 'yes', 'on'], true);
     }
     
-    /**
-     * Verificar si existe una variable
-     */
+    //Verificar si existe una variable
+    
     public static function has($key) {
         return self::get($key) !== null;
     }
     
-    /**
-     * Obtener todas las variables (útil para debugging - ¡NO usar en producción!)
-     */
+    //Obtener todas las variables (debugging solo en desarrollo ----> no usar en producción)
+    
     public static function all() {
         return self::$variables;
     }
     
-    /**
-     * Requerir que exista una variable (lanzar excepción si no existe)
-     */
+    //Requerir que exista una variable (lanzar excepción si no existe)
+    
     public static function require($key) {
         $value = self::get($key);
         
@@ -157,9 +145,8 @@ class Env {
         return $value;
     }
     
-    /**
-     * Requerir múltiples variables
-     */
+    // Requerir múltiples variables
+     
     public static function requireMultiple(array $keys) {
         $missing = [];
         
@@ -174,9 +161,8 @@ class Env {
         }
     }
     
-    /**
-     * Remover comillas de un valor
-     */
+    //Remover comillas de un valor
+    
     private static function removeQuotes($value) {
         // Remover comillas dobles o simples al inicio y final
         if (
@@ -189,9 +175,8 @@ class Env {
         return $value;
     }
     
-    /**
-     * Verificar configuración crítica
-     */
+    //Verificar configuración crítica
+     
     public static function validateCriticalConfig() {
         $critical = [
             'DB_HOST',

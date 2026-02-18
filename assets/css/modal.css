@@ -2,7 +2,7 @@
 
 /*MODAL OVERLAY*/
 .modal-overlay {
-    display: none; /* Oculto por DEFAULT */
+    display: none; /* Oculto*/
     position: fixed;
     top: 0;
     left: 0;
@@ -19,7 +19,7 @@
 
 /*CONTENEDOR DEL MODAL CONTAINER*/
 .modal-container {
-    display: none; /* Oculto por DEFAULT */
+    display: none; /* Oculto*/
     position: fixed;
     top: 50%;
     left: 50%;
@@ -40,7 +40,7 @@
     flex-direction: column;
 }
 
-/*ENCABEZADO MODAL*/
+/*ENCABEZADO DEL MODAL*/
 .modal-header {
     display:    flex;
     justify-content: space-between;
@@ -115,7 +115,7 @@
 
 /*TABS DEL MODAL*/
 .modal-tabs {
-    overflow: hidden; /* Evita que los tabs se desborden revisar funcionalidad en movil*/
+    overflow: hidden; /* --->los tabs no se desbordan, revisar funcionalidad en movil*/
     display: flex;
     gap: 5px;
     padding: 0 30px;
@@ -292,7 +292,7 @@
     box-shadow: 0 4px 12px rgba(32, 168, 158, 0.3);
 }
 
-/*COLUMASN DE ACTIONES*/
+/*COLUMNA DE ACTIONES*/
 .actions-column {
     background-color: #f8f9fa;
     border-left: 1px solid #e8e8e8;

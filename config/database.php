@@ -1,12 +1,7 @@
 <?php
-/**
- * Configuración de Base de Datos
- * Sistema Maxilofacial Texcoco
- * 
- * Utiliza variables de entorno para mayor seguridad
- */
+//Configuración de Base de Datos
 
-// Cargar gestor de variables de entorno
+// Cargar archivo de variables de entorno
 require_once __DIR__ . '/Env.php';
 
 // Cargar variables del archivo .env
@@ -19,7 +14,7 @@ try {
     die("Error de configuración: " . $e->getMessage());
 }
 
-// ==================== CONFIGURACIÓN DE BASE DE DATOS ====================
+// CONFIGURACIÓN DE BASE DE DATOS
 
 class Database {
     
@@ -47,9 +42,7 @@ class Database {
         $this->connect();
     }
     
-    /**
-     * Obtener instancia única de la base de datos
-     */
+    //Obtener instancia única de la base de datos
     public static function getInstance() {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -57,9 +50,7 @@ class Database {
         return self::$instance;
     }
     
-    /**
-     * Conectar a la base de datos
-     */
+    //Conectar a la base de datos
     private function connect() {
         try {
             $dsn = "mysql:host={$this->host};dbname={$this->database};charset={$this->charset}";
@@ -79,7 +70,7 @@ class Database {
             }
             
         } catch (PDOException $e) {
-            // En producción, no mostrar detalles del error
+            // En producción (no mostrar detalles de error)
             if (Env::get('APP_ENV') === 'production') {
                 error_log("Error de conexión a BD: " . $e->getMessage());
                 die("Error al conectar con la base de datos. Por favor contacta al administrador.");
@@ -89,16 +80,12 @@ class Database {
         }
     }
     
-    /**
-     * Obtener conexión PDO
-     */
+    //Obtener conexión PDO
     public function getConnection() {
         return $this->connection;
     }
     
-    /**
-     * Prevenir clonación
-     */
+    //Evitar clonación
     private function __clone() {}
     
     /**
@@ -109,7 +96,7 @@ class Database {
     }
 }
 
-// ==================== FUNCIÓN DE AYUDA PARA OBTENER CONEXIÓN ====================
+// FUNCIÓN DE AYUDA PARA OBTENER CONEXIÓN
 
 /**
  * Obtener conexión a la base de datos
@@ -120,7 +107,7 @@ function getDB() {
     return Database::getInstance()->getConnection();
 }
 
-// ==================== CONFIGURACIÓN LEGACY (Para compatibilidad) ====================
+// CONFIGURACIÓN LEGACY (compatibilidad) 
 
 /**
  * NOTA: Mantener estas constantes por compatibilidad con código existente
@@ -132,10 +119,10 @@ define('DB_USER', Env::get('DB_USER'));
 define('DB_PASS', Env::get('DB_PASS'));
 define('DB_CHARSET', Env::get('DB_CHARSET', 'utf8mb4'));
 
-// ==================== FUNCIÓN LEGACY DE CONEXIÓN ====================
+// FUNCIÓN LEGACY DE CONEXIÓN 
 
 /**
- * Función legacy de conexión (mantener por compatibilidad)
+ * Función legacy de conexión (compatibilidad)
  * 
  * @deprecated Usar getDB() en su lugar
  */

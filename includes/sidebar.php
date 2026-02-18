@@ -1,7 +1,6 @@
 <?php
-/**
- * Sidebar: menú lateral del sistema
- */
+//Sidebar: menú lateral del sistema
+
 // Si no está incluido config.php
 if (!defined('SITE_URL')) {
     require_once dirname(__DIR__) . '/config/config.php';
@@ -12,7 +11,7 @@ $rol = $_SESSION['rol'] ?? 'usuario';
 // Determinar qué menú está activo
 $current_page = basename($_SERVER['PHP_SELF'], '.php');
 
-// Función helper- para determinar si un menú está activo
+// Función helper- para determinar si un menú está activo---
 function is_active($page) {
     global $current_page;
     return $current_page === $page ? 'active' : '';

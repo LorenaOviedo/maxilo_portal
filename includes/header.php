@@ -1,5 +1,5 @@
 <?php
-/*Header del sistema de gestión de clínica dental*/
+/*Header del sistema de gestión integral Maxilofacial Texcoco*/
 // Enlace configuración
 if (!defined('SITE_URL')) {
     require_once dirname(__DIR__) . '/config/config.php';

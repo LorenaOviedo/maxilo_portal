@@ -1,8 +1,5 @@
 <?php
-/**
- * Configuración de Google reCAPTCHA v2
- * Sistema Maxilofacial Texcoco
- */
+// Configuración de Google reCAPTCHA v2
 
 require_once __DIR__ . '/Env.php';
 
@@ -16,9 +13,8 @@ class ReCaptcha {
     private static $siteKey;
     private static $secretKey;
     
-    /**
-     * Inicializar reCAPTCHA
-     */
+    //Inicializar reCAPTCHA
+    
     public static function init() {
         self::$siteKey = Env::get('RECAPTCHA_SITE_KEY');
         self::$secretKey = Env::get('RECAPTCHA_SECRET_KEY');
@@ -31,9 +27,8 @@ class ReCaptcha {
         }
     }
     
-    /**
-     * Obtener Site Key (para el frontend)
-     */
+    //Obtener Site Key (para el frontend)
+    
     public static function getSiteKey() {
         if (self::$siteKey === null) {
             self::init();
@@ -41,9 +36,8 @@ class ReCaptcha {
         return self::$siteKey;
     }
     
-    /**
-     * Obtener Secret Key (solo para backend)
-     */
+    //Obtener Secret Key (solo para backend)
+    
     private static function getSecretKey() {
         if (self::$secretKey === null) {
             self::init();
@@ -52,14 +46,14 @@ class ReCaptcha {
     }
     
     /**
-     * Verificar respuesta de reCAPTCHA
+     * Verificar respuesta de RECAPTCHA
      * 
      * @param string $response Token de respuesta del cliente
      * @param string $remoteIp IP del cliente (opcional)
      * @return array Resultado de la verificación
      */
     public static function verify($response, $remoteIp = null) {
-        // Verificar que se haya enviado el token
+        // Verificar que se haya enviado el token de reCAPTCHA
         if (empty($response)) {
             return [
                 'success' => false,
@@ -71,7 +65,7 @@ class ReCaptcha {
         
         // Si no hay secret key configurada
         if (empty($secretKey)) {
-            // En desarrollo, permitir continuar sin reCAPTCHA
+            // En desarrollo permitir continuar sin reCAPTCHA
             if (Env::get('APP_ENV') !== 'production') {
                 error_log("WARNING: reCAPTCHA deshabilitado en desarrollo");
                 return ['success' => true];
@@ -181,7 +175,7 @@ class ReCaptcha {
 // Inicializar automáticamente
 ReCaptcha::init();
 
-// ==================== FUNCIONES DE AYUDA ====================
+// FUNCIONES DE AYUDA 
 
 /**
  * Verificar reCAPTCHA desde formulario POST
@@ -205,10 +199,9 @@ function renderRecaptcha($options = []) {
     return ReCaptcha::render($options);
 }
 
-// ==================== CONSTANTE LEGACY ====================
+// CONSTANTE LEGACY
 
-/**
- * NOTA: Mantener por compatibilidad
- */
+//NOTA: Mantener por compatibilidad
+
 define('RECAPTCHA_SITE_KEY', ReCaptcha::getSiteKey());
 ?>

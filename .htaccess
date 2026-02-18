@@ -83,7 +83,7 @@ Options +FollowSymLinks
 # </IfModule>
 
 # ==========================================
-# REESCRITURA DE URLs
+# REESCRITURA DE URLS
 # ==========================================
 
 <IfModule mod_rewrite.c>

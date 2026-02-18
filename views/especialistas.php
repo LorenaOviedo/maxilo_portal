@@ -51,7 +51,7 @@ include '../includes/sidebar.php';
             <!-- Breadcrumb flechas-->
             <nav class="breadcrumb">
                 <div class="breadcrumb-item">
-                    <a href="<?php echo view_url('catalogos.php'); ?>">Catálogos</a>
+                    <a href="<?php echo view_url('especialistas.php'); ?>">Especialistas</a>
                 </div>
                 <span class="breadcrumb-separator">▶</span>
                 <div class="breadcrumb-item">
