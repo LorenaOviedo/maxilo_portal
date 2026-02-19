@@ -67,7 +67,7 @@ foreach ($nombres as $nombre) {
            <!-- dentro de header.php -->
 <?php if (basename($_SERVER['PHP_SELF']) === 'dashboard.php'): ?>
   <div class="header-welcome">
-    Bienvenido, <?= htmlspecialchars($_SESSION['nombreUsuario']) ?>
+    <h1>Bienvenido de nuevo, Dr. <?php echo htmlspecialchars(explode(' ', $nombreUsuario)[0]); ?></h1>
   </div>
 <?php endif; ?> 
             <div class="navbar-user">
