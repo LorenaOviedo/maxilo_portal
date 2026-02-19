@@ -23,15 +23,15 @@ if (isset($_SESSION['usuario_id'])) {
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    // ========== VERIFICAR reCAPTCHA PRIMERO ==========
+    // VERIFICACIÓN RECAPTCHA PRIMERO
     require_once 'config/recaptcha.php';
     $recaptchaResult = verificarRecaptcha();
     
     if (!$recaptchaResult['success']) {
-        // reCAPTCHA falló
+        // RECAPTCHA falló
         $error = $recaptchaResult['error'];
     } else {
-        // reCAPTCHA válido, proceder con login
+        // RECAPTCHA válido, proceder con login
         require_once 'controllers/AuthController.php';
         $auth = new AuthController();
         $resultado = $auth->login($_POST['usuario'], $_POST['password']);
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = $resultado['message'];
         }
     }
-    // ========== FIN DE VERIFICACIÓN ==========
+    // FIN DE VERIFICACIÓN
 }
 
 ?>
@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <!-- Widget de RECAPTCHA -->
-                    <div style="display: flex; justify-content: center; margin: 25px 0;">
+                    <div style="display: flex; justify-content: center; margin: 25px 0;"> <!-- Estilos del widget -->
                         <?php
                         require_once 'config/recaptcha.php';
                         echo renderRecaptcha();

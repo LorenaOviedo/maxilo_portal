@@ -49,6 +49,12 @@ foreach ($nombres as $nombre) {
 </head>
 <body>
     <div class="dashboard-container">
+        <!-- dentro de header.php -->
+<?php if (basename($_SERVER['PHP_SELF']) === 'dashboard.php'): ?>
+  <div class="header-welcome">
+    Bienvenido, <?= htmlspecialchars($_SESSION['nombre']) ?>
+  </div>
+<?php endif; ?>
         <!-- Navbar -->
         <nav class="navbar">
             <div class="navbar-brand">
@@ -58,7 +64,12 @@ foreach ($nombres as $nombre) {
                     <span class="navbar-subtitle"><?php echo SITE_DESCRIPTION; ?></span>
                 </div>
             </div>
-            
+           <!-- dentro de header.php -->
+<?php if (basename($_SERVER['PHP_SELF']) === 'dashboard.php'): ?>
+  <div class="header-welcome">
+    Bienvenido, <?= htmlspecialchars($_SESSION['nombre']) ?>
+  </div>
+<?php endif; ?> 
             <div class="navbar-user">
                 <div class="user-info">
                     <span class="user-name"><?php echo htmlspecialchars($nombreUsuario); ?></span>
