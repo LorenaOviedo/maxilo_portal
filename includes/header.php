@@ -67,13 +67,6 @@ foreach ($nombres as $nombre) {
                     <span class="navbar-subtitle"><?php echo SITE_DESCRIPTION; ?></span>
                 </div>
             </div>
-            <!-- saludo dentro de header.php -->
-            <?php if (basename($_SERVER['PHP_SELF']) === 'dashboard.php'): ?>
-                <div class="header-welcome">
-                    <h1>Bienvenido de nuevo, Dr. <?php echo htmlspecialchars(explode(' ', $nombreUsuario)[0]); ?></h1>
-                </div>
-            <?php endif; ?>
-            <!-- termina saludo dentro de header.php -->
             <div class="navbar-user">
                 <div class="user-info">
                     <span class="user-name"><?php echo htmlspecialchars($nombreUsuario); ?></span>
