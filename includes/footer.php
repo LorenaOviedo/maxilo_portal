@@ -12,7 +12,7 @@ if (!defined('SITE_URL')) {
     
     <!-- JavaScript general -->
     <script src="<?php echo asset('js/main.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
-    <script src="<?php echo asset('js/hamburger.js'); ?>"></script>
+    <script src="<?php echo asset('js/burger-menu.js'); ?>"></script>
     
     <!-- JavaScript de la página actual -->
     <?php if (isset($page_js)): ?>
