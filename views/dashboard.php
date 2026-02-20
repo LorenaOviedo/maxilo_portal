@@ -29,6 +29,10 @@ include '../includes/sidebar.php';
 
         <!-- Contenido principal -->
         <main class="main-content">
+            <div class="content-header">
+                <h1>Bienvenido de nuevo, Dr. <?php echo htmlspecialchars(explode(' ', $nombreUsuario)[0]); ?></h1>
+            </div>
+            
             <!-- Dashboard Grid -->
             <div class="dashboard-grid" style="grid-template-columns: 2fr 1fr 1fr; margin-bottom: 30px;">
                 <!-- Citas programadas para hoy -->

@@ -52,12 +52,6 @@ foreach ($nombres as $nombre) {
 
 <body>
     <div class="dashboard-container">
-        <!-- dentro de header.php -->
-        <?php if (basename($_SERVER['PHP_SELF']) === 'dashboard.php'): ?>
-            <div class="header-welcome">
-                Bienvenido, <?= htmlspecialchars($_SESSION['nombre']) ?>
-            </div>
-        <?php endif; ?>
         <!-- Navbar -->
         <nav class="navbar">
             <div class="navbar-brand">
