@@ -60,7 +60,6 @@ foreach ($nombres as $nombre) {
                 <span></span>
                 <span></span>
             </button>
-            <div class="navbar-brand"></div>
             <div class="navbar-brand">
                 <img src="<?php echo asset('img/logo_maxilo.png'); ?>" alt="Logo" class="navbar-logo">
                 <div class="navbar-title-wrapper">
