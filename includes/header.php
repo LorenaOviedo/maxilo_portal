@@ -54,12 +54,6 @@ foreach ($nombres as $nombre) {
     <div class="dashboard-container">
         <!-- Navbar -->
         <nav class="navbar">
-            <!-- Botón hamburguesa - Movil -->
-            <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
             <div class="navbar-brand">
                 <img src="<?php echo asset('img/logo_maxilo.png'); ?>" alt="Logo" class="navbar-logo">
                 <div class="navbar-title-wrapper">
@@ -76,4 +70,12 @@ foreach ($nombres as $nombre) {
                     <?php echo $iniciales; ?>
                 </div>
             </div>
+                        <!-- Botón hamburguesa - Movil -->
+            <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </nav>
+    </div> 
+</body>       
