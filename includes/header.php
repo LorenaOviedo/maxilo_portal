@@ -70,12 +70,10 @@ foreach ($nombres as $nombre) {
                     <?php echo $iniciales; ?>
                 </div>
             </div>
-                        <!-- Botón hamburguesa - Movil -->
+            <!-- Botón hamburguesa - Movil -->
             <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
         </nav>
-    </div> 
-</body>       
