@@ -598,8 +598,6 @@ body {
 /* BOTÓN HAMBURGUESA */
 .hamburger {
     display: none;
-    order: -1;        /* lo lleva visualmente al inicio */
-    flex-shrink: 0;
     flex-direction: column;
     justify-content: center;
     gap: 5px;
@@ -609,10 +607,6 @@ body {
     padding: 8px;
     border-radius: 6px;
     transition: background 0.2s;
-}
-
-.hamburger:hover {
-    background-color: #f0f0f0;
 }
 
 .hamburger span {
@@ -625,56 +619,52 @@ body {
     transform-origin: center;
 }
 
-/* Animación a X cuando está abierto */
-.hamburger.open span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-.hamburger.open span:nth-child(2) {
-    opacity: 0;
-    transform: scaleX(0);
-}
-
-.hamburger.open span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-}
-
-/* BOTÓN CERRAR DENTRO DEL SIDEBAR */
-.sidebar-close {
-    display: none;
-    background: none;
-    border: none;
-    font-size: 22px;
-    color: #495057;
-    cursor: pointer;
-    padding: 10px 16px;
-    align-self: flex-end;
-    transition: color 0.2s;
-}
-
-.sidebar-close:hover {
-    color: #dc3545;
-}
-
-/* OVERLAY */
-.sidebar-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    z-index: 99;
-    backdrop-filter: blur(2px);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.sidebar-overlay.active {
-    display: block;
-    opacity: 1;
-}
+.sidebar-close { display: none; }
+.sidebar-overlay { display: none; }
 
 /*RESPONSIVE*/
 @media (max-width: 968px) {
+    .hamburger {
+        display: flex;
+        order: -1;        /* solo aplica order cuando el botón es visible */
+        flex-shrink: 0;
+    }
+
+    .sidebar-close {
+        display: flex;
+        background: none;
+        border: none;
+        font-size: 22px;
+        color: #495057;
+        cursor: pointer;
+        padding: 10px 16px;
+        align-self: flex-end;
+        transition: color 0.2s;
+    }
+
+    .sidebar-close:hover { color: #dc3545; }
+
+    .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 99;
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    .sidebar-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+
     .dashboard-container {
         grid-template-areas: 
             "navbar"
@@ -683,15 +673,6 @@ body {
         grid-template-rows: 80px 1fr;
     }
 
-    .hamburger {
-        display: flex;
-    }
-
-    .sidebar-close {
-        display: flex;
-    }
-
-    /* El sidebar ahora es un drawer lateral */
     .sidebar {
         position: fixed;
         top: 0;
@@ -701,8 +682,7 @@ body {
         z-index: 100;
         transform: translateX(-100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: none;
-        display: flex;          /* siempre visible en DOM, oculto con transform */
+        display: flex;
         padding-top: 10px;
     }
 
@@ -711,13 +691,8 @@ body {
         box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
     }
 
-    .navbar-subtitle {
-        display: none;
-    }
-
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
+    .navbar-subtitle { display: none; }
+    .dashboard-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
