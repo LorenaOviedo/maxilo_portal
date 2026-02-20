@@ -276,3 +276,8 @@ include '../includes/sidebar.php';
     </div><!-- /dashboard-container (abierto por header.php) -->
 </body>
 </html>
+
+<?php
+//INCLUIR FOOTER
+include '../includes/footer.php';
+?>
