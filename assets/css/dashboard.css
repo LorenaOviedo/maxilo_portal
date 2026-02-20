@@ -595,6 +595,82 @@ body {
     color: #6c757d;
 }
 
+/* BOTÓN HAMBURGUESA */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.hamburger:hover {
+    background-color: #f0f0f0;
+}
+
+.hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background-color: #1a1a1a;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+/* Animación a X cuando está abierto */
+.hamburger.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.hamburger.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* BOTÓN CERRAR DENTRO DEL SIDEBAR */
+.sidebar-close {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #495057;
+    cursor: pointer;
+    padding: 10px 16px;
+    align-self: flex-end;
+    transition: color 0.2s;
+}
+
+.sidebar-close:hover {
+    color: #dc3545;
+}
+
+/* OVERLAY */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 99;
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
 /*RESPONSIVE*/
 @media (max-width: 968px) {
     .dashboard-container {
@@ -604,15 +680,39 @@ body {
         grid-template-columns: 1fr;
         grid-template-rows: 80px 1fr;
     }
-    
-    .sidebar {
-        display: none;
+
+    .hamburger {
+        display: flex;
     }
-    
+
+    .sidebar-close {
+        display: flex;
+    }
+
+    /* El sidebar ahora es un drawer lateral */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 260px;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: none;
+        display: flex;          /* siempre visible en DOM, oculto con transform */
+        padding-top: 10px;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    }
+
     .navbar-subtitle {
         display: none;
     }
-    
+
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
