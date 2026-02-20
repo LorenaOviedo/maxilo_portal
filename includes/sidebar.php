@@ -26,6 +26,12 @@ function is_active($page)
     </button>
 
     <ul class="menu">
+        <li class="menu-item <?php echo is_active('Dashboard'); ?>">
+            <a href="<?php echo view_url('dashboard.php'); ?>">
+                <span class="menu-icon"><i class="ri-home-2-line"></i></span>
+                <span class="menu-text">Dashboard</span>
+            </a>
+        </li>
         <li class="menu-item <?php echo is_active('catalogos'); ?>">
             <a href="<?php echo view_url('catalogos.php'); ?>">
                 <span class="menu-icon"><i class="ri-book-open-line"></i></span>
