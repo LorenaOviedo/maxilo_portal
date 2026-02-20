@@ -25,7 +25,6 @@ function is_active($page)
         <i class="ri-close-line"></i>
     </button>
 
-    <ul class="menu"></ul>
     <ul class="menu">
         <li class="menu-item <?php echo is_active('catalogos'); ?>">
             <a href="<?php echo view_url('catalogos.php'); ?>">
