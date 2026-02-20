@@ -43,18 +43,16 @@ body {
     background-color: #ffffff;
     border-bottom: 1px solid #e8e8e8;
     display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: 0 40px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-    gap: 15px;
 }
 
-/* El brand empuja al usuario a la derecha */
 .navbar-brand {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-right: auto;   /* ← esta es la clave */
 }
 
 .navbar-logo {
@@ -615,18 +613,9 @@ body {
 }
 
 /* BOTÓN HAMBURGUESA */
-.hamburger {
+.hamburger,
+.sidebar-close {
     display: none;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 6px;
-    flex-shrink: 0;
-    transition: background 0.2s;
 }
 
 .hamburger span {
@@ -642,56 +631,101 @@ body {
 .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* OVERLAY */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 99;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
   
 
 /*RESPONSIVE*/
-@media (max-width: 968px)  {
+@media (max-width: 968px) {
+    .dashboard-container {
+        grid-template-areas: 
+            "navbar"
+            "main";
+        grid-template-columns: 1fr;
+        grid-template-rows: 80px 1fr;
+    }
+
+    /* Mostrar hamburguesa */
     .hamburger {
         display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 6px;
+        flex-shrink: 0;
     }
+
+    .hamburger:hover { background-color: #f0f0f0; }
+
+    /* Mostrar botón cerrar */
+    .sidebar-close {
+        display: flex;
+        background: none;
+        border: none;
+        font-size: 22px;
+        color: #495057;
+        cursor: pointer;
+        padding: 10px 16px;
+        align-self: flex-end;
+        transition: color 0.2s;
+    }
+
+    .sidebar-close:hover { color: #dc3545; }
+
+    /* Sidebar como drawer */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 260px;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        padding-top: 10px;
+        box-shadow: none;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .navbar-subtitle { display: none; }
+    .dashboard-grid  { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
-    .main-content {
-        padding: 20px 15px;
-    }
-    
-    .navbar {
-        padding: 0 15px;
-    }
-    
-    .user-info {
-        display: none;
-    }
-    
-    .navbar-title-wrapper {
-        display: none;
-    }
-    
-    .content-header h1 {
-        font-size: 20px;
-    }
-    
-    .dashboard-cards {
-        grid-template-columns: 1fr;
-    }
-    
-    .card-number {
-        font-size: 28px;
-    }
-    
-    .info-card {
-        padding: 20px;
-    }
-    
-    .bar-chart {
-        height: 150px;
-        gap: 20px;
-    }
-    
-    .chart-card h3 {
-        font-size: 13px;
-    }
+    .main-content        { padding: 20px 15px; }
+    .navbar              { padding: 0 15px; }
+    .user-info           { display: none; }
+    .navbar-title-wrapper{ display: none; }
+    .content-header h1   { font-size: 20px; }
+    .dashboard-cards     { grid-template-columns: 1fr; }
+    .card-number         { font-size: 28px; }
+    .info-card           { padding: 20px; }
+    .bar-chart           { height: 150px; gap: 20px; }
+    .chart-card h3       { font-size: 13px; }
 }
 
 /*UTILIDADES*/
