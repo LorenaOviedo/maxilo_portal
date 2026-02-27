@@ -89,17 +89,17 @@ include '../includes/sidebar.php';
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="col-id">FOLIO DE ORDEN<br>COMPRA</th>
-                            <th class="col-name">PROVEEDOR</th>
-                            <th class="col-type">PRODUCTO</th>
-                            <th class="col-description">CANTIDAD</th>
-                            <th class="col-price">FECHA DE<br>EMISIÓN</th>
-                            <th class="col-time">FECHA DE<br>ENTREGA</th>
-                            <th class="col-actions">ACCIONES</th>
+                            <th class="col-folio">FOLIO DE ORDEN<br>COMPRA</th>
+                            <th class="col-proveedor">PROVEEDOR</th>
+                            <th class="col-producto">PRODUCTO</th>
+                            <th class="col-cantidad">CANTIDAD</th>
+                            <th class="col-emision">FECHA DE<br>EMISIÓN</th>
+                            <th class="col-entrega">FECHA DE<br>ENTREGA</th>
+                            <th class="col-acciones">ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (empty($tratamientos)): ?>
+                        <?php if (empty($compras)): ?>
                         <tr>
                             <td colspan="9">
                                 <div class="empty-state">
@@ -114,13 +114,12 @@ include '../includes/sidebar.php';
                         <?php else: ?>
                             <?php foreach ($compras as $compra): ?>
                             <tr>
-                                <td class="col-id"><?php echo htmlspecialchars($compra['folio']); ?></td>
-                                <td class="col-name"><?php echo htmlspecialchars($compra['proveedor']); ?></td>
-                                <td class="col-type"><?php echo htmlspecialchars($compra['producto']); ?></td>
-                                <td class="col-description">
-                                    <span class="text-truncate" title="<?php echo htmlspecialchars($compra['descripcion']); ?>">
-                                        <?php echo htmlspecialchars($compra['descripcion']); ?>
-                                    </span>
+                                <td class="col-folio"><?php echo htmlspecialchars($compra['folio']); ?></td>
+                                <td class="col-proveedor"><?php echo htmlspecialchars($compra['proveedor']); ?></td>
+                                <td class="col-producto"><?php echo htmlspecialchars($compra['producto']); ?></td>
+                                <td class="col-cantidad"><?php echo htmlspecialchars($compra['cantidad']); ?></td>
+                                <td class="col-emision"><?php echo htmlspecialchars($compra['fecha_emision']); ?></td>
+                                <td class="col-entrega"><?php echo htmlspecialchars($compra['fecha_entrega']); ?></td>
                                 </td>
                                 <td class="col-price"><?php echo htmlspecialchars($compra['precio']); ?></td>
                                 <td class="col-time text-center"><?php echo htmlspecialchars($compra['fecha_entrega']); ?></td>
