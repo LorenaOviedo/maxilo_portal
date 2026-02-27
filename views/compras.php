@@ -124,6 +124,14 @@ include '../includes/sidebar.php';
                                     <div class="action-buttons">
                                         <button 
                                             type="button" 
+                                            class="btn-action btn-view" 
+                                            title="Ver paciente"
+                                            onclick='verPaciente(<?php echo json_encode($paciente); ?>)'    
+                                        >
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button 
+                                            type="button" 
                                             class="btn-action btn-edit" 
                                             title="Editar compra"
                                             onclick="editarRegistro('<?php echo $compra['folio']; ?>', '<?php echo view_url('compra_form.php'); ?>')"
