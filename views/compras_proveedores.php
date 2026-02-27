@@ -14,7 +14,7 @@ if (!$auth->verificarSesion()) {
 }
 
 //CONFIGURACIÓN DE LA PÁGINA
-$page_title = 'Compraas y proveedores';
+$page_title = 'Compras y proveedores';
 $page_css = ['catalogos.css'];
 
 //Definir catálogoss
@@ -39,7 +39,7 @@ include '../includes/sidebar.php';
         <!-- Contenido principal -->
         <main class="main-content">
             <div class="content-header">
-                <h1>Catálogos</h1>
+                <h1>Compras y proveedores</h1>
             </div>
             
             <!-- Grid de tarjetas de catálogos -->
