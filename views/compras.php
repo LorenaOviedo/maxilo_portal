@@ -30,7 +30,7 @@ $compras = [
         'fecha_entrega' => '2026-01-20',
     ],
     [
-        'numero_compra' => 'T-002',
+        'numero_compra' => 'FO-002',
         'proveedor' => 'MEDICAMENTOS Y EQUIPO ODONTOLOGICO SA DE CV',
         'producto' => 'RESINA SECADO RAPIDO 20 ML',
         'cantidad' => '25',
@@ -120,9 +120,6 @@ include '../includes/sidebar.php';
                                 <td class="col-cantidad"><?php echo htmlspecialchars($compra['cantidad']); ?></td>
                                 <td class="col-emision"><?php echo htmlspecialchars($compra['fecha_emision']); ?></td>
                                 <td class="col-entrega"><?php echo htmlspecialchars($compra['fecha_entrega']); ?></td>
-                                </td>
-                                <td class="col-price"><?php echo htmlspecialchars($compra['precio']); ?></td>
-                                <td class="col-time text-center"><?php echo htmlspecialchars($compra['fecha_entrega']); ?></td>
                                 <td class="col-actions">
                                     <div class="action-buttons">
                                         <button 
