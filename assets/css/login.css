@@ -181,7 +181,8 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(0, 139, 139, 0.3), rgba(0, 102, 102, 0.5));
+    /*background: linear-gradient(135deg, rgba(0, 139, 139, 0.3), rgba(0, 102, 102, 0.5));*/
+    background: linear-gradient(to right, rgba(0,0,0,0.4), transparent),linear-gradient(135deg, rgba(0, 139, 139, 0.4), rgba(0, 102, 102, 0.6));
 }
 
 /* reCAPTCHA 
