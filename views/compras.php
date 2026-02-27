@@ -114,7 +114,7 @@ include '../includes/sidebar.php';
                         <?php else: ?>
                             <?php foreach ($compras as $compra): ?>
                             <tr>
-                                <td class="col-folio"><?php echo htmlspecialchars($compra['folio']); ?></td>
+                                <td class="col-folio"><?php echo htmlspecialchars($compra['numero_compra']); ?></td>
                                 <td class="col-proveedor"><?php echo htmlspecialchars($compra['proveedor']); ?></td>
                                 <td class="col-producto"><?php echo htmlspecialchars($compra['producto']); ?></td>
                                 <td class="col-cantidad"><?php echo htmlspecialchars($compra['cantidad']); ?></td>
@@ -123,20 +123,6 @@ include '../includes/sidebar.php';
                                 </td>
                                 <td class="col-price"><?php echo htmlspecialchars($compra['precio']); ?></td>
                                 <td class="col-time text-center"><?php echo htmlspecialchars($compra['fecha_entrega']); ?></td>
-                                <td class="col-authorization text-center">
-                                    <?php if ($compra['autorizacion'] === 'SI'): ?>
-                                        <span class="badge badge-yes">SI</span>
-                                    <?php else: ?>
-                                        <span class="badge badge-no">NO</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="col-status text-center">
-                                    <?php if ($compra['estatus'] === 'ACTIVO'): ?>
-                                        <span class="badge badge-active">ACTIVO</span>
-                                    <?php else: ?>
-                                        <span class="badge badge-inactive">INACTIVO</span>
-                                    <?php endif; ?>
-                                </td>
                                 <td class="col-actions">
                                     <div class="action-buttons">
                                         <button 
