@@ -115,7 +115,7 @@ include '../includes/sidebar.php';
                         <?php else: ?>
                             <?php foreach ($proveedores as $proveedor): ?>
                             <tr>
-                                <td class="col-id"><?php echo htmlspecialchars($proveedor['numero']); ?></td>
+                                <td class="col-id-proveedor"><?php echo htmlspecialchars($proveedor['numero_proveedor']); ?></td>
                                 <td class="col-razon-social"><?php echo htmlspecialchars($proveedor['razon_social']); ?></td>
                                 <td class="col-rfc"><?php echo htmlspecialchars($proveedor['rfc']); ?></td>
                                 <td class="col-tipo-persona"><?php echo htmlspecialchars($proveedor['tipo_persona']); ?></td>
