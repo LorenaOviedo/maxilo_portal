@@ -18,6 +18,12 @@ foreach ($nombres as $nombre) {
     if (strlen($iniciales) >= 2)
         break;
 }
+
+// Manejo de caché: prevenir caché en páginas protegidas
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+header("Sat, 01 Jan 2000 00:00:00 GMT");
 ?>
 <!DOCTYPE html>
 <html lang="es">

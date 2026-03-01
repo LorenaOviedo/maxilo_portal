@@ -166,9 +166,11 @@ if (session_status() === PHP_SESSION_NONE) {
     // En producción, usar cookie segura (HTTPS)
     if (ENVIRONMENT === 'production') {
         ini_set('session.cookie_secure', 1);
+        ini_set('session.cookie_samesite', 'Strict'); // Evitar envío de cookies en solicitudes cross-site -seg. extra- Manejo de caché
     }
     
     session_name(SESSION_NAME);
+    session_start();
 }
 
 // CONFIGURACIÓN DE UPLOADS 
