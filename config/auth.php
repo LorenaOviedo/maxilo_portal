@@ -2,7 +2,7 @@
 //session_start() es llamado en config.php
 
 // Si no hay sesión activa, se redirige al login
-if (!isset($_SESSION['id_usuario'])) {
+if (!isset($_SESSION['usuario_id'])) {
     header("Location: " . url('index.php'));
     exit();
 }
