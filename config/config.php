@@ -64,8 +64,7 @@ if (ENVIRONMENT === 'production') {
 }
 
 // Definir URL completa del proyecto
-//define('SITE_URL', BASE_URL . BASE_PATH);
-define('SITE_URL', rtrim(BASE_URL . BASE_PATH, '/') . '/');
+define('SITE_URL', BASE_URL . BASE_PATH);
 
 // CONFIGURACIÓN DE RUTAS
 
