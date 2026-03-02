@@ -3,7 +3,7 @@
 
 // Si no hay sesión activa, se redirige al login
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: " . SITE_URL . "/index.php");
+    header("Location: " . url('index.php'));
     exit();
 }
 
