@@ -10,9 +10,9 @@ require_once __DIR__ . '/../config/auth.php';
 $auth = new AuthController();
 
 // Verificar que el usuario esté autenticado
-if (!$auth->verificarSesion()) {
-    redirect('index.php');
-}
+//if (!$auth->verificarSesion()) {
+//    redirect('index.php');
+//}
 
 //CONFIGURACIÓN DE LA PÁGINA
 $page_title = 'Dashboard';
