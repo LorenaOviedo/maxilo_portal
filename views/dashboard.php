@@ -6,7 +6,7 @@ require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../config/auth.php';
 
 
-session_start();
+//session_start();
 
 $auth = new AuthController();
 
