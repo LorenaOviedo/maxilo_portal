@@ -161,8 +161,8 @@ class AuthController {
         session_destroy();
         
         // Iniciar nueva sesión limpia
-        //session_start();
-        //session_regenerate_id(true);
+        session_start();
+        session_regenerate_id(true);
         
         return [
             'success' => true,

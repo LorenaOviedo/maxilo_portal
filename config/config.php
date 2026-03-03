@@ -170,7 +170,7 @@ if (session_status() === PHP_SESSION_NONE) {
     }
     
     session_name(SESSION_NAME);
-    session_start();
+    //session_start();
 }
 
 // CONFIGURACIÓN DE UPLOADS 
