@@ -21,6 +21,6 @@ if (isset($_SESSION['ultimo_acceso'])) {
 $_SESSION['ultimo_acceso'] = time();
 
 // Headers para evitar caché en páginas protegidas
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Pragma: no-cache");
-header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
+//header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+//header("Pragma: no-cache");
+//header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
