@@ -19,7 +19,7 @@ $page_title = 'Inventarios';
 $page_css = ['catalogos.css'];
 
 //Definir catálogoss
-$catalogos = [
+$inventarios = [
     [
         'titulo' => 'Inventarios',
         'descripcion' => 'Gestione el inventario de productos del sistema.',
