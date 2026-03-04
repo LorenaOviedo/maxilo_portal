@@ -63,11 +63,11 @@ include '../includes/sidebar.php';
 
         <div class="filters-actions">
             <button class="btn-generar" id="btnGenerar">
-                <i class="ri-bar-chart-2-line"></i>
+                <i class="ri-bar-chart-line"></i>
                 Generar reporte
             </button>
             <button class="btn-exportar btn-excel" id="btnExcel">
-                <i class="ri-file-excel-2-line"></i>
+                <i class="ri-file-excel-line"></i>
                 Exportar Excel
             </button>
             <button class="btn-exportar btn-pdf" id="btnPdf">
