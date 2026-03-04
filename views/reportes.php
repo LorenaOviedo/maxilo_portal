@@ -52,12 +52,10 @@ include '../includes/sidebar.php';
                 <div class="date-range">
                     <div class="date-input-wrapper">
                         <input type="date" id="fechaInicio" class="filter-date" value="<?php echo date('Y-m-01'); ?>">
-                        <i class="ri-calendar-line date-icon"></i>
                     </div>
                     <span class="date-separator">—</span>
                     <div class="date-input-wrapper">
                         <input type="date" id="fechaFin" class="filter-date" value="<?php echo date('Y-m-t'); ?>">
-                        <i class="ri-calendar-line date-icon"></i>
                     </div>
                 </div>
             </div>
