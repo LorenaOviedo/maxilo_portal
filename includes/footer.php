@@ -11,7 +11,7 @@ $scripts_globales = [
     'catalogos-tabla.js',
     'modal.js',
     'OdontogramaModel.js',
-    'odontogramaController.js',
+    'OdontogramaController.js',
 ];
 
 ?>
