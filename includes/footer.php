@@ -10,8 +10,8 @@ $scripts_globales = [
     'burger-menu.js',
     'catalogos-tabla.js',
     'modal.js',
-    'OdontogramaModel.js',
-    'OdontogramaController.js',
+    'odontogramaModel.js',
+    'odontogramaController.js',
 ];
 
 ?>
