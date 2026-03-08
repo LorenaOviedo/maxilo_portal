@@ -6,7 +6,6 @@ if (!defined('SITE_URL')) {
 }
 
 $scripts_globales = [
-    'main.js',
     'burger-menu.js',
     'catalogos-tabla.js',
     'modal.js',
@@ -21,7 +20,6 @@ $scripts_globales = [
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     
     <!-- JavaScript general -->
-    <script src="<?php echo asset('js/main.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
     <script src="<?php echo asset('js/burger-menu.js'); ?>"></script>
 
     <script src="<?php echo asset('js/catalogos-tabla.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
