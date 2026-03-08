@@ -281,7 +281,7 @@ $modal_id = 'modalPaciente';
                                     <td><span class="badge-estatus completado">COMPLETADO</span></td>
                                     <td class="acciones-cell">
                                         <button class="btn-accion editar" onclick="editarProcedimientoPlan(1)"><i
-                                                class="fas fa-edit"></i></button>
+                                                class=""></i></button>
                                         <button class="btn-accion eliminar" onclick="eliminarProcedimientoPlan(1)"><i
                                                 class="fas fa-trash"></i></button>
                                     </td>
@@ -293,9 +293,9 @@ $modal_id = 'modalPaciente';
                                     <td><span class="badge-estatus completado">COMPLETADO</span></td>
                                     <td class="acciones-cell">
                                         <button class="btn-accion editar" onclick="editarProcedimientoPlan(2)"><i
-                                                class="fas fa-edit"></i></button>
+                                                class="ri-edit-box-line"></i></button>
                                         <button class="btn-accion eliminar" onclick="eliminarProcedimientoPlan(2)"><i
-                                                class="fas fa-trash"></i></button>
+                                                class="ri-delete-bin-6-line"></i></button>
                                     </td>
                                 </tr>
                                 <tr>
