@@ -17,7 +17,7 @@ if (!$auth->verificarSesion()) {
 //CONFIGURACIÓN DE LA PAGINA
 $page_title = 'Pacientes';
 $page_css = ['catalogos-tabla.css', 'modal.css', odontograma.css];
-$page_js = ['https://unpkg.com/vue@3/dist/vue.global.js','catalogos-tabla.js', 'modal.js', odontogramaModel.js, odontogramaController.js];
+$page_js = ['catalogos-tabla.js', 'modal.js', odontogramaModel.js, odontogramaController.js];
 
 // Datos de ejemplo para pacientes
 $pacientes = [
