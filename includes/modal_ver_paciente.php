@@ -144,7 +144,7 @@ $modal_id = 'modalPaciente';
                     <!-- Sección: Datos de contacto del paciente -->
                     <div class="form-section-title">
                         <i class="fas fa-user-circle"></i>
-                        Datos de contacto del paciente
+                        Datos de contacto del paciente<br>
                     </div>
 
                     <!-- F1: Email, teléfono -->
@@ -160,6 +160,12 @@ $modal_id = 'modalPaciente';
                         </div>
                     </div>
 
+                    <!-- Sección: Contacto de emergencia -->
+                    <div class="form-section-title" style="margin-top: 20px;">
+                        <i class="fas fa-ambulance"></i>
+                        Contacto de emergencia<br>
+                    </div>
+
                     <!-- F2: Nombre del contacto, parentesco -->
                     <div class="form-row cols-2">
                         <div class="form-group">
@@ -170,14 +176,6 @@ $modal_id = 'modalPaciente';
                             <label class="form-label">Relación / Parentesco</label>
                             <input type="text" name="relacion" class="form-input"
                                 placeholder="Ej: Madre, Hermano, Esposo/a...">
-                        </div>
-                    </div>
-                    <!-- F3: Teléfono de emergencia -->
-                    <div class="form-row cols-2">
-                        <div class="form-group">
-                            <label class="form-label">Teléfono del contacto</label>
-                            <input type="tel" name="telefono_emergencia" class="form-input" maxlength="10"
-                                placeholder="10 dígitos">
                         </div>
                     </div>
 
