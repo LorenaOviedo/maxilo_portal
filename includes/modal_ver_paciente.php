@@ -419,7 +419,7 @@ $modal_id = 'modalPaciente';
 
                                 <!-- Header -->
                                 <div class="odonto-panel-header">
-                                    <div class="odonto-panel-header-icon">{{ dienteActivo.icono }}</div>
+                                    <div class="odonto-panel-header-icon"><i :class="dienteActivo.icono"></i></div>
                                     <div class="odonto-panel-header-info">
                                         <h3>Pieza {{ dienteActivo.numero }}</h3>
                                         <p>{{ dienteActivo.nombre }} · {{ dienteActivo.arcada }}</p>
