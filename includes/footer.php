@@ -24,7 +24,7 @@ $scripts_globales = [
     <script src="<?php echo asset('js/main.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
     <script src="<?php echo asset('js/burger-menu.js'); ?>"></script>
 
-    <script src="<?php echo asset('js/catalog-table.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+    <script src="<?php echo asset('js/catalogo-tabla.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
     <script src="<?php echo asset('js/modal.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
 
     <!-- Vue.js — debe cargarse ANTES que OdontogramaModel y OdontogramaController -->
