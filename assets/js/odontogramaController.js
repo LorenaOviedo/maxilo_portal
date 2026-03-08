@@ -189,7 +189,7 @@ const OdontogramaController = {
           eliminarRegistro,
         };
       },
-    }).mount('#tabOdontograma');
+    }).mount('#app-odontograma');
   },
 
   /**
