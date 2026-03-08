@@ -105,7 +105,7 @@ const odontogramaModel = {
    * Construye el array de objetos de pieza para una arcada
    * @param {number[]} numeros
    * @param {string}   arcada  - 'Superior' | 'Inferior'
-   * @returns {Array<{numero, nombre, arcada, emoji}>}
+   * @returns {Array<{numero, nombre, arcada, icono}>}
    */
   construirArcada(numeros, arcada) {
     return numeros.map((numero) => ({
