@@ -32,7 +32,7 @@ $inventarios = [
     ],
     [
         'titulo' => 'Movimientos de almacén',
-        'descripcion' => 'Catálogo para registrar los movimientos de productos en el almacén.',
+        'descripcion' => 'Registre los movimientos de productos en el almacén.',
         'url' => 'movimientos_almacen.php'
     ],
 ];
