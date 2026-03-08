@@ -8,12 +8,9 @@ if (!defined('SITE_URL')) {
 $scripts_globales = [
     'main.js',
     'burger-menu.js',
-    'catalog-table.js',
     'catalogos-tabla.js',
     'modal.js',
     'OdontogramaModel.js',
-    'odontogramaModel.js',
-    'OdontogramaController.js',
     'odontogramaController.js',
 ];
 
