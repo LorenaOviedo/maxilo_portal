@@ -20,7 +20,7 @@ const OdontogramaController = {
   // PUNTO DE ENTRADA
   // Llamar desde modal_paciente.php al abrir
   // el tab de odontograma:
-  //   OdontogramaController.montar(numeroPaciente)
+  // OdontogramaController.montar(numeroPaciente)
   // ─────────────────────────────────────────
 
   /**
