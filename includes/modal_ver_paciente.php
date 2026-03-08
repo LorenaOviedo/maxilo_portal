@@ -209,15 +209,6 @@ $modal_id = 'modalPaciente';
                     </div>
                 </div>
 
-                <!-- Alergias -->
-                <div class="form-row cols-1">
-                    <div class="form-group">
-                        <label class="form-label">Alergias</label>
-                        <textarea name="alergias" class="form-input form-textarea" rows="3"
-                            placeholder="Describe las alergias conocidas..."></textarea>
-                    </div>
-                </div>
-
                 <!-- Medicamentos actuales -->
                 <div class="form-row cols-1">
                     <div class="form-group">
@@ -326,7 +317,7 @@ $modal_id = 'modalPaciente';
                         </table>
                     </div><!-- /.plan-card -->
                 </div><!-- /#listaPlanesContainer -->
-
+                
                 <!-- Botón imprimir -->
                 <div class="tab-footer-actions">
                     <button type="button" class="btn-imprimir" onclick="imprimirPlanes()">
