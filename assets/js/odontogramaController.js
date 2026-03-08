@@ -105,13 +105,13 @@ const OdontogramaController = {
         /** Seleccionar un diente → abre el panel lateral */
         function seleccionarDiente(pieza) {
           dienteActivo.value = pieza;
-          form.value = OdontogramaModel.registroVacio();
+          form.value = odontogramaModel.registroVacio();
         }
 
         /** Cerrar panel lateral sin guardar */
         function cancelar() {
           dienteActivo.value = null;
-          form.value = OdontogramaModel.registroVacio();
+          form.value = odontogramaModel.registroVacio();
         }
 
         /** Guardar un nuevo registro en la pieza activa */
@@ -132,7 +132,7 @@ const OdontogramaController = {
           registros.value[num].push(nuevoRegistro);
 
           mostrarNotif(`Registro guardado en pieza ${num}`);
-          form.value = OdontogramaModel.registroVacio();
+          form.value = odontogramaModel.registroVacio();
 
           // Persistir en el servidor
           await self._guardarEnServidor(numeroPaciente, num, nuevoRegistro);
@@ -231,11 +231,11 @@ const OdontogramaController = {
         // El servidor devuelve: { success: true, registros: { [numeroPieza]: [...] } }
         registros.value = data.registros;
       } else {
-        console.warn('OdontogramaController: no se pudieron cargar registros', data.message);
+        console.warn('odontogramaController: no se pudieron cargar registros', data.message);
       }
     } catch (err) {
       // En desarrollo sin servidor activo, silenciar el error
-      console.info('OdontogramaController: servidor no disponible, modo local activo');
+      console.info('odontogramaController: servidor no disponible, modo local activo');
     } finally {
       cargando.value = false;
     }
@@ -263,11 +263,11 @@ const OdontogramaController = {
       const data = await response.json();
 
       if (!data.success) {
-        console.error('OdontogramaController: error al guardar', data.message);
+        console.error('odontogramaController: error al guardar', data.message);
         CatalogTable.showNotification('Error al guardar en servidor', 'error');
       }
     } catch (err) {
-      console.info('OdontogramaController: guardado solo en local (servidor no disponible)');
+      console.info('odontogramaController: guardado solo en local (servidor no disponible)');
     }
   },
 
@@ -293,10 +293,10 @@ const OdontogramaController = {
       const data = await response.json();
 
       if (!data.success) {
-        console.error('OdontogramaController: error al eliminar', data.message);
+        console.error('odontogramaController: error al eliminar', data.message);
       }
     } catch (err) {
-      console.info('OdontogramaController: eliminación solo en local');
+      console.info('odontogramaController: eliminación solo en local');
     }
   },
 };

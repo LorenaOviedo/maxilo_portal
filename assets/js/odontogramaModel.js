@@ -6,7 +6,7 @@
  * No conoce la vista ni el controlador.
  */
 
-const OdontogramaModel = {
+const odontogramaModel = {
 
   // ─────────────────────────────────────────
   // CATÁLOGOS (deben coincidir con la BD)
