@@ -6,6 +6,7 @@ if (!defined('SITE_URL')) {
 }
 
 $scripts_globales = [
+    'vue.global.prod.min.js',
     'burger-menu.js',
     'catalogos-tabla.js',
     'modal.js',
@@ -26,7 +27,8 @@ $scripts_globales = [
     <script src="<?php echo asset('js/modal.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
 
     <!-- Vue.js — debe cargarse ANTES que OdontogramaModel y OdontogramaController -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"></script>-->
+    <script src="<?php echo asset('js/vue.global.prod.min.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
 
     <!-- Odontograma MVC — Model siempre ANTES que Controller -->
     <script src="<?php echo asset('js/odontogramaModel.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
