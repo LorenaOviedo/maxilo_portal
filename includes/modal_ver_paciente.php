@@ -138,12 +138,6 @@ $modal_id = 'modalPaciente';
         <div id="tabContacto" class="modal-tab-content">
             <form class="modal-form" id="formContacto">
 
-                <!-- Sección: Datos de contacto del paciente -->
-                <div class="form-section-title">
-                    <i class="fas fa-user-circle"></i>
-                    Datos de contacto del paciente
-                </div>
-
                 <!-- F1: Email, teléfono -->
                 <div class="form-row cols-2">
                     <div class="form-group">
@@ -154,12 +148,6 @@ $modal_id = 'modalPaciente';
                         <label class="form-label">Teléfono</label>
                         <input type="tel" name="telefono" class="form-input" maxlength="10" placeholder="10 dígitos">
                     </div>
-                </div>
-
-                <!-- Sección: Contacto de emergencia -->
-                <div class="form-section-title" style="margin-top: 20px;">
-                    <i class="fas fa-ambulance"></i>
-                    Contacto de emergencia
                 </div>
 
                 <!-- F2: Nombre del contacto, parentesco -->
