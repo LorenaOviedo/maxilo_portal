@@ -30,12 +30,12 @@ $modal_id = 'modalPaciente';
     <div class="modal-tabs">
         <button class="modal-tab active" data-tab="tabInfoPersonal"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabInfoPersonal')">
-            Información Personal y contacto
+            Información<br>Personal
         </button>
         <button class="modal-tab" data-tab="tabContacto"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabContacto')">
             <i class="fas fa-address-book"></i>
-            Contacto
+            Información de<br>Contacto
         </button>
         <button class="modal-tab" data-tab="tabHistorial"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabHistorial')">
@@ -74,6 +74,7 @@ $modal_id = 'modalPaciente';
                         <input type="text" name="apellido_paterno" class="form-input">
                     </div>
                 </div>
+
 
                 <!-- F2 apellido materno, fecha de nacimiento -->
                 <div class="form-row cols-2">
@@ -131,137 +132,137 @@ $modal_id = 'modalPaciente';
                         <input type="text" name="pais" class="form-input" value="México">
                     </div>
                 </div>
-
-                <!-- Tab 2 Contacto -->
-                <div id="tabContacto" class="modal-tab-content">
-                    <form class="modal-form" id="formContacto">
-
-                        <!-- Sección: Datos de contacto del paciente -->
-                        <div class="form-section-title">
-                            <i class="fas fa-user-circle"></i>
-                            Datos de contacto del paciente
-                        </div>
-
-                        <!-- F1: Email, teléfono -->
-                        <div class="form-row cols-2">
-                            <div class="form-group">
-                                <label class="form-label">Correo electrónico</label>
-                                <input type="email" name="email" class="form-input" placeholder="correo@ejemplo.com">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Teléfono</label>
-                                <input type="tel" name="telefono" class="form-input" maxlength="10"
-                                    placeholder="10 dígitos">
-                            </div>
-                        </div>
-
-                        <!-- Sección: Contacto de emergencia -->
-                        <div class="form-section-title" style="margin-top: 20px;">
-                            <i class="fas fa-ambulance"></i>
-                            Contacto de emergencia
-                        </div>
-
-                        <!-- F2: Nombre del contacto, parentesco -->
-                        <div class="form-row cols-2">
-                            <div class="form-group">
-                                <label class="form-label">Nombre del contacto</label>
-                                <input type="text" name="contacto_emergencia" class="form-input">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Relación / Parentesco</label>
-                                <input type="text" name="relacion" class="form-input"
-                                    placeholder="Ej: Madre, Hermano, Esposo/a...">
-                            </div>
-                        </div>
-
-                        <!-- F3: Teléfono de emergencia -->
-                        <div class="form-row cols-2">
-                            <div class="form-group">
-                                <label class="form-label">Teléfono del contacto</label>
-                                <input type="tel" name="telefono_emergencia" class="form-input" maxlength="10"
-                                    placeholder="10 dígitos">
-                            </div>
-                        </div>
-
-                    </form>
-                </div>
-
-                <!-- Tab 3 historial clínico -->
-                <div id="tabHistorial" class="modal-tab-content">
-                    <div class="modal-form">
-                        <p class="text-muted">Contenido del historial clínico...</p>
-                    </div>
-                </div>
-
-                <!-- Tab 4 planes de tratamiento -->
-                <div id="tabPlanes" class="modal-tab-content">
-                    <div class="modal-form">
-                        <p class="text-muted">Contenido de planes de tratamiento...</p>
-                    </div>
-                </div>
-
-                <!-- Tab 5 odontograma -->
-                <div id="tabOdontograma" class="modal-tab-content">
-                    <div class="modal-form">
-                        <p class="text-muted">Contenido del odontograma...</p>
-                    </div>
-                </div>
-
-                <!-- Tab 6 archivos medicos -->
-                <div id="tabArchivos" class="modal-tab-content">
-                    <div class="modal-form">
-                        <p class="text-muted">Contenido de archivos médicos...</p>
-                    </div>
-                </div>
         </div>
 
-        <!-- Footer -->
-        <div class="modal-footer">
-            <button type="button" class="btn-modal-cancel" onclick="cerrarModal('<?php echo $modal_id; ?>')">
-                Cancelar
-            </button>
-            <button type="button" class="btn-modal-save" id="btnGuardarPaciente">
-                Guardar cambios
-            </button>
+        <!-- Tab 2 Contacto -->
+        <div id="tabContacto" class="modal-tab-content">
+            <form class="modal-form" id="formContacto">
+
+                <!-- Sección: Datos de contacto del paciente -->
+                <div class="form-section-title">
+                    <i class="fas fa-user-circle"></i>
+                    Datos de contacto del paciente
+                </div>
+
+                <!-- F1: Email, teléfono -->
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email" name="email" class="form-input" placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Teléfono</label>
+                        <input type="tel" name="telefono" class="form-input" maxlength="10" placeholder="10 dígitos">
+                    </div>
+                </div>
+
+                <!-- Sección: Contacto de emergencia -->
+                <div class="form-section-title" style="margin-top: 20px;">
+                    <i class="fas fa-ambulance"></i>
+                    Contacto de emergencia
+                </div>
+
+                <!-- F2: Nombre del contacto, parentesco -->
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Nombre del contacto</label>
+                        <input type="text" name="contacto_emergencia" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Relación / Parentesco</label>
+                        <input type="text" name="relacion" class="form-input"
+                            placeholder="Ej: Madre, Hermano, Esposo/a...">
+                    </div>
+                </div>
+
+                <!-- F3: Teléfono de emergencia -->
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Teléfono del contacto</label>
+                        <input type="tel" name="telefono_emergencia" class="form-input" maxlength="10"
+                            placeholder="10 dígitos">
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Tab 3 historial clínico -->
+        <div id="tabHistorial" class="modal-tab-content">
+            <div class="modal-form">
+                <p class="text-muted">Contenido del historial clínico...</p>
+            </div>
+        </div>
+
+        <!-- Tab 4 planes de tratamiento -->
+        <div id="tabPlanes" class="modal-tab-content">
+            <div class="modal-form">
+                <p class="text-muted">Contenido de planes de tratamiento...</p>
+            </div>
+        </div>
+
+        <!-- Tab 5 odontograma -->
+        <div id="tabOdontograma" class="modal-tab-content">
+            <div class="modal-form">
+                <p class="text-muted">Contenido del odontograma...</p>
+            </div>
+        </div>
+
+        <!-- Tab 6 archivos medicos -->
+        <div id="tabArchivos" class="modal-tab-content">
+            <div class="modal-form">
+                <p class="text-muted">Contenido de archivos médicos...</p>
+            </div>
         </div>
     </div>
 
-    <!-- JavaScript para modal de paciente -->
-    <script>
-    // Función para ver paciente
-    function verPaciente(data) {
-        // Actualizar número en título
-        document.getElementById('modalPacienteNumero').textContent = data.id || '';
+    <!-- Footer -->
+    <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" onclick="cerrarModal('<?php echo $modal_id; ?>')">
+            Cancelar
+        </button>
+        <button type="button" class="btn-modal-save" id="btnGuardarPaciente">
+            Guardar cambios
+        </button>
+    </div>
+</div>
 
-        // Cargar datos para lectura
-        verEnModal('<?php echo $modal_id; ?>', data);
-    }
+<!-- JavaScript para modal de paciente -->
+<script>
+// Función para ver paciente
+function verPaciente(data) {
+    // Actualizar número en título
+    document.getElementById('modalPacienteNumero').textContent = data.id || '';
 
-    // Función para editar paciente
-    function editarPaciente(data) {
-        // Actualizar número en título
-        document.getElementById('modalPacienteNumero').textContent = data.id || '';
+    // Cargar datos para lectura
+    verEnModal('<?php echo $modal_id; ?>', data);
+}
 
-        // Cargar datos en edición
-        editarEnModal('<?php echo $modal_id; ?>', data);
-    }
+// Función para editar paciente
+function editarPaciente(data) {
+    // Actualizar número en título
+    document.getElementById('modalPacienteNumero').textContent = data.id || '';
 
-    // Evento de guardar paciente
-    document.getElementById('btnGuardarPaciente')?.addEventListener('click', function() {
-        const form = document.getElementById('formPaciente');
-        const formData = new FormData(form);
+    // Cargar datos en edición
+    editarEnModal('<?php echo $modal_id; ?>', data);
+}
 
-        // Convertir a objeto
-        const data = {};
-        formData.forEach((value, key) => {
-            data[key] = value;
-        });
+// Evento de guardar paciente
+document.getElementById('btnGuardarPaciente')?.addEventListener('click', function() {
+    const form = document.getElementById('formPaciente');
+    const formData = new FormData(form);
 
-        console.log('Datos a guardar:', data);
-
-        // Pendiente implementación de guardado
-
-        // Cerrar modal
-        CatalogTable.showNotification('Función de guardado pendiente de implementar.....', 'info');
+    // Convertir a objeto
+    const data = {};
+    formData.forEach((value, key) => {
+        data[key] = value;
     });
-    </script>
+
+    console.log('Datos a guardar:', data);
+
+    // Pendiente implementación de guardado
+
+    // Cerrar modal
+    CatalogTable.showNotification('Función de guardado pendiente de implementar.....', 'info');
+});
+</script>
