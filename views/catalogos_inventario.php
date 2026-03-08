@@ -31,15 +31,10 @@ $inventarios = [
         'url' => 'productos.php'
     ],
     [
-        'titulo' => 'Entradas a almacén',
-        'descripcion' => 'Catálogo para registrar las entradas de productos al almacén.',
-        'url' => 'entradas_almacen.php'
+        'titulo' => 'Movimientos de almacén',
+        'descripcion' => 'Catálogo para registrar los movimientos de productos en el almacén.',
+        'url' => 'movimientos_almacen.php'
     ],
-    [
-        'titulo' => 'Salidas de almacén',
-        'descripcion' => 'Catálogo para registrar las salidas de productos del almacén.',
-        'url' => 'salidas_almacen.php'
-    ]
 ];
 
 // LLAMAR  HEADER Y SIDEBAR
