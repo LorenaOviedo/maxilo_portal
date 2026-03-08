@@ -45,6 +45,9 @@ foreach ($nombres as $nombre) {
     <!-- Paquete de iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
 
+    <!-- Font Awesome (requerido por modal y odontograma) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- CSS -->
     <?php if (isset($additional_css)): ?>
         <?php echo $additional_css; ?>
