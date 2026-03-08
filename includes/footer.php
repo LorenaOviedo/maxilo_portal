@@ -31,8 +31,8 @@ $scripts_globales = [
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"></script>
 
     <!-- Odontograma MVC — Model siempre ANTES que Controller -->
-    <script src="<?php echo asset('js/OdontogramaModel.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
-    <script src="<?php echo asset('js/OdontogramaController.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+    <script src="<?php echo asset('js/odontogramaModel.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+    <script src="<?php echo asset('js/odontogramaController.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
 
     
     <!-- JavaScript de la página actual -->
