@@ -611,26 +611,22 @@ document.getElementById('btnGuardarPaciente')?.addEventListener('click', functio
 });
 </script>
 <script>
-(function() {
-    // Guardar referencias a las funciones originales
+window.addEventListener('load', function() {
     const _cambiarTabOrig = window.cambiarTab;
     const _cerrarModalOrig = window.cerrarModal;
 
-    // Extender cambiarTab para montar Vue al entrar al odontograma
     window.cambiarTab = function(modalId, tabId) {
         if (typeof _cambiarTabOrig === 'function') _cambiarTabOrig(modalId, tabId);
 
         if (tabId === 'tabOdontograma') {
-            // Leer el número de paciente del campo oculto del formulario
             const numeroPaciente = document.querySelector('#formPaciente [name="id"]')?.value || null;
             odontogramaController.montar(numeroPaciente);
         }
     };
 
-    // Extender cerrarModal para desmontar Vue al cerrar el modal
     window.cerrarModal = function(modalId) {
         if (typeof _cerrarModalOrig === 'function') _cerrarModalOrig(modalId);
         odontogramaController.desmontar();
     };
-})();
+});
 </script>
