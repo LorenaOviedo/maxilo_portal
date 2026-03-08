@@ -16,8 +16,8 @@ if (!$auth->verificarSesion()) {
 
 //CONFIGURACIÓN DE LA PAGINA
 $page_title = 'Pacientes';
-$page_css = ['catalogos-tabla.css', 'modal.css'];
-$page_js = ['catalogos-tabla.js', 'modal.js'];
+$page_css = ['catalogos-tabla.css', 'modal.css', odontograma.css];
+$page_js = ['https://unpkg.com/vue@3/dist/vue.global.js','catalogos-tabla.js', 'modal.js', odontogramaModel.js, odontogramaController.js];
 
 // Datos de ejemplo para pacientes
 $pacientes = [
@@ -25,7 +25,7 @@ $pacientes = [
         'numero' => 'P-001',
         'nombre' => 'MARIANA LOPEZ LOPEZ',
         'telefono' => '5589552913',
-        'correo' => 'LOPLOPMAR@GMAIL.COM',
+        'correo' => 'LOPLOPMAR@GMAIL.COM',  
         'edad' => '32',
         'ultima_visita' => '09/10/2025',
         'estatus' => 'ACTIVO'

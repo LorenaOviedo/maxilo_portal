@@ -1,0 +1,435 @@
+/**
+ * VISTA (estilos) - odontograma.css
+ * Sistema Maxilofacial Texcoco
+ *
+ * Responsabilidad: estilos exclusivos del tab de odontograma.
+ * Se importa junto a modal.css en el layout principal.
+ */
+
+/* ============================================================
+   LAYOUT INTERNO DEL TAB
+   ============================================================ */
+
+.odonto-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.arcadas-panel {
+  flex: 1;
+  min-width: 0;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.arcadas-panel-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.arcadas-panel-sub {
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 20px;
+}
+
+/* ============================================================
+   ARCADAS
+   ============================================================ */
+
+.arcada-section   { margin-bottom: 16px; }
+
+.arcada-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #6c757d;
+  margin-bottom: 8px;
+  padding-left: 2px;
+}
+
+.arcada-row {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.arcada-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0;
+  color: #6c757d;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+.arcada-divider::before,
+.arcada-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e8e8e8;
+}
+
+/* ============================================================
+   DIENTE
+   ============================================================ */
+
+.diente {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: transform .15s ease;
+}
+
+.diente:hover                  { transform: translateY(-3px); }
+.diente:hover .diente-icon     { border-color: #20a89e; }
+
+.diente-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 2px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  background: #fff;
+  transition: all .2s ease;
+  position: relative;
+}
+
+.diente-icon.estado-sano     { background: #fff;    border-color: #e8e8e8; }
+.diente-icon.estado-anomalia { background: #fef9ec; border-color: #f39c12; box-shadow: 0 0 0 3px rgba(243,156,18,.12); }
+.diente-icon.estado-tratado  { background: #eafaf1; border-color: #27ae60; box-shadow: 0 0 0 3px rgba(39,174,96,.12); }
+.diente-icon.estado-atencion { background: #fdecea; border-color: #e74c3c; box-shadow: 0 0 0 3px rgba(231,76,60,.12); }
+
+.diente-icon.activo {
+  border-color: #20a89e !important;
+  box-shadow: 0 0 0 4px rgba(32,168,158,.22) !important;
+  transform: scale(1.08);
+}
+
+.diente-badge {
+  position: absolute;
+  top: -5px; right: -5px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #20a89e;
+  color: #fff;
+  font-size: 9px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid #fff;
+}
+
+.diente-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6c757d;
+  line-height: 1;
+}
+
+/* ============================================================
+   LEYENDA
+   ============================================================ */
+
+.leyenda {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.leyenda-dot {
+  width: 11px; height: 11px;
+  border-radius: 3px;
+  border: 2px solid;
+}
+
+.leyenda-dot.sano     { border-color: #e8e8e8; background: #fff; }
+.leyenda-dot.anomalia { border-color: #f39c12; background: #fef9ec; }
+.leyenda-dot.tratado  { border-color: #27ae60; background: #eafaf1; }
+.leyenda-dot.atencion { border-color: #e74c3c; background: #fdecea; }
+
+/* ============================================================
+   PANEL LATERAL
+   ============================================================ */
+
+.odonto-form-panel {
+  width: 300px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+}
+
+.odonto-panel-empty {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 36px 20px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.odonto-panel-empty-icon { font-size: 44px; margin-bottom: 12px; opacity: .3; }
+.odonto-panel-empty p    { font-size: 12px; line-height: 1.5; }
+
+.odonto-panel-active {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.odonto-panel-header {
+  background: #20a89e;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.odonto-panel-header-icon      { font-size: 26px; line-height: 1; }
+.odonto-panel-header-info h3   { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 1px; }
+.odonto-panel-header-info p    { font-size: 11px; color: rgba(255,255,255,.75); }
+
+.odonto-panel-body {
+  padding: 18px;
+  max-height: 460px;
+  overflow-y: auto;
+}
+
+/* ============================================================
+   REGISTROS PREVIOS
+   ============================================================ */
+
+.registros-previos  { margin-bottom: 18px; }
+
+.registros-titulo {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .5px; text-transform: uppercase;
+  color: #6c757d; margin-bottom: 8px;
+}
+
+.registro-item {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 9px 11px;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.registro-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.registro-anomalia          { font-weight: 700; color: #1a1a1a; }
+.registro-cara,
+.registro-procedimiento     { color: #6c757d; font-size: 11px; margin-top: 2px; }
+.registro-procedimiento     { color: #188a82; }
+
+.registro-estatus {
+  font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 10px;
+}
+
+.registro-estatus.pendiente  { background: #fef9ec; color: #92400e; }
+.registro-estatus.tratado    { background: #eafaf1; color: #065f46; }
+.registro-estatus.en-proceso { background: #dbeafe; color: #1e40af; }
+
+.btn-eliminar-registro {
+  background: none; border: none;
+  color: #e74c3c; cursor: pointer;
+  font-size: 11px; padding: 2px 4px;
+  border-radius: 4px; opacity: .55;
+  transition: opacity .2s; margin-left: 4px;
+}
+.btn-eliminar-registro:hover { opacity: 1; }
+
+/* ============================================================
+   FORMULARIO NUEVO REGISTRO
+   ============================================================ */
+
+.nuevo-registro-titulo {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .5px; text-transform: uppercase;
+  color: #20a89e;
+  padding-top: 14px; margin-bottom: 12px;
+  border-top: 1px solid #e8e8e8;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.campo-grupo  { margin-bottom: 12px; }
+
+.campo-label {
+  display: block;
+  font-size: 11px; font-weight: 600;
+  color: #6c757d; margin-bottom: 5px;
+}
+
+.campo-select {
+  width: 100%;
+  padding: 8px 11px;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 6px;
+  font-size: 13px; color: #1a1a1a;
+  background: #f8f9fa;
+  transition: all .2s;
+  appearance: none; -webkit-appearance: none;
+}
+
+.campo-select:focus {
+  outline: none;
+  border-color: #20a89e;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(32,168,158,.1);
+}
+
+/* Caras dentales */
+.caras-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+
+.cara-check { display: none; }
+
+.cara-label {
+  display: flex; align-items: center; justify-content: center;
+  padding: 5px 3px;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 6px;
+  font-size: 11px; font-weight: 600;
+  color: #6c757d; cursor: pointer;
+  transition: all .15s; text-align: center;
+}
+
+.cara-check:checked + .cara-label {
+  background: rgba(32,168,158,.1);
+  border-color: #20a89e;
+  color: #20a89e;
+}
+
+/* ============================================================
+   FOOTER DEL PANEL
+   ============================================================ */
+
+.odonto-panel-footer {
+  padding: 14px 18px;
+  border-top: 1px solid #e8e8e8;
+  display: flex; gap: 8px;
+}
+
+.btn-odonto-guardar {
+  flex: 1; padding: 9px;
+  background: #20a89e; color: #fff;
+  border: none; border-radius: 6px;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all .2s;
+}
+
+.btn-odonto-guardar:hover {
+  background: #188a82;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(32,168,158,.3);
+}
+
+.btn-odonto-guardar:disabled {
+  background: #adb5bd;
+  cursor: not-allowed; transform: none; box-shadow: none;
+}
+
+.btn-odonto-cancelar {
+  padding: 9px 13px;
+  background: #f8f9fa; color: #6c757d;
+  border: none; border-radius: 6px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background .2s;
+}
+.btn-odonto-cancelar:hover { background: #e8e8e8; }
+
+/* ============================================================
+   NOTIFICACIÓN
+   ============================================================ */
+
+.odonto-notif {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  background: #20a89e; color: #fff;
+  padding: 11px 18px; border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  z-index: 99999;
+}
+
+/* ============================================================
+   ESTADO DE CARGA
+   ============================================================ */
+
+.odonto-cargando {
+  text-align: center; padding: 40px 20px;
+  color: #6c757d; font-size: 13px;
+}
+
+.odonto-cargando i {
+  font-size: 24px; color: #20a89e;
+  display: block; margin-bottom: 10px;
+  animation: odonto-spin .8s linear infinite;
+}
+
+@keyframes odonto-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   TRANSICIONES VUE
+   ============================================================ */
+
+.slide-fade-enter-active { transition: all .25s ease; }
+.slide-fade-leave-active { transition: all .2s ease; }
+.slide-fade-enter-from   { opacity: 0; transform: translateX(10px); }
+.slide-fade-leave-to     { opacity: 0; transform: translateX(10px); }
+
+.notif-enter-active { transition: all .3s ease; }
+.notif-leave-active { transition: all .25s ease; }
+.notif-enter-from   { opacity: 0; transform: translateY(10px); }
+.notif-leave-to     { opacity: 0; transform: translateY(10px); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .odonto-wrapper    { flex-direction: column; }
+  .odonto-form-panel { width: 100%; position: static; }
+  .diente-icon       { width: 34px; height: 34px; font-size: 15px; }
+  .arcada-row        { gap: 3px; }
+}
