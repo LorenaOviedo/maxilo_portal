@@ -165,7 +165,7 @@ $modal_id = 'modalPaciente';
                     <div class="form-section-title" style="margin-top: 20px;">
                         <i class="fas fa-ambulance"></i>
                         Contacto de emergencia<br>
-                        
+
                     </div>
 
                     <!-- F2: Nombre del contacto, parentesco -->
@@ -197,14 +197,142 @@ $modal_id = 'modalPaciente';
         <!-- Tab 3 historial clínico -->
         <div id="tabHistorial" class="modal-tab-content">
             <div class="modal-form">
-                <p class="text-muted">Contenido del historial clínico...</p>
+                <!-- Tipo de sangre y antecedentes médicos -->
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Tipo de sangre</label>
+                        <input type="text" name="tipo_sangre" class="form-input" placeholder="Ej: A+, B-, O+...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Antecedentes médicos</label>
+                        <input type="text" name="antecedentes_medicos" class="form-input">
+                    </div>
+                </div>
+
+                <!-- Alergias -->
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label class="form-label">Alergias</label>
+                        <textarea name="alergias" class="form-input form-textarea" rows="3"
+                            placeholder="Describe las alergias conocidas..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Medicamentos actuales -->
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label class="form-label">Medicamentos actuales</label>
+                        <textarea name="medicamentos" class="form-input form-textarea" rows="3"
+                            placeholder="Lista los medicamentos que toma actualmente..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Cirugías previas -->
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label class="form-label">Cirugías previas</label>
+                        <textarea name="cirugias_previas" class="form-input form-textarea" rows="3"
+                            placeholder="Describe cirugías o procedimientos previos..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Notas -->
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label class="form-label">Notas</label>
+                        <textarea name="notas_historial" class="form-input form-textarea" rows="3"
+                            placeholder="Notas adicionales del historial clínico..."></textarea>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Tab 4 planes de tratamiento -->
         <div id="tabPlanes" class="modal-tab-content">
             <div class="modal-form">
-                <p class="text-muted">Contenido de planes de tratamiento...</p>
+                <!-- Botón agregar nuevo plan -->
+                <div class="tab-toolbar">
+                    <button type="button" class="btn-modal-add" onclick="agregarPlan()">
+                        Agregar nuevo <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+
+                <!-- Contenedor de planes (se llena dinámicamente) -->
+                <div id="listaPlanesContainer">
+                    <!-- Ejemplo de tarjeta de plan -->
+                    <div class="plan-card form-card">
+                        <div class="plan-card-header">
+                            <div class="plan-card-info">
+                                <span class="plan-nombre">Plan de Ortodoncia</span>
+                                <span class="plan-descripcion">Tratamiento de ortodoncia con brackets metálicos</span>
+                                <span class="plan-meta"><strong>Creado:</strong> 08/08/2025</span>
+                                <span class="plan-meta"><strong>Estatus:</strong> En Progreso</span>
+                            </div>
+                            <div class="plan-card-totales">
+                                <span><strong>Costo total:</strong> $17700.00</span>
+                                <span><strong>Pagado:</strong> $17000.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de procedimientos del plan -->
+                        <table class="plan-table">
+                            <thead>
+                                <tr>
+                                    <th>PROCEDIMIENTO</th>
+                                    <th>FECHA</th>
+                                    <th>COSTO</th>
+                                    <th>ESTATUS</th>
+                                    <th>ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ESTUDIO RADIOGRAFÍA CEFALICA LATERAL</td>
+                                    <td>07/10/2025</td>
+                                    <td>$2000.00</td>
+                                    <td><span class="badge-estatus completado">COMPLETADO</span></td>
+                                    <td class="acciones-cell">
+                                        <button class="btn-accion editar" onclick="editarProcedimientoPlan(1)"><i
+                                                class="fas fa-edit"></i></button>
+                                        <button class="btn-accion eliminar" onclick="eliminarProcedimientoPlan(1)"><i
+                                                class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>CIMENTACIÓN DE BRACKETS</td>
+                                    <td>07/10/2025</td>
+                                    <td>$14000.00</td>
+                                    <td><span class="badge-estatus completado">COMPLETADO</span></td>
+                                    <td class="acciones-cell">
+                                        <button class="btn-accion editar" onclick="editarProcedimientoPlan(2)"><i
+                                                class="fas fa-edit"></i></button>
+                                        <button class="btn-accion eliminar" onclick="eliminarProcedimientoPlan(2)"><i
+                                                class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>AJUSTE MENSUAL</td>
+                                    <td>08/12/2025</td>
+                                    <td>$700.00</td>
+                                    <td><span class="badge-estatus pendiente">PENDIENTE</span></td>
+                                    <td class="acciones-cell">
+                                        <button class="btn-accion editar" onclick="editarProcedimientoPlan(3)"><i
+                                                class="fas fa-edit"></i></button>
+                                        <button class="btn-accion eliminar" onclick="eliminarProcedimientoPlan(3)"><i
+                                                class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div><!-- /.plan-card -->
+                </div><!-- /#listaPlanesContainer -->
+
+                <!-- Botón imprimir -->
+                <div class="tab-footer-actions">
+                    <button type="button" class="btn-imprimir" onclick="imprimirPlanes()">
+                        Imprimir
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -218,20 +346,38 @@ $modal_id = 'modalPaciente';
         <!-- Tab 6 archivos medicos -->
         <div id="tabArchivos" class="modal-tab-content">
             <div class="modal-form">
-                <p class="text-muted">Contenido de archivos médicos...</p>
-            </div>
-        </div>
-    </div>
+            </div class="form-card">
 
-    <!-- Footer -->
-    <div class="modal-footer">
-        <button type="button" class="btn-modal-cancel" onclick="cerrarModal('<?php echo $modal_id; ?>')">
-            Cancelar
-        </button>
-        <button type="button" class="btn-modal-save" id="btnGuardarPaciente">
-            Guardar cambios
-        </button>
+            <!-- Tabla de archivos -->
+            <table class="plan-table">
+                <thead>
+                    <tr>
+                        <th>RADIOGRAFÍAS / FOTOGRAFÍAS</th>
+                        <th>FECHA</th>
+                    </tr>
+                </thead>
+                <tbody id="listaArchivos">
+                    <tr>
+                        <td><a href="#" class="archivo-link">RADIOGRAFIA_CONSULTA_PRIMERA_VEZ_455.jpg</a></td>
+                        <td>01/07/2025</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div><!-- /.form-card -->
     </div>
+</div>
+</div>
+
+<!-- Footer -->
+<div class="modal-footer">
+    <button type="button" class="btn-modal-cancel" onclick="cerrarModal('<?php echo $modal_id; ?>')">
+        Cancelar
+    </button>
+    <button type="button" class="btn-modal-save" id="btnGuardarPaciente">
+        Guardar cambios
+    </button>
+</div>
 </div>
 
 <!-- JavaScript para modal de paciente -->
