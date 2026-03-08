@@ -408,7 +408,7 @@ $modal_id = 'modalPaciente';
                         <!-- Sin diente seleccionado -->
                         <transition name="slide-fade">
                             <div v-if="!dienteActivo" class="odonto-panel-empty">
-                                <div class="odonto-panel-empty-icon">🦷</div>
+                                <div class="odonto-panel-empty-icon"><i class="ri-tooth-line"></i></div>
                                 <p>Selecciona una pieza dental para ver su historial o registrar un nuevo avance</p>
                             </div>
                         </transition>
