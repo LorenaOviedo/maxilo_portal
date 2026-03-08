@@ -145,6 +145,7 @@ $modal_id = 'modalPaciente';
                     <div class="form-section-title">
                         <i class="fas fa-user-circle"></i>
                         Datos de contacto del paciente<br>
+
                     </div>
 
                     <!-- F1: Email, teléfono -->
@@ -164,6 +165,7 @@ $modal_id = 'modalPaciente';
                     <div class="form-section-title" style="margin-top: 20px;">
                         <i class="fas fa-ambulance"></i>
                         Contacto de emergencia<br>
+                        
                     </div>
 
                     <!-- F2: Nombre del contacto, parentesco -->
