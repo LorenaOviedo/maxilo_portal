@@ -8,7 +8,7 @@
  * Se monta sobre: #tabOdontograma  (dentro del modal de paciente)
  */
 
-const OdontogramaController = {
+const odontogramaController = {
 
   // ─────────────────────────────────────────
   // Instancia Vue activa (para poder destruirla
