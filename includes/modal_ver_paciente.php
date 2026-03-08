@@ -353,7 +353,7 @@ $modal_id = 'modalPaciente';
                 `estado-${estadoDiente(pieza.numero)}`,
                 { activo: dienteActivo?.numero === pieza.numero }
               ]">
-                                        {{ pieza.emoji }}
+                                        {{ pieza.icono }}
                                         <span v-if="registros[pieza.numero]?.length" class="diente-badge">
                                             {{ registros[pieza.numero].length }}
                                         </span>
@@ -375,7 +375,7 @@ $modal_id = 'modalPaciente';
                 `estado-${estadoDiente(pieza.numero)}`,
                 { activo: dienteActivo?.numero === pieza.numero }
               ]">
-                                        {{ pieza.emoji }}
+                                        {{ pieza.icono }}
                                         <span v-if="registros[pieza.numero]?.length" class="diente-badge">
                                             {{ registros[pieza.numero].length }}
                                         </span>
@@ -419,7 +419,7 @@ $modal_id = 'modalPaciente';
 
                                 <!-- Header -->
                                 <div class="odonto-panel-header">
-                                    <div class="odonto-panel-header-icon">{{ dienteActivo.emoji }}</div>
+                                    <div class="odonto-panel-header-icon">{{ dienteActivo.icono }}</div>
                                     <div class="odonto-panel-header-info">
                                         <h3>Pieza {{ dienteActivo.numero }}</h3>
                                         <p>{{ dienteActivo.nombre }} · {{ dienteActivo.arcada }}</p>

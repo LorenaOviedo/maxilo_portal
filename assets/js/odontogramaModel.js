@@ -112,19 +112,19 @@ const odontogramaModel = {
       numero,
       nombre: this.getNombrePieza(numero),
       arcada,
-      emoji: this._emojiPorNumero(numero),
+      icono: this._iconoPorNumero(numero),
     }));
   },
 
   /**
-   * Retorna el emoji según el tipo de pieza
+   * Retorna el icono según el tipo de pieza
    * @param {number} numero
    * @returns {string}
    */
-  _emojiPorNumero(numero) {
+  _iconoPorNumero(numero) {
     // Terceros molares (muelas del juicio)
-    if ([18, 28, 38, 48].includes(numero)) return '😬';
-    return '🦷';
+    if ([18, 28, 38, 48].includes(numero)) return 'ri-tooth-line';
+    return 'ri-tooth-line'; // Icono genérico para todas las piezas
   },
 
   /**
