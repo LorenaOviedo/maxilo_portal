@@ -407,3 +407,243 @@
 .mb-2 { margin-bottom: 1rem; }
 .mb-3 { margin-bottom: 1.5rem; }
 .mt-3 { margin-top: 1.5rem; }
+
+/* ============================================================ */
+/* FORM CARD - caja blanca dentro de tabs                      */
+/* ============================================================ */
+
+.form-card {
+    background: #ffffff;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+/* ============================================================ */
+/* SECCIÓN TÍTULOS - Historial y Contacto                      */
+/* ============================================================ */
+
+.form-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 16px;
+    margin-top: 4px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e8e8e8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-section-title i {
+    color: #20a89e;
+}
+
+/* ============================================================ */
+/* PLANES DE TRATAMIENTO                                        */
+/* ============================================================ */
+
+/* Toolbar superior (botón Agregar nuevo) */
+.tab-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+/* Tarjeta de plan */
+.plan-card {
+    background-color: #ffffff;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.plan-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.plan-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.plan-nombre {
+    font-size: 15px;
+    font-weight: 700;
+    color: #20a89e;
+}
+
+.plan-descripcion {
+    font-size: 13px;
+    color: #495057;
+}
+
+.plan-meta {
+    font-size: 13px;
+    color: #495057;
+}
+
+.plan-card-totales {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: right;
+    font-size: 14px;
+    color: #212529;
+}
+
+/* Tabla de procedimientos del plan */
+.plan-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.plan-table thead tr {
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.plan-table th {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    color: #6c757d;
+    letter-spacing: 0.5px;
+}
+
+.plan-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f1f3f5;
+    color: #495057;
+}
+
+.plan-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Badges de estatus */
+.badge-estatus {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+}
+
+.badge-estatus.completado {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.badge-estatus.pendiente {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.badge-estatus.en-progreso {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-estatus.cancelado {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Botones de acción dentro de la tabla */
+.acciones-cell {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-accion {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: opacity 0.2s, background 0.2s;
+}
+
+.btn-accion:hover {
+    opacity: 0.75;
+    background-color: #f8f9fa;
+}
+
+.btn-accion.editar  { color: #20a89e; }
+.btn-accion.eliminar { color: #dc3545; }
+
+/* Botón imprimir */
+.tab-footer-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.btn-imprimir {
+    background-color: #20a89e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 28px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-imprimir:hover {
+    background-color: #188a82;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(32, 168, 158, 0.3);
+}
+
+/* ============================================================ */
+/* ARCHIVOS MÉDICOS                                             */
+/* ============================================================ */
+
+.archivo-link {
+    color: #0d6efd;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.archivo-link:hover {
+    text-decoration: underline;
+}
+
+/* ============================================================ */
+/* RESPONSIVE - Planes de tratamiento                          */
+/* ============================================================ */
+
+@media (max-width: 640px) {
+    .plan-card-header {
+        flex-direction: column;
+    }
+
+    .plan-card-totales {
+        text-align: left;
+    }
+
+    .plan-table th,
+    .plan-table td {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .acciones-cell {
+        gap: 4px;
+    }
+}

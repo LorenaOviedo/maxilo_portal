@@ -346,38 +346,38 @@ $modal_id = 'modalPaciente';
         <!-- Tab 6 archivos medicos -->
         <div id="tabArchivos" class="modal-tab-content">
             <div class="modal-form">
-            </div class="form-card">
+                <div class="form-card">
 
-            <!-- Tabla de archivos -->
-            <table class="plan-table">
-                <thead>
-                    <tr>
-                        <th>RADIOGRAFÍAS / FOTOGRAFÍAS</th>
-                        <th>FECHA</th>
-                    </tr>
-                </thead>
-                <tbody id="listaArchivos">
-                    <tr>
-                        <td><a href="#" class="archivo-link">RADIOGRAFIA_CONSULTA_PRIMERA_VEZ_455.jpg</a></td>
-                        <td>01/07/2025</td>
-                    </tr>
-                </tbody>
-            </table>
+                    <!-- Tabla de archivos -->
+                    <table class="plan-table">
+                        <thead>
+                            <tr>
+                                <th>RADIOGRAFÍAS / FOTOGRAFÍAS</th>
+                                <th>FECHA</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaArchivos">
+                            <tr>
+                                <td><a href="#" class="archivo-link">RADIOGRAFIA_CONSULTA_PRIMERA_VEZ_455.jpg</a></td>
+                                <td>01/07/2025</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-        </div><!-- /.form-card -->
+                </div><!-- /.form-card -->
+            </div>
+        </div>
     </div>
-</div>
-</div>
 
-<!-- Footer -->
-<div class="modal-footer">
-    <button type="button" class="btn-modal-cancel" onclick="cerrarModal('<?php echo $modal_id; ?>')">
-        Cancelar
-    </button>
-    <button type="button" class="btn-modal-save" id="btnGuardarPaciente">
-        Guardar cambios
-    </button>
-</div>
+    <!-- Footer -->
+    <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" onclick="cerrarModal('<?php echo $modal_id; ?>')">
+            Cancelar
+        </button>
+        <button type="button" class="btn-modal-save" id="btnGuardarPaciente">
+            Guardar cambios
+        </button>
+    </div>
 </div>
 
 <!-- JavaScript para modal de paciente -->
