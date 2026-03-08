@@ -39,17 +39,17 @@ const OdontogramaController = {
       setup() {
 
         // ── Exponer catálogos del Modelo a la Vista ──
-        const catalogoAnomalias      = OdontogramaModel.catalogoAnomalias;
-        const catalogoCaras          = OdontogramaModel.catalogoCaras;
-        const catalogoProcedimientos = OdontogramaModel.catalogoProcedimientos;
-        const catalogoEstatus        = OdontogramaModel.catalogoEstatus;
+        const catalogoAnomalias      = odontogramaModel.catalogoAnomalias;
+        const catalogoCaras          = odontogramaModel.catalogoCaras;
+        const catalogoProcedimientos = odontogramaModel.catalogoProcedimientos;
+        const catalogoEstatus        = odontogramaModel.catalogoEstatus;
 
         // ── Construir arcadas desde el Modelo ──
-        const arcadaSuperior = OdontogramaModel.construirArcada(
-          OdontogramaModel.numerosSuperior, 'Superior'
+        const arcadaSuperior = odontogramaModel.construirArcada(
+          odontogramaModel.numerosSuperior, 'Superior'
         );
-        const arcadaInferior = OdontogramaModel.construirArcada(
-          OdontogramaModel.numerosInferior, 'Inferior'
+        const arcadaInferior = odontogramaModel.construirArcada(
+          odontogramaModel.numerosInferior, 'Inferior'
         );
 
         // ── Estado reactivo ──
@@ -62,7 +62,7 @@ const OdontogramaController = {
         const registros = ref({});
 
         // Formulario de nuevo registro
-        const form = ref(OdontogramaModel.registroVacio());
+        const form = ref(odontogramaModel.registroVacio());
 
         // Notificación temporal
         const notif = ref({ visible: false, texto: '' });
