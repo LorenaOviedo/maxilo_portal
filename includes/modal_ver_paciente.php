@@ -132,43 +132,62 @@ $modal_id = 'modalPaciente';
                         <input type="text" name="pais" class="form-input" value="México">
                     </div>
                 </div>
+            </form>
         </div>
 
         <!-- Tab 2 Contacto -->
         <div id="tabContacto" class="modal-tab-content">
             <form class="modal-form" id="formContacto">
 
-                <!-- F1: Email, teléfono -->
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Correo electrónico</label>
-                        <input type="email" name="email" class="form-input" placeholder="correo@ejemplo.com">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Teléfono</label>
-                        <input type="tel" name="telefono" class="form-input" maxlength="10" placeholder="10 dígitos">
-                    </div>
-                </div>
+                <div class="form-card">
 
-                <!-- F2: Nombre del contacto, parentesco -->
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Nombre del contacto</label>
-                        <input type="text" name="contacto_emergencia" class="form-input">
+                    <!-- Sección: Datos de contacto del paciente -->
+                    <div class="form-section-title">
+                        <i class="fas fa-user-circle"></i>
+                        Datos de contacto del paciente
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Relación / Parentesco</label>
-                        <input type="text" name="relacion" class="form-input"
-                            placeholder="Ej: Madre, Hermano, Esposo/a...">
-                    </div>
-                </div>
 
-                <!-- F3: Teléfono de emergencia -->
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Teléfono del contacto</label>
-                        <input type="tel" name="telefono_emergencia" class="form-input" maxlength="10"
-                            placeholder="10 dígitos">
+                    <!-- F1: Email, teléfono -->
+                    <div class="form-row cols-2">
+                        <div class="form-group">
+                            <label class="form-label">Correo electrónico</label>
+                            <input type="email" name="email" class="form-input" placeholder="correo@ejemplo.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" name="telefono" class="form-input" maxlength="10"
+                                placeholder="10 dígitos">
+                        </div>
+                    </div>
+
+                    <!-- F2: Nombre del contacto, parentesco -->
+                    <div class="form-row cols-2">
+                        <div class="form-group">
+                            <label class="form-label">Nombre del contacto</label>
+                            <input type="text" name="contacto_emergencia" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Relación / Parentesco</label>
+                            <input type="text" name="relacion" class="form-input"
+                                placeholder="Ej: Madre, Hermano, Esposo/a...">
+                        </div>
+                    </div>
+                    <!-- F3: Teléfono de emergencia -->
+                    <div class="form-row cols-2">
+                        <div class="form-group">
+                            <label class="form-label">Teléfono del contacto</label>
+                            <input type="tel" name="telefono_emergencia" class="form-input" maxlength="10"
+                                placeholder="10 dígitos">
+                        </div>
+                    </div>
+
+                    <!-- F3: Teléfono de emergencia -->
+                    <div class="form-row cols-2">
+                        <div class="form-group">
+                            <label class="form-label">Teléfono del contacto</label>
+                            <input type="tel" name="telefono_emergencia" class="form-input" maxlength="10"
+                                placeholder="10 dígitos">
+                        </div>
                     </div>
                 </div>
 
