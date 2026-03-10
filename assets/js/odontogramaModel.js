@@ -123,11 +123,9 @@ const odontogramaModel = {
    */
   _iconoPorNumero(numero) {
     // Terceros molares (muelas del juicio)
-    if ([18, 28, 38, 48].includes(numero)) return 'ri-tooth-line';
-    return 'ri-tooth-line'; // Icono genérico para todas las piezas
-  },
-
-  _imagenPorNumero(numero) {
+    //if ([18, 28, 38, 48].includes(numero)) return 'ri-tooth-line';
+    //return 'ri-tooth-line'; // Icono genérico para todas las piezas
+    
     const base = 'assets/img/odontograma/';
     
     // Terceros molares (muelas del juicio)
