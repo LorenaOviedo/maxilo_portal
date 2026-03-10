@@ -136,14 +136,14 @@
 .diente:hover .diente-icon     { border-color: #20a89e; }
 
 .diente-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
+  width: 34px; /* antes 42px */
+  height: 34px;
+  border-radius: 8px;
   border: 2px solid #e8e8e8;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 19px;
+  font-size: 16px;
   background: #fff;
   transition: all .2s ease;
   position: relative;
