@@ -350,7 +350,7 @@ $modal_id = 'modalPaciente';
                 { activo: dienteActivo?.numero === pieza.numero }
               ]">
                                         <!-- <i :class="pieza.icono"></i> -->
-                                        <img :src="pieza.icono" alt="pieza.nombre" style="width:18px; height:18px; object-fit:contain;">
+                                        <img :src="pieza.icono" :alt="pieza.nombre" style="width:18px; height:18px; object-fit:contain;">
                                         <span v-if="registros[pieza.numero]?.length" class="diente-badge">
                                             {{ registros[pieza.numero].length }}
                                         </span>
@@ -373,7 +373,7 @@ $modal_id = 'modalPaciente';
                 { activo: dienteActivo?.numero === pieza.numero }
               ]">
                                         <!-- <i :class="pieza.icono"></i> -->
-                                        <img :src="pieza.icono" alt="pieza.nombre" style="width:18px; height:18px; object-fit:contain;">
+                                        <img :src="pieza.icono" :alt="pieza.nombre" style="width:18px; height:18px; object-fit:contain;">
                                         <span v-if="registros[pieza.numero]?.length" class="diente-badge">
                                             {{ registros[pieza.numero].length }}
                                         </span>
