@@ -138,8 +138,6 @@ $modal_id = 'modalPaciente';
         <div id="tabContacto" class="modal-tab-content">
             <form class="modal-form" id="formContacto">
 
-                <div class="form-card">
-
                     <!-- Sección: Datos de contacto del paciente -->
                     <div class="form-section-title">
                         Datos de contacto del paciente<br>
@@ -186,8 +184,6 @@ $modal_id = 'modalPaciente';
                                 placeholder="10 dígitos">
                         </div>
                     </div>
-                </div>
-
             </form>
         </div>
 
@@ -537,8 +533,6 @@ $modal_id = 'modalPaciente';
         <!-- Tab 6 archivos medicos -->
         <div id="tabArchivos" class="modal-tab-content">
             <div class="modal-form">
-                <div class="form-card">
-
                     <!-- Tabla de archivos -->
                     <table class="plan-table">
                         <thead>
@@ -554,8 +548,6 @@ $modal_id = 'modalPaciente';
                             </tr>
                         </tbody>
                     </table>
-
-                </div><!-- /.form-card -->
             </div>
         </div>
     </div>
