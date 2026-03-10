@@ -406,7 +406,7 @@ $modal_id = 'modalPaciente';
                         <!-- Sin diente seleccionado -->
                         <transition name="slide-fade">
                             <div v-if="!dienteActivo" class="odonto-panel-empty">
-                                <div class="odonto-panel-empty-icon"><img :src="dienteActivo.icono" :alt="dienteActivo.nombre" style="width:24px; height:24px; object-fit:contain;">
+                                <div class="odonto-panel-empty-icon"><i class="ri-tooth-line"></i></div>
                                 <p>Selecciona una pieza dental para ver su historial o registrar un nuevo avance</p>
                             </div>
                         </transition>
@@ -417,8 +417,7 @@ $modal_id = 'modalPaciente';
 
                                 <!-- Header -->
                                 <div class="odonto-panel-header">
-                                    <div class="odonto-panel-header-icon">
-                                        <img :src="dienteActivo.icono" :alt="dienteActivo.nombre" style="width:24px; height:24px; object-fit:contain;">
+                                    <div class="odonto-panel-header-icon"><i :class="dienteActivo.icono"></i></div>
                                     <div class="odonto-panel-header-info">
                                         <h3>Pieza {{ dienteActivo.numero }}</h3>
                                         <p>{{ dienteActivo.nombre }} · {{ dienteActivo.arcada }}</p>
