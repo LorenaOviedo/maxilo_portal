@@ -63,13 +63,13 @@
   flex-wrap: wrap;
 }
 
-/* ── Curva dental ── */
+/*Curva dental de las arcadas del odontrograma */
 
-/* Arcada Superior: extremos hacia abajo, centro plano */
-.arcada-superior .diente:nth-child(1)  { transform: translateY(10px); }
-.arcada-superior .diente:nth-child(2)  { transform: translateY(6px);  }
-.arcada-superior .diente:nth-child(3)  { transform: translateY(3px);  }
-.arcada-superior .diente:nth-child(4)  { transform: translateY(1px);  }
+/* Arcada Superior: molares hacía abajo*/
+.arcada-superior .diente:nth-child(1)  { transform: translateY(14px); }
+.arcada-superior .diente:nth-child(2)  { transform: translateY(10px);  }
+.arcada-superior .diente:nth-child(3)  { transform: translateY(7px);  }
+.arcada-superior .diente:nth-child(4)  { transform: translateY(5px);  }
 .arcada-superior .diente:nth-child(5)  { transform: translateY(0);    }
 .arcada-superior .diente:nth-child(6)  { transform: translateY(0);    }
 .arcada-superior .diente:nth-child(7)  { transform: translateY(0);    }
@@ -78,16 +78,16 @@
 .arcada-superior .diente:nth-child(10) { transform: translateY(0);    }
 .arcada-superior .diente:nth-child(11) { transform: translateY(0);    }
 .arcada-superior .diente:nth-child(12) { transform: translateY(0);    }
-.arcada-superior .diente:nth-child(13) { transform: translateY(1px);  }
-.arcada-superior .diente:nth-child(14) { transform: translateY(3px);  }
-.arcada-superior .diente:nth-child(15) { transform: translateY(6px);  }
-.arcada-superior .diente:nth-child(16) { transform: translateY(10px); }
+.arcada-superior .diente:nth-child(13) { transform: translateY(5px);  }
+.arcada-superior .diente:nth-child(14) { transform: translateY(7px);  }
+.arcada-superior .diente:nth-child(15) { transform: translateY(10px);  }
+.arcada-superior .diente:nth-child(16) { transform: translateY(14px); }
 
-/* Arcada Inferior: extremos hacia arriba, centro plano */
-.arcada-inferior .diente:nth-child(1)  { transform: translateY(-10px); }
-.arcada-inferior .diente:nth-child(2)  { transform: translateY(-6px);  }
-.arcada-inferior .diente:nth-child(3)  { transform: translateY(-3px);  }
-.arcada-inferior .diente:nth-child(4)  { transform: translateY(-1px);  }
+/* Arcada Inferior: molares hacía arriba */
+.arcada-inferior .diente:nth-child(1)  { transform: translateY(-14px); }
+.arcada-inferior .diente:nth-child(2)  { transform: translateY(-10px);  }
+.arcada-inferior .diente:nth-child(3)  { transform: translateY(-7px);  }
+.arcada-inferior .diente:nth-child(4)  { transform: translateY(-5px);  }
 .arcada-inferior .diente:nth-child(5)  { transform: translateY(0);     }
 .arcada-inferior .diente:nth-child(6)  { transform: translateY(0);     }
 .arcada-inferior .diente:nth-child(7)  { transform: translateY(0);     }
@@ -96,10 +96,10 @@
 .arcada-inferior .diente:nth-child(10) { transform: translateY(0);     }
 .arcada-inferior .diente:nth-child(11) { transform: translateY(0);     }
 .arcada-inferior .diente:nth-child(12) { transform: translateY(0);     }
-.arcada-inferior .diente:nth-child(13) { transform: translateY(-1px);  }
-.arcada-inferior .diente:nth-child(14) { transform: translateY(-3px);  }
-.arcada-inferior .diente:nth-child(15) { transform: translateY(-6px);  }
-.arcada-inferior .diente:nth-child(16) { transform: translateY(-10px); }
+.arcada-inferior .diente:nth-child(13) { transform: translateY(-5px);  }
+.arcada-inferior .diente:nth-child(14) { transform: translateY(-7px);  }
+.arcada-inferior .diente:nth-child(15) { transform: translateY(-10px);  }
+.arcada-inferior .diente:nth-child(16) { transform: translateY(-14px); }
 
 .arcada-divider {
   display: flex;
