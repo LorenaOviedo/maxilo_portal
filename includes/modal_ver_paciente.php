@@ -342,7 +342,7 @@ $modal_id = 'modalPaciente';
                         <!-- Arcada Superior -->
                         <div class="arcada-section">
                             <p class="arcada-label">Arcada superior</p>
-                            <div class="arcada-row">
+                            <div class="arcada-row arcada-superior">
                                 <div v-for="pieza in arcadaSuperior" :key="pieza.numero" class="diente"
                                     @click="seleccionarDiente(pieza)">
                                     <div class="diente-icon" :class="[
@@ -364,7 +364,7 @@ $modal_id = 'modalPaciente';
                         <!-- Arcada Inferior -->
                         <div class="arcada-section">
                             <p class="arcada-label">Arcada inferior</p>
-                            <div class="arcada-row">
+                            <div class="arcada-row arcada-inferior">
                                 <div v-for="pieza in arcadaInferior" :key="pieza.numero" class="diente"
                                     @click="seleccionarDiente(pieza)">
                                     <div class="diente-icon" :class="[
