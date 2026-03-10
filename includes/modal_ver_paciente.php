@@ -3,6 +3,10 @@
 $modal_id = 'modalPaciente';
 ?>
 
+<script>
+    const ASSETS_URL = '<?php echo asset('img/odontograma/'); ?>';
+</script>
+
 <!-- Overlay -->
 <div id="<?php echo $modal_id; ?>-overlay" class="modal-overlay"></div>
 
