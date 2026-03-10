@@ -55,6 +55,8 @@
 }
 
 .arcada-row {
+  padding-top: 12px;
+  padding-bottom: 12px;
   display: flex;
   gap: 5px;
   justify-content: center;
