@@ -127,6 +127,25 @@ const odontogramaModel = {
     return 'ri-tooth-line'; // Icono genérico para todas las piezas
   },
 
+  _imagenPorNumero(numero) {
+    const base = 'assets/img/odontograma/';
+    
+    // Terceros molares (muelas del juicio)
+    if ([18, 28, 38, 48].includes(numero)) return `${base}3molar.png`;
+    
+    // Molares
+    if ([16, 17, 26, 27, 36, 37, 46, 47].includes(numero)) return `${base}molar.png`;
+    
+    // Premolares
+    if ([14, 15, 24, 25, 34, 35, 44, 45].includes(numero)) return `${base}premolar.png`;
+    
+    // Caninos
+    if ([13, 23, 33, 43].includes(numero)) return `${base}canino.png`;
+    
+    // Incisivos
+    return `${base}incisivo.png`;
+  },
+
   /**
    * Crea un objeto de registro vacío (estructura base)
    * @returns {{anomalia, caras, procedimiento, estatus}}
