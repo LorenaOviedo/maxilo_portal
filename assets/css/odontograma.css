@@ -64,8 +64,8 @@
 /* ── Curva dental ── */
 
 /* Arcada Superior: extremos hacia abajo, centro plano */
-.arcada-row:first-of-type .diente:nth-child(1)  { transform: translateY(20px); }
-.arcada-row:first-of-type .diente:nth-child(2)  { transform: translateY(12px);  }
+.arcada-row:first-of-type .diente:nth-child(1)  { transform: translateY(10px); }
+.arcada-row:first-of-type .diente:nth-child(2)  { transform: translateY(6px);  }
 .arcada-row:first-of-type .diente:nth-child(3)  { transform: translateY(3px);  }
 .arcada-row:first-of-type .diente:nth-child(4)  { transform: translateY(1px);  }
 .arcada-row:first-of-type .diente:nth-child(5)  { transform: translateY(0);    }
