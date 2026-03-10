@@ -350,7 +350,7 @@ $modal_id = 'modalPaciente';
                 { activo: dienteActivo?.numero === pieza.numero }
               ]">
                                         <!-- <i :class="pieza.icono"></i> -->
-                                        <img :src="pieza.icono" :alt="pieza.nombre" style="width:18px; height:18px; object-fit:contain;">
+                                        <img :src="pieza.icono" :alt="pieza.nombre" :style="width:18px; height:18px; object-fit:contain;">
                                         <span v-if="registros[pieza.numero]?.length" class="diente-badge">
                                             {{ registros[pieza.numero].length }}
                                         </span>
@@ -373,7 +373,7 @@ $modal_id = 'modalPaciente';
                 { activo: dienteActivo?.numero === pieza.numero }
               ]">
                                         <!-- <i :class="pieza.icono"></i> -->
-                                        <img :src="pieza.icono" :alt="pieza.nombre" style="width:18px; height:18px; object-fit:contain;">
+                                        <img :src="pieza.icono" :alt="pieza.nombre" :style="width:18px; height:18px; object-fit:contain;">
                                         <span v-if="registros[pieza.numero]?.length" class="diente-badge">
                                             {{ registros[pieza.numero].length }}
                                         </span>
@@ -406,7 +406,7 @@ $modal_id = 'modalPaciente';
                         <!-- Sin diente seleccionado -->
                         <transition name="slide-fade">
                             <div v-if="!dienteActivo" class="odonto-panel-empty">
-                                <div class="odonto-panel-empty-icon"><i class="ri-tooth-line"></i></div>
+                                <div class="odonto-panel-empty-icon"><img :src="dienteActivo.icono" :alt="dienteActivo.nombre" :style="width:24px; height:24px; object-fit:contain;">
                                 <p>Selecciona una pieza dental para ver su historial o registrar un nuevo avance</p>
                             </div>
                         </transition>
