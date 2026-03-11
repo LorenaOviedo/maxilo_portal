@@ -733,7 +733,7 @@ body {
     .user-info           { display: none; }
     .navbar-title-wrapper{ display: none; }
     .content-header h1   { font-size: 20px; }
-    .dashboard-cards     { grid-template-columns: repeat(2, 1fr); }
+    .dashboard-cards     { grid-template-columns: 1fr 1fr !important; }
     .card-number         { font-size: 28px; }
     .info-card           { padding: 20px; }
     .bar-chart           { height: 150px; gap: 20px; }
