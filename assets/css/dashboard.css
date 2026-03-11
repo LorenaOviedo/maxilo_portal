@@ -739,9 +739,7 @@ body {
     .bar-chart           { height: 150px; gap: 20px; }
     .chart-card h3       { font-size: 13px; }
 
-    .dashboard-cards .card:first-child {
-        grid-column: 1 / -1; /*La tarjeta principal ocupa todo el ancho */
-    }
+    .dashboard-cards .card:first-child { grid-column: 1 / -1; } /*La tarjeta principal ocupa todo el ancho */
 }
 
 /*UTILIDADES*/
