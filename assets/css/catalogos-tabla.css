@@ -484,3 +484,99 @@
 .mt-2 { margin-top: 1rem; }
 .mt-3 { margin-top: 1.5rem; }
 .mt-4 { margin-top: 2rem; }
+
+/*Tarjetas apiladas en movil*/
+@media (max-width: 640px) {
+
+    /* Ocultar thead */
+    .data-table thead {
+        display: none;
+    }
+
+    /* Resetear tabla para comportamiento de bloque */
+    .data-table,
+    .data-table tbody,
+    .data-table tr,
+    .data-table td {
+        display: block;
+        width: 100%;
+    }
+
+    /* Quitar min-width que fuerza scroll */
+    .data-table {
+        min-width: unset;
+    }
+
+    .table-container {
+        overflow-x: unset;
+        background: transparent;
+        box-shadow: none;
+        border: none;
+    }
+
+    /* Cada fila como tarjeta */
+    .data-table tbody tr {
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #e8e8e8;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        margin-bottom: 12px;
+        padding: 16px;
+    }
+
+    .data-table tbody tr:hover {
+        background: #ffffff;
+    }
+
+    /* Cada celda con etiqueta */
+    .data-table tbody td {
+        padding: 6px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+    }
+
+    .data-table tbody td:last-child {
+        border-bottom: none;
+        padding-top: 12px;
+    }
+
+    /* Etiquetas con data-label */
+    .data-table tbody td::before {
+        content: attr(data-label);
+        font-size: 11px;
+        font-weight: 700;
+        color: #adb5bd;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        flex-shrink: 0;
+        margin-right: 12px;
+    }
+
+    /* Columna ID destacada */
+    .data-table tbody td.col-id {
+        font-size: 15px;
+        border-bottom: 2px solid #e8f6f5;
+        padding-bottom: 10px;
+        margin-bottom: 4px;
+    }
+
+    /* Acciones centradas */
+    .data-table tbody td.col-actions {
+        justify-content: flex-end;
+    }
+
+    .data-table tbody td.col-actions::before {
+        content: none;
+    }
+
+    /* Text truncate desactivado en móvil */
+    .text-truncate {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+        max-width: unset;
+    }
+}

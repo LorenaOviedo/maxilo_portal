@@ -120,24 +120,24 @@ include '../includes/sidebar.php';
                         <?php else: ?>
                             <?php foreach ($tratamientos as $tratamiento): ?>
                             <tr>
-                                <td class="col-id"><?php echo htmlspecialchars($tratamiento['numero']); ?></td>
-                                <td class="col-name"><?php echo htmlspecialchars($tratamiento['nombre']); ?></td>
-                                <td class="col-type"><?php echo htmlspecialchars($tratamiento['tipo']); ?></td>
-                                <td class="col-description">
+                                <td class="col-id" data-label="Número de Tratamiento"><?php echo htmlspecialchars($tratamiento['numero']); ?></td>
+                                <td class="col-name" data-label="Nombre"><?php echo htmlspecialchars($tratamiento['nombre']); ?></td>
+                                <td class="col-type" data-label="Tipo"><?php echo htmlspecialchars($tratamiento['tipo']); ?></td>
+                                <td class="col-description" data-label="Descripción">
                                     <span class="text-truncate" title="<?php echo htmlspecialchars($tratamiento['descripcion']); ?>">
                                         <?php echo htmlspecialchars($tratamiento['descripcion']); ?>
                                     </span>
                                 </td>
-                                <td class="col-price"><?php echo htmlspecialchars($tratamiento['precio']); ?></td>
-                                <td class="col-time text-center"><?php echo htmlspecialchars($tratamiento['tiempo']); ?></td>
-                                <td class="col-authorization text-center">
+                                <td class="col-price" data-label="Precio"><?php echo htmlspecialchars($tratamiento['precio']); ?></td>
+                                <td class="col-time text-center" data-label="Tiempo"><?php echo htmlspecialchars($tratamiento['tiempo']); ?></td>
+                                <td class="col-authorization text-center" data-label="Autorización">
                                     <?php if ($tratamiento['autorizacion'] === 'SI'): ?>
                                         <span class="badge badge-yes">SI</span>
                                     <?php else: ?>
                                         <span class="badge badge-no">NO</span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="col-status text-center">
+                                <td class="col-status text-center" data-label="Estatus">
                                     <?php if ($tratamiento['estatus'] === 'ACTIVO'): ?>
                                         <span class="badge badge-active">ACTIVO</span>
                                     <?php else: ?>
