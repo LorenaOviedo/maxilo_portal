@@ -721,6 +721,10 @@ body {
     .dashboard-cards {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .dashboard-cards .card:first-child {
+        grid-column: 1 / -1; /* ocupa ambas columnas */
+    }
 }
 
 @media (max-width: 640px) {
