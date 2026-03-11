@@ -615,7 +615,7 @@ body {
 /* BOTÓN HAMBURGUESA */
 .hamburger,
 .sidebar-close {
-    display: none !important;
+    display: none;
 }
 
 .hamburger span {
@@ -662,7 +662,7 @@ body {
 
     /* Mostrar hamburguesa */
     .hamburger {
-        display: flex;
+        display: flex !important;
         flex-direction: column;
         justify-content: center;
         gap: 5px;
@@ -680,7 +680,7 @@ body {
 
     /* Mostrar botón cerrar */
     .sidebar-close {
-        display: flex;
+        display: flex !important;
         background: none;
         border: none;
         font-size: 22px;
