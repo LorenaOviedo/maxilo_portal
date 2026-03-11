@@ -231,3 +231,38 @@ body {
         width: 140px;
     }
 }
+
+/*Scroll en orientación horizontal */
+@media (max-height: 600px) {
+    body {
+        overflow-y: auto;
+    }
+
+    .container {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .login-box {
+        padding: 20px;
+        justify-content: flex-start;
+        padding-top: 30px;
+    }
+
+    .welcome-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .logo {
+        width: 100px;
+    }
+
+    .logo-container {
+        margin-bottom: 15px;
+    }
+
+    .form-container {
+        padding: 20px;
+    }
+}
