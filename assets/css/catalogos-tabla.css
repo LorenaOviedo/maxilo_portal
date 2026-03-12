@@ -592,7 +592,7 @@
 }
 
 .data-table thead th.sortable::after {
-    content: '\ea65';
+    content: '&#xF327';
     font-family: 'remixicon';
     position: absolute;
     right: 8px;
@@ -601,13 +601,13 @@
 }
 
 .data-table thead th.sort-asc::after {
-    content: '\ea60';
+    content: '&#xEA78';
     font-family: 'remixicon';
     color: #20a89e;
 }
 
 .data-table thead th.sort-desc::after {
-    content: '\ea54';
+    content: '&#xEA4E';
     font-family: 'remixicon';
     color: #20a89e;
 }
