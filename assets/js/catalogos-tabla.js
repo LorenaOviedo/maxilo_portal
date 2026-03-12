@@ -418,7 +418,7 @@ initSortMobile: function(headers) {
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
     defaultOption.textContent = 'Ordenar por...';
-    select.appendChild(defaultOption);
+    select.appendChild(defaultOption); 
 
     // Una opción por columna con data-sort, en ambas direcciones
     headers.forEach(th => {
