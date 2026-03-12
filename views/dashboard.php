@@ -35,7 +35,7 @@ include '../includes/sidebar.php';
             </div>
             
             <!-- Dashboard Grid -->
-            <div class="dashboard-grid" style="grid-template-columns: 2fr 1fr 1fr; margin-bottom: 30px;">
+            <div class="dashboard-grid grid-citas mb-30">
                 <!-- Citas programadas para hoy -->
                 <div class="card card-primary">
                     <h3 class="card-title">Citas programadas para el día de hoy</h3>

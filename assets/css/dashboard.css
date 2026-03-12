@@ -438,6 +438,10 @@ body {
     .dashboard-grid.grid-3 {
         grid-template-columns: 1fr;
     }
+
+    .grid-citas {
+        grid-template-columns: 1fr;
+    }
 }
 
 .agenda-card,
@@ -647,6 +651,14 @@ body {
 .sidebar-overlay.active {
     display: block;
     opacity: 1;
+}
+
+.mb-30 {
+    margin-bottom: 30px;
+}
+
+.grid-citas {
+    grid-template-columns: 2fr 1fr 1fr;
 }
   
 
