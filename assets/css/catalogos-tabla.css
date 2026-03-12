@@ -177,6 +177,7 @@
 .data-table tbody td {
     padding: 16px 20px;
     font-size: 14px;
+    font-weight: 400;
     color: #1a1a1a;
     vertical-align: middle;
 }
