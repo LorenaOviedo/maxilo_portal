@@ -181,7 +181,7 @@
     vertical-align: middle;
 }
 
-/* Columnas especificas para las tablas */
+/* Columnas especificas para las tablas 
 .data-table .col-id {
     font-weight: 500;
     color: #1a1a1a;
@@ -201,7 +201,7 @@
 .data-table .col-price {
     font-weight: 500;
     color: #1a1a1a;
-}
+}*/
 
 .data-table .col-time {
     text-align: center;
