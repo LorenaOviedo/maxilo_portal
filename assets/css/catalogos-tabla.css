@@ -155,7 +155,7 @@
     text-align: left;
     font-size: 12px;
     font-weight: 700;
-    color: #495057;
+    color: #20a89e;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
@@ -177,7 +177,7 @@
 .data-table tbody td {
     padding: 16px 20px;
     font-size: 14px;
-    color: #495057;
+    color: #1a1a1a;
     vertical-align: middle;
 }
 
