@@ -1,6 +1,8 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<?php if (isset($_GET['debug'])): ?>
+<div style="position:fixed;top:0;left:0;right:0;background:red;color:white;font-size:12px;z-index:9999;padding:5px;">
+    W:<?php echo isset($_SERVER['HTTP_USER_AGENT']) ? 'UA ok' : 'no UA'; ?>
+</div>
+<?php endif; ?>
 
 <?php
 /*Header del sistema de gestión integral Maxilofacial Texcoco*/
