@@ -580,3 +580,61 @@
         max-width: unset;
     }
 }
+
+/*ORDENAMIENTO: Nueva característica en tablas*/
+
+/* Flechas en encabezados de tabla */
+.data-table thead th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 28px;
+}
+
+.data-table thead th.sortable::after {
+    content: '↕';
+    position: absolute;
+    right: 8px;
+    color: #adb5bd;
+    font-size: 11px;
+}
+
+.data-table thead th.sort-asc::after {
+    content: '↑';
+    color: #20a89e;
+}
+
+.data-table thead th.sort-desc::after {
+    content: '↓';
+    color: #20a89e;
+}
+
+/* Select de ordenamiento en móvil */
+.sort-mobile-bar {
+    display: none;
+    margin-bottom: 12px;
+}
+
+.sort-mobile-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #e8e8e8;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #495057;
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.sort-mobile-select:focus {
+    outline: none;
+    border-color: #20a89e;
+    box-shadow: 0 0 0 3px rgba(32, 168, 158, 0.1);
+}
+
+@media (max-width: 640px) {
+    .sort-mobile-bar {
+        display: block;
+    }
+}

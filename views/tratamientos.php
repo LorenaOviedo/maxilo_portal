@@ -94,10 +94,10 @@ include '../includes/sidebar.php';
                     <thead>
                         <tr>
                             <th class="col-id">NÚMERO DE<br>TRATAMIENTO</th>
-                            <th class="col-name">NOMBRE DEL<br>TRATAMIENTO</th>
-                            <th class="col-type">TIPO</th>
+                            <th class="col-name" data-sort="nombre">NOMBRE DEL<br>TRATAMIENTO</th>
+                            <th class="col-type" data-sort="tipo">TIPO</th>
                             <th class="col-description">DESCRIPCIÓN</th>
-                            <th class="col-price">PRECIO</th>
+                            <th class="col-price" data-sort="precio">PRECIO</th>
                             <th class="col-time">TIEMPO<br>ESTIMADO</th>
                             <th class="col-authorization">REQUIERE<br>AUTORIZACIÓN</th>
                             <th class="col-status">ESTATUS</th>
@@ -121,14 +121,14 @@ include '../includes/sidebar.php';
                             <?php foreach ($tratamientos as $tratamiento): ?>
                             <tr>
                                 <td class="col-id" data-label="Número de Tratamiento"><?php echo htmlspecialchars($tratamiento['numero']); ?></td>
-                                <td class="col-name" data-label="Nombre"><?php echo htmlspecialchars($tratamiento['nombre']); ?></td>
-                                <td class="col-type" data-label="Tipo"><?php echo htmlspecialchars($tratamiento['tipo']); ?></td>
+                                <td class="col-name" data-label="Nombre" data-sort="nombre"><?php echo htmlspecialchars($tratamiento['nombre']); ?></td>
+                                <td class="col-type" data-label="Tipo" data-sort="tipo"><?php echo htmlspecialchars($tratamiento['tipo']); ?></td>
                                 <td class="col-description" data-label="Descripción">
                                     <span class="text-truncate" title="<?php echo htmlspecialchars($tratamiento['descripcion']); ?>">
                                         <?php echo htmlspecialchars($tratamiento['descripcion']); ?>
                                     </span>
                                 </td>
-                                <td class="col-price" data-label="Precio"><?php echo htmlspecialchars($tratamiento['precio']); ?></td>
+                                <td class="col-price" data-label="Precio" data-sort="precio"><?php echo htmlspecialchars($tratamiento['precio']); ?></td>
                                 <td class="col-time text-center" data-label="Tiempo"><?php echo htmlspecialchars($tratamiento['tiempo']); ?></td>
                                 <td class="col-authorization text-center" data-label="Autorización">
                                     <?php if ($tratamiento['autorizacion'] === 'SI'): ?>

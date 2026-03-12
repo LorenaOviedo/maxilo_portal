@@ -363,8 +363,120 @@ const CatalogTable = {
     setup: function () {
         this.initSearch();
         this.initSearchButton();
-        console.log('✓ Catalog Table inicializado correctamente');
-    }
+        this.initSort();
+        console.log('Catalog Table inicializado correctamente');
+    },
+
+//ORDENAMIENTO
+
+/**
+ * Inicializar ordenamiento
+ * Lee los th con atributo data-sort y coloca un click listener para ordenar por esa columna
+ */
+initSort: function() {
+    const headers = document.querySelectorAll('.data-table thead th[data-sort]');
+    if (!headers.length) return;
+
+    // Escritorio: flechitas en encabezados
+    headers.forEach(th => {
+        th.classList.add('sortable');
+        th.addEventListener('click', () => {
+            const col = th.getAttribute('data-sort');
+            const isAsc = th.classList.contains('sort-asc');
+
+            // Limpiar clases de otros headers
+            headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+
+            // Aplicar dirección
+            th.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+            this.sortTable(col, !isAsc);
+        });
+    });
+
+    // Móvil: crear select dinámico con las columnas disponibles
+    this.initSortMobile(headers);
+
+    console.log('Ordenamiento inicializado');
+},
+
+/**
+ * Crear select de ordenamiento para móvil
+ */
+initSortMobile: function(headers) {
+    const container = document.querySelector('.table-container');
+    if (!container) return;
+
+    const bar = document.createElement('div');
+    bar.className = 'sort-mobile-bar';
+
+    const select = document.createElement('select');
+    select.className = 'sort-mobile-select';
+
+    // Opción por defecto
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Ordenar por...';
+    select.appendChild(defaultOption);
+
+    // Una opción por columna con data-sort, en ambas direcciones
+    headers.forEach(th => {
+        const col = th.getAttribute('data-sort');
+        const label = th.textContent.trim().replace(/\n/g, ' ');
+
+        const optAsc = document.createElement('option');
+        optAsc.value = `${col}|asc`;
+        optAsc.textContent = `${label} ↑`;
+        select.appendChild(optAsc);
+
+        const optDesc = document.createElement('option');
+        optDesc.value = `${col}|desc`;
+        optDesc.textContent = `${label} ↓`;
+        select.appendChild(optDesc);
+    });
+
+    select.addEventListener('change', () => {
+        if (!select.value) return;
+        const [col, dir] = select.value.split('|');
+        this.sortTable(col, dir === 'asc');
+    });
+
+    bar.appendChild(select);
+    container.parentNode.insertBefore(bar, container);
+},
+
+/**
+ * Ordenar filas de la tabla por columna
+ * @param {string} col   - valor del atributo data-sort del th
+ * @param {boolean} asc  - true = ascendente
+ */
+sortTable: function(col, asc) {
+    const tbody = document.querySelector('.data-table tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => !r.id);
+
+    rows.sort((a, b) => {
+        const tdA = a.querySelector(`td[data-col="${col}"]`);
+        const tdB = b.querySelector(`td[data-col="${col}"]`);
+
+        if (!tdA || !tdB) return 0;
+
+        const valA = tdA.textContent.trim().toLowerCase();
+        const valB = tdB.textContent.trim().toLowerCase();
+
+        // Intentar ordenar como número si aplica
+        const numA = parseFloat(valA.replace(/[^0-9.-]/g, ''));
+        const numB = parseFloat(valB.replace(/[^0-9.-]/g, ''));
+
+        if (!isNaN(numA) && !isNaN(numB)) {
+            return asc ? numA - numB : numB - numA;
+        }
+
+        return asc
+            ? valA.localeCompare(valB, 'es')
+            : valB.localeCompare(valA, 'es');
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+},
 };
 
 //FUNCIONES GLOBALES
