@@ -121,14 +121,14 @@ include '../includes/sidebar.php';
                             <?php foreach ($tratamientos as $tratamiento): ?>
                             <tr>
                                 <td class="col-id" data-label="Número de Tratamiento"><?php echo htmlspecialchars($tratamiento['numero']); ?></td>
-                                <td class="col-name" data-label="Nombre" data-sort="nombre"><?php echo htmlspecialchars($tratamiento['nombre']); ?></td>
-                                <td class="col-type" data-label="Tipo" data-sort="tipo"><?php echo htmlspecialchars($tratamiento['tipo']); ?></td>
+                                <td class="col-name" data-label="Nombre" data-col="nombre"><?php echo htmlspecialchars($tratamiento['nombre']); ?></td>
+                                <td class="col-type" data-label="Tipo" data-col="tipo"><?php echo htmlspecialchars($tratamiento['tipo']); ?></td>
                                 <td class="col-description" data-label="Descripción">
                                     <span class="text-truncate" title="<?php echo htmlspecialchars($tratamiento['descripcion']); ?>">
                                         <?php echo htmlspecialchars($tratamiento['descripcion']); ?>
                                     </span>
                                 </td>
-                                <td class="col-price" data-label="Precio" data-sort="precio"><?php echo htmlspecialchars($tratamiento['precio']); ?></td>
+                                <td class="col-price" data-label="Precio" data-col="precio"><?php echo htmlspecialchars($tratamiento['precio']); ?></td>
                                 <td class="col-time text-center" data-label="Tiempo"><?php echo htmlspecialchars($tratamiento['tiempo']); ?></td>
                                 <td class="col-authorization text-center" data-label="Autorización">
                                     <?php if ($tratamiento['autorizacion'] === 'SI'): ?>
