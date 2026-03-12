@@ -1,9 +1,3 @@
-<?php if (isset($_GET['debug'])): ?>
-<div style="position:fixed;top:0;left:0;right:0;background:red;color:white;font-size:12px;z-index:9999;padding:5px;">
-    W:<?php echo isset($_SERVER['HTTP_USER_AGENT']) ? 'UA ok' : 'no UA'; ?>
-</div>
-<?php endif; ?>
-
 <?php
 /*Header del sistema de gestión integral Maxilofacial Texcoco*/
 // Enlace configuración
@@ -31,6 +25,7 @@ foreach ($nombres as $nombre) {
 
 <head>
     <meta charset="UTF-8">
+    <meta id="vp-check" name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<?php echo SITE_DESCRIPTION; ?>">
     <title><?php echo $page_title ?? SITE_NAME; ?> - <?php echo SITE_NAME; ?></title>
