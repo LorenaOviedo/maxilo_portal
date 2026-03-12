@@ -94,7 +94,7 @@ include '../includes/sidebar.php';
                     <thead>
                         <tr>
                             <th class="col-id">NÚMERO DE<br>TRATAMIENTO</th>
-                            <th class="col-name" data-sort="nombre">NOMBRE DEL<br>TRATAMIENTO</th>
+                            <th class="col-name" data-sort="nombre">NOMBRE DEL TRATAMIENTO</th>
                             <th class="col-type" data-sort="tipo">TIPO</th>
                             <th class="col-description">DESCRIPCIÓN</th>
                             <th class="col-price" data-sort="precio">PRECIO</th>
