@@ -92,11 +92,11 @@ include '../includes/sidebar.php';
                     <thead>
                         <tr>
                             <th class="col-id">NÚMERO DE<br>PACIENTE</th>
-                            <th class="col-name">NOMBRE<br>COMPLETO</th>
+                            <th class="col-name">NOMBRE COMPLETO</th>
                             <th class="col-tel">TELEFONO</th>
-                            <th class="col-email">CORREO<br>ELECTRÓNICO</th>
+                            <th class="col-email">CORREO ELECTRÓNICO</th>
                             <th class="col-edad">EDAD</th>
-                            <th class="col-visit">ULTIMA<br>VISITA</th>
+                            <th class="col-visit">ULTIMA VISITA</th>
                             <th class="col-status">ESTATUS</th>
                             <th class="col-actions">ACCIONES</th>
                         </tr>
@@ -125,7 +125,7 @@ include '../includes/sidebar.php';
                                         <?php echo htmlspecialchars($paciente['correo']); ?>
                                     </span>
                                 </td>
-                                <td class="col-edad"><?php echo htmlspecialchars($paciente['edad']); ?></td>
+                                <td class="col-edad text-center"><?php echo htmlspecialchars($paciente['edad']); ?></td>
                                 <td class="col-visit text-center"><?php echo htmlspecialchars($paciente['ultima_visita']); ?></td>
                                 <td class="col-status text-center">
                                     <?php if ($paciente['estatus'] === 'ACTIVO'): ?>
