@@ -403,6 +403,8 @@ initSort: function() {
  * Crear select de ordenamiento para móvil
  */
 initSortMobile: function(headers) {
+
+    if(document.querySelector('.sort-mobile-bar')) return; // Evitar duplicados
     const container = document.querySelector('.table-container');
     if (!container) return;
 
