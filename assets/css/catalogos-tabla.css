@@ -183,8 +183,8 @@
 
 /* Columnas especificas para las tablas */
 .data-table .col-id {
-    font-weight: 600;
-    color: #20a89e;
+    font-weight: 500;
+    color: #1a1a1a;
 }
 
 .data-table .col-name {
@@ -194,11 +194,12 @@
 
 .data-table .col-type,
 .data-table .col-description {
-    color: #6c757d;
+    font-weight: 500;
+    color: #1a1a1a;
 }
 
 .data-table .col-price {
-    font-weight: 600;
+    font-weight: 500;
     color: #1a1a1a;
 }
 
