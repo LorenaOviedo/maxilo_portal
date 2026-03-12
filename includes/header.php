@@ -25,7 +25,6 @@ foreach ($nombres as $nombre) {
 
 <head>
     <meta charset="UTF-8">
-    <meta id="vp-check" name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<?php echo SITE_DESCRIPTION; ?>">
     <title><?php echo $page_title ?? SITE_NAME; ?> - <?php echo SITE_NAME; ?></title>

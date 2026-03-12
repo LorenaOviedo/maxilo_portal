@@ -239,7 +239,7 @@ body {
 /*TARJETAS DEL DASHBOARD*/
 .dashboard-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, 1fr); /* ← fijo en 3 columnas en escritorio */
     gap: 25px;
     margin-bottom: 35px;
 }
@@ -719,11 +719,7 @@ body {
     .dashboard-grid  { grid-template-columns: 1fr; }
 
     .dashboard-cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .dashboard-cards .card:first-child {
-        grid-column: 1 / -1; /* ocupa ambas columnas */
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
@@ -733,13 +729,13 @@ body {
     .user-info           { display: none; }
     .navbar-title-wrapper{ display: none; }
     .content-header h1   { font-size: 20px; }
-    .dashboard-cards     { grid-template-columns: repeat(2, 1fr); }
+    .dashboard-cards     { grid-template-columns: repeat(3, 1fr); }
     .card-number         { font-size: 28px; }
     .info-card           { padding: 20px; }
     .bar-chart           { height: 150px; gap: 20px; }
     .chart-card h3       { font-size: 13px; }
 
-    .dashboard-cards .card:first-child { grid-column: 1 / -1; } /*La tarjeta principal ocupa todo el ancho */
+    .dashboard-cards .card:first-child { grid-column: unset; } /*La tarjeta principal ocupa todo el ancho */
 }
 
 /*UTILIDADES*/
