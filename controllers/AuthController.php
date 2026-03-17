@@ -46,12 +46,9 @@ class AuthController {
             ];
         }
         
-        // Verificar si el usuario está activo
-        if (!$userData['activo']) {
-            return [
-                'success' => false,
-                'message' => 'Usuario desactivado. Contacte al administrador'
-            ];
+        // Verificar si el usuario está activo (id_status = 1)
+        if (!$this->userModel->isActivo($userData)){
+            return ['sucess' => false, 'message' => 'El usuario no está activo. Contacte al administrador'];
         }
     
         //Verificar contraseña
@@ -99,18 +96,19 @@ class AuthController {
     
     private function registrarSesion($usuarioId) {
         try {
-            $token = bin2hex(random_bytes(32));
-            $ip = $_SERVER['REMOTE_ADDR'];
-            $userAgent = $_SERVER['HTTP_USER_AGENT'];
+            $tokenCrudo = bin2hex(random_bytes(32));
+            $token = hash('sha256', $tokenCrudo);
+            $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
             
-            $query = "INSERT INTO sesiones (usuario_id, token, ip_address, user_agent) 
-                     VALUES (:usuario_id, :token, :ip_address, :user_agent)";
+            $query = "INSERT INTO sesiones (id_usuario, token_sesion, direccion_ip, user_agent) 
+                     VALUES (:id_usuario, :token_sesion, :address_ip, :user_agent)";
             
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':usuario_id', $usuarioId);
-            $stmt->bindParam(':token', $token);
-            $stmt->bindParam(':ip_address', $ip);
-            $stmt->bindParam(':user_agent', $userAgent);
+            $stmt->bindParam(':id_usuario', $usuarioId, PDO::PARAM_INT);
+            $stmt->bindParam(':token_sesion', $tokenHash, PDO::PARAM_STR);
+            $stmt->bindParam(':direccion_ip', $ip, PDO::PARAM_STR);
+            $stmt->bindParam(':user_agent', $userAgent, PDO::PARAM_STR);
             
             $stmt->execute();
         } catch (PDOException $e) {
@@ -118,23 +116,21 @@ class AuthController {
         }
     }
     
-    private function estaBloqueado() {
+   private function estaBloqueado() {
         if (!isset($_SESSION['intentos_fallidos'])) {
             return false;
         }
-        
+ 
         if ($_SESSION['intentos_fallidos'] >= $this->maxIntentos) {
-            $tiempoTranscurrido = time() - $_SESSION['tiempo_bloqueo'];
-            
-            if ($tiempoTranscurrido < $this->tiempoBloqueo) {
+            $transcurrido = time() - ($_SESSION['tiempo_bloqueo'] ?? 0);
+ 
+            if ($transcurrido < $this->tiempoBloqueo) {
                 return true;
-            } else {
-                // El bloqueo expiró, limpiar
-                $this->limpiarIntentosFallidos();
-                return false;
             }
+ 
+            $this->limpiarIntentosFallidos();
         }
-        
+ 
         return false;
     }
     
@@ -151,8 +147,7 @@ class AuthController {
     }
     
     private function limpiarIntentosFallidos() {
-        unset($_SESSION['intentos_fallidos']);
-        unset($_SESSION['tiempo_bloqueo']);
+        unset($_SESSION['intentos_fallidos'], $_SESSION['tiempo_bloqueo']);
     }
     
     public function logout() {
@@ -192,13 +187,6 @@ class AuthController {
         }
         
         return true;
-    }
-    
-    private function sanitize($data) {
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
-        return $data;
     }
 }
 ?>
