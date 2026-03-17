@@ -14,7 +14,7 @@ $email = $_SESSION['email'] ?? '';
 $iniciales = '';
 $nombres = explode(' ', $nombreUsuario);
 foreach ($nombres as $nombre) {
-    $iniciales .= strtoupper(substr($nombre, 1, 2)); //0,1 para obtener la primera letra de cada nombre
+    $iniciales .= strtoupper(substr($nombre, 0, 1)); //0,1 para obtener la primera letra de cada nombre
     if (strlen($iniciales) >= 2)
         break;
 }
