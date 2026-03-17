@@ -100,24 +100,25 @@ class AuthController
 
     private function registrarSesion($usuarioId)
     {
+        $tokenHash = hash('sha256', bin2hex(random_bytes(32)));
+        $ip        = $_SERVER['REMOTE_ADDR']     ?? null;
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+ 
         try {
-            $tokenCrudo = bin2hex(random_bytes(32));
-            $tokenHash = hash('sha256', $tokenCrudo);
-            $ip = $_SERVER['REMOTE_ADDR'] ?? null;
-            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
-
-
-            $query = "INSERT INTO sesion (id_usuario, token_sesion, direccion_ip, user_agent) 
-                     VALUES (:id_usuario, :token_sesion, :address_ip, :user_agent)";
-
+            $query = "
+                INSERT INTO sesion (id_usuario, token_sesion, direccion_ip, user_agent)
+                VALUES (:id_usuario, :token_sesion, :direccion_ip, :user_agent)
+            ";
+ 
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':id_usuario', $usuarioId, PDO::PARAM_INT);
+            $stmt->bindParam(':id_usuario',   $usuarioId, PDO::PARAM_INT);
             $stmt->bindParam(':token_sesion', $tokenHash, PDO::PARAM_STR);
-            $stmt->bindParam(':direccion_ip', $ip, PDO::PARAM_STR);
-            $stmt->bindParam(':user_agent', $userAgent, PDO::PARAM_STR);
-
+            $stmt->bindParam(':direccion_ip', $ip,        PDO::PARAM_STR);
+            $stmt->bindParam(':user_agent',   $userAgent, PDO::PARAM_STR);
             $stmt->execute();
-        } catch (PDOException $e) {
+ 
+        } catch (Exception $e) {
+            // Captura tanto PDOException como cualquier otro error inesperado
             error_log("Error al registrar sesión: " . $e->getMessage());
         }
     }
