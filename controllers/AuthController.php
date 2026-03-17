@@ -101,7 +101,7 @@ class AuthController {
             $ip = $_SERVER['REMOTE_ADDR'] ?? null;
             $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
             
-            $query = "INSERT INTO sesiones (id_usuario, token_sesion, direccion_ip, user_agent) 
+            $query = "INSERT INTO sesion (id_usuario, token_sesion, direccion_ip, user_agent) 
                      VALUES (:id_usuario, :token_sesion, :address_ip, :user_agent)";
             
             $stmt = $this->db->prepare($query);
