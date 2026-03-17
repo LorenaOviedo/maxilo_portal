@@ -106,8 +106,6 @@ class AuthController
             $ip = $_SERVER['REMOTE_ADDR'] ?? null;
             $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
 
-            // DEBUG TEMPORAL
-            error_log("DEBUG - ip: $ip | agent: $userAgent | token: $tokenHash");
 
             $query = "INSERT INTO sesion (id_usuario, token_sesion, direccion_ip, user_agent) 
                      VALUES (:id_usuario, :token_sesion, :address_ip, :user_agent)";
