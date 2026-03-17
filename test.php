@@ -8,23 +8,24 @@ require_once __DIR__ . '/config/database.php';
 $db = getDB();
 
 try {
-    // Verificar tabla Usuario
-    $stmt = $db->query("SELECT id_usuario, usuario, id_rol, id_estatus FROM Usuario LIMIT 5");
-    $usuarios = $stmt->fetchAll();
-    echo "Usuarios encontrados: " . count($usuarios) . "<br>";
-    var_dump($usuarios);
+    $token    = hash('sha256', bin2hex(random_bytes(32)));
+    $ip       = '127.0.0.1';
+    $agent    = 'test-browser';
+    $usuario  = 1; // el id_usuario del admin que existe en tu tabla usuario
+
+    $stmt = $db->prepare("
+        INSERT INTO sesion (id_usuario, token_sesion, direccion_ip, user_agent)
+        VALUES (:id_usuario, :token_sesion, :direccion_ip, :user_agent)
+    ");
+
+    $stmt->bindParam(':id_usuario',   $usuario, PDO::PARAM_INT);
+    $stmt->bindParam(':token_sesion', $token,   PDO::PARAM_STR);
+    $stmt->bindParam(':direccion_ip', $ip,      PDO::PARAM_STR);
+    $stmt->bindParam(':user_agent',   $agent,   PDO::PARAM_STR);
+
+    $stmt->execute();
+    echo "Sesión insertada correctamente. ID: " . $db->lastInsertId();
 
 } catch (PDOException $e) {
-    echo "ERROR en Usuario: " . $e->getMessage() . "<br>";
-}
-
-try {
-    // Verificar tabla Rol
-    $stmt2 = $db->query("SELECT * FROM Rol");
-    $roles = $stmt2->fetchAll();
-    echo "Roles encontrados: " . count($roles) . "<br>";
-    var_dump($roles);
-
-} catch (PDOException $e) {
-    echo "ERROR en Rol: " . $e->getMessage() . "<br>";
+    echo "ERROR: " . $e->getMessage();
 }
