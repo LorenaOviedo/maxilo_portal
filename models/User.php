@@ -1,7 +1,7 @@
 <?php
 class User {
     private $conn;
-    private $table = 'Usuario';
+    private $table = 'usuario';
 
     //id_estatus de la tabla Estatus para usuarios activos, 0 para inactivos.
     private const ESTATUS_ACTIVO = 1;
@@ -21,8 +21,8 @@ class User {
                 u.nombre_usuario    AS nombre_completo,
                 r.nombre_rol        AS rol,
                 u.id_estatus
-            FROM Usuario u
-            INNER JOIN Rol r ON r.id_rol = u.id_rol
+            FROM usuario u
+            INNER JOIN rol r ON r.id_rol = u.id_rol
             WHERE u.usuario = :username
                OR u.email   = :email
             LIMIT 1
@@ -54,8 +54,8 @@ class User {
                 r.nombre_rol        AS rol,
                 u.id_estatus,
                 u.fecha_registro    AS created_at
-            FROM Usuario u
-            INNER JOIN Rol r ON r.id_rol = u.id_rol
+            FROM usuario u
+            INNER JOIN rol r ON r.id_rol = u.id_rol
             WHERE u.id_usuario = :id
             LIMIT 1
         ";
@@ -125,7 +125,7 @@ class User {
     //Crear nuevo usuario
     public function create($data) {
         $query = "
-            INSERT INTO Usuario (usuario, email, contrasena, nombre_usuario, id_rol, id_estatus)
+            INSERT INTO usuario (usuario, email, contrasena, nombre_usuario, id_rol, id_estatus)
             VALUES (:usuario, :email, :contrasena, :nombre_usuario, :id_rol, :id_estatus)
         ";
  
@@ -166,7 +166,7 @@ class User {
         }
  
         if (isset($data['nombre_completo'])) {
-            $fields[]                  = "nombre_usuario = :nombre_usuario";
+            $fields[]           = "nombre_usuario = :nombre_usuario";
             $params[':nombre_usuario'] = $data['nombre_completo'];
         }
  
@@ -193,7 +193,7 @@ class User {
             return false;
         }
  
-        $query = "UPDATE Usuario SET " . implode(', ', $fields) . " WHERE id_usuario = :id";
+        $query = "UPDATE usuario SET " . implode(', ', $fields) . " WHERE id_usuario = :id";
  
         $stmt = $this->conn->prepare($query);
  
@@ -209,7 +209,7 @@ class User {
     //Desactivar (eliminar) usaurio existente
     public function delete($id) {
         // solo desactivar
-        $query = "UPDATE Usuario SET id_estatus = 2 WHERE id_usuario = :id";
+        $query = "UPDATE usuario SET id_estatus = 2 WHERE id_usuario = :id";
  
         $stmt = $this->conn->prepare($query);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
