@@ -82,7 +82,7 @@ include '../includes/sidebar.php';
             <tbody>
                 <?php if (empty($procedimientos)): ?>
                     <tr>
-                        <td colspan="9">
+                        <td colspan="9"> <!--Elimina columna descripción se puede ver en modal-->
                             <div class="empty-state">
                                 <div class="empty-state-icon">
                                     <i class="ri-folder-open-line"></i>

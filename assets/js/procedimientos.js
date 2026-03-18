@@ -177,3 +177,8 @@ function validarFormulario() {
  
     return valido;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const thNombre = document.querySelector('.data-table th[data-sort="id_procedimiento"]');
+    if (thNombre) thNombre.classList.add('sort-asc');
+});
