@@ -135,6 +135,46 @@ $modal_id = 'modalProcedimiento';
         });
     })();
 
+    // Abrir modal en modo VER (solo lectura) 
+    function abrirModalVer(id) {
+        limpiarFormulario();
+        document.getElementById('modalProcedimientoTitulo').textContent = 'Ver procedimiento';
+
+        fetch(`<?php echo ajax_url('api.php'); ?>?modulo=procedimientos&accion=get&id=${id}`)
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) {
+                    CatalogTable.showNotification('No se pudo cargar el procedimiento', 'error');
+                    return;
+                }
+                const p = data.procedimiento;
+                document.getElementById('proc_id').value = p.id_procedimiento;
+                document.getElementById('proc_nombre').value = p.nombre_procedimiento;
+                document.getElementById('proc_tipo').value = p.tipo ?? '';
+                document.getElementById('proc_especialidad').value = p.id_especialidad;
+                document.getElementById('proc_precio').value = p.precio_base;
+                document.getElementById('proc_tiempo').value = p.tiempo_estimado ?? '';
+                document.getElementById('proc_estatus').value = p.id_estatus;
+                document.getElementById('proc_autorizacion').checked = parseInt(p.requiere_autorizacion) === 1;
+                document.getElementById('proc_descripcion').value = p.descripcion ?? '';
+
+                // Deshabilitar todos los campos
+                setModoLectura(true);
+                abrirModal(MODAL_ID);
+            })
+            .catch(() => CatalogTable.showNotification('Error al obtener los datos', 'error'));
+    }
+
+    // Activar / desactivar modo lectura 
+    function setModoLectura(soloLectura) {
+        const campos = document.querySelectorAll('#formProcedimiento input, #formProcedimiento select, #formProcedimiento textarea');
+        campos.forEach(el => el.disabled = soloLectura);
+
+        // Ocultar o mostrar el botón guardar
+        const btnGuardar = document.getElementById('btnGuardarProcedimiento');
+        btnGuardar.style.display = soloLectura ? 'none' : '';
+    }
+
     // Abrir modal en modo NUEVO
     function abrirModalNuevo() {
         limpiarFormulario();
