@@ -179,8 +179,8 @@ include '../includes/sidebar.php';
 
 <!-- Variables globales para procedimientos.js — deben ir ANTES del modal -->
 <script>
-    const API_URL = '<?php echo ajax_url('Api.php'); ?>';
-    const ESPECIALIDADES = <?php echo $especialidadesJson; ?>;
+    var API_URL = '<?php echo ajax_url('Api.php'); ?>';
+    var ESPECIALIDADES = <?php echo $especialidadesJson; ?>;
 </script>
 
 <!-- Modal procedimiento -->

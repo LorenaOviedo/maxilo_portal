@@ -34,17 +34,17 @@ const MODAL_ID = 'modalProcedimiento';
  
 // ── Poblar select de especialidades ───────────────────────────────
 // ESPECIALIDADES se inyecta desde PHP en procedimientos.php
-(function poblarEspecialidades() {
+document.addEventListener('DOMContentLoaded', function poblarEspecialidades() {
     const select = document.getElementById('proc_especialidad');
-    if (!select || !window.ESPECIALIDADES) return;
- 
+    if (!select || typeof ESPECIALIDADES === 'undefined') return;
+
     ESPECIALIDADES.forEach(e => {
         const opt       = document.createElement('option');
         opt.value       = e.id_especialidad;
         opt.textContent = e.nombre;
         select.appendChild(opt);
     });
-});
+})
  
 // ── Helpers ───────────────────────────────────────────────────────
  
