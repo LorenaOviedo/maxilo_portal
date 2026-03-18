@@ -181,11 +181,14 @@ function responder(bool $success, string $message, array $extra = []): void {
 /**
  * Sanitizar datos del POST.
  * Solo limpia strings — no castea tipos (eso lo hace el modelo).
+ * Protección contra XSS se maneja al mostrar los datos, no aquí.
  */
 function sanitizarPost(array $post): array {
     $clean = [];
     foreach ($post as $key => $value) {
-        $clean[$key] = is_string($value) ? trim($value) : $value;
+        $clean[$key] = is_string($value)
+            ? htmlspecialchars(trim($value), ENT_QUOTES, 'UTF-8')
+            : $value;
     }
     return $clean;
 }
