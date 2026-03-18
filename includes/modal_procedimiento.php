@@ -149,7 +149,7 @@ $modal_id = 'modalProcedimiento';
         document.getElementById('modalProcedimientoTitulo').textContent = 'Editar procedimiento';
 
         // Obtener datos del servidor
-        fetch(`<?php echo ajax_url('api.php'); ?>?modulo=procedimientos&accion=get&id=${id}`)
+        fetch(`<?php echo ajax_url('Api.php'); ?>?modulo=procedimientos&accion=get&id=${id}`)
             .then(r => r.json())
             .then(data => {
                 if (!data.success) {
@@ -178,7 +178,7 @@ $modal_id = 'modalProcedimiento';
 
         const form = document.getElementById('formProcedimiento');
         const id = document.getElementById('proc_id').value;
-        const url = '<?php echo ajax_url('api.php'); ?>';
+        const url = '<?php echo ajax_url('Api.php'); ?>';
         const formData = new FormData(form);
 
         // Checkbox no enviado si no está marcado — forzar valor
@@ -222,7 +222,7 @@ $modal_id = 'modalProcedimiento';
 
         CatalogTable.showLoading(true);
 
-        fetch('<?php echo ajax_url('api.php'); ?>', {
+        fetch('<?php echo ajax_url('Api.php'); ?>', {
             method: 'POST',
             body: formData
         })
