@@ -14,7 +14,7 @@ if (!$auth->verificarSesion()) {
  
 // Configuración de la página
 $page_title = 'Procedimientos Dentales';
-$page_css   = ['catalogos-tabla.css', 'modadal.css'];
+$page_css   = ['catalogos-tabla.css', 'modal.css'];
 $page_js    = ['catalogos-tabla.js'];
  
 // Obtener datos de la BD
