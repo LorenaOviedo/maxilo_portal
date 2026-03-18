@@ -1,23 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('1. DOM listo');
-    console.log('2. ESPECIALIDADES:', window.ESPECIALIDADES);
-    console.log('3. select:', document.getElementById('proc_especialidad'));
-    
-    const select = document.getElementById('proc_especialidad');
-    if (select && window.ESPECIALIDADES) {
-        console.log('4. Poblando select con', ESPECIALIDADES.length, 'especialidades');
-        ESPECIALIDADES.forEach(e => {
-            console.log('   agregando:', e);
-            const opt = document.createElement('option');
-            opt.value = e.id_especialidad;
-            opt.textContent = e.nombre;
-            select.appendChild(opt);
-        });
-        console.log('5. Select tiene ahora', select.options.length, 'opciones');
-    } else {
-        console.log('4. FALLÓ — select existe:', !!select, '| ESPECIALIDADES existe:', !!window.ESPECIALIDADES);
-    }
-});
 /**
  * procedimientos.js
  * Sistema Maxilofacial Texcoco

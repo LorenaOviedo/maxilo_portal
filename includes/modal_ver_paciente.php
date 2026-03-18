@@ -338,7 +338,6 @@ $modal_id = 'modalPaciente';
 
                     <!-- PANEL IZQUIERDO: Arcadas dentales-->
                     <div class="arcadas-panel">
-                        <p class="arcadas-panel-title">Odontograma</p>
                         <p class="arcadas-panel-sub">
                             Haz clic en una pieza dental para ver su historial o registrar un avance
                         </p>
