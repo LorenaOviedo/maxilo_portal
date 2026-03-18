@@ -68,8 +68,8 @@ include '../includes/sidebar.php';
         <table class="data-table">
             <thead>
                 <tr>
-                    <th class="col-id" data-sort="id">NO. PROCEDIMIENTO</th>
-                    <th class="col-name" data-sort="nombre">NOMBRE DEL PROCEDIMIENTO</th>
+                    <th class="col-id" data-sort="id">NO.<br>PROCEDIMIENTO</th>
+                    <th class="col-name" data-sort="nombre">NOMBRE DEL<br>PROCEDIMIENTO</th>
                     <th class="col-type" data-sort="tipo">TIPO</th>
                     <th class="col-specialty" data-sort="especialidad">ESPECIALIDAD</th>
                     <th class="col-price" data-sort="precio">PRECIO BASE</th>
@@ -181,7 +181,12 @@ include '../includes/sidebar.php';
 <?php include '../includes/modal_procedimiento.php'; ?>
 
 <script>
+    // Variables globales para procedimientos.js
+    const API_URL = '<?php echo ajax_url('Api.php'); ?>';
     const ESPECIALIDADES = <?php echo $especialidadesJson; ?>;
 </script>
+
+<!-- JS específico del módulo -->
+<script src="<?php echo asset('js/procedimientos.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
 
 <?php include '../includes/footer.php'; ?>
