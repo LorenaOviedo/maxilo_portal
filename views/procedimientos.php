@@ -183,11 +183,6 @@ include '../includes/sidebar.php';
     const ESPECIALIDADES = <?php echo $especialidadesJson; ?>;
 </script>
 
-<?php
-echo '<script>console.log("especialidades PHP:", ' . $especialidadesJson . ');</script>';
-var_dump($especialidades);
-?>
-
 <!-- Modal procedimiento -->
 <?php include '../includes/modal_procedimiento.php'; ?>
 
