@@ -24,7 +24,7 @@ const MODAL_ID = 'modalProcedimiento';
         opt.textContent = e.nombre;
         select.appendChild(opt);
     });
-})();
+});
  
 // ── Helpers ───────────────────────────────────────────────────────
  
