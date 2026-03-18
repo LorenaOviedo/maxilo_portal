@@ -220,6 +220,16 @@ function view_url($view) {
 }
 
 /**
+ * Generar URL de endpoint AJAX
+ *
+ * @param  string $file  Nombre del archivo dentro de /ajax/
+ * @return string        URL completa
+ */
+function ajax_url($file = '') {
+    return SITE_URL . 'ajax/' . ltrim($file, '/');
+}
+
+/**
  * Re direccionar a una URL
  * @param string $path Ruta a redireccionar
  */

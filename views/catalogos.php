@@ -21,9 +21,9 @@ $page_css = ['catalogos.css'];
 //Definir catálogoss
 $catalogos = [
     [
-        'titulo' => 'Tratamientos dentales',
-        'descripcion' => 'Catálogo para tratamientos dentales y sus costos.',
-        'url' => 'tratamientos.php'
+        'titulo' => 'Procedimientos dentales',
+        'descripcion' => 'Catálogo para procedimientos dentales y sus costos.',
+        'url' => 'procedimientos.php'
     ],
     [
         'titulo' => 'Permisos',

@@ -647,3 +647,144 @@
         gap: 4px;
     }
 }
+
+/*==============================MODAL SIN TABS — formulario directo :catálogos simples =====================================*/
+
+ 
+/* El body de un modal sin tabs no necesita fondo gris */
+.modal-notabs .modal-body {
+    background-color: #ffffff;
+    padding: 30px;
+}
+ 
+/* El formulario ocupa todo el espacio sin tarjeta extra */
+.modal-notabs .modal-form {
+    background-color: #ffffff;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+ 
+/* Separador de secciones dentro del formulario (sin tabs) */
+.modal-notabs .form-section-title {
+    margin-top: 24px;
+}
+ 
+.modal-notabs .form-section-title:first-child {
+    margin-top: 0;
+}
+ 
+/* ============================================================ */
+/* ESTADOS DE CARGA EN BOTÓN GUARDAR                           */
+/* ============================================================ */
+ 
+.btn-modal-save.loading {
+    opacity: 0.75;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+ 
+.btn-modal-save.loading::after {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+ 
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+ 
+/* ============================================================ */
+/* VALIDACIÓN — campos con error                               */
+/* ============================================================ */
+ 
+.form-input.input-error,
+.form-select.input-error,
+.form-textarea.input-error {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+ 
+.field-error {
+    display: block;
+    font-size: 12px;
+    color: #dc3545;
+    margin-top: 4px;
+    min-height: 16px;
+}
+ 
+.form-label .required {
+    color: #dc3545;
+    margin-left: 2px;
+}
+ 
+/* ============================================================ */
+/* CHECKBOX ESTILIZADO                                          */
+/* ============================================================ */
+ 
+.form-group-check {
+    display: flex;
+    align-items: center;
+    padding-top: 24px;
+}
+ 
+.form-label-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #495057;
+    cursor: pointer;
+    font-weight: 500;
+}
+ 
+.form-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: #20a89e;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+ 
+/* ============================================================ */
+/* BOTÓN ACTIVAR (verde) en tabla                              */
+/* ============================================================ */
+ 
+.btn-activate {
+    background-color: #e8f6f5;
+    color: #20a89e;
+}
+ 
+.btn-activate:hover {
+    background-color: #20a89e;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(32, 168, 158, 0.3);
+}
+ 
+/* ============================================================ */
+/* RESPONSIVE — modal sin tabs                                 */
+/* ============================================================ */
+ 
+@media (max-width: 968px) {
+    .modal-notabs .modal-body {
+        padding: 20px;
+    }
+}
+ 
+@media (max-width: 640px) {
+    .modal-notabs .modal-body {
+        padding: 16px;
+    }
+ 
+    .form-group-check {
+        padding-top: 8px;
+    }
+}
