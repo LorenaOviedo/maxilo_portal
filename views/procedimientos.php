@@ -177,14 +177,14 @@ include '../includes/sidebar.php';
 
 <?php $especialidadesJson = json_encode($especialidades); ?>
 
-<!-- Modal procedimiento -->
-<?php include '../includes/modal_procedimiento.php'; ?>
-
+<!-- Variables globales para procedimientos.js — deben ir ANTES del modal -->
 <script>
-    // Variables globales para procedimientos.js
     const API_URL = '<?php echo ajax_url('Api.php'); ?>';
     const ESPECIALIDADES = <?php echo $especialidadesJson; ?>;
 </script>
+
+<!-- Modal procedimiento -->
+<?php include '../includes/modal_procedimiento.php'; ?>
 
 <!-- JS específico del módulo -->
 <script src="<?php echo asset('js/procedimientos.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
