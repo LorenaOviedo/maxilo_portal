@@ -472,4 +472,39 @@
   .odonto-form-panel { width: 100%; position: static; }
   .diente-icon       { width: 34px; height: 34px; font-size: 15px; }
   .arcada-row        { gap: 3px; }
+
+  /* Eliminar curva dental en paatanllas pequeñas, dientes en línea recta */
+  .arcada-superior .diente:nth-child(1),
+  .arcada-superior .diente:nth-child(2),
+  .arcada-superior .diente:nth-child(3),
+  .arcada-superior .diente:nth-child(4),
+  .arcada-superior .diente:nth-child(5),
+  .arcada-superior .diente:nth-child(6),
+  .arcada-superior .diente:nth-child(7),
+  .arcada-superior .diente:nth-child(8),
+  .arcada-superior .diente:nth-child(9),
+  .arcada-superior .diente:nth-child(10),
+  .arcada-superior .diente:nth-child(11),
+  .arcada-superior .diente:nth-child(12),
+  .arcada-superior .diente:nth-child(13),
+  .arcada-superior .diente:nth-child(14),
+  .arcada-superior .diente:nth-child(15),
+  .arcada-superior .diente:nth-child(16),
+  .arcada-inferior .diente:nth-child(1),
+  .arcada-inferior .diente:nth-child(2),
+  .arcada-inferior .diente:nth-child(3),
+  .arcada-inferior .diente:nth-child(4),
+  .arcada-inferior .diente:nth-child(5),
+  .arcada-inferior .diente:nth-child(6),
+  .arcada-inferior .diente:nth-child(7),
+  .arcada-inferior .diente:nth-child(8),
+  .arcada-inferior .diente:nth-child(9),
+  .arcada-inferior .diente:nth-child(10),
+  .arcada-inferior .diente:nth-child(11),
+  .arcada-inferior .diente:nth-child(12),
+  .arcada-inferior .diente:nth-child(13),
+  .arcada-inferior .diente:nth-child(14),
+  .arcada-inferior .diente:nth-child(15),
+  .arcada-inferior .diente:nth-child(16) { transform: translateY(0); }
+
 }
