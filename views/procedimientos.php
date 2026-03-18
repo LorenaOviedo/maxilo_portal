@@ -14,7 +14,7 @@ if (!$auth->verificarSesion()) {
  
 // Configuración de la página
 $page_title = 'Procedimientos Dentales';
-$page_css   = ['catalogos-tabla.css'];
+$page_css   = ['catalogos-tabla.css', 'modadal.css'];
 $page_js    = ['catalogos-tabla.js'];
  
 // Obtener datos de la BD
@@ -72,7 +72,7 @@ include '../includes/sidebar.php';
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="col-id"data-sort="id_procedimiento">ID</th>
+                            <th class="col-id" data-sort="id_procedimiento">ID</th>
                             <th class="col-name" data-sort="nombre">NOMBRE DEL PROCEDIMIENTO</th>
                             <th class="col-type" data-sort="tipo">TIPO</th>
                             <th class="col-specialty" data-sort="especialidad">ESPECIALIDAD</th>
