@@ -48,7 +48,7 @@ if (empty($modulo) || empty($accion)) {
 $modulos = [
     'procedimientos' => [
         'modelo'   => 'Procedimiento',
-        'archivo'  => __DIR__ . '/../models/Procedimiento.php',
+        'archivo'  => __DIR__ . '/../models/Procedimientos.php',
         'campo_id' => 'id_procedimiento',
     ],
     // 'especialidades' => [
