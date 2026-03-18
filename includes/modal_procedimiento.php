@@ -178,6 +178,7 @@ $modal_id = 'modalProcedimiento';
     // Abrir modal en modo NUEVO
     function abrirModalNuevo() {
         limpiarFormulario();
+        setModoLectura(false);
         document.getElementById('modalProcedimientoTitulo').textContent = 'Nuevo procedimiento';
         document.getElementById('proc_id').value = '';
         abrirModal(MODAL_ID);
@@ -186,6 +187,7 @@ $modal_id = 'modalProcedimiento';
     // Abrir modal en modo EDITAR 
     function abrirModalEditar(id) {
         limpiarFormulario();
+        setModoLectura(false);
         document.getElementById('modalProcedimientoTitulo').textContent = 'Editar procedimiento';
 
         // Obtener datos del servidor
