@@ -156,7 +156,7 @@ include '../includes/sidebar.php';
                                                 '<?php echo htmlspecialchars($p['nombre_procedimiento']); ?>'
                                             )"
                                         >
-                                            <i class="<?php echo $activo ? 'ri-forbid-line' : 'ri-checkbox-circle-line'; ?>"></i>
+                                            <i class="<?php echo $activo ? 'ri-forbid-line' : 'ri-delete-bin-6-line'; ?>"></i>
                                         </button>
                                     </div>
                                 </td>
