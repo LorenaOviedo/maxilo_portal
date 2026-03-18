@@ -18,10 +18,10 @@ $page_css   = ['catalogos-tabla.css', 'modal.css'];
 $page_js    = ['catalogos-tabla.js'];
  
 // Obtener datos de la BD
-$db = getDB();
+$db                  = getDB();
 $modeloProcedimiento = new Procedimiento($db);
-$procedimientos  = $modeloProcedimiento->getAll();
-$especialidades  = $modeloProcedimiento->getEspecialidades();
+$procedimientos      = $modeloProcedimiento->getAll();
+$especialidades      = $modeloProcedimiento->getEspecialidades();
  
 include '../includes/header.php';
 include '../includes/sidebar.php';
@@ -72,12 +72,11 @@ include '../includes/sidebar.php';
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="col-id" data-sort="id">NO.<br> PROCEDIMIENTO</th>
-                            <th class="col-name" data-sort="nombre">NOMBRE DEL<br> PROCEDIMIENTO</th>
-                            <th class="col-type" data-sort="tipo">TIPO</th>
-                            <th class="col-specialty" data-sort="especialidad">ESPECIALIDAD</th>
-                            <th class="col-description">DESCRIPCIÓN</th>
-                            <th class="col-price" data-sort="precio">PRECIO BASE</th>
+                            <th class="col-id"            data-sort="id">NO.<br>PROCEDIMIENTO</th>
+                            <th class="col-name"          data-sort="nombre">NOMBRE DEL<br>PROCEDIMIENTO</th>
+                            <th class="col-type"          data-sort="tipo">TIPO</th>
+                            <th class="col-specialty"     data-sort="especialidad">ESPECIALIDAD</th>
+                            <th class="col-price"         data-sort="precio">PRECIO BASE</th>
                             <th class="col-time">TIEMPO<br>ESTIMADO</th>
                             <th class="col-authorization">REQUIERE<br>AUTORIZACIÓN</th>
                             <th class="col-status">ESTATUS</th>
@@ -87,7 +86,7 @@ include '../includes/sidebar.php';
                     <tbody>
                         <?php if (empty($procedimientos)): ?>
                         <tr>
-                            <td colspan="10"
+                            <td colspan="9">
                                 <div class="empty-state">
                                     <div class="empty-state-icon">
                                         <i class="ri-folder-open-line"></i>
@@ -100,7 +99,7 @@ include '../includes/sidebar.php';
                         <?php else: ?>
                             <?php foreach ($procedimientos as $p): ?>
                             <tr>
-                                <td class="col-id" data-label="NO. PROCEDIMIENTO" data-col="id_procedimiento">
+                                <td class="col-id" data-label="No. Procedimiento" data-col="id">
                                     <?php echo $p['id_procedimiento']; ?>
                                 </td>
                                 <td class="col-name" data-label="Nombre" data-col="nombre">
@@ -112,15 +111,11 @@ include '../includes/sidebar.php';
                                 <td class="col-specialty" data-label="Especialidad" data-col="especialidad">
                                     <?php echo htmlspecialchars($p['especialidad']); ?>
                                 </td>
-                                <td class="col-description" data-label="Descripción">
-                                    <span class="text-truncate" title="<?php echo htmlspecialchars($p['descripcion'] ?? ''); ?>">
-                                        <?php echo htmlspecialchars($p['descripcion'] ?? '—'); ?>
-                                    </span>
-                                </td>
+                                <!-- Descripción omitida en tabla — visible en modal Ver -->
                                 <td class="col-price" data-label="Precio" data-col="precio">
                                     $<?php echo number_format((float)$p['precio_base'], 2); ?>
                                 </td>
-                                <td class="col-time text-center" data-label="Tiempo (min)">
+                                <td class="col-time text-center" data-label="Tiempo">
                                     <?php echo $p['tiempo_estimado'] ? $p['tiempo_estimado'] . ' min' : '—'; ?>
                                 </td>
                                 <td class="col-authorization text-center" data-label="Autorización">
@@ -138,6 +133,16 @@ include '../includes/sidebar.php';
                                 </td>
                                 <td class="col-actions" data-label="Acciones">
                                     <div class="action-buttons">
+                                        <!-- Ver (modo lectura) -->
+                                        <button
+                                            type="button"
+                                            class="btn-action btn-view"
+                                            title="Ver procedimiento"
+                                            onclick="abrirModalVer(<?php echo $p['id_procedimiento']; ?>)"
+                                        >
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <!-- Editar -->
                                         <button
                                             type="button"
                                             class="btn-action btn-edit"
@@ -146,6 +151,7 @@ include '../includes/sidebar.php';
                                         >
                                             <i class="ri-edit-box-line"></i>
                                         </button>
+                                        <!-- Activar / Desactivar -->
                                         <button
                                             type="button"
                                             class="btn-action <?php echo $activo ? 'btn-delete' : 'btn-activate'; ?>"
@@ -156,7 +162,7 @@ include '../includes/sidebar.php';
                                                 '<?php echo htmlspecialchars($p['nombre_procedimiento']); ?>'
                                             )"
                                         >
-                                            <i class="<?php echo $activo ? 'ri-forbid-line' : 'ri-delete-bin-6-line'; ?>"></i>
+                                            <i class="<?php echo $activo ? 'ri-delete-bin-6-line' : 'ri-delete-bin-6-line'; ?>"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -184,16 +190,12 @@ include '../includes/sidebar.php';
  
         </main>
  
-<?php
-// Pasar especialidades al modal via JSON para el select dinámico
-$especialidadesJson = json_encode($especialidades);
-?>
+<?php $especialidadesJson = json_encode($especialidades); ?>
  
-<!-- ==================== MODAL PROCEDIMIENTO ==================== -->
+<!-- Modal procedimiento -->
 <?php include '../includes/modal_procedimiento.php'; ?>
  
 <script>
-// Especialidades disponibles (desde PHP)
 const ESPECIALIDADES = <?php echo $especialidadesJson; ?>;
 </script>
  
