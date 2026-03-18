@@ -140,7 +140,7 @@ $modal_id = 'modalProcedimiento';
         limpiarFormulario();
         document.getElementById('modalProcedimientoTitulo').textContent = 'Ver procedimiento';
 
-        fetch(`<?php echo ajax_url('api.php'); ?>?modulo=procedimientos&accion=get&id=${id}`)
+        fetch(`<?php echo ajax_url('Api.php'); ?>?modulo=procedimientos&accion=get&id=${id}`)
             .then(r => r.json())
             .then(data => {
                 if (!data.success) {
