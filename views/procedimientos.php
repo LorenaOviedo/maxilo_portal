@@ -72,7 +72,7 @@ include '../includes/sidebar.php';
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="col-id" data-sort="id_procedimiento">ID</th>
+                            <th class="col-id" data-sort="id">NO. PROCEDIMIENTO</th>
                             <th class="col-name" data-sort="nombre">NOMBRE DEL PROCEDIMIENTO</th>
                             <th class="col-type" data-sort="tipo">TIPO</th>
                             <th class="col-specialty" data-sort="especialidad">ESPECIALIDAD</th>
@@ -87,7 +87,7 @@ include '../includes/sidebar.php';
                     <tbody>
                         <?php if (empty($procedimientos)): ?>
                         <tr>
-                            <td colspan="10">
+                            <td colspan="10"
                                 <div class="empty-state">
                                     <div class="empty-state-icon">
                                         <i class="ri-folder-open-line"></i>
@@ -100,7 +100,7 @@ include '../includes/sidebar.php';
                         <?php else: ?>
                             <?php foreach ($procedimientos as $p): ?>
                             <tr>
-                                <td class="col-id" data-label="ID">
+                                <td class="col-id" data-label="NO. PROCEDIMIENTO" data-col="id_procedimiento">
                                     <?php echo $p['id_procedimiento']; ?>
                                 </td>
                                 <td class="col-name" data-label="Nombre" data-col="nombre">
