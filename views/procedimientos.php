@@ -72,7 +72,7 @@ include '../includes/sidebar.php';
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="col-id">ID</th>
+                            <th class="col-id"data-sort="id_procedimiento">ID</th>
                             <th class="col-name" data-sort="nombre">NOMBRE DEL PROCEDIMIENTO</th>
                             <th class="col-type" data-sort="tipo">TIPO</th>
                             <th class="col-specialty" data-sort="especialidad">ESPECIALIDAD</th>
