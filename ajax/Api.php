@@ -43,13 +43,19 @@ if (empty($modulo) || empty($accion)) {
  
 // ── Registro de módulos disponibles ──────────────────────────────
 // Para agregar un módulo nuevo:
-//   1. Crea el modelo en models/NombreModelo.php
-//   2. Agrega una entrada aquí con la clase y el campo ID que usa
+//   1. Crear el modelo en models/NombreModelo.php
+//   2. Agregar una entrada aquí con la clase y el campo ID que usa
 $modulos = [
     'procedimientos' => [
         'modelo'   => 'Procedimiento',
         'archivo'  => __DIR__ . '/../models/Procedimientos.php',
         'campo_id' => 'id_procedimiento',
+    ],
+
+    'pacientes' => [
+        'modelo'   => 'Paciente',
+        'archivo'  => __DIR__ . '/../models/Paciente.php',
+        'campo_id' => 'numero_paciente',
     ],
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
