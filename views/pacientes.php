@@ -109,7 +109,7 @@ include '../includes/sidebar.php';
                             <?php $activo = (int)$p['id_estatus'] === 1; ?>
                             <tr>
                                 <td class="col-id" data-label="No. Paciente" data-col="numero">
-                                    <span style="font-weight:700;">P-<?php echo str_pad($p['numero_paciente'], 3, '0', STR_PAD_LEFT); ?></span>
+                                    <span style="font-weight:700;">P-<?php echo $p['numero_paciente']; ?></span>
                                     <br>
                                     <span style="font-size:11px; color:#6c757d;">Exp: <?php echo htmlspecialchars($p['id_paciente_expediente']); ?></span>
                                 </td>
