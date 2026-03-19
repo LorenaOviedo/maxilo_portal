@@ -154,26 +154,37 @@ class Paciente
      */
     public function getById($id)
     {
-        // DEBUG TEMPORAL
-        error_log("getById llamado con id: " . $id);
-
+        // Datos principales + dirección
         $query = "
-        SELECT
-            p.numero_paciente,
-            p.nombre,
-            p.apellido_paterno,
-            p.apellido_materno,
-            p.fecha_nacimiento,
-            p.sexo,
-            p.id_estatus,
-            p.id_ocupacion,
-            p.fecha_registro,
-            s.estatus
-        FROM paciente p
-        INNER JOIN estatus s ON s.id_estatus = p.id_estatus
-        WHERE p.numero_paciente = :id
-        LIMIT 1
-    ";
+            SELECT
+                p.numero_paciente,
+                p.id_paciente_expediente,
+                p.nombre,
+                p.apellido_paterno,
+                p.apellido_materno,
+                p.fecha_nacimiento,
+                p.sexo,
+                p.id_estatus,
+                p.id_ocupacion,
+                p.fecha_registro,
+                s.estatus,
+                -- Dirección
+                d.calle,
+                d.numero_exterior,
+                d.numero_interior,
+                cp.codigo_postal,
+                cp.colonia,
+                m.municipio,
+                e.estado
+            FROM paciente p
+            INNER JOIN estatus          s  ON s.id_estatus   = p.id_estatus
+            LEFT  JOIN direcciones      d  ON d.id_direccion = p.id_direccion
+            LEFT  JOIN codigospostales  cp ON cp.id_cp       = d.id_cp
+            LEFT  JOIN municipios       m  ON m.id_municipio = cp.id_municipio
+            LEFT  JOIN estados          e  ON e.id_estado    = m.id_estado
+            WHERE p.numero_paciente = :id
+            LIMIT 1
+        ";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindValue(':id', (int) $id, PDO::PARAM_INT);
@@ -181,25 +192,37 @@ class Paciente
         try {
             $stmt->execute();
             $paciente = $stmt->fetch(PDO::FETCH_ASSOC);
-            error_log("getById resultado: " . json_encode($paciente));
-
             if (!$paciente)
                 return false;
 
-            // Contactos (teléfono, email, etc.)
-            $paciente['contactos'] = $this->getContactos($id);
+            // DEBUG — probar cada consulta por separado
+            error_log("Paciente OK: " . $paciente['nombre']);
 
-            // Contacto de emergencia
-            $paciente['contacto_emergencia'] = $this->getContactoEmergencia($id);
+            try {
+                $paciente['contactos'] = $this->getContactos($id);
+                error_log("Contactos OK");
+            } catch (Exception $e) {
+                error_log("Error contactos: " . $e->getMessage());
+                $paciente['contactos'] = [];
+            }
 
-            // Historial médico
-            $paciente['historial'] = $this->getHistorial($id);
+            try {
+                $paciente['contacto_emergencia'] = $this->getContactoEmergencia($id);
+                error_log("Contacto emergencia OK");
+            } catch (Exception $e) {
+                error_log("Error contacto emergencia: " . $e->getMessage());
+                $paciente['contacto_emergencia'] = null;
+            }
+
+            try {
+                $paciente['historial'] = $this->getHistorial($id);
+                error_log("Historial OK");
+            } catch (Exception $e) {
+                error_log("Error historial: " . $e->getMessage());
+                $paciente['historial'] = null;
+            }
 
             return $paciente;
-
-        } catch (PDOException $e) {
-            error_log("Error en Paciente::getById: " . $e->getMessage());
-            return false;
         }
     }
 
