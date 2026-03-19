@@ -6,7 +6,7 @@
  * Tablas involucradas:
  *   paciente, direcciones, codigospostales, municipios, estados,
  *   contactos, tipocontacto, contactosemergencia, tipoparentescos,
- *   historialmedico, tiposangre, antecedentemedico, antecedentemedico
+ *   historialmedico, tipossangre, antecedentemedico, antecedentemedico
  */
 class Paciente
 {
@@ -195,34 +195,20 @@ class Paciente
             if (!$paciente)
                 return false;
 
-            // DEBUG — probar cada consulta por separado
-            error_log("Paciente OK: " . $paciente['nombre']);
+            // Contactos (teléfono, email, etc.)
+            $paciente['contactos'] = $this->getContactos($id);
 
-            try {
-                $paciente['contactos'] = $this->getContactos($id);
-                error_log("Contactos OK");
-            } catch (Exception $e) {
-                error_log("Error contactos: " . $e->getMessage());
-                $paciente['contactos'] = [];
-            }
+            // Contacto de emergencia
+            $paciente['contacto_emergencia'] = $this->getContactoEmergencia($id);
 
-            try {
-                $paciente['contacto_emergencia'] = $this->getContactoEmergencia($id);
-                error_log("Contacto emergencia OK");
-            } catch (Exception $e) {
-                error_log("Error contacto emergencia: " . $e->getMessage());
-                $paciente['contacto_emergencia'] = null;
-            }
-
-            try {
-                $paciente['historial'] = $this->getHistorial($id);
-                error_log("Historial OK");
-            } catch (Exception $e) {
-                error_log("Error historial: " . $e->getMessage());
-                $paciente['historial'] = null;
-            }
+            // Historial médico
+            $paciente['historial'] = $this->getHistorial($id);
 
             return $paciente;
+
+        } catch (PDOException $e) {
+            error_log("Error en Paciente::getById: " . $e->getMessage());
+            return false;
         }
     }
 
@@ -293,7 +279,7 @@ class Paciente
                 ts.tipo_sangre,
                 GROUP_CONCAT(am.nombre_antecedente SEPARATOR ', ') AS antecedentes
             FROM historialmedico hm
-            LEFT JOIN tiposangre        ts ON ts.id_tipo_sangre = hm.id_tipo_sangre
+            LEFT JOIN tipossangre        ts ON ts.id_tipo_sangre = hm.id_tipo_sangre
             LEFT JOIN antecedentemedico am ON am.id_antecedente IN (
                 SELECT ap.id_antecedente
                 FROM antecedentemedico ap
@@ -635,7 +621,7 @@ class Paciente
     public function getTiposSangre()
     {
         try {
-            $stmt = $this->conn->query("SELECT id_tipo_sangre, tipo_sangre FROM tiposangre ORDER BY tipo_sangre");
+            $stmt = $this->conn->query("SELECT id_tipo_sangre, tipo_sangre FROM tipossangre ORDER BY tipo_sangre");
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error en Paciente::getTiposSangre: " . $e->getMessage());
