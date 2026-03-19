@@ -568,60 +568,23 @@ $modal_id = 'modalPaciente';
     </div>
 </div>
 
-<!-- JavaScript para modal de paciente -->
+ 
+<!-- JavaScript del modal — lógica delegada a pacientes.js -->
 <script>
-// Función para ver paciente
-function verPaciente(data) {
-    // Actualizar número en título
-    document.getElementById('modalPacienteNumero').textContent = data.id || '';
-
-    // Cargar datos para lectura
-    verEnModal('<?php echo $modal_id; ?>', data);
-}
-
-// Función para editar paciente
-function editarPaciente(data) {
-    // Actualizar número en título
-    document.getElementById('modalPacienteNumero').textContent = data.id || '';
-
-    // Cargar datos en edición
-    editarEnModal('<?php echo $modal_id; ?>', data);
-}
-
-// Evento de guardar paciente
-document.getElementById('btnGuardarPaciente')?.addEventListener('click', function() {
-    const form = document.getElementById('formPaciente');
-    const formData = new FormData(form);
-
-    // Convertir a objeto
-    const data = {};
-    formData.forEach((value, key) => {
-        data[key] = value;
-    });
-
-    console.log('Datos a guardar:', data);
-
-    // Pendiente implementación de guardado
-
-    // Cerrar modal
-    CatalogTable.showNotification('Función de guardado pendiente de implementar.....', 'info');
-});
-</script>
-<script>
-window.addEventListener('load', function() {
+// El odontograma necesita interceptar cambiarTab y cerrarModal
+window.addEventListener('load', function () {
     const _cambiarTabOrig = window.cambiarTab;
     const _cerrarModalOrig = window.cerrarModal;
-
-    window.cambiarTab = function(modalId, tabId) {
+ 
+    window.cambiarTab = function (modalId, tabId) {
         if (typeof _cambiarTabOrig === 'function') _cambiarTabOrig(modalId, tabId);
-
         if (tabId === 'tabOdontograma') {
             const numeroPaciente = document.querySelector('#formPaciente [name="id"]')?.value || null;
             odontogramaController.montar(numeroPaciente);
         }
     };
-
-    window.cerrarModal = function(modalId) {
+ 
+    window.cerrarModal = function (modalId) {
         if (typeof _cerrarModalOrig === 'function') _cerrarModalOrig(modalId);
         odontogramaController.desmontar();
     };
