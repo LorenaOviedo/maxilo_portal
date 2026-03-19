@@ -89,7 +89,7 @@ function actualizarTabla(pacientes) {
  
     tbody.innerHTML = pacientes.map(p => {
         const activo       = parseInt(p.id_estatus) === 1;
-        const numero       = 'P-' + String(p.numero_paciente).padStart(3, '0');
+        const numero       = p.numero_paciente;
         const ultimaVisita = p.ultima_visita
             ? new Date(p.ultima_visita).toLocaleDateString('es-MX')
             : '—';
