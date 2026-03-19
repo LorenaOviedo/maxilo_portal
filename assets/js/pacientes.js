@@ -109,7 +109,11 @@ function actualizarTabla(pacientes) {
 
       return `
             <tr>
-                <td class="col-id"    data-label="No. Paciente"  data-col="numero">${numero}</td>
+                <td class="col-id"    data-label="No. Paciente"  data-col="numero">
+                    <span style="font-weight:700;">P-${String(p.numero_paciente).padStart(3, "0")}</span>
+                    <br>
+                    <span style="font-size:11px; color:#6c757d;">Exp: ${p.id_paciente_expediente}</span>
+                </td>
                 <td class="col-name"  data-label="Nombre"        data-col="nombre">${p.nombre_completo}</td>
                 <td class="col-tel"   data-label="Teléfono">${p.telefono || "—"}</td>
                 <td class="col-email" data-label="Correo">
@@ -238,7 +242,7 @@ function abrirModalVerPaciente(id) {
   cargarPaciente(id, (p) => {
     verEnModal(MODAL_PAC_ID, mapearDatosPaciente(p));
     document.getElementById("modalPacienteNumero").textContent =
-      "P-" + String(p.numero_paciente).padStart(3, "0");
+      p.id_paciente_expediente;
   });
 }
 
@@ -246,7 +250,7 @@ function abrirModalEditarPaciente(id) {
   cargarPaciente(id, (p) => {
     editarEnModal(MODAL_PAC_ID, mapearDatosPaciente(p));
     document.getElementById("modalPacienteNumero").textContent =
-      "P-" + String(p.numero_paciente).padStart(3, "0");
+      p.id_paciente_expediente;
   });
 }
 

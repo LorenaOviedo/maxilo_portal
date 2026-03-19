@@ -81,11 +81,11 @@ include '../includes/sidebar.php';
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="col-id" data-sort="numero">NÚMERO DE<br>PACIENTE</th>
-                            <th class="col-name" data-sort="nombre">NOMBRE COMPLETO</th>
+                            <th class="col-id"     data-sort="numero">NÚMERO DE<br>PACIENTE</th>
+                            <th class="col-name"   data-sort="nombre">NOMBRE COMPLETO</th>
                             <th class="col-tel">TELÉFONO</th>
                             <th class="col-email">CORREO ELECTRÓNICO</th>
-                            <th class="col-edad" data-sort="edad">EDAD</th>
+                            <th class="col-edad"   data-sort="edad">EDAD</th>
                             <th class="col-visit">ÚLTIMA VISITA</th>
                             <th class="col-status">ESTATUS</th>
                             <th class="col-actions">ACCIONES</th>
@@ -109,7 +109,9 @@ include '../includes/sidebar.php';
                             <?php $activo = (int)$p['id_estatus'] === 1; ?>
                             <tr>
                                 <td class="col-id" data-label="No. Paciente" data-col="numero">
-                                    P-<?php echo str_pad($p['numero_paciente'], 3, '0', STR_PAD_LEFT); ?>
+                                    <span style="font-weight:700;">P-<?php echo str_pad($p['numero_paciente'], 3, '0', STR_PAD_LEFT); ?></span>
+                                    <br>
+                                    <span style="font-size:11px; color:#6c757d;">Exp: <?php echo htmlspecialchars($p['id_paciente_expediente']); ?></span>
                                 </td>
                                 <td class="col-name" data-label="Nombre" data-col="nombre">
                                     <?php echo htmlspecialchars($p['nombre_completo']); ?>
@@ -155,7 +157,7 @@ include '../includes/sidebar.php';
                                                 <?php echo $activo ? 2 : 1; ?>,
                                                 '<?php echo htmlspecialchars($p['nombre_completo']); ?>'
                                             )">
-                                            <i class="<?php echo $activo ? 'ri-delete-bin-6-line' : 'ri-delete-bin-6-line'; ?>"></i>
+                                            <i class="<?php echo $activo ? 'ri-forbid-line' : 'ri-checkbox-circle-line'; ?>"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -204,8 +206,8 @@ $catalogosJson = json_encode([
  
 <!-- Variables globales — antes del modal y el JS -->
 <script>
-    var API_URL   = '<?php echo ajax_url('Api.php'); ?>';
-    var CATALOGOS = <?php echo $catalogosJson; ?>;
+var API_URL   = '<?php echo ajax_url('Api.php'); ?>';
+var CATALOGOS = <?php echo $catalogosJson; ?>;
 </script>
  
 <!-- Modal paciente -->
