@@ -36,9 +36,6 @@ if (empty($modulo) || empty($accion)) {
 }
  
 // ── Registro de módulos disponibles ──────────────────────────────
-// Para agregar un módulo nuevo:
-//   1. Crear el modelo en models/NombreModelo.php
-//   2. Agregar una entrada aquí con la clase y el campo ID que se usará para identificar registros.
 $modulos = [
     'procedimientos' => [
         'modelo'   => 'Procedimiento',

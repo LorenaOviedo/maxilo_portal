@@ -81,11 +81,12 @@ include '../includes/sidebar.php';
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="col-id"     data-sort="numero">NÚMERO DE<br>PACIENTE</th>
-                            <th class="col-name"   data-sort="nombre">NOMBRE COMPLETO</th>
+                            <th class="col-id" data-sort="numero">NÚMERO DE<br>PACIENTE</th>
+                            <th class="col-exp" data-sort="numero">NÚMERO<br>EXPEDIENTE</th>
+                            <th class="col-name" data-sort="nombre">NOMBRE COMPLETO</th>
                             <th class="col-tel">TELÉFONO</th>
                             <th class="col-email">CORREO ELECTRÓNICO</th>
-                            <th class="col-edad"   data-sort="edad">EDAD</th>
+                            <th class="col-edad" data-sort="edad">EDAD</th>
                             <th class="col-visit">ÚLTIMA VISITA</th>
                             <th class="col-status">ESTATUS</th>
                             <th class="col-actions">ACCIONES</th>
@@ -94,7 +95,7 @@ include '../includes/sidebar.php';
                     <tbody>
                         <?php if (empty($pacientes)): ?>
                         <tr>
-                            <td colspan="8">
+                            <td colspan="9">
                                 <div class="empty-state">
                                     <div class="empty-state-icon">
                                         <i class="ri-folder-open-line"></i>
@@ -110,8 +111,9 @@ include '../includes/sidebar.php';
                             <tr>
                                 <td class="col-id" data-label="No. Paciente" data-col="numero">
                                     <span style="font-weight:700;"><?php echo $p['numero_paciente']; ?></span>
-                                    <br>
-                                    <span style="font-size:11px; color:#6c757d;">Exp: <?php echo htmlspecialchars($p['id_paciente_expediente']); ?></span>
+                                </td>
+                                <td class="col-exp" data-label="Número de Expediente" data-col="numero">
+                                    <span style="font-weight:700;"><?php echo $p['numero_expediente']; ?></span>
                                 </td>
                                 <td class="col-name" data-label="Nombre" data-col="nombre">
                                     <?php echo htmlspecialchars($p['nombre_completo']); ?>
