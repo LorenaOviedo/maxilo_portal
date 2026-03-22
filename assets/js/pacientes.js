@@ -235,18 +235,23 @@ function mapearDatosPaciente(p) {
 // ── Botones de la tabla ────────────────────────────────────────────
 function abrirModalNuevoPaciente() {
   nuevoEnModal(MODAL_PAC_ID);
-  document.getElementById("modalPacienteNumero").textContent = "";
+    document.getElementById('modalPacienteNumero').textContent = '';
 
-  //Se obtiene el ID del nuevo paciente para mostrarlo en el modal y asignarlo al campo oculto del formulario
-   fetch(`${API_URL}?modulo=pacientes&accion=next_id`)
+    const inputId = document.querySelector('#formPaciente [name="id"]');
+
+    // Deshabilitar el campo ID y mostrar "..." mientras se obtiene el siguiente ID disponible
+    if (inputId) {
+        inputId.disabled = true;
+        inputId.value    = '...'; 
+
+    fetch(`${API_URL}?modulo=pacientes&accion=next_id`)
         .then(r => r.json())
         .then(data => {
-            if (data.success) {
-                const input = document.querySelector('#formPaciente [name="id"]');
-                if (input) input.value = data.next_id;
+            if (data.success && inputId) {
+                inputId.value = data.next_id;
             }
         });
-
+      }
 }
 
 function abrirModalVerPaciente(id) {
