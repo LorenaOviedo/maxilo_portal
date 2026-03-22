@@ -82,7 +82,7 @@ include '../includes/sidebar.php';
             <tbody>
                 <?php if (empty($procedimientos)): ?>
                     <tr>
-                        <td colspan="9"> <!--Elimina columna descripción se puede ver en modal-->
+                        <td colspan="9">
                             <div class="empty-state">
                                 <div class="empty-state-icon">
                                     <i class="ri-folder-open-line"></i>
@@ -107,7 +107,7 @@ include '../includes/sidebar.php';
                             <td class="col-specialty" data-label="Especialidad" data-col="especialidad">
                                 <?php echo htmlspecialchars($p['especialidad']); ?>
                             </td>
-                            <!-- Descripción omitida en tabla — visible en modal Ver -->
+                            <!-- Descripción se omite en tabla — visible en Ver -->
                             <td class="col-price" data-label="Precio" data-col="precio">
                                 $<?php echo number_format((float) $p['precio_base'], 2); ?>
                             </td>

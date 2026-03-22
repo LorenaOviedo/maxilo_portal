@@ -69,7 +69,7 @@ $modal_id = 'modalPaciente';
                         <input type="text" name="id" class="form-input" disabled>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Nombre(s)</label>
+                        <label class="form-label">Nombre(s)<span class="required">*</span></label>
                         <input type="text" name="nombre" class="form-input">
                     </div>
                     <div class="form-group">
