@@ -185,12 +185,11 @@ switch ($accion) {
         break;
 
     case 'next_id':
-        $tabla = $config['tabla'];   // 'paciente' en lugar del módulo
-        $stmt = $db->query("SELECT AUTO_INCREMENT FROM information_schema.TABLES 
-                          WHERE TABLE_SCHEMA = DATABASE() 
-                          AND TABLE_NAME = '{$tabla}'");
+        $tabla = $config['tabla'];
+        $stmt = $db->query("SELECT COALESCE(MAX({$config['campo_id']}), 0) + 1 AS next_id 
+                         FROM {$tabla}");
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        responder(true, 'OK', ['next_id' => $row['AUTO_INCREMENT'] ?? 1]);
+        responder(true, 'OK', ['next_id' => $row['next_id']]);
         break;
 
     // ── Acción no reconocida ──────────────────────────────────────
