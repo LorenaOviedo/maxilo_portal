@@ -97,8 +97,8 @@ $modal_id = 'modalPaciente';
                         <label class="form-label">Género</label>
                         <select name="genero" class="form-select">
                             <option value="">Seleccionar</option>
-                            <option value="Hombre">Hombre</option>
-                            <option value="Mujer">Mujer</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
                             <option value="Otro">Otro</option>
                         </select>
                     </div>
