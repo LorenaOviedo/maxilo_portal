@@ -165,6 +165,7 @@ class Paciente
                 p.sexo,
                 p.id_estatus,
                 p.id_ocupacion,
+                p.id_direccion,
                 p.fecha_registro,
                 s.estatus,
                 -- Dirección
