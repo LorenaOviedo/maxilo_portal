@@ -198,17 +198,17 @@ function mapearDatosPaciente(p) {
   return {
     // Tab 1: Información personal — coincide con name= del modal
     id: p.numero_paciente,
-    nombre: p.nombre,
-    apellido_paterno: p.apellido_paterno,
-    apellido_materno: p.apellido_materno,
+    nombre: normalizar(p.nombre),
+    apellido_paterno: normalizar(p.apellido_paterno),
+    apellido_materno: normalizar(p.apellido_materno),
     fecha_nacimiento: p.fecha_nacimiento,
     sexo: p.sexo,
     id_ocupacion: p.id_ocupacion || "",
-    calle: p.calle || "",
+    calle: normalizar(p.calle || ""),
     codigo_postal: p.codigo_postal || "",
-    colonia: p.colonia || "",
-    estado: p.estado || "",
-    ciudad: p.municipio || "",
+    colonia: normalizar(p.colonia || ""),
+    estado: normalizar(p.estado || ""),
+    ciudad: normalizar(p.municipio || ""),  
     pais: "México",
 
     // Tab 2: Contacto — coincide con name= del modal
