@@ -73,7 +73,7 @@ $modal_id = 'modalPaciente';
                         <input type="text" name="nombre" class="form-input">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Apellido paterno</label>
+                        <label class="form-label">Apellido paterno<span class="required">*</span></label>
                         <input type="text" name="apellido_paterno" class="form-input">
                     </div>
                 </div>
@@ -82,11 +82,11 @@ $modal_id = 'modalPaciente';
                 <!-- F2 apellido materno, fecha de nacimiento -->
                 <div class="form-row cols-2">
                     <div class="form-group">
-                        <label class="form-label">Apellido materno</label>
+                        <label class="form-label">Apellido materno<span class="required">*</span></label>
                         <input type="text" name="apellido_materno" class="form-input">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Fecha de nacimiento</label>
+                        <label class="form-label">Fecha de nacimiento<span class="required">*</span></label>
                         <input type="date" name="fecha_nacimiento" class="form-input">
                     </div>
                 </div>
@@ -96,7 +96,7 @@ $modal_id = 'modalPaciente';
                     <div class="form-group">
                         <label class="form-label">Sexo</label>
                         <select name="sexo" class="form-select">
-                            <option value="">Seleccionar</option>
+                            <option value="">Seleccionar<span class="required">*</span></option>
                             <option value="M">MASCULINO</option>
                             <option value="F">FEMENINO</option>
                         </select>
@@ -113,7 +113,7 @@ $modal_id = 'modalPaciente';
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Calle y número</label>
+                        <label class="form-label">Calle y número<span class="required">*</span></label>
                         <input type="text" name="calle" class="form-input">
                     </div>
                 </div>
@@ -125,7 +125,7 @@ $modal_id = 'modalPaciente';
                         <input type="text" name="codigo_postal" class="form-input" maxlength="5">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Colonia</label>
+                        <label class="form-label">Colonia<span class="required">*</span></label>
                         <input type="text" name="colonia" class="form-input">
                     </div>
                 </div>
@@ -133,7 +133,7 @@ $modal_id = 'modalPaciente';
                 <!-- F5 estado, ciudad, país -->
                 <div class="form-row cols-3">
                     <div class="form-group">
-                        <label class="form-label">Estado</label>
+                        <label class="form-label">Estado<span class="required">*</span></label>
                         <input type="text" name="estado" class="form-input">
                     </div>
                     <div class="form-group">
@@ -165,7 +165,7 @@ $modal_id = 'modalPaciente';
                         <input type="email" name="email" class="form-input" placeholder="correo@ejemplo.com">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Teléfono</label>
+                        <label class="form-label">Teléfono<span class="required">*</span></label>
                         <input type="tel" name="telefono" class="form-input" maxlength="10" placeholder="10 dígitos">
                     </div>
                 </div>
