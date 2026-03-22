@@ -113,7 +113,7 @@ include '../includes/sidebar.php';
                                     <span style="font-weight:700;"><?php echo $p['numero_paciente']; ?></span>
                                 </td>
                                 <td class="col-exp" data-label="Número de Expediente" data-col="numero">
-                                    <span style="font-weight:700;"><?php echo $p['numero_expediente']; ?></span>
+                                    <span style="font-weight:700;"><?php echo $p['id_paciente_expediente']; ?></span>
                                 </td>
                                 <td class="col-name" data-label="Nombre" data-col="nombre">
                                     <?php echo htmlspecialchars($p['nombre_completo']); ?>
