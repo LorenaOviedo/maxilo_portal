@@ -94,12 +94,11 @@ $modal_id = 'modalPaciente';
                 <!-- F3 genero, calle y número -->
                 <div class="form-row cols-2">
                     <div class="form-group">
-                        <label class="form-label">Género</label>
+                        <label class="form-label">Sexo</label>
                         <select name="sexo" class="form-select">
                             <option value="">Seleccionar</option>
                             <option value="M">MASCULINO</option>
                             <option value="F">FEMENINO</option>
-                            <option value="Otro">Otro</option>
                         </select>
                     </div>
                     <div class="form-group">
