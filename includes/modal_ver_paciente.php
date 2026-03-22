@@ -95,11 +95,22 @@ $modal_id = 'modalPaciente';
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Género</label>
-                        <select name="genero" class="form-select">
+                        <select name="sexo" class="form-select">
                             <option value="">Seleccionar</option>
                             <option value="M">Masculino</option>
                             <option value="F">Femenino</option>
                             <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ocupación</label>
+                        <select name="id_ocupacion" class="form-select">
+                            <option value="">Seleccionar</option>
+                            <?php foreach (json_decode($catalogosJson, true)['ocupaciones'] as $oc): ?>
+                                <option value="<?php echo $oc['id_ocupacion']; ?>">
+                                    <?php echo htmlspecialchars($oc['ocupacion']); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="form-group">
@@ -142,52 +153,51 @@ $modal_id = 'modalPaciente';
         <div id="tabContacto" class="modal-tab-content">
             <form class="modal-form" id="formContacto">
 
-                    <!-- Sección: Datos de contacto del paciente -->
-                    <div class="form-section-title">
-                        Datos de contacto del paciente<br>
+                <!-- Sección: Datos de contacto del paciente -->
+                <div class="form-section-title">
+                    Datos de contacto del paciente<br>
 
+                </div>
+
+                <!-- F1: Email, teléfono -->
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email" name="email" class="form-input" placeholder="correo@ejemplo.com">
                     </div>
-
-                    <!-- F1: Email, teléfono -->
-                    <div class="form-row cols-2">
-                        <div class="form-group">
-                            <label class="form-label">Correo electrónico</label>
-                            <input type="email" name="email" class="form-input" placeholder="correo@ejemplo.com">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Teléfono</label>
-                            <input type="tel" name="telefono" class="form-input" maxlength="10"
-                                placeholder="10 dígitos">
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label">Teléfono</label>
+                        <input type="tel" name="telefono" class="form-input" maxlength="10" placeholder="10 dígitos">
                     </div>
+                </div>
 
-                    <!-- Sección: Contacto de emergencia -->
-                    <div class="form-section-title" style="margin-top: 20px;">
-                        Contacto de emergencia<br>
+                <!-- Sección: Contacto de emergencia -->
+                <div class="form-section-title" style="margin-top: 20px;">
+                    Contacto de emergencia<br>
 
+                </div>
+
+                <!-- F2: Nombre del contacto, parentesco -->
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Nombre del contacto</label>
+                        <input type="text" name="contacto_emergencia" class="form-input">
                     </div>
-
-                    <!-- F2: Nombre del contacto, parentesco -->
-                    <div class="form-row cols-2">
-                        <div class="form-group">
-                            <label class="form-label">Nombre del contacto</label>
-                            <input type="text" name="contacto_emergencia" class="form-input">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Relación / Parentesco</label>
-                            <input type="text" name="relacion" class="form-input"
-                                placeholder="Ej: Madre, Hermano, Esposo/a...">
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label">Relación / Parentesco</label>
+                        <input type="text" name="relacion" class="form-input"
+                            placeholder="Ej: Madre, Hermano, Esposo/a...">
                     </div>
+                </div>
 
-                    <!-- F3: Teléfono de emergencia -->
-                    <div class="form-row cols-2">
-                        <div class="form-group">
-                            <label class="form-label">Teléfono del contacto</label>
-                            <input type="tel" name="telefono_emergencia" class="form-input" maxlength="10"
-                                placeholder="10 dígitos">
-                        </div>
+                <!-- F3: Teléfono de emergencia -->
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Teléfono del contacto</label>
+                        <input type="tel" name="telefono_emergencia" class="form-input" maxlength="10"
+                            placeholder="10 dígitos">
                     </div>
+                </div>
             </form>
         </div>
 
@@ -353,7 +363,8 @@ $modal_id = 'modalPaciente';
                 { activo: dienteActivo?.numero === pieza.numero }
               ]">
                                         <!-- <i :class="pieza.icono"></i> -->
-                                        <img :src="pieza.icono" :alt="pieza.nombre" style="width:18px; height:18px; object-fit:contain;">
+                                        <img :src="pieza.icono" :alt="pieza.nombre"
+                                            style="width:18px; height:18px; object-fit:contain;">
                                         <span v-if="registros[pieza.numero]?.length" class="diente-badge">
                                             {{ registros[pieza.numero].length }}
                                         </span>
@@ -376,7 +387,8 @@ $modal_id = 'modalPaciente';
                 { activo: dienteActivo?.numero === pieza.numero }
               ]">
                                         <!-- <i :class="pieza.icono"></i> -->
-                                        <img :src="pieza.icono" :alt="pieza.nombre" style="width:18px; height:18px; object-fit:contain;">
+                                        <img :src="pieza.icono" :alt="pieza.nombre"
+                                            style="width:18px; height:18px; object-fit:contain;">
                                         <span v-if="registros[pieza.numero]?.length" class="diente-badge">
                                             {{ registros[pieza.numero].length }}
                                         </span>
@@ -538,21 +550,21 @@ $modal_id = 'modalPaciente';
         <!-- Tab 6 archivos medicos -->
         <div id="tabArchivos" class="modal-tab-content">
             <div class="modal-form">
-                    <!-- Tabla de archivos -->
-                    <table class="plan-table">
-                        <thead>
-                            <tr>
-                                <th>RADIOGRAFÍAS / FOTOGRAFÍAS</th>
-                                <th>FECHA</th>
-                            </tr>
-                        </thead>
-                        <tbody id="listaArchivos">
-                            <tr>
-                                <td><a href="#" class="archivo-link">RADIOGRAFIA_CONSULTA_PRIMERA_VEZ_455.jpg</a></td>
-                                <td>01/07/2025</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Tabla de archivos -->
+                <table class="plan-table">
+                    <thead>
+                        <tr>
+                            <th>RADIOGRAFÍAS / FOTOGRAFÍAS</th>
+                            <th>FECHA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaArchivos">
+                        <tr>
+                            <td><a href="#" class="archivo-link">RADIOGRAFIA_CONSULTA_PRIMERA_VEZ_455.jpg</a></td>
+                            <td>01/07/2025</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -568,25 +580,25 @@ $modal_id = 'modalPaciente';
     </div>
 </div>
 
- 
+
 <!-- JavaScript del modal — lógica delegada a pacientes.js -->
 <script>
-// El odontograma necesita interceptar cambiarTab y cerrarModal
-window.addEventListener('load', function () {
-    const _cambiarTabOrig = window.cambiarTab;
-    const _cerrarModalOrig = window.cerrarModal;
- 
-    window.cambiarTab = function (modalId, tabId) {
-        if (typeof _cambiarTabOrig === 'function') _cambiarTabOrig(modalId, tabId);
-        if (tabId === 'tabOdontograma') {
-            const numeroPaciente = document.querySelector('#formPaciente [name="id"]')?.value || null;
-            odontogramaController.montar(numeroPaciente);
-        }
-    };
- 
-    window.cerrarModal = function (modalId) {
-        if (typeof _cerrarModalOrig === 'function') _cerrarModalOrig(modalId);
-        odontogramaController.desmontar();
-    };
-});
+    // El odontograma necesita interceptar cambiarTab y cerrarModal
+    window.addEventListener('load', function () {
+        const _cambiarTabOrig = window.cambiarTab;
+        const _cerrarModalOrig = window.cerrarModal;
+
+        window.cambiarTab = function (modalId, tabId) {
+            if (typeof _cambiarTabOrig === 'function') _cambiarTabOrig(modalId, tabId);
+            if (tabId === 'tabOdontograma') {
+                const numeroPaciente = document.querySelector('#formPaciente [name="id"]')?.value || null;
+                odontogramaController.montar(numeroPaciente);
+            }
+        };
+
+        window.cerrarModal = function (modalId) {
+            if (typeof _cerrarModalOrig === 'function') _cerrarModalOrig(modalId);
+            odontogramaController.desmontar();
+        };
+    });
 </script>
