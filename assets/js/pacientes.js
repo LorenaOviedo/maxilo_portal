@@ -94,7 +94,7 @@ function actualizarTabla(pacientes) {
       const ultimaVisita = p.ultima_visita
         ? new Date(p.ultima_visita).toLocaleDateString("es-MX")
         : "—";
-      const nombre = (p.nombre_completo || "").replace(/'/g, "\\'");
+      const nombre = normalizar(p.nombre_completo || "").replace(/'/g, "\\'");
       const badgeEstatus = activo
         ? `<span class="badge badge-active">${p.estatus.toUpperCase()}</span>`
         : `<span class="badge badge-inactive">${p.estatus.toUpperCase()}</span>`;
@@ -113,7 +113,7 @@ function actualizarTabla(pacientes) {
                     <br>
                     <span style="font-size:11px; color:#6c757d;">Exp: ${p.id_paciente_expediente}</span>
                 </td>
-                <td class="col-name"  data-label="Nombre"        data-col="nombre">${p.nombre_completo}</td>
+                <td class="col-name"  data-label="Nombre"        data-col="nombre">${normalizar(p.nombre_completo)}</td>
                 <td class="col-tel"   data-label="Teléfono">${p.telefono || "—"}</td>
                 <td class="col-email" data-label="Correo">
                     <span class="text-truncate" title="${p.email || ""}">${p.email || "—"}</span>
