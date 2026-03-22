@@ -331,9 +331,9 @@ class Paciente
 
             $stmt = $this->conn->prepare($query);
             $stmt->bindValue(':expediente', (int) $data['id_paciente_expediente'], PDO::PARAM_INT);
-            $stmt->bindValue(':apellido_paterno', strtoupper(trim($data['apellido_paterno'])));
-            $stmt->bindValue(':apellido_materno', strtoupper(trim($data['apellido_materno'] ?? '')));
-            $stmt->bindValue(':nombre', strtoupper(trim($data['nombre'])));
+            $stmt->bindValue(':apellido_paterno', $this->normalizar($data['apellido_paterno']));
+            $stmt->bindValue(':apellido_materno', $this->normalizar($data['apellido_materno'] ?? ''));
+            $stmt->bindValue(':nombre', $this->normalizar($data['nombre']));
             $stmt->bindValue(':fecha_nacimiento', $data['fecha_nacimiento']);
             $stmt->bindValue(':sexo', strtoupper($data['sexo']));
             $stmt->bindValue(':id_ocupacion', !empty($data['id_ocupacion']) ? (int) $data['id_ocupacion'] : null, PDO::PARAM_INT);
@@ -407,9 +407,9 @@ class Paciente
             ";
 
             $stmt = $this->conn->prepare($query);
-            $stmt->bindValue(':apellido_paterno', strtoupper(trim($data['apellido_paterno'])));
-            $stmt->bindValue(':apellido_materno', strtoupper(trim($data['apellido_materno'] ?? '')));
-            $stmt->bindValue(':nombre', strtoupper(trim($data['nombre'])));
+            $stmt->bindValue(':apellido_paterno', $this->normalizar($data['apellido_paterno']));
+            $stmt->bindValue(':apellido_materno', $this->normalizar($data['apellido_materno'] ?? ''));
+            $stmt->bindValue(':nombre', $this->normalizar($data['nombre']));
             $stmt->bindValue(':fecha_nacimiento', $data['fecha_nacimiento']);
             $stmt->bindValue(':sexo', strtoupper($data['sexo']));
             $stmt->bindValue(':id_ocupacion', !empty($data['id_ocupacion']) ? (int) $data['id_ocupacion'] : null, PDO::PARAM_INT);
@@ -615,6 +615,17 @@ class Paciente
         $stmt->bindValue(':paciente', (int) $numeroPaciente, PDO::PARAM_INT);
         $stmt->execute();
     }
+
+    private function normalizar(string $valor): string {
+    // Convierte a mayúsculas sin acentos
+    $valor = mb_strtoupper(trim($valor), 'UTF-8');
+    $valor = strtr($valor, [
+        'Á'=>'A','É'=>'E','Í'=>'I','Ó'=>'O','Ú'=>'U',
+        'À'=>'A','È'=>'E','Ì'=>'I','Ò'=>'O','Ù'=>'U',
+        'Ü'=>'U','Ñ'=>'N'
+    ]);
+    return $valor;
+}
 
     // ==================== CATÁLOGOS ====================
 
