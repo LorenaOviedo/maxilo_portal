@@ -251,6 +251,10 @@
     background-size: 18px;
 }
 
+.form-input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0;
+}
+
 /*FOOTER MODAL*/
 .modal-footer {
     display: flex;

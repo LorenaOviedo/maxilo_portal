@@ -112,7 +112,7 @@ include '../includes/sidebar.php';
                                 <td class="col-id" data-label="No. Paciente" data-col="numero">
                                     <span style="font-weight:700;"><?php echo $p['numero_paciente']; ?></span>
                                 </td>
-                                <td class="col-exp" data-label="Número de Expediente" data-col="numero">
+                                <td class="col-exp" data-label="No. Expediente" data-col="numero">
                                     <span style="font-weight:700;"><?php echo $p['id_paciente_expediente']; ?></span>
                                 </td>
                                 <td class="col-name" data-label="Nombre" data-col="nombre">
