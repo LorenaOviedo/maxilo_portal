@@ -184,6 +184,16 @@ switch ($accion) {
         ]);
         break;
 
+    case 'next_id':
+        $tabla = $config['campo_id']; // 'numero_paciente'
+        $stmt = $db->query("SELECT AUTO_INCREMENT FROM information_schema.TABLES 
+                            WHERE TABLE_SCHEMA = DATABASE() 
+                            AND TABLE_NAME = '{$modulo}'");
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $nextId = $row['AUTO_INCREMENT'] ?? '—';
+        responder(true, 'OK', ['next_id' => $nextId]);
+        break;
+
     // ── Acción no reconocida ──────────────────────────────────────
     default:
         http_response_code(400);
