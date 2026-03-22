@@ -9,7 +9,7 @@ require_once __DIR__ . '/../config/auth.php';
 
 $auth = new AuthController();
 
-// Verificar que el usuario esté autenticado
+// Verificar que el usuario está autenticado
 //if (!$auth->verificarSesion()) {
 //    redirect('index.php');
 //}

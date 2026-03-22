@@ -1,6 +1,5 @@
 /**
  * procedimientos.js
- * Sistema Maxilofacial Texcoco
  *
  * Lógica específica del catálogo de Procedimientos Dentales.
  * Depende de: modal.js, catalogos-tabla.js

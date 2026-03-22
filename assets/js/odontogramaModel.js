@@ -1,6 +1,5 @@
 /**
  * MODELO - OdontogramaModel.js
- * Sistema Maxilofacial Texcoco
  *
  * Responsabilidad: datos puros, catálogos y estructura de piezas dentales.
  * No conoce la vista ni el controlador.

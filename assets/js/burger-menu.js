@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.style.overflow = '';
     }
 
-    // Soporte táctil explícito para iOS/Edge
+    // Soporte táctil exp. para iOS/Edge
     hamburgerBtn.addEventListener('click', openMenu, { passive: true });
     hamburgerBtn.addEventListener('touchend', function(e) {
         e.preventDefault();

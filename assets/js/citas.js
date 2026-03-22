@@ -1,6 +1,5 @@
 /**
  * Módulo de Citas - JavaScript
- * Sistema Maxilofacial Texcoco
  */
 
 // ==================== ESTADO GLOBAL ====================

@@ -115,7 +115,7 @@ const CatalogTable = {
     },
 
     /**
-     * Búsqueda en servidor (pendiente)
+     * Búsqueda en servidor (pendiente)!
      * @param {string} searchTerm - Término a buscar
      */
     searchInServer: function (searchTerm) {
@@ -137,7 +137,7 @@ const CatalogTable = {
 /**
  * Ver detalles del registro
  * @param {string} id - ID del registro
- * @param {string} viewUrl - URL de la página de detalles (opcional)
+ * @param {string} viewUrl - URL de la página de detalles (opc)
  */
     view: function (id, viewUrl = null) {
         const url = viewUrl || `detalle.php?id=${id}`;
@@ -147,7 +147,7 @@ const CatalogTable = {
     /**
      * Editar registro
      * @param {string} id - ID del registro
-     * @param {string} formUrl - URL del formulario de edición (opcional)
+     * @param {string} formUrl - URL del formulario de edición (opc)
      */
     edit: function (id, formUrl = null) {
         const url = formUrl || `form.php?id=${id}`; //EDITAR POR URL DE FORMULARIO DE EDICIÓN
@@ -157,8 +157,8 @@ const CatalogTable = {
     /**
      * Eliminar registro
      * @param {string} id - ID del registro
-     * @param {string} deleteUrl - URL del endpoint de eliminación (opcional)
-     * @param {string} customMessage - Mensaje personalizado de confirmación (opcional)
+     * @param {string} deleteUrl - URL del endpoint de eliminación (opc)
+     * @param {string} customMessage - Mensaje personalizado de confirmación (opc)
      */
     delete: function (id, deleteUrl = null, customMessage = null) {
         const message = customMessage || this.config.deleteMessage;
@@ -371,7 +371,7 @@ const CatalogTable = {
 
 /**
  * Inicializar ordenamiento
- * Lee los th con atributo data-sort y coloca un click listener para ordenar por esa columna
+ * Lee los th con atributo data-sort, se ordena por esa columna mediante un click listener
  */
 initSort: function() {
     const headers = document.querySelectorAll('.data-table thead th[data-sort]');
@@ -393,7 +393,7 @@ initSort: function() {
         });
     });
 
-    // Móvil: crear select dinámico con las columnas disponibles
+    // Móvil: crear select dinámico con las columnas que están disponibles
     this.initSortMobile(headers);
 
     console.log('Ordenamiento inicializado');

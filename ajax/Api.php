@@ -2,19 +2,13 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 /**
- * API Central AJAX
- * Sistema Maxilofacial Texcoco
+ * API centrarizada para operaciones AJAX.
  *
  * Punto de entrada único para todas las operaciones AJAX del sistema.
  *
  * USO:
  *   GET  ajax/api.php?modulo=procedimientos&accion=get&id=5
- *   POST ajax/api.php  →  body: modulo=procedimientos&accion=create&...
- *
- * MÓDULOS REGISTRADOS:
- *   procedimientos  → models/Procedimiento.php
- *   especialidades  → models/Especialidad.php   (agregar cuando exista)
- *   (agregar más módulos en el array $modulos)
+ *   POST ajax/api.php  →  body: modulo=procedimientos&accion=create&
  */
  
 require_once __DIR__ . '/../config/config.php';
@@ -44,7 +38,7 @@ if (empty($modulo) || empty($accion)) {
 // ── Registro de módulos disponibles ──────────────────────────────
 // Para agregar un módulo nuevo:
 //   1. Crear el modelo en models/NombreModelo.php
-//   2. Agregar una entrada aquí con la clase y el campo ID que usa
+//   2. Agregar una entrada aquí con la clase y el campo ID que se usará para identificar registros.
 $modulos = [
     'procedimientos' => [
         'modelo'   => 'Procedimiento',

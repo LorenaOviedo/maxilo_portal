@@ -1,5 +1,5 @@
 /**
- * reportes.js — Sistema Maxilofacial Texcoco
+ * reportes.js
  * Manejo de reportes con datos de ejemplo, exportación Excel y PDF
  */
 

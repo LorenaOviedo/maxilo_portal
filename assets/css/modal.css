@@ -648,10 +648,10 @@
     }
 }
 
-/*==============================MODAL SIN TABS — formulario directo :catálogos simples =====================================*/
+/*==============================MODAL SIN TABS:catálogos simples =====================================*/
 
  
-/* El body de un modal sin tabs no necesita fondo gris */
+/* Modal sin tabs*/
 .modal-notabs .modal-body {
     background-color: #ffffff;
     padding: 30px;
@@ -726,7 +726,7 @@
 }
  
 /* ============================================================ */
-/* CHECKBOX ESTILIZADO                                          */
+/* CHECKBOX                                                     */
 /* ============================================================ */
  
 .form-group-check {

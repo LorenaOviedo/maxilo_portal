@@ -1,6 +1,5 @@
 /**
  * CONTROLADOR - OdontogramaController.js
- * Sistema Maxilofacial Texcoco
  *
  * Responsabilidad: lógica de negocio, estado reactivo Vue y
  * comunicación con el servidor.

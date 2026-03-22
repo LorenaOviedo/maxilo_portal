@@ -1,5 +1,5 @@
 /* ============================================================
-   REPORTES.CSS — Sistema Maxilofacial Texcoco
+   REPORTES
    ============================================================ */
 
 /* PANEL DE FILTROS */
@@ -35,7 +35,7 @@
     letter-spacing: 0.3px;
 }
 
-/* SELECT PERSONALIZADO */
+/* SELECT */
 .select-wrapper {
     position: relative;
 }

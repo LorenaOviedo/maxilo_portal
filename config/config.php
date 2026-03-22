@@ -1,7 +1,6 @@
 <?php
 /**
  * Configuración Principal del Sistema
- * Sistema Maxilofacial Texcoco
  * 
  * Versión mejorada con soporte para variables de entorno (.env)
  */

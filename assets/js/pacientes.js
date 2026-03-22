@@ -1,6 +1,5 @@
 /**
  * pacientes.js
- * Sistema Maxilofacial Texcoco
  *
  * Lógica específica del módulo de Pacientes.
  * Depende de: modal.js, catalogos-tabla.js

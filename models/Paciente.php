@@ -1,7 +1,6 @@
 <?php
 /**
  * Modelo de Paciente
- * Sistema Maxilofacial Texcoco
  *
  * Tablas involucradas:
  *   paciente, direcciones, codigospostales, municipios, estados,
