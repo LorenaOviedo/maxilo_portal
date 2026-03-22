@@ -472,7 +472,7 @@ class Paciente
                   VALUES (:calle, :num_ext, :num_int, :id_cp)";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bindValue(':calle', trim($data['calle']));
+        $stmt->bindValue(':calle', $this->normalizar($data['calle']));
         $stmt->bindValue(':num_ext', trim($data['numero_exterior'] ?? ''));
         $stmt->bindValue(':num_int', trim($data['numero_interior'] ?? ''));
         $stmt->bindValue(':id_cp', $idCp, PDO::PARAM_INT);
@@ -490,7 +490,7 @@ class Paciente
                   WHERE id_direccion = :id";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bindValue(':calle', trim($data['calle']));
+        $stmt->bindValue(':calle', $this->normalizar($data['calle']));
         $stmt->bindValue(':num_ext', trim($data['numero_exterior'] ?? ''));
         $stmt->bindValue(':num_int', trim($data['numero_interior'] ?? ''));
         $stmt->bindValue(':id_cp', $idCp, PDO::PARAM_INT);
@@ -519,7 +519,7 @@ class Paciente
             "INSERT INTO codigospostales (codigo_postal, colonia, id_municipio) VALUES (:cp, :colonia, :id_municipio)"
         );
         $stmt->bindValue(':cp', $data['codigo_postal']);
-        $stmt->bindValue(':colonia', trim($data['colonia'] ?? ''));
+        $stmt->bindValue(':colonia', $this->normalizar($data['colonia'] ?? ''));
         $stmt->bindValue(':id_municipio', $idMunicipio, PDO::PARAM_INT);
         $stmt->execute();
 
@@ -571,8 +571,8 @@ class Paciente
                  telefono_contacto_emergencia, id_tipo_parentesco)
             VALUES (:nombres, :apellido, :telefono, :parentesco)
         ");
-        $stmt->bindValue(':nombres', strtoupper(trim($data['contacto_nombre'])));
-        $stmt->bindValue(':apellido', strtoupper(trim($data['contacto_apellido'] ?? '')));
+        $stmt->bindValue(':nombres', $this->normalizar($data['contacto_nombre']));
+        $stmt->bindValue(':apellido', $this->normalizar($data['contacto_apellido'] ?? ''));
         $stmt->bindValue(':telefono', trim($data['telefono_emergencia'] ?? ''));
         $stmt->bindValue(':parentesco', (int) ($data['id_tipo_parentesco'] ?? 1), PDO::PARAM_INT);
         $stmt->execute();
@@ -611,7 +611,7 @@ class Paciente
             WHERE numero_paciente = :paciente
         ");
         $stmt->bindValue(':sangre', !empty($data['id_tipo_sangre']) ? (int) $data['id_tipo_sangre'] : null, PDO::PARAM_INT);
-        $stmt->bindValue(':notas', trim($data['notas'] ?? ''));
+        $stmt->bindValue(':notas', $this->normalizar($data['notas'] ?? ''));
         $stmt->bindValue(':paciente', (int) $numeroPaciente, PDO::PARAM_INT);
         $stmt->execute();
     }
