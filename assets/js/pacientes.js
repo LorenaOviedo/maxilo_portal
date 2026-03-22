@@ -209,7 +209,7 @@ function mapearDatosPaciente(p) {
     colonia: normalizar(p.colonia || ""),
     estado: normalizar(p.estado || ""),
     ciudad: normalizar(p.municipio || ""),  
-    pais: "México",
+    pais: "MEXICO",
 
     // Tab 2: Contacto — coincide con name= del modal
     email: email,
