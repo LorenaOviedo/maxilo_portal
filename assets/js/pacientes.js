@@ -279,7 +279,7 @@ function abrirModalEditarPaciente(id) {
 }
 
 // ── Guardar paciente ───────────────────────────────────────────────
-ocument
+document
   .getElementById("btnGuardarPaciente")
   ?.addEventListener("click", async function () {
     const formPaciente = document.getElementById("formPaciente");
@@ -308,7 +308,7 @@ ocument
     });
 
     formData.append("modulo", "pacientes");
-    formData.append("accion", id ? "update" : "create");
+    formData.append("accion", numeroPaciente ? "update" : "create");
     if (numeroPaciente) formData.append("numero_paciente", numeroPaciente);
 
     const nombre = formData.get("nombre")?.trim() || "";

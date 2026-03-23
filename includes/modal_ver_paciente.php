@@ -70,6 +70,7 @@ $modal_id = 'modalPaciente';
                     </div>
                     <div class="form-group">
                         <label class="form-label">Nombre(s)<span class="required">*</span></label>
+                        <input type="text" name="nombre" class="form-input">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Apellido paterno<span class="required">*</span></label>
@@ -90,12 +91,12 @@ $modal_id = 'modalPaciente';
                     </div>
                 </div>
 
-                <!-- F3 genero, calle y número -->
+                <!-- F3 Sexo, calle y número -->
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Sexo</label>
                         <select name="sexo" class="form-select">
-                            <option value="">Seleccionar<span class="required">*</span></option>
+                            <option value="">Seleccionar</option>
                             <option value="M">MASCULINO</option>
                             <option value="F">FEMENINO</option>
                         </select>
@@ -111,13 +112,17 @@ $modal_id = 'modalPaciente';
                             <?php endforeach; ?>
                         </select>
                     </div>
+                </div>
+
+                <!-- F4: Calle (fila propia) -->
+                <div class="form-row cols-1">
                     <div class="form-group">
-                        <label class="form-label">Calle y número<span class="required">*</span></label>
+                        <label class="form-label">Calle y número</label>
                         <input type="text" name="calle" class="form-input">
                     </div>
                 </div>
 
-                <!-- F4 codigo postal, colonia -->
+                <!-- F5 codigo postal, colonia -->
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Código postal</label>
@@ -129,7 +134,7 @@ $modal_id = 'modalPaciente';
                     </div>
                 </div>
 
-                <!-- F5 estado, ciudad, país -->
+                <!-- F6 estado, ciudad, país -->
                 <div class="form-row cols-3">
                     <div class="form-group">
                         <label class="form-label">Estado<span class="required">*</span></label>
