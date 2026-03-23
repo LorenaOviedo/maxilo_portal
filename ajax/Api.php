@@ -46,9 +46,7 @@ $modulos = [
     'pacientes' => [
         'modelo' => 'Paciente',
         'archivo' => __DIR__ . '/../models/Paciente.php',
-        'campo_id' => 'numero_paciente',
-        'tabla'     => 'paciente',
-        'singular'  => 'paciente', 
+        'campo_id' => 'numero_paciente', 
     ],
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
@@ -94,7 +92,7 @@ switch ($accion) {
         }
 
         // La clave de respuesta usa el nombre del módulo en singular
-        $clave = rtrim('singular');
+        $clave = rtrim($modulo, 's'); // Ej: 'procedimientos' → 'procedimiento'
         responder(true, 'OK', [$clave => $result]);
         break;
 
