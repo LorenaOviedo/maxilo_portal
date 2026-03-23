@@ -29,32 +29,6 @@ $params = array_merge($_GET, $_POST);
 $modulo = trim($params['modulo'] ?? '');
 $accion = trim($params['accion'] ?? '');
 
-if (empty($modulo) || empty($accion)) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Parámetros modulo y accion son obligatorios']);
-    exit;
-}
-
-// ── Registro de módulos disponibles ──────────────────────────────
-$modulos = [
-    'procedimientos' => [
-        'modelo' => 'Procedimiento',
-        'archivo' => __DIR__ . '/../models/Procedimientos.php',
-        'campo_id' => 'id_procedimiento',
-    ],
-
-    'pacientes' => [
-        'modelo' => 'Paciente',
-        'archivo' => __DIR__ . '/../models/Paciente.php',
-        'campo_id' => 'numero_paciente',
-    ],
-    // 'especialidades' => [
-    //     'modelo'   => 'Especialidad',
-    //     'archivo'  => __DIR__ . '/../models/Especialidad.php',
-    //     'campo_id' => 'id_especialidad',
-    // ],
-];
-
 // ── Acciones globales (no requieren módulo) ───────────────
 if ($accion === 'buscar_cp') {
     $cp   = trim($_GET['cp'] ?? '');
@@ -82,6 +56,32 @@ if ($accion === 'buscar_cp') {
         ], $resultados)
     ]);
 }
+
+if (empty($modulo) || empty($accion)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Parámetros modulo y accion son obligatorios']);
+    exit;
+}
+
+// ── Registro de módulos disponibles ──────────────────────────────
+$modulos = [
+    'procedimientos' => [
+        'modelo' => 'Procedimiento',
+        'archivo' => __DIR__ . '/../models/Procedimientos.php',
+        'campo_id' => 'id_procedimiento',
+    ],
+
+    'pacientes' => [
+        'modelo' => 'Paciente',
+        'archivo' => __DIR__ . '/../models/Paciente.php',
+        'campo_id' => 'numero_paciente',
+    ],
+    // 'especialidades' => [
+    //     'modelo'   => 'Especialidad',
+    //     'archivo'  => __DIR__ . '/../models/Especialidad.php',
+    //     'campo_id' => 'id_especialidad',
+    // ],
+];
 
 // ── Validar módulo solicitado ─────────────────────────────────────
 if (!array_key_exists($modulo, $modulos)) {
