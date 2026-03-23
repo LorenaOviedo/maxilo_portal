@@ -162,7 +162,7 @@ $modal_id = 'modalPaciente';
                     </div>
                     <div class="form-group">
                         <label class="form-label">País<span class="required">*</span></label>
-                        <input type="text" name="pais" class="form-input" value="MEXICO"  autocomplete="off" readonly>
+                        <input type="text" name="pais" class="form-input" value="MEXICO"  autocomplete="off">
                     </div>
                 </div>
             </form>
