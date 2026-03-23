@@ -62,7 +62,7 @@ function iniciarEventosCP() {
         listaColonias.innerHTML = data.colonias
           .map((c) => `<option value="${normalizar(c.colonia)}">`)
           .join("");
-        inputColonia.value = normalizar(data.colonias[0].colonia);
+        inputColonia.value = ""; // limpiar para que el usuario seleccione
       })
       .catch(() => CatalogTable.showNotification("Error de conexión", "error"));
   }
