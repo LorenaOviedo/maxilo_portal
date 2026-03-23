@@ -298,6 +298,7 @@ function mapearDatosPaciente(p) {
 // ── Botones de la tabla ────────────────────────────────────────────
 function abrirModalNuevoPaciente() {
   nuevoEnModal(MODAL_PAC_ID);
+  document.querySelector('[name="pais"]').value = "MEXICO";
   document.getElementById("modalPacienteNumero").textContent = "";
   document.getElementById("formPaciente").dataset.numeroPaciente = "";
   document.getElementById("grupoCampoId")?.style &&
@@ -322,12 +323,15 @@ function abrirModalNuevoPaciente() {
 }
 
 function abrirModalVerPaciente(id) {
-  console.log("abriendo modal para id:", id);
   cargarPaciente(id, (p) => {
-    console.log("paciente cargado:", p); // ← y aquí
-    const datos = mapearDatosPaciente(p);
-    console.log("datos mapeados:", datos); // ← y aquí
-    verEnModal(MODAL_PAC_ID, datos);
+    verEnModal(MODAL_PAC_ID, mapearDatosPaciente(p));
+    document.getElementById("modalPacienteNumero").textContent =
+      p.id_paciente_expediente;
+    document.getElementById("formPaciente").dataset.numeroPaciente =
+      p.numero_paciente;
+    document.querySelector('[name="pais"]').value = "MEXICO";
+    iniciarEventosCP();
+    cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
   });
 }
 
@@ -338,8 +342,7 @@ function abrirModalEditarPaciente(id) {
       p.id_paciente_expediente;
     document.getElementById("formPaciente").dataset.numeroPaciente =
       p.numero_paciente; // ← guardar
-    document.getElementById("grupoCampoId")?.style &&
-      (document.getElementById("grupoCampoId").style.display = "");
+    document.querySelector('[name="pais"]').value = "MEXICO";
     iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
   });
