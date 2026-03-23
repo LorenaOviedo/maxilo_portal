@@ -21,33 +21,56 @@ document.addEventListener("DOMContentLoaded", function () {
   iniciarBusqueda();
 });
 
-// ── Preseleccionar colonia al cargar código postal ────────────────────────────────s
-function cargarCPyPreseleccionar(codigoPostal, coloniaActual) {
-  if (!codigoPostal) return;
+function iniciarEventosCP() {
+  const inputCP = document.getElementById("inputCP");
+  const btnBuscarCP = document.getElementById("btnBuscarCP");
+  const inputColonia = document.getElementById("inputColonia");
+  const listaColonias = document.getElementById("listaColonias");
+  const inputEstado = document.getElementById("inputEstado");
+  const inputMunicipio = document.getElementById("inputMunicipio");
 
-  fetch(`${API_URL}?accion=buscar_cp&cp=${encodeURIComponent(codigoPostal)}`)
-    .then((r) => r.json())
-    .then((data) => {
-      if (!data.success) return;
+  if (!inputCP) return; // si no existe el modal todavía, salir
 
-      const inputColonia = document.getElementById("inputColonia");
-      const listaColonias = document.getElementById("listaColonias");
-      const inputEstado = document.getElementById("inputEstado");
-      const inputMunicipio = document.getElementById("inputMunicipio");
+  // Evitar registrar el evento dos veces
+  inputCP.removeEventListener("input", inputCP._cpHandler);
+  btnBuscarCP.removeEventListener("click", inputCP._cpHandler);
 
-      inputEstado.value = normalizar(data.estado);
-      inputMunicipio.value = normalizar(data.municipio);
+  inputCP._cpHandler = function () {
+    if (inputCP.value.trim().length === 5) buscarCP();
+  };
 
-      // Llenar sugerencias del datalist
-      listaColonias.innerHTML = data.colonias
-        .map((c) => `<option value="${normalizar(c.colonia)}">`)
-        .join("");
+  inputCP.addEventListener("input", inputCP._cpHandler);
+  btnBuscarCP?.addEventListener("click", buscarCP);
 
-      // Preseleccionar la colonia guardada
-      inputColonia.value = normalizar(coloniaActual || "");
-    });
+  function buscarCP() {
+    const cp = inputCP.value.trim();
+    if (!cp || cp.length < 5) {
+      CatalogTable.showNotification("Ingresa un CP de 5 dígitos", "warning");
+      return;
+    }
+
+    inputColonia.value = "";
+    listaColonias.innerHTML = "";
+    inputEstado.value = "";
+    inputMunicipio.value = "";
+
+    fetch(`${API_URL}?accion=buscar_cp&cp=${encodeURIComponent(cp)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!data.success) {
+          CatalogTable.showNotification("Código postal no encontrado", "error");
+          return;
+        }
+        inputEstado.value = normalizar(data.estado);
+        inputMunicipio.value = normalizar(data.municipio);
+        listaColonias.innerHTML = data.colonias
+          .map((c) => `<option value="${normalizar(c.colonia)}">`)
+          .join("");
+        inputColonia.value = normalizar(data.colonias[0].colonia);
+      })
+      .catch(() => CatalogTable.showNotification("Error de conexión", "error"));
+  }
 }
-
 
 // ── Búsqueda AJAX con debounce ─────────────────────────────────────
 function iniciarBusqueda() {
@@ -268,6 +291,7 @@ function abrirModalNuevoPaciente() {
   document.getElementById("formPaciente").dataset.numeroPaciente = "";
   document.getElementById("grupoCampoId")?.style &&
     (document.getElementById("grupoCampoId").style.display = "none");
+    iniciarEventosCP();
 
   const inputId = document.querySelector('#formPaciente [name="id"]');
 
@@ -295,6 +319,7 @@ function abrirModalVerPaciente(id) {
       p.numero_paciente;
     document.getElementById("grupoCampoId")?.style &&
       (document.getElementById("grupoCampoId").style.display = "");
+      iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
   });
 }
@@ -308,6 +333,7 @@ function abrirModalEditarPaciente(id) {
       p.numero_paciente; // ← guardar
     document.getElementById("grupoCampoId")?.style &&
       (document.getElementById("grupoCampoId").style.display = "");
+      iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
   });
 }
