@@ -260,6 +260,7 @@ function abrirModalVerPaciente(id) {
     verEnModal(MODAL_PAC_ID, mapearDatosPaciente(p));
     document.getElementById("modalPacienteNumero").textContent =
       p.id_paciente_expediente;
+    document.getElementById("grupoCampoId").style.display = "";
   });
 }
 

@@ -64,16 +64,16 @@ $modal_id = 'modalPaciente';
             <form class="modal-form" id="formPaciente">
                 <!-- F1 Número, nombre, apellido paterno -->
                 <div class="form-row cols-3">
+                    <div id="grupoCampoId">
                     <div class="form-group">
                         <label class="form-label">Número de paciente</label>
                         <input type="text" name="id" class="form-input" disabled>
                     </div>
-                    <div id="grupoCampoId">
+                    </div>
                         <div class="form-group">
                             <label class="form-label">Nombre(s)<span class="required">*</span></label>
-                            <input type="text" name="nombre" class="form-input" disabled>
+                            <input type="text" name="nombre" class="form-input">
                         </div>
-                    </div>
                     <div class="form-group">
                         <label class="form-label">Apellido paterno<span class="required">*</span></label>
                         <input type="text" name="apellido_paterno" class="form-input">
