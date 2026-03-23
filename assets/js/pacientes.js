@@ -21,6 +21,34 @@ document.addEventListener("DOMContentLoaded", function () {
   iniciarBusqueda();
 });
 
+// ── Preseleccionar colonia al cargar código postal ────────────────────────────────s
+function cargarCPyPreseleccionar(codigoPostal, coloniaActual) {
+  if (!codigoPostal) return;
+
+  fetch(`${API_URL}?accion=buscar_cp&cp=${encodeURIComponent(codigoPostal)}`)
+    .then((r) => r.json())
+    .then((data) => {
+      if (!data.success) return;
+
+      const inputColonia = document.getElementById("inputColonia");
+      const listaColonias = document.getElementById("listaColonias");
+      const inputEstado = document.getElementById("inputEstado");
+      const inputMunicipio = document.getElementById("inputMunicipio");
+
+      inputEstado.value = normalizar(data.estado);
+      inputMunicipio.value = normalizar(data.municipio);
+
+      // Llenar sugerencias del datalist
+      listaColonias.innerHTML = data.colonias
+        .map((c) => `<option value="${normalizar(c.colonia)}">`)
+        .join("");
+
+      // Preseleccionar la colonia guardada
+      inputColonia.value = normalizar(coloniaActual || "");
+    });
+}
+
+
 // ── Búsqueda AJAX con debounce ─────────────────────────────────────
 function iniciarBusqueda() {
   const searchInput = document.getElementById("searchInput");
