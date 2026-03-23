@@ -29,6 +29,8 @@ $params = array_merge($_GET, $_POST);
 $modulo = trim($params['modulo'] ?? '');
 $accion = trim($params['accion'] ?? '');
 
+$db = getDB();
+
 // ── Acciones globales (no requieren módulo) ───────────────
 if ($accion === 'buscar_cp') {
     $cp   = trim($_GET['cp'] ?? '');
@@ -101,7 +103,6 @@ if (!file_exists($config['archivo'])) {
 
 require_once $config['archivo'];
 
-$db = getDB();
 $model = new $config['modelo']($db);
 
 // ── Enrutar acción ────────────────────────────────────────────────
