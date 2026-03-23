@@ -198,6 +198,7 @@ function mapearDatosPaciente(p) {
   return {
     // Tab 1: Información personal — coincide con name= del modal
     id: p.numero_paciente,
+    id_paciente_expediente: p.id_paciente_expediente || '',
     nombre: normalizar(p.nombre),
     apellido_paterno: normalizar(p.apellido_paterno),
     apellido_materno: normalizar(p.apellido_materno),
