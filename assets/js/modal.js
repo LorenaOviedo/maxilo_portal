@@ -116,10 +116,6 @@ const Modal = {
     //Llenar campos del formulario
     Object.keys(data).forEach((key) => {
       const field = modal.querySelector(`[name="${key}"]`);
-      if (key === "pais") {
-        console.log("campo pais encontrado:", field);
-        console.log("valor a asignar:", data[key]);
-      }
       if (field) {
         if (field.type === "checkbox") {
           field.checked = data[key];

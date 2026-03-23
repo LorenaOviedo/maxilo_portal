@@ -72,15 +72,15 @@ function iniciarEventosCP() {
   });
 
   nuevoInputCP.addEventListener("input", () => {
-  // Limpiar sugerencias si el usuario borra el codigo postal o no ha ingresado 5 dígitos
-  if (nuevoInputCP.value.trim().length < 5) {
-    document.getElementById("listaColonias").innerHTML = "";
-    document.getElementById("inputColonia").value = "";
-    document.getElementById("inputEstado").value = "";
-    document.getElementById("inputMunicipio").value = "";
-  }
-  if (nuevoInputCP.value.trim().length === 5) buscarCP();
-});
+    // Limpiar sugerencias si el usuario borra el codigo postal o no ha ingresado 5 dígitos
+    if (nuevoInputCP.value.trim().length < 5) {
+      document.getElementById("listaColonias").innerHTML = "";
+      document.getElementById("inputColonia").value = "";
+      document.getElementById("inputEstado").value = "";
+      document.getElementById("inputMunicipio").value = "";
+    }
+    if (nuevoInputCP.value.trim().length === 5) buscarCP();
+  });
 }
 
 // ── Búsqueda AJAX con debounce ─────────────────────────────────────
@@ -323,6 +323,9 @@ function abrirModalNuevoPaciente() {
 
 function abrirModalVerPaciente(id) {
   cargarPaciente(id, (p) => {
+    const datos = mapearDatosPaciente(p);
+    console.log("objeto completo enviado al modal:", datos); // ← agregar
+
     verEnModal(MODAL_PAC_ID, mapearDatosPaciente(p));
     document.getElementById("modalPacienteNumero").textContent =
       p.id_paciente_expediente;
@@ -515,4 +518,3 @@ function cargarCPyPreseleccionar(codigoPostal, coloniaActual) {
       inputColonia.value = normalizar(coloniaActual || "");
     });
 }
-
