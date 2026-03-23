@@ -268,6 +268,7 @@ function abrirModalVerPaciente(id) {
       p.numero_paciente;
     document.getElementById("grupoCampoId")?.style &&
       (document.getElementById("grupoCampoId").style.display = "");
+    cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
   });
 }
 
@@ -280,6 +281,7 @@ function abrirModalEditarPaciente(id) {
       p.numero_paciente; // ← guardar
     document.getElementById("grupoCampoId")?.style &&
       (document.getElementById("grupoCampoId").style.display = "");
+    cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
   });
 }
 
@@ -420,5 +422,93 @@ function cambiarEstatusPaciente(id, nuevoEstatus, nombre) {
     .catch(() => {
       CatalogTable.showLoading(false);
       CatalogTable.showNotification("Error de conexión", "error");
+    });
+}
+
+// ── Autocompletado por código postal ──────────────────────────────
+document.addEventListener("DOMContentLoaded", function () {
+  const inputCP = document.getElementById("inputCP");
+  const btnBuscarCP = document.getElementById("btnBuscarCP");
+  const selectColonia = document.getElementById("selectColonia");
+  const inputEstado = document.getElementById("inputEstado");
+  const inputMunicipio = document.getElementById("inputMunicipio");
+
+  function buscarCP() {
+    const cp = inputCP?.value.trim();
+    if (!cp || cp.length < 5) {
+      CatalogTable.showNotification(
+        "Ingresa un código postal de 5 dígitos",
+        "warning",
+      );
+      return;
+    }
+
+    // Limpiar campos mientras busca
+    selectColonia.innerHTML = '<option value="">Buscando...</option>';
+    inputEstado.value = "";
+    inputMunicipio.value = "";
+
+    fetch(`${API_URL}?accion=buscar_cp&cp=${encodeURIComponent(cp)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!data.success) {
+          CatalogTable.showNotification("Código postal no encontrado", "error");
+          selectColonia.innerHTML =
+            '<option value="">— CP no encontrado —</option>';
+          return;
+        }
+
+        // Autocompletar estado y municipio
+        inputEstado.value = normalizar(data.estado);
+        inputMunicipio.value = normalizar(data.municipio);
+
+        // Llenar select de colonias
+        selectColonia.innerHTML = data.colonias
+          .map(
+            (c) =>
+              `<option value="${normalizar(c.colonia)}">${normalizar(c.colonia)}</option>`,
+          )
+          .join("");
+      })
+      .catch(() => {
+        CatalogTable.showNotification(
+          "Error al buscar el código postal",
+          "error",
+        );
+      });
+  }
+
+  // Buscar al hacer clic en el botón
+  btnBuscarCP?.addEventListener("click", buscarCP);
+
+  // Buscar automáticamente al escribir 3 dígitos
+  inputCP?.addEventListener("input", () => {
+    if (inputCP.value.trim().length === 3) buscarCP();
+  });
+});
+
+// ── Preseleccionar colonia al cargar código postal ────────────────────────────────s
+function cargarCPyPreseleccionar(codigoPostal, coloniaActual) {
+  if (!codigoPostal) return;
+
+  fetch(`${API_URL}?accion=buscar_cp&cp=${encodeURIComponent(codigoPostal)}`)
+    .then((r) => r.json())
+    .then((data) => {
+      if (!data.success) return;
+
+      const selectColonia = document.getElementById("selectColonia");
+      const inputEstado = document.getElementById("inputEstado");
+      const inputMunicipio = document.getElementById("inputMunicipio");
+
+      inputEstado.value = normalizar(data.estado);
+      inputMunicipio.value = normalizar(data.municipio);
+
+      selectColonia.innerHTML = data.colonias
+        .map((c) => {
+          const val = normalizar(c.colonia);
+          const selected = val === normalizar(coloniaActual) ? "selected" : "";
+          return `<option value="${val}" ${selected}>${val}</option>`;
+        })
+        .join("");
     });
 }

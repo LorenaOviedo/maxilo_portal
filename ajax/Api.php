@@ -46,7 +46,7 @@ $modulos = [
     'pacientes' => [
         'modelo' => 'Paciente',
         'archivo' => __DIR__ . '/../models/Paciente.php',
-        'campo_id' => 'numero_paciente', 
+        'campo_id' => 'numero_paciente',
     ],
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
@@ -54,6 +54,34 @@ $modulos = [
     //     'campo_id' => 'id_especialidad',
     // ],
 ];
+
+// ── Acciones globales (no requieren módulo) ───────────────
+if ($accion === 'buscar_cp') {
+    $cp   = trim($_GET['cp'] ?? '');
+    if (empty($cp)) responder(false, 'Código postal requerido');
+
+    $stmt = $db->prepare("
+        SELECT cp.id_cp, cp.colonia, m.municipio, e.estado
+        FROM codigospostales cp
+        INNER JOIN municipios m ON m.id_municipio = cp.id_municipio
+        INNER JOIN estados    e ON e.id_estado    = m.id_estado
+        WHERE cp.codigo_postal = :cp
+        ORDER BY cp.colonia
+    ");
+    $stmt->execute([':cp' => $cp]);
+    $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if (empty($resultados)) responder(false, 'Código postal no encontrado');
+
+    responder(true, 'OK', [
+        'estado'    => $resultados[0]['estado'],
+        'municipio' => $resultados[0]['municipio'],
+        'colonias'  => array_map(fn($r) => [
+            'id_cp'   => $r['id_cp'],
+            'colonia' => $r['colonia']
+        ], $resultados)
+    ]);
+}
 
 // ── Validar módulo solicitado ─────────────────────────────────────
 if (!array_key_exists($modulo, $modulos)) {
@@ -225,6 +253,41 @@ switch ($accion) {
         ]);
         $total = (int) $stmt->fetch(PDO::FETCH_ASSOC)['total'];
         responder(true, 'OK', ['duplicado' => $total > 0]);
+        break;
+
+    case 'buscar_cp':
+        $cp = trim($_GET['cp'] ?? '');
+        if (empty($cp)) {
+            responder(false, 'Código postal requerido');
+        }
+
+        $stmt = $db->prepare("
+        SELECT 
+            cp.id_cp,
+            cp.colonia,
+            m.municipio,
+            e.estado
+        FROM codigospostales cp
+        INNER JOIN municipios m ON m.id_municipio = cp.id_municipio
+        INNER JOIN estados    e ON e.id_estado    = m.id_estado
+        WHERE cp.codigo_postal = :cp
+        ORDER BY cp.colonia
+    ");
+        $stmt->execute([':cp' => $cp]);
+        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($resultados)) {
+            responder(false, 'Código postal no encontrado');
+        }
+
+        responder(true, 'OK', [
+            'estado' => $resultados[0]['estado'],
+            'municipio' => $resultados[0]['municipio'],
+            'colonias' => array_map(fn($r) => [
+                'id_cp' => $r['id_cp'],
+                'colonia' => $r['colonia']
+            ], $resultados)
+        ]);
         break;
 
     // ── Acción no reconocida ──────────────────────────────────────

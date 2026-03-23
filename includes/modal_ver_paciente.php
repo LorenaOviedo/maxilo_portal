@@ -75,8 +75,8 @@ $modal_id = 'modalPaciente';
                     </div>
                     <div class="form-group">
                         <label class="form-label">Apellido paterno<span class="required">*</span></label>
-                        <input type="text" name="apellido_paterno" class="form-input" pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$"
-                            title="Solo letras y espacios">
+                        <input type="text" name="apellido_paterno" class="form-input"
+                            pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$" title="Solo letras y espacios">
                     </div>
                 </div>
 
@@ -85,8 +85,8 @@ $modal_id = 'modalPaciente';
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Apellido materno<span class="required">*</span></label>
-                        <input type="text" name="apellido_materno" class="form-input" pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$"
-                            title="Solo letras y espacios">
+                        <input type="text" name="apellido_materno" class="form-input"
+                            pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$" title="Solo letras y espacios">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Fecha de nacimiento<span class="required">*</span></label>
@@ -141,7 +141,9 @@ $modal_id = 'modalPaciente';
                     </div>
                     <div class="form-group">
                         <label class="form-label">Colonia<span class="required">*</span></label>
-                        <input type="text" name="colonia" class="form-input">
+                        <select name="colonia" id="selectColonia" class="form-select">
+                            <option value="">— Busca un CP primero —</option>
+                        </select>
                     </div>
                 </div>
 
@@ -149,15 +151,15 @@ $modal_id = 'modalPaciente';
                 <div class="form-row cols-3">
                     <div class="form-group">
                         <label class="form-label">Estado<span class="required">*</span></label>
-                        <input type="text" name="estado" class="form-input">
+                        <input type="text" name="estado" id="inputEstado" class="form-input" readonly>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Municipio<span class="required">*</span></label>
-                        <input type="text" name="municipio" class="form-input">
+                        <input type="text" name="municipio" id="inputMunicipio" class="form-input" readonly>
                     </div>
                     <div class="form-group">
                         <label class="form-label">País<span class="required">*</span></label>
-                        <input type="text" name="pais" class="form-input" value="México">
+                        <input type="text" name="pais" class="form-input" value="MEXICO" readonly>
                     </div>
                 </div>
             </form>
