@@ -322,19 +322,12 @@ function abrirModalNuevoPaciente() {
 }
 
 function abrirModalVerPaciente(id) {
+  console.log("abriendo modal para id:", id);
   cargarPaciente(id, (p) => {
+    console.log("paciente cargado:", p); // ← y aquí
     const datos = mapearDatosPaciente(p);
-    console.log("objeto completo enviado al modal:", datos); // ← agregar
-
-    verEnModal(MODAL_PAC_ID, mapearDatosPaciente(p));
-    document.getElementById("modalPacienteNumero").textContent =
-      p.id_paciente_expediente;
-    document.getElementById("formPaciente").dataset.numeroPaciente =
-      p.numero_paciente;
-    document.getElementById("grupoCampoId")?.style &&
-      (document.getElementById("grupoCampoId").style.display = "");
-    iniciarEventosCP();
-    cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
+    console.log("datos mapeados:", datos); // ← y aquí
+    verEnModal(MODAL_PAC_ID, datos);
   });
 }
 
