@@ -154,11 +154,11 @@ $modal_id = 'modalPaciente';
                 <div class="form-row cols-3">
                     <div class="form-group">
                         <label class="form-label">Estado<span class="required">*</span></label>
-                        <input type="text" name="estado" id="inputEstado" class="form-input"  autocomplete="off" readonly>
+                        <input type="text" name="estado" id="inputEstado" class="form-input"  autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Municipio<span class="required">*</span></label>
-                        <input type="text" name="municipio" id="inputMunicipio" class="form-input"  autocomplete="off" readonly>
+                        <input type="text" name="municipio" id="inputMunicipio" class="form-input"  autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">País<span class="required">*</span></label>
