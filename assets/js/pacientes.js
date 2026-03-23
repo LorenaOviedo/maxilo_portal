@@ -205,6 +205,8 @@ function mapearDatosPaciente(p) {
     sexo: p.sexo,
     id_ocupacion: p.id_ocupacion || "",
     calle: normalizar(p.calle || ""),
+    numero_exterior: p.numero_exterior || "",
+    numero_interior: p.numero_interior || "",
     codigo_postal: p.codigo_postal || "",
     colonia: normalizar(p.colonia || ""),
     estado: normalizar(p.estado || ""),

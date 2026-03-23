@@ -117,8 +117,16 @@ $modal_id = 'modalPaciente';
                 <!-- F4: Calle (fila propia) -->
                 <div class="form-row cols-1">
                     <div class="form-group">
-                        <label class="form-label">Calle y número</label>
+                        <label class="form-label">Calle</label>
                         <input type="text" name="calle" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Número Exterior</label>
+                        <input type="text" name="numero_exterior" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Número Interior</label>
+                        <input type="text" name="numero_interior" class="form-input">
                     </div>
                 </div>
 
