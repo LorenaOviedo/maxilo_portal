@@ -29,21 +29,17 @@ function iniciarEventosCP() {
   const inputEstado = document.getElementById("inputEstado");
   const inputMunicipio = document.getElementById("inputMunicipio");
 
-  if (!inputCP) return; // si no existe el modal todavía, salir
+  if (!inputCP) return;
 
-  // Evitar registrar el evento dos veces
-  inputCP.removeEventListener("input", inputCP._cpHandler);
-  btnBuscarCP.removeEventListener("click", inputCP._cpHandler);
+  // Clonar el elemento para limpiar todos los listeners anteriores
+  const nuevoInputCP = inputCP.cloneNode(true);
+  inputCP.parentNode.replaceChild(nuevoInputCP, inputCP);
 
-  inputCP._cpHandler = function () {
-    if (inputCP.value.trim().length === 5) buscarCP();
-  };
-
-  inputCP.addEventListener("input", inputCP._cpHandler);
-  btnBuscarCP?.addEventListener("click", buscarCP);
+  const nuevoBtn = btnBuscarCP?.cloneNode(true);
+  btnBuscarCP?.parentNode.replaceChild(nuevoBtn, btnBuscarCP);
 
   function buscarCP() {
-    const cp = inputCP.value.trim();
+    const cp = nuevoInputCP.value.trim();
     if (!cp || cp.length < 5) {
       CatalogTable.showNotification("Ingresa un CP de 5 dígitos", "warning");
       return;
@@ -70,6 +66,11 @@ function iniciarEventosCP() {
       })
       .catch(() => CatalogTable.showNotification("Error de conexión", "error"));
   }
+
+  nuevoInputCP.addEventListener("input", () => {
+    if (nuevoInputCP.value.trim().length === 5) buscarCP();
+  });
+  nuevoBtn?.addEventListener("click", buscarCP);
 }
 
 // ── Búsqueda AJAX con debounce ─────────────────────────────────────
@@ -291,7 +292,7 @@ function abrirModalNuevoPaciente() {
   document.getElementById("formPaciente").dataset.numeroPaciente = "";
   document.getElementById("grupoCampoId")?.style &&
     (document.getElementById("grupoCampoId").style.display = "none");
-    iniciarEventosCP();
+  iniciarEventosCP();
 
   const inputId = document.querySelector('#formPaciente [name="id"]');
 
@@ -319,7 +320,7 @@ function abrirModalVerPaciente(id) {
       p.numero_paciente;
     document.getElementById("grupoCampoId")?.style &&
       (document.getElementById("grupoCampoId").style.display = "");
-      iniciarEventosCP();
+    iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
   });
 }
@@ -333,7 +334,7 @@ function abrirModalEditarPaciente(id) {
       p.numero_paciente; // ← guardar
     document.getElementById("grupoCampoId")?.style &&
       (document.getElementById("grupoCampoId").style.display = "");
-      iniciarEventosCP();
+    iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
   });
 }
@@ -477,68 +478,6 @@ function cambiarEstatusPaciente(id, nuevoEstatus, nombre) {
       CatalogTable.showNotification("Error de conexión", "error");
     });
 }
-
-// ── Autocompletado por código postal ──────────────────────────────
-document.addEventListener("DOMContentLoaded", function () {
-  const inputCP = document.getElementById("inputCP");
-  const btnBuscarCP = document.getElementById("btnBuscarCP");
-  const selectColonia = document.getElementById("selectColonia");
-  const inputEstado = document.getElementById("inputEstado");
-  const inputMunicipio = document.getElementById("inputMunicipio");
-
-  function buscarCP() {
-    const cp = inputCP?.value.trim();
-    if (!cp || cp.length < 5) {
-      CatalogTable.showNotification(
-        "Ingresa un código postal de 5 dígitos",
-        "warning",
-      );
-      return;
-    }
-
-    // Limpiar campos mientras busca
-    selectColonia.innerHTML = '<option value="">Buscando...</option>';
-    inputEstado.value = "";
-    inputMunicipio.value = "";
-
-    fetch(`${API_URL}?accion=buscar_cp&cp=${encodeURIComponent(cp)}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (!data.success) {
-          CatalogTable.showNotification("Código postal no encontrado", "error");
-          selectColonia.innerHTML =
-            '<option value="">— CP no encontrado —</option>';
-          return;
-        }
-
-        // Autocompletar estado y municipio
-        inputEstado.value = normalizar(data.estado);
-        inputMunicipio.value = normalizar(data.municipio);
-
-        // Llenar select de colonias
-        selectColonia.innerHTML = data.colonias
-          .map(
-            (c) =>
-              `<option value="${normalizar(c.colonia)}">${normalizar(c.colonia)}</option>`,
-          )
-          .join("");
-      })
-      .catch(() => {
-        CatalogTable.showNotification(
-          "Error al buscar el código postal",
-          "error",
-        );
-      });
-  }
-
-  // Buscar al hacer clic en el botón
-  btnBuscarCP?.addEventListener("click", buscarCP);
-
-  // Buscar automáticamente al escribir 3 dígitos
-  inputCP?.addEventListener("input", () => {
-    if (inputCP.value.trim().length === 3) buscarCP();
-  });
-});
 
 // ── Preseleccionar colonia al cargar código postal ────────────────────────────────s
 function cargarCPyPreseleccionar(codigoPostal, coloniaActual) {
