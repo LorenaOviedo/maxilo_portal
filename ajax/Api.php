@@ -192,6 +192,29 @@ switch ($accion) {
         responder(true, 'OK', ['next_id' => $row['next_id']]);
         break;
 
+    case 'check_duplicado':
+        $nombre = trim($_GET['nombre'] ?? '');
+        $apPat = trim($_GET['apellido_paterno'] ?? '');
+        $apMat = trim($_GET['apellido_materno'] ?? '');
+        $excluir = (int) ($_GET['excluir'] ?? 0);
+
+        $stmt = $db->prepare("
+        SELECT COUNT(*) AS total FROM paciente
+        WHERE nombre           = :nombre
+          AND apellido_paterno = :ap_pat
+          AND apellido_materno = :ap_mat
+          AND numero_paciente <> :excluir
+    ");
+        $stmt->execute([
+            ':nombre' => mb_strtoupper(trim($nombre), 'UTF-8'),
+            ':ap_pat' => mb_strtoupper(trim($apPat), 'UTF-8'),
+            ':ap_mat' => mb_strtoupper(trim($apMat), 'UTF-8'),
+            ':excluir' => $excluir,
+        ]);
+        $total = (int) $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        responder(true, 'OK', ['duplicado' => $total > 0]);
+        break;
+
     // ── Acción no reconocida ──────────────────────────────────────
     default:
         http_response_code(400);

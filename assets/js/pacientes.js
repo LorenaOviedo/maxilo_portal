@@ -236,6 +236,7 @@ function mapearDatosPaciente(p) {
 function abrirModalNuevoPaciente() {
   nuevoEnModal(MODAL_PAC_ID);
   document.getElementById("modalPacienteNumero").textContent = "";
+  document.getElementById("formPaciente").dataset.numeroPaciente = "";
   document.getElementById("grupoCampoId").style.display = "none";
 
   const inputId = document.querySelector('#formPaciente [name="id"]');
@@ -260,6 +261,8 @@ function abrirModalVerPaciente(id) {
     verEnModal(MODAL_PAC_ID, mapearDatosPaciente(p));
     document.getElementById("modalPacienteNumero").textContent =
       p.id_paciente_expediente;
+    document.getElementById("formPaciente").dataset.numeroPaciente =
+      p.numero_paciente;
     document.getElementById("grupoCampoId").style.display = "";
   });
 }
@@ -269,66 +272,94 @@ function abrirModalEditarPaciente(id) {
     editarEnModal(MODAL_PAC_ID, mapearDatosPaciente(p));
     document.getElementById("modalPacienteNumero").textContent =
       p.id_paciente_expediente;
+    document.getElementById("formPaciente").dataset.numeroPaciente =
+      p.numero_paciente; // ← guardar
     document.getElementById("grupoCampoId").style.display = "";
   });
 }
 
 // ── Guardar paciente ───────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", function () {
-  document
-    .getElementById("btnGuardarPaciente")
-    ?.addEventListener("click", function () {
-      const formPaciente = document.getElementById("formPaciente");
-      const formContacto = document.getElementById("formContacto");
-      const id = formPaciente.querySelector('[name="id"]')?.value;
-      const formData = new FormData(formPaciente);
+ocument
+  .getElementById("btnGuardarPaciente")
+  ?.addEventListener("click", async function () {
+    const formPaciente = document.getElementById("formPaciente");
+    const formContacto = document.getElementById("formContacto");
+    const formData = new FormData(formPaciente);
 
-      // Agregar campos del tab Contacto
-      if (formContacto) {
-        new FormData(formContacto).forEach((val, key) => {
-          if (!formData.has(key)) formData.append(key, val);
-        });
-      }
+    const numeroPaciente = formPaciente.dataset.numeroPaciente || "";
 
-      // Agregar campos del tab Historial (textarea y campos sueltos fuera de form)
-      [
-        "tipo_sangre",
-        "antecedentes_medicos",
-        "medicamentos",
-        "cirugias_previas",
-        "notas_historial",
-      ].forEach((campo) => {
-        const el = document.querySelector(`[name="${campo}"]`);
-        if (el && !formData.has(campo)) formData.append(campo, el.value);
+    // Agregar campos del tab Contacto
+    if (formContacto) {
+      new FormData(formContacto).forEach((val, key) => {
+        if (!formData.has(key)) formData.append(key, val);
       });
+    }
 
-      formData.append("modulo", "pacientes");
-      formData.append("accion", id ? "update" : "create");
-      if (id) formData.append("numero_paciente", id);
-
-      CatalogTable.showLoading(true);
-
-      fetch(API_URL, { method: "POST", body: formData })
-        .then((r) => r.json())
-        .then((data) => {
-          CatalogTable.showLoading(false);
-          if (data.success) {
-            CatalogTable.showNotification(data.message, "success");
-            cerrarModal(MODAL_PAC_ID);
-            buscarPacientes();
-          } else {
-            CatalogTable.showNotification(
-              data.message || "Error al guardar",
-              "error",
-            );
-          }
-        })
-        .catch(() => {
-          CatalogTable.showLoading(false);
-          CatalogTable.showNotification("Error de conexión", "error");
-        });
+    // Agregar campos del tab Historial (textarea y campos sueltos fuera de form)
+    [
+      "tipo_sangre",
+      "antecedentes_medicos",
+      "medicamentos",
+      "cirugias_previas",
+      "notas_historial",
+    ].forEach((campo) => {
+      const el = document.querySelector(`[name="${campo}"]`);
+      if (el && !formData.has(campo)) formData.append(campo, el.value);
     });
-});
+
+    formData.append("modulo", "pacientes");
+    formData.append("accion", id ? "update" : "create");
+    if (numeroPaciente) formData.append("numero_paciente", numeroPaciente);
+
+    const nombre = formData.get("nombre")?.trim() || "";
+    const apPat = formData.get("apellido_paterno")?.trim() || "";
+    const apMat = formData.get("apellido_materno")?.trim() || "";
+
+    if (nombre && apPat) {
+      try {
+        const res = await fetch(
+          `${API_URL}?modulo=pacientes&accion=check_duplicado` +
+            `&nombre=${encodeURIComponent(nombre)}` +
+            `&apellido_paterno=${encodeURIComponent(apPat)}` +
+            `&apellido_materno=${encodeURIComponent(apMat)}` +
+            `&excluir=${numeroPaciente}`,
+        );
+        const data = await res.json();
+        if (data.duplicado) {
+          CatalogTable.showNotification(
+            `Ya existe un paciente con el nombre "${nombre} ${apPat} ${apMat}"`,
+            "error",
+          );
+          return; // bloquear
+        }
+      } catch {
+        CatalogTable.showNotification("Error al validar duplicados", "error");
+        return;
+      }
+    }
+
+    CatalogTable.showLoading(true);
+
+    fetch(API_URL, { method: "POST", body: formData })
+      .then((r) => r.json())
+      .then((data) => {
+        CatalogTable.showLoading(false);
+        if (data.success) {
+          CatalogTable.showNotification(data.message, "success");
+          cerrarModal(MODAL_PAC_ID);
+          buscarPacientes();
+        } else {
+          CatalogTable.showNotification(
+            data.message || "Error al guardar",
+            "error",
+          );
+        }
+      })
+      .catch(() => {
+        CatalogTable.showLoading(false);
+        CatalogTable.showNotification("Error de conexión", "error");
+      });
+  });
 
 // ── Cambiar estatus ────────────────────────────────────────────────
 function cambiarEstatusPaciente(id, nuevoEstatus, nombre) {
