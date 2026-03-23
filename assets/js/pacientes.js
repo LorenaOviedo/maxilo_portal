@@ -208,7 +208,7 @@ function mapearDatosPaciente(p) {
     codigo_postal: p.codigo_postal || "",
     colonia: normalizar(p.colonia || ""),
     estado: normalizar(p.estado || ""),
-    ciudad: normalizar(p.municipio || ""),  
+    ciudad: normalizar(p.municipio || ""),
     pais: "MEXICO",
 
     // Tab 2: Contacto — coincide con name= del modal
@@ -235,23 +235,24 @@ function mapearDatosPaciente(p) {
 // ── Botones de la tabla ────────────────────────────────────────────
 function abrirModalNuevoPaciente() {
   nuevoEnModal(MODAL_PAC_ID);
-    document.getElementById('modalPacienteNumero').textContent = '';
+  document.getElementById("modalPacienteNumero").textContent = "";
+  document.getElementById("grupoCampoId").style.display = "none";
 
-    const inputId = document.querySelector('#formPaciente [name="id"]');
+  const inputId = document.querySelector('#formPaciente [name="id"]');
 
-    // Deshabilitar el campo ID y mostrar "..." mientras se obtiene el siguiente ID disponible
-    if (inputId) {
-        inputId.disabled = true;
-        inputId.value    = '...'; 
+  // Deshabilitar el campo ID y mostrar "..." mientras se obtiene el siguiente ID disponible
+  if (inputId) {
+    inputId.disabled = true;
+    inputId.value = "...";
 
     fetch(`${API_URL}?modulo=pacientes&accion=next_id`)
-        .then(r => r.json())
-        .then(data => {
-            if (data.success && inputId) {
-                inputId.value = data.next_id;
-            }
-        });
-      }
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && inputId) {
+          inputId.value = data.next_id;
+        }
+      });
+  }
 }
 
 function abrirModalVerPaciente(id) {
@@ -267,6 +268,7 @@ function abrirModalEditarPaciente(id) {
     editarEnModal(MODAL_PAC_ID, mapearDatosPaciente(p));
     document.getElementById("modalPacienteNumero").textContent =
       p.id_paciente_expediente;
+    document.getElementById("grupoCampoId").style.display = "";
   });
 }
 

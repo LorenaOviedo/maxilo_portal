@@ -68,9 +68,11 @@ $modal_id = 'modalPaciente';
                         <label class="form-label">Número de paciente</label>
                         <input type="text" name="id" class="form-input" disabled>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Nombre(s)<span class="required">*</span></label>
-                        <input type="text" name="nombre" class="form-input">
+                    <div id="grupoCampoId">
+                        <div class="form-group">
+                            <label class="form-label">Nombre(s)<span class="required">*</span></label>
+                            <input type="text" name="nombre" class="form-input" disabled>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Apellido paterno<span class="required">*</span></label>
@@ -580,7 +582,7 @@ $modal_id = 'modalPaciente';
 </div>
 
 
-<!-- JavaScript del modal — lógica delegada a pacientes.js -->
+<!-- JavaScript del modal, lógica se pasa a pacientes.js -->
 <script>
     // El odontograma necesita interceptar cambiarTab y cerrarModal
     window.addEventListener('load', function () {
