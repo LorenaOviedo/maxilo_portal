@@ -50,7 +50,7 @@ function iniciarEventosCP() {
     inputEstado.value = "";
     inputMunicipio.value = "";
 
-    fetch(`${API_URL}accion=buscar_cp&cp=${encodeURIComponent(cp)}`)
+    fetch(`${API_URL}?accion=buscar_cp&cp=${encodeURIComponent(cp)}`)
       .then((r) => r.json())
       .then((data) => {
         if (!data.success) {
