@@ -197,7 +197,7 @@ function mapearDatosPaciente(p) {
 
   return {
     // Tab 1: Información personal — coincide con name= del modal
-    id_paciente_expediente: p.id_paciente_expediente || '',
+    id_paciente_expediente: p.id_paciente_expediente || "",
     nombre: normalizar(p.nombre),
     apellido_paterno: normalizar(p.apellido_paterno),
     apellido_materno: normalizar(p.apellido_materno),
@@ -239,7 +239,8 @@ function abrirModalNuevoPaciente() {
   nuevoEnModal(MODAL_PAC_ID);
   document.getElementById("modalPacienteNumero").textContent = "";
   document.getElementById("formPaciente").dataset.numeroPaciente = "";
-  document.getElementById("grupoCampoId").style.display = "none";
+  document.getElementById("grupoCampoId")?.style &&
+    (document.getElementById("grupoCampoId").style.display = "none");
 
   const inputId = document.querySelector('#formPaciente [name="id"]');
 
@@ -265,7 +266,8 @@ function abrirModalVerPaciente(id) {
       p.id_paciente_expediente;
     document.getElementById("formPaciente").dataset.numeroPaciente =
       p.numero_paciente;
-    document.getElementById("grupoCampoId").style.display = "";
+    document.getElementById("grupoCampoId")?.style &&
+      (document.getElementById("grupoCampoId").style.display = "");
   });
 }
 
@@ -276,7 +278,8 @@ function abrirModalEditarPaciente(id) {
       p.id_paciente_expediente;
     document.getElementById("formPaciente").dataset.numeroPaciente =
       p.numero_paciente; // ← guardar
-    document.getElementById("grupoCampoId").style.display = "";
+    document.getElementById("grupoCampoId")?.style &&
+      (document.getElementById("grupoCampoId").style.display = "");
   });
 }
 
