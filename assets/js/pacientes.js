@@ -140,7 +140,7 @@ function actualizarTabla(pacientes) {
   if (!pacientes || !pacientes.length) {
     tbody.innerHTML = `
             <tr>
-                <td colspan="8" style="text-align:center; padding:40px;">
+                <td colspan="9" style="text-align:center; padding:40px;">
                     <i class="ri-search-line" style="font-size:48px; color:#dee2e6; display:block; margin-bottom:15px;"></i>
                     <p style="font-size:16px; color:#6c757d; font-weight:600;">No se encontraron resultados</p>
                     <p style="font-size:14px; color:#adb5bd;">Intenta con otro término de búsqueda</p>
@@ -386,27 +386,117 @@ document
     const apPat = formData.get("apellido_paterno")?.trim() || "";
     const apMat = formData.get("apellido_materno")?.trim() || "";
 
-    const camposRequeridos = [
-      { name: "nombre", label: "Nombre(s)" },
-      { name: "apellido_paterno", label: "Apellido paterno" },
-      { name: "fecha_nacimiento", label: "Fecha de nacimiento" },
-      { name: "calle", label: "Calle" },
-      { name: "colonia", label: "Colonia" },
-      { name: "municipio", label: "Municipio" },
-      { name: "estado", label: "Estado" },
-      { name: "pais", label: "País" },
+    // ── Validaciones ──────────────────────────────────────────────────
+    const reglas = [
+      // Tab 1
+      {
+        name: "id_paciente_expediente",
+        label: "No. Expediente",
+        requerido: false,
+        regex: /^\d+$/,
+        msgRegex: "El No. Expediente solo debe contener números",
+      },
+      {
+        name: "nombre",
+        label: "Nombre(s)",
+        requerido: true,
+        regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/,
+        msgRegex: "El Nombre solo debe contener letras",
+      },
+      {
+        name: "apellido_paterno",
+        label: "Apellido paterno",
+        requerido: true,
+        regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/,
+        msgRegex: "El Apellido paterno solo debe contener letras",
+      },
+      {
+        name: "apellido_materno",
+        label: "Apellido materno",
+        requerido: false,
+        regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/,
+        msgRegex: "El Apellido materno solo debe contener letras",
+      },
+      {
+        name: "fecha_nacimiento",
+        label: "Fecha de nacimiento",
+        requerido: true,
+        validar: (valor) => {
+          const fecha = new Date(valor);
+          const hoy = new Date();
+          const minima = new Date();
+          minima.setFullYear(hoy.getFullYear() - 120);
+          if (fecha >= hoy) return "La fecha de nacimiento no puede ser futura";
+          if (fecha < minima) return "La fecha de nacimiento no es válida";
+          return null;
+        },
+      },
+      {
+        name: "codigo_postal",
+        label: "Código postal",
+        requerido: false,
+        regex: /^\d{5}$/,
+        msgRegex: "El Código postal debe tener exactamente 5 dígitos",
+      },
+      // Tab 2
+      {
+        name: "email",
+        label: "Correo electrónico",
+        requerido: false,
+        regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        msgRegex: "El formato del correo electrónico no es válido",
+      },
+      {
+        name: "telefono",
+        label: "Teléfono",
+        requerido: false,
+        regex: /^\d{10}$/,
+        msgRegex: "El Teléfono debe tener exactamente 10 dígitos",
+      },
+      {
+        name: "telefono_emergencia",
+        label: "Teléfono de emergencia",
+        requerido: false,
+        regex: /^\d{10}$/,
+        msgRegex: "El Teléfono de emergencia debe tener exactamente 10 dígitos",
+      },
+      {
+        name: "contacto_emergencia",
+        label: "Nombre del contacto de emergencia",
+        requerido: false,
+        regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/,
+        msgRegex: "El nombre del contacto solo debe contener letras",
+      },
     ];
 
-    for (const campo of camposRequeridos) {
-      const valor = formData.get(campo.name)?.trim();
-      if (!valor) {
+    for (const regla of reglas) {
+      const valor = formData.get(regla.name)?.trim() || "";
+
+      // Requerido
+      if (regla.requerido && !valor) {
         CatalogTable.showNotification(
-          `El campo "${campo.label}" es obligatorio`,
+          `El campo "${regla.label}" es obligatorio`,
           "error",
         );
-        // Enfocar el campo para que el usuario lo vea
-        document.querySelector(`[name="${campo.name}"]`)?.focus();
-        return; // detener
+        document.querySelector(`[name="${regla.name}"]`)?.focus();
+        return;
+      }
+
+      // Regex: solo si tiene valor
+      if (valor && regla.regex && !regla.regex.test(valor)) {
+        CatalogTable.showNotification(regla.msgRegex, "error");
+        document.querySelector(`[name="${regla.name}"]`)?.focus();
+        return;
+      }
+
+      // Validación personalizada, solo si tiene valor
+      if (valor && regla.validar) {
+        const error = regla.validar(valor);
+        if (error) {
+          CatalogTable.showNotification(error, "error");
+          document.querySelector(`[name="${regla.name}"]`)?.focus();
+          return;
+        }
       }
     }
 

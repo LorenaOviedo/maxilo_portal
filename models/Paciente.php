@@ -418,7 +418,7 @@ class Paciente
             ";
 
             $stmt = $this->conn->prepare($query);
-            $stmt->bindValue(':expediente', (int)$data['id_paciente_expediente'], PDO::PARAM_INT);
+            $stmt->bindValue(':expediente', (int) $data['id_paciente_expediente'], PDO::PARAM_INT);
             $stmt->bindValue(':apellido_paterno', $this->normalizar($data['apellido_paterno']));
             $stmt->bindValue(':apellido_materno', $this->normalizar($data['apellido_materno'] ?? ''));
             $stmt->bindValue(':nombre', $this->normalizar($data['nombre']));
@@ -723,6 +723,89 @@ class Paciente
             error_log("Error en Paciente::getOcupaciones: " . $e->getMessage());
             return [];
         }
+    }
+
+    //Validaciones para el módulo de pacientes
+    public function validar(array $data): ?string
+    {
+        // Nombre
+        if (empty(trim($data['nombre'] ?? '')))
+            return 'El campo "Nombre" es obligatorio';
+        if (!preg_match('/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/u', trim($data['nombre'])))
+            return 'El campo "Nombre" solo debe contener letras';
+
+        // Apellido paterno
+        if (empty(trim($data['apellido_paterno'] ?? '')))
+            return 'El campo "Apellido paterno" es obligatorio';
+        if (!preg_match('/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/u', trim($data['apellido_paterno'])))
+            return 'El campo "Apellido paterno" solo debe contener letras';
+
+        // Apellido materno (opcional)
+        if (
+            !empty($data['apellido_materno']) &&
+            !preg_match('/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/u', trim($data['apellido_materno']))
+        )
+            return 'El campo "Apellido materno" solo debe contener letras';
+
+        // Fecha de nacimiento
+        if (empty(trim($data['fecha_nacimiento'] ?? '')))
+            return 'El campo "Fecha de nacimiento" es obligatorio';
+
+        try {
+            $fecha = new DateTime($data['fecha_nacimiento']);
+            $hoy = new DateTime();
+            $minima = (new DateTime())->modify('-120 years');
+            if ($fecha >= $hoy)
+                return 'La fecha de nacimiento no puede ser futura';
+            if ($fecha < $minima)
+                return 'La fecha de nacimiento no parece válida';
+        } catch (Exception $e) {
+            return 'El formato de la fecha de nacimiento no es válido';
+        }
+
+        // No. Expediente (opcional, solo números)
+        if (
+            !empty($data['id_paciente_expediente']) &&
+            !preg_match('/^\d+$/', trim($data['id_paciente_expediente']))
+        )
+            return 'El No. Expediente solo debe contener números';
+
+        // Código postal (opcional, 5 dígitos)
+        if (
+            !empty($data['codigo_postal']) &&
+            !preg_match('/^\d{5}$/', trim($data['codigo_postal']))
+        )
+            return 'El Código postal debe tener exactamente 5 dígitos';
+
+        // Email (opcional)
+        if (
+            !empty($data['email']) &&
+            !filter_var($data['email'], FILTER_VALIDATE_EMAIL)
+        )
+            return 'El formato del correo electrónico no es válido';
+
+        // Teléfono (opcional, 10 dígitos)
+        if (
+            !empty($data['telefono']) &&
+            !preg_match('/^\d{10}$/', trim($data['telefono']))
+        )
+            return 'El Teléfono debe tener exactamente 10 dígitos';
+
+        // Teléfono emergencia (opcional, 10 dígitos)
+        if (
+            !empty($data['telefono_emergencia']) &&
+            !preg_match('/^\d{10}$/', trim($data['telefono_emergencia']))
+        )
+            return 'El Teléfono de emergencia debe tener exactamente 10 dígitos';
+
+        // Contacto emergencia (opcional, solo letras)
+        if (
+            !empty($data['contacto_emergencia']) &&
+            !preg_match('/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/u', trim($data['contacto_emergencia']))
+        )
+            return 'El nombre del contacto de emergencia solo debe contener letras';
+
+        return null; // todo válido
     }
 }
 ?>

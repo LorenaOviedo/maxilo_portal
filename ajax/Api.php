@@ -33,8 +33,9 @@ $db = getDB();
 
 // ── Acciones globales (no requieren módulo) ───────────────
 if ($accion === 'buscar_cp') {
-    $cp   = trim($_GET['cp'] ?? '');
-    if (empty($cp)) responder(false, 'Código postal requerido');
+    $cp = trim($_GET['cp'] ?? '');
+    if (empty($cp))
+        responder(false, 'Código postal requerido');
 
     $stmt = $db->prepare("
         SELECT cp.id_cp, cp.colonia, m.municipio, e.estado
@@ -47,13 +48,14 @@ if ($accion === 'buscar_cp') {
     $stmt->execute([':cp' => $cp]);
     $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if (empty($resultados)) responder(false, 'Código postal no encontrado');
+    if (empty($resultados))
+        responder(false, 'Código postal no encontrado');
 
     responder(true, 'OK', [
-        'estado'    => $resultados[0]['estado'],
+        'estado' => $resultados[0]['estado'],
         'municipio' => $resultados[0]['municipio'],
-        'colonias'  => array_map(fn($r) => [
-            'id_cp'   => $r['id_cp'],
+        'colonias' => array_map(fn($r) => [
+            'id_cp' => $r['id_cp'],
             'colonia' => $r['colonia']
         ], $resultados)
     ]);
@@ -105,6 +107,7 @@ require_once $config['archivo'];
 
 $model = new $config['modelo']($db);
 
+
 // ── Enrutar acción ────────────────────────────────────────────────
 switch ($accion) {
 
@@ -133,6 +136,12 @@ switch ($accion) {
 
         $data = sanitizarPost($_POST);
 
+        if (method_exists($model, 'validar')) {
+            $error = $model->validar($data);
+            if ($error)
+                responder(false, $error);
+        }
+
         $validationError = null;
         if (method_exists($model, 'validarPaciente') && !$model->validarPaciente($data, $validationError)) {
             responder(false, $validationError);
@@ -159,6 +168,13 @@ switch ($accion) {
         }
 
         $data = sanitizarPost($_POST);
+
+        //LLamar método de validación general para cada modulo (si existe)
+        if (method_exists($model, 'validar')) {
+            $error = $model->validar($data);
+            if ($error)
+                responder(false, $error);
+        }
 
         $validationError = null;
         if (method_exists($model, 'validarPaciente') && !$model->validarPaciente($data, $validationError)) {
