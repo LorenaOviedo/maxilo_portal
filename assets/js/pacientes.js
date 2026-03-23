@@ -170,10 +170,11 @@ function actualizarTabla(pacientes) {
 
       return `
             <tr>
-                <td class="col-id"    data-label="No. Paciente"  data-col="numero">
+                <td class="col-id" data-label="No. Paciente" data-col="numero">
                     <span style="font-weight:700;">${p.numero_paciente}</span>
-                    <br>
-                    <span style="font-size:11px; color:#6c757d;">Exp: ${p.id_paciente_expediente}</span>
+                </td>
+                <td class="col-exp" data-label="No. Expediente">
+                    ${p.id_paciente_expediente || "—"}
                 </td>
                 <td class="col-name"  data-label="Nombre"        data-col="nombre">${normalizar(p.nombre_completo)}</td>
                 <td class="col-tel"   data-label="Teléfono">${p.telefono || "—"}</td>
