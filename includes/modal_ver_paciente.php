@@ -145,15 +145,15 @@ $modal_id = 'modalPaciente';
                     </div>
                 </div>
 
-                <!-- F6 estado, ciudad, país -->
+                <!-- F6 estado, municipio, país -->
                 <div class="form-row cols-3">
                     <div class="form-group">
                         <label class="form-label">Estado<span class="required">*</span></label>
                         <input type="text" name="estado" class="form-input">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Ciudad</label>
-                        <input type="text" name="ciudad" class="form-input">
+                        <label class="form-label">Municipio<span class="required">*</span></label>
+                        <input type="text" name="municipio" class="form-input">
                     </div>
                     <div class="form-group">
                         <label class="form-label">País<span class="required">*</span></label>

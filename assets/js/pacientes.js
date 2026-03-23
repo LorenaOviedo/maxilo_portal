@@ -210,7 +210,7 @@ function mapearDatosPaciente(p) {
     codigo_postal: p.codigo_postal || "",
     colonia: normalizar(p.colonia || ""),
     estado: normalizar(p.estado || ""),
-    ciudad: normalizar(p.municipio || ""),
+    municipio: normalizar(p.municipio || ""),
     pais: "MEXICO",
 
     // Tab 2: Contacto — coincide con name= del modal
@@ -319,6 +319,30 @@ document
     const nombre = formData.get("nombre")?.trim() || "";
     const apPat = formData.get("apellido_paterno")?.trim() || "";
     const apMat = formData.get("apellido_materno")?.trim() || "";
+
+    const camposRequeridos = [
+      { name: "nombre", label: "Nombre(s)" },
+      { name: "apellido_paterno", label: "Apellido paterno" },
+      { name: "fecha_nacimiento", label: "Fecha de nacimiento" },
+      { name: "calle", label: "Calle" },
+      { name: "colonia", label: "Colonia" },
+      { name: "municipio", label: "Municipio" },
+      { name: "estado", label: "Estado" },
+      { name: "pais", label: "País" },
+    ];
+
+    for (const campo of camposRequeridos) {
+      const valor = formData.get(campo.name)?.trim();
+      if (!valor) {
+        CatalogTable.showNotification(
+          `El campo "${campo.label}" es obligatorio`,
+          "error",
+        );
+        // Enfocar el campo para que el usuario lo vea
+        document.querySelector(`[name="${campo.name}"]`)?.focus();
+        return; // detener
+      }
+    }
 
     if (nombre && apPat) {
       try {
