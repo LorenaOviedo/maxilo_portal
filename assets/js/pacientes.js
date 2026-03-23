@@ -208,9 +208,8 @@ function mapearDatosPaciente(p) {
     numero_exterior: p.numero_exterior || "",
     numero_interior: p.numero_interior || "",
     codigo_postal: p.codigo_postal || "",
-    colonia: normalizar(p.colonia || ""),
-    estado: normalizar(p.estado || ""),
-    municipio: normalizar(p.municipio || ""),
+    estado: "", // se autocompleta por código postal
+    municipio: "", // se autocompleta por código postal
     pais: "MEXICO",
 
     // Tab 2: Contacto — coincide con name= del modal
@@ -496,19 +495,20 @@ function cargarCPyPreseleccionar(codigoPostal, coloniaActual) {
     .then((data) => {
       if (!data.success) return;
 
-      const selectColonia = document.getElementById("selectColonia");
+      const inputColonia = document.getElementById("inputColonia");
+      const listaColonias = document.getElementById("listaColonias");
       const inputEstado = document.getElementById("inputEstado");
       const inputMunicipio = document.getElementById("inputMunicipio");
 
       inputEstado.value = normalizar(data.estado);
       inputMunicipio.value = normalizar(data.municipio);
 
-      selectColonia.innerHTML = data.colonias
-        .map((c) => {
-          const val = normalizar(c.colonia);
-          const selected = val === normalizar(coloniaActual) ? "selected" : "";
-          return `<option value="${val}" ${selected}>${val}</option>`;
-        })
+      // Llenar sugerencias del datalist
+      listaColonias.innerHTML = data.colonias
+        .map((c) => `<option value="${normalizar(c.colonia)}">`)
         .join("");
+
+      // Preseleccionar la colonia guardada
+      inputColonia.value = normalizar(coloniaActual || "");
     });
 }

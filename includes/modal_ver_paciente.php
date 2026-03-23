@@ -141,9 +141,9 @@ $modal_id = 'modalPaciente';
                     </div>
                     <div class="form-group">
                         <label class="form-label">Colonia<span class="required">*</span></label>
-                        <select name="colonia" id="selectColonia" class="form-select">
-                            <option value="">— Busca un CP primero —</option>
-                        </select>
+                        <input type="text" name="colonia" id="inputColonia" class="form-input" list="listaColonias"
+                            placeholder="Busca por CP o escribe la colonia">
+                        <datalist id="listaColonias"></datalist>
                     </div>
                 </div>
 
