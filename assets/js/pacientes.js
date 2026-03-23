@@ -322,6 +322,11 @@ function abrirModalVerPaciente(id) {
     iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
   });
+
+  cargarPaciente(id, (p) => {
+    const mapeado = mapearDatosPaciente(p);
+    console.log("pais en mapeado:", mapeado.pais);
+  });
 }
 
 function abrirModalEditarPaciente(id) {
@@ -506,12 +511,12 @@ function cargarCPyPreseleccionar(codigoPostal, coloniaActual) {
 }
 
 nuevoInputCP.addEventListener("input", () => {
-    // Limpiar sugerencias si el usuario borra el codigo postal o no ha ingresado 5 dígitos
-    if (nuevoInputCP.value.trim().length < 5) {
-        document.getElementById('listaColonias').innerHTML = '';
-        document.getElementById('inputColonia').value     = '';
-        document.getElementById('inputEstado').value      = '';
-        document.getElementById('inputMunicipio').value   = '';
-    }
-    if (nuevoInputCP.value.trim().length === 5) buscarCP();
+  // Limpiar sugerencias si el usuario borra el codigo postal o no ha ingresado 5 dígitos
+  if (nuevoInputCP.value.trim().length < 5) {
+    document.getElementById("listaColonias").innerHTML = "";
+    document.getElementById("inputColonia").value = "";
+    document.getElementById("inputEstado").value = "";
+    document.getElementById("inputMunicipio").value = "";
+  }
+  if (nuevoInputCP.value.trim().length === 5) buscarCP();
 });
