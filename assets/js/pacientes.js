@@ -70,7 +70,6 @@ function iniciarEventosCP() {
   nuevoInputCP.addEventListener("input", () => {
     if (nuevoInputCP.value.trim().length === 5) buscarCP();
   });
-  nuevoBtn?.addEventListener("click", buscarCP);
 }
 
 // ── Búsqueda AJAX con debounce ─────────────────────────────────────

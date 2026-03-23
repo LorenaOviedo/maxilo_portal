@@ -138,16 +138,13 @@ $modal_id = 'modalPaciente';
                     <div class="form-group">
                         <label class="form-label">Código postal</label>
                         <div style="display:flex; gap:8px;">
-                            <input type="text" name="codigo_postal" id="inputCP" class="form-input" maxlength="5"
+                            <input type="text" name="codigo_postal" id="inputCP" class="form-input" maxlength="5"  autocomplete="off"
                                 placeholder="5 dígitos">
-                            <button type="button" id="btnBuscarCP" class="btn-search">
-                                <i class="ri-search-line"></i>
-                            </button>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Colonia<span class="required">*</span></label>
-                        <input type="text" name="colonia" id="inputColonia" class="form-input" list="listaColonias"
+                        <input type="text" name="colonia" id="inputColonia" class="form-input" list="listaColonias"  autocomplete="off"
                             placeholder="Busca por CP o escribe la colonia">
                         <datalist id="listaColonias"></datalist>
                     </div>
@@ -157,15 +154,15 @@ $modal_id = 'modalPaciente';
                 <div class="form-row cols-3">
                     <div class="form-group">
                         <label class="form-label">Estado<span class="required">*</span></label>
-                        <input type="text" name="estado" id="inputEstado" class="form-input" readonly>
+                        <input type="text" name="estado" id="inputEstado" class="form-input"  autocomplete="off" readonly>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Municipio<span class="required">*</span></label>
-                        <input type="text" name="municipio" id="inputMunicipio" class="form-input" readonly>
+                        <input type="text" name="municipio" id="inputMunicipio" class="form-input"  autocomplete="off" readonly>
                     </div>
                     <div class="form-group">
                         <label class="form-label">País<span class="required">*</span></label>
-                        <input type="text" name="pais" class="form-input" value="MEXICO" readonly>
+                        <input type="text" name="pais" class="form-input" value="MEXICO"  autocomplete="off" readonly>
                     </div>
                 </div>
             </form>
