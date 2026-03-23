@@ -311,6 +311,11 @@ class Paciente
     public function create($data)
     {
         try {
+            $validationError = null;
+            if (!$this->validarPaciente($data, $validationError)) {
+                throw new Exception($validationError);
+            }
+
             $this->conn->beginTransaction();
 
             // 1. Crear dirección si se proporcionó
@@ -377,6 +382,11 @@ class Paciente
     public function update($id, $data)
     {
         try {
+            $validationError = null;
+            if (!$this->validarPaciente($data, $validationError)) {
+                throw new Exception($validationError);
+            }
+
             $this->conn->beginTransaction();
 
             // 1. Actualizar o crear dirección
@@ -637,6 +647,47 @@ class Paciente
             'Ñ' => 'N'
         ]);
         return $valor;
+    }
+
+    public function validarPaciente(array $data, ?string &$error = null): bool
+    {
+        $nombre = trim($data['nombre'] ?? '');
+        $apellidoPaterno = trim($data['apellido_paterno'] ?? '');
+        $apellidoMaterno = trim($data['apellido_materno'] ?? '');
+
+        if ($nombre === '') {
+            $error = 'El campo nombre es obligatorio';
+            return false;
+        }
+
+        if ($apellidoPaterno === '') {
+            $error = 'El campo apellido paterno es obligatorio';
+            return false;
+        }
+
+        if ($apellidoMaterno === '') {
+            $error = 'El campo apellido materno es obligatorio';
+            return false;
+        }
+
+        $patron = '/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/u';
+
+        if (!preg_match($patron, $nombre)) {
+            $error = 'El nombre solo puede contener letras y espacios';
+            return false;
+        }
+
+        if (!preg_match($patron, $apellidoPaterno)) {
+            $error = 'El apellido paterno solo puede contener letras y espacios';
+            return false;
+        }
+
+        if (!preg_match($patron, $apellidoMaterno)) {
+            $error = 'El apellido materno solo puede contener letras y espacios';
+            return false;
+        }
+
+        return true;
     }
 
     // ==================== CATÁLOGOS ====================

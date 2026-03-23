@@ -70,11 +70,13 @@ $modal_id = 'modalPaciente';
                     </div>
                     <div class="form-group">
                         <label class="form-label">Nombre(s)<span class="required">*</span></label>
-                        <input type="text" name="nombre" class="form-input">
+                        <input type="text" name="nombre" class="form-input" pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$"
+                            title="Solo letras y espacios">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Apellido paterno<span class="required">*</span></label>
-                        <input type="text" name="apellido_paterno" class="form-input">
+                        <input type="text" name="apellido_paterno" class="form-input" pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$"
+                            title="Solo letras y espacios">
                     </div>
                 </div>
 
@@ -83,7 +85,8 @@ $modal_id = 'modalPaciente';
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Apellido materno<span class="required">*</span></label>
-                        <input type="text" name="apellido_materno" class="form-input">
+                        <input type="text" name="apellido_materno" class="form-input" pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$"
+                            title="Solo letras y espacios">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Fecha de nacimiento<span class="required">*</span></label>
@@ -117,7 +120,7 @@ $modal_id = 'modalPaciente';
                 <!-- F4: Calle (fila propia) -->
                 <div class="form-row cols-1">
                     <div class="form-group">
-                        <label class="form-label">Calle</label>
+                        <label class="form-label">Calle<span class="required">*</span></label>
                         <input type="text" name="calle" class="form-input">
                     </div>
                     <div class="form-group">
@@ -153,7 +156,7 @@ $modal_id = 'modalPaciente';
                         <input type="text" name="ciudad" class="form-input">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">País</label>
+                        <label class="form-label">País<span class="required">*</span></label>
                         <input type="text" name="pais" class="form-input" value="México">
                     </div>
                 </div>

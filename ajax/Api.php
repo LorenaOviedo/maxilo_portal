@@ -103,6 +103,12 @@ switch ($accion) {
         }
 
         $data = sanitizarPost($_POST);
+
+        $validationError = null;
+        if (method_exists($model, 'validarPaciente') && !$model->validarPaciente($data, $validationError)) {
+            responder(false, $validationError);
+        }
+
         $id = $model->create($data);
 
         if ($id) {
@@ -124,6 +130,12 @@ switch ($accion) {
         }
 
         $data = sanitizarPost($_POST);
+
+        $validationError = null;
+        if (method_exists($model, 'validarPaciente') && !$model->validarPaciente($data, $validationError)) {
+            responder(false, $validationError);
+        }
+
         $ok = $model->update($id, $data);
 
         if ($ok) {
