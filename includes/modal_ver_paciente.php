@@ -137,7 +137,13 @@ $modal_id = 'modalPaciente';
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Código postal</label>
-                        <input type="text" name="codigo_postal" class="form-input" maxlength="5">
+                        <div style="display:flex; gap:8px;">
+                            <input type="text" name="codigo_postal" id="inputCP" class="form-input" maxlength="5"
+                                placeholder="5 dígitos">
+                            <button type="button" id="btnBuscarCP" class="btn-search">
+                                <i class="ri-search-line"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Colonia<span class="required">*</span></label>
