@@ -504,3 +504,14 @@ function cargarCPyPreseleccionar(codigoPostal, coloniaActual) {
       inputColonia.value = normalizar(coloniaActual || "");
     });
 }
+
+nuevoInputCP.addEventListener("input", () => {
+    // Limpiar sugerencias si el usuario borra el codigo postal o no ha ingresado 5 dígitos
+    if (nuevoInputCP.value.trim().length < 5) {
+        document.getElementById('listaColonias').innerHTML = '';
+        document.getElementById('inputColonia').value     = '';
+        document.getElementById('inputEstado').value      = '';
+        document.getElementById('inputMunicipio').value   = '';
+    }
+    if (nuevoInputCP.value.trim().length === 5) buscarCP();
+});
