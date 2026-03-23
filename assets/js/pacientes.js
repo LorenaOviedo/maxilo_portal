@@ -333,11 +333,6 @@ function abrirModalVerPaciente(id) {
     iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
   });
-
-  cargarPaciente(id, (p) => {
-    const mapeado = mapearDatosPaciente(p);
-    console.log("pais en mapeado:", mapeado.pais);
-  });
 }
 
 function abrirModalEditarPaciente(id) {
