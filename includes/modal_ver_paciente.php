@@ -240,7 +240,7 @@ $modal_id = 'modalPaciente';
                     <div class="form-group">
                         <label class="form-label">Medicamentos actuales</label>
                         <textarea name="medicamentos" class="form-input form-textarea" rows="3"
-                            placeholder="Lista los medicamentos que toma actualmente..."></textarea>
+                            placeholder="Lista los medicamentos que toma actualmente."></textarea>
                     </div>
                 </div>
 
@@ -249,16 +249,16 @@ $modal_id = 'modalPaciente';
                     <div class="form-group">
                         <label class="form-label">Cirugías previas</label>
                         <textarea name="cirugias_previas" class="form-input form-textarea" rows="3"
-                            placeholder="Describe cirugías o procedimientos previos..."></textarea>
+                            placeholder="Describe cirugías o procedimientos previos."></textarea>
                     </div>
                 </div>
 
                 <!-- Notas -->
                 <div class="form-row cols-1">
                     <div class="form-group">
-                        <label class="form-label">Notas</label>
+                        <label class="form-label">Complicaciones en cirugías previas (opcional)</label>
                         <textarea name="notas_historial" class="form-input form-textarea" rows="3"
-                            placeholder="Notas adicionales del historial clínico..."></textarea>
+                            placeholder="Notas adicionales del historial clínico."></textarea>
                     </div>
                 </div>
             </div>
