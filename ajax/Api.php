@@ -69,6 +69,12 @@ if (empty($modulo) || empty($accion)) {
 
 // ── Registro de módulos disponibles ──────────────────────────────
 $modulos = [
+    'dashboard' => [
+        'modelo' => 'Dashboard',
+        'archivo' => __DIR__ . '/../models/Dashboard.php',
+        'campo_id' => null,
+    ],
+
     'procedimientos' => [
         'modelo' => 'Procedimiento',
         'archivo' => __DIR__ . '/../models/Procedimientos.php',
@@ -305,6 +311,12 @@ switch ($accion) {
                 'colonia' => $r['colonia']
             ], $resultados)
         ]);
+        break;
+
+    case 'resumen':
+        require_once __DIR__ . '/../controllers/DashboardController.php';
+        $controller = new DashboardController($db);
+        responder(true, 'OK', $controller->resumen());
         break;
 
     // ── Acción no reconocida ──────────────────────────────────────
