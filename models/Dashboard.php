@@ -13,9 +13,11 @@ class Dashboard
         $this->db = $db;
     }
  
-    // ── Citas programadas para hoy (total y el desglose por motivo) ──
+    // ── Citas programadas para hoy (total + desglose por motivo) ──
  
-    /*Total de citas programadas para hoy (cualquier estatus activo)*/
+    /**
+     * Total de citas programadas para hoy (cualquier estatus activo).
+     */
     public function totalCitasHoy(): int
     {
         $stmt = $this->db->prepare("
@@ -54,8 +56,8 @@ class Dashboard
     // ── Citas atendidas ───────────────────────────────────────────
  
     /**
-     * Total de citas con estatus "Atendida" en una fecha.
-     * @param string $fecha  formato YYYY-MM-DD. Por defecto el día anterior
+     * Total de citas con estatus "Atendida" en una fecha dada.
+     * @param string $fecha  Formato YYYY-MM-DD. Por defecto ayer.
      */
     public function citasAtendidas(string $fecha = ''): int
     {
@@ -74,10 +76,10 @@ class Dashboard
         return (int) $stmt->fetchColumn();
     }
  
-    // ── Agenda: próximas citas del día ──
+    // ── Agenda: próximas citas del día (las que faltan por atender) ──
  
     /**
-     * Lista de citas pendientes de hoy por hora (se muestran ordenadas).
+     * Lista de citas pendientes de hoy ordenadas por hora.
      * Retorna: [['paciente' => '...', 'hora' => 'HH:MM', 'motivo' => '...'], ...]
      *
      * @param int $limite  Máximo de registros a devolver.
@@ -107,7 +109,7 @@ class Dashboard
     // ── Facturas pendientes ───────────────────────────────────────
  
     /**
-     * Total de solicitudes de factura con estatus de pendiente.
+     * Total de solicitudes de factura con estatus pendiente.
      */
     public function facturasPendientes(): int
     {
@@ -125,7 +127,7 @@ class Dashboard
  
     /**
      * Devuelve todas las métricas del dashboard en un solo array.
-     * Petición AJAX única para cargar el dashboard de citas.
+     * Ideal para una petición AJAX única.
      */
     public function resumen(): array
     {
