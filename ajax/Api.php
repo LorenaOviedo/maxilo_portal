@@ -313,12 +313,6 @@ switch ($accion) {
         ]);
         break;
 
-    case 'resumen':
-        require_once __DIR__ . '/../controllers/DashboardController.php';
-        $controller = new DashboardController($db);
-        responder(true, 'OK', $controller->resumen());
-        break;
-
     // ── Acción no reconocida ──────────────────────────────────────
     default:
         http_response_code(400);
