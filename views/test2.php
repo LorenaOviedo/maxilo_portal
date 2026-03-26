@@ -8,21 +8,26 @@ require_once __DIR__ . '/../config/config.php';
 echo "2. database<br>";
 require_once __DIR__ . '/../config/database.php';
 
-echo "3. Dashboard.php existe: ";
-var_dump(file_exists(__DIR__ . '/../models/Dashboard.php'));
+echo "3. AuthController<br>";
+require_once __DIR__ . '/../controllers/AuthController.php';
 
-echo "4. cargando modelo<br>";
-require_once __DIR__ . '/../models/Dashboard.php';
+echo "4. auth.php<br>";
+require_once __DIR__ . '/../config/auth.php';
 
-echo "5. conectando BD<br>";
-$db = getDB();
+echo "5. session_start<br>";
+session_start();
 
-echo "6. instanciando<br>";
-$dash = new Dashboard($db);
+echo "6. AuthController instancia<br>";
+$auth = new AuthController();
 
-echo "7. resumen<br>";
-$datos = $dash->resumen();
+echo "7. verificarSesion<br>";
+var_dump($auth->verificarSesion());
 
-echo "<pre>";
-print_r($datos);
-echo "</pre>";
+echo "8. header.php existe: ";
+var_dump(file_exists(__DIR__ . '/../includes/header.php'));
+
+echo "9. sidebar.php existe: ";
+var_dump(file_exists(__DIR__ . '/../includes/sidebar.php'));
+
+echo "10. footer.php existe: ";
+var_dump(file_exists(__DIR__ . '/../includes/footer.php'));
