@@ -2,30 +2,32 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ . '/config/config.php';
-require_once __DIR__ . '/config/database.php';
+echo "1. config OK<br>";
+require_once __DIR__ . '/../config/config.php';
 
+echo "2. database OK<br>";
+require_once __DIR__ . '/../config/database.php';
+
+echo "3. AuthController OK<br>";
+require_once __DIR__ . '/../controllers/AuthController.php';
+
+echo "4. auth OK<br>";
+require_once __DIR__ . '/../config/auth.php';
+
+echo "5. Dashboard model OK<br>";
+require_once __DIR__ . '/../models/Dashboard.php';
+
+echo "6. getDB OK<br>";
 $db = getDB();
 
-try {
-    $token    = hash('sha256', bin2hex(random_bytes(32)));
-    $ip       = '127.0.0.1';
-    $agent    = 'test-browser';
-    $usuario  = 1; // el id_usuario del admin que existe en tu tabla usuario
+echo "7. instancia Dashboard OK<br>";
+$dashboard = new Dashboard($db);
 
-    $stmt = $db->prepare("
-        INSERT INTO sesion (id_usuario, token_sesion, direccion_ip, user_agent)
-        VALUES (:id_usuario, :token_sesion, :direccion_ip, :user_agent)
-    ");
+echo "8. resumen OK<br>";
+$datos = $dashboard->resumen();
 
-    $stmt->bindParam(':id_usuario',   $usuario, PDO::PARAM_INT);
-    $stmt->bindParam(':token_sesion', $token,   PDO::PARAM_STR);
-    $stmt->bindParam(':direccion_ip', $ip,      PDO::PARAM_STR);
-    $stmt->bindParam(':user_agent',   $agent,   PDO::PARAM_STR);
+echo "<pre>";
+print_r($datos);
+echo "</pre>";
 
-    $stmt->execute();
-    echo "Sesión insertada correctamente. ID: " . $db->lastInsertId();
-
-} catch (PDOException $e) {
-    echo "ERROR: " . $e->getMessage();
-}
+echo "Todo bien!";
