@@ -1,33 +1,16 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+// Muestra la estructura real de carpetas
+$base = '/home/u113135450/domains/portal-maxilofacial.site/';
+foreach (new DirectoryIterator($base) as $item) {
+    if ($item->isDot()) continue;
+    echo ($item->isDir() ? '[DIR] ' : '[FILE] ') . $item->getFilename() . '<br>';
+}
 
-echo "1. config OK<br>";
-require_once __DIR__ . '/../config/config.php';
+echo '<hr>';
 
-echo "2. database OK<br>";
-require_once __DIR__ . '/../config/database.php';
-
-echo "3. AuthController OK<br>";
-require_once __DIR__ . '/../controllers/AuthController.php';
-
-echo "4. auth OK<br>";
-require_once __DIR__ . '/../config/auth.php';
-
-echo "5. Dashboard model OK<br>";
-require_once __DIR__ . '/../models/Dashboard.php';
-
-echo "6. getDB OK<br>";
-$db = getDB();
-
-echo "7. instancia Dashboard OK<br>";
-$dashboard = new Dashboard($db);
-
-echo "8. resumen OK<br>";
-$datos = $dashboard->resumen();
-
-echo "<pre>";
-print_r($datos);
-echo "</pre>";
-
-echo "Todo bien!";
+// También muestra qué hay dentro de public_html
+echo '<b>Dentro de public_html:</b><br>';
+foreach (new DirectoryIterator($base . 'public_html/') as $item) {
+    if ($item->isDot()) continue;
+    echo ($item->isDir() ? '[DIR] ' : '[FILE] ') . $item->getFilename() . '<br>';
+}
