@@ -10,7 +10,6 @@ require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../models/Dashboard.php';
 
-session_start();
 
 $auth = new AuthController();
 if (!$auth->verificarSesion()) {
