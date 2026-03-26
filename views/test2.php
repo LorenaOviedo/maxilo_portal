@@ -2,12 +2,27 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-echo "views está en: " . __DIR__ . "<br>";
-echo "¿config existe?: ";
-var_dump(is_dir(__DIR__ . '/../config'));
+echo "1. config<br>";
+require_once __DIR__ . '/../config/config.php';
 
-echo "¿models existe?: ";
-var_dump(is_dir(__DIR__ . '/../models'));
+echo "2. database<br>";
+require_once __DIR__ . '/../config/database.php';
 
-echo "¿controllers existe?: ";
-var_dump(is_dir(__DIR__ . '/../controllers'));
+echo "3. Dashboard.php existe: ";
+var_dump(file_exists(__DIR__ . '/../models/Dashboard.php'));
+
+echo "4. cargando modelo<br>";
+require_once __DIR__ . '/../models/Dashboard.php';
+
+echo "5. conectando BD<br>";
+$db = getDB();
+
+echo "6. instanciando<br>";
+$dash = new Dashboard($db);
+
+echo "7. resumen<br>";
+$datos = $dash->resumen();
+
+echo "<pre>";
+print_r($datos);
+echo "</pre>";
