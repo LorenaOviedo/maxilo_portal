@@ -27,7 +27,7 @@ class Paciente
      */
     public function getAll($filtros = [], $pagina = 1, $porPagina = 10)
     {
-    $query = "
+        $query = "
         SELECT
             p.numero_paciente,
             p.id_paciente_expediente,
@@ -47,73 +47,6 @@ class Paciente
         INNER JOIN estatus   s ON s.id_estatus      = p.id_estatus
         LEFT  JOIN contactos c ON c.numero_paciente = p.numero_paciente
     ";
- 
-    $conditions = [];
-    $params     = [];
- 
-    if (isset($filtros['id_estatus'])) {
-        $conditions[] = "p.id_estatus = :id_estatus";
-        $params[':id_estatus'] = (int) $filtros['id_estatus'];
-    }
- 
-    if (!empty($filtros['buscar'])) {
-        // ── FIX: c.valor se mueve a EXISTS para no romper el LEFT JOIN ──
-        $conditions[] = "(
-            p.nombre                 LIKE :buscar OR
-            p.apellido_paterno       LIKE :buscar OR
-            p.apellido_materno       LIKE :buscar OR
-            p.id_paciente_expediente LIKE :buscar OR
-            EXISTS (
-                SELECT 1 FROM contactos cx
-                WHERE cx.numero_paciente = p.numero_paciente
-                  AND cx.valor LIKE :buscar
-            )
-        )";
-        $params[':buscar'] = '%' . $filtros['buscar'] . '%';
-    }
- 
-    if (!empty($conditions)) {
-        $query .= " WHERE " . implode(' AND ', $conditions);
-    }
- 
-    $query .= " GROUP BY p.numero_paciente ORDER BY p.fecha_registro DESC";
- 
-    $pagina    = max(1, (int) $pagina);
-    $porPagina = max(1, (int) $porPagina);
-    $offset    = ($pagina - 1) * $porPagina;
- 
-    $query .= " LIMIT :limit OFFSET :offset";
- 
-    $stmt = $this->conn->prepare($query);
- 
-    foreach ($params as $key => $val) {
-        $tipo = is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR;
-        $stmt->bindValue($key, $val, $tipo);
-    }
- 
-    $stmt->bindValue(':limit',  $porPagina, PDO::PARAM_INT);
-    $stmt->bindValue(':offset', $offset,    PDO::PARAM_INT);
- 
-    try {
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        error_log("Error en Paciente::getAll: " . $e->getMessage());
-        return [];
-    }
-}
-
-    /**
-     * Contar total de pacientes (para paginación).
-     */
-    public function contarTotal($filtros = [])
-    {
-        $query = "
-            SELECT COUNT(DISTINCT p.numero_paciente) AS total
-            FROM paciente p
-            INNER JOIN estatus s ON s.id_estatus = p.id_estatus
-            LEFT  JOIN contactos c ON c.numero_paciente = p.numero_paciente
-        ";
 
         $conditions = [];
         $params = [];
@@ -125,12 +58,82 @@ class Paciente
 
         if (!empty($filtros['buscar'])) {
             $conditions[] = "(
-                p.nombre                LIKE :buscar OR
-                p.apellido_paterno      LIKE :buscar OR
-                p.apellido_materno      LIKE :buscar OR
-                p.id_paciente_expediente LIKE :buscar OR
-                c.valor                 LIKE :buscar
-            )";
+            p.nombre                 LIKE :buscar OR
+            p.apellido_paterno       LIKE :buscar OR
+            p.apellido_materno       LIKE :buscar OR
+            p.id_paciente_expediente LIKE :buscar OR
+            EXISTS (
+                SELECT 1 FROM contactos cx
+                WHERE cx.numero_paciente = p.numero_paciente
+                  AND cx.valor LIKE :buscar
+            )
+        )";
+            $params[':buscar'] = '%' . $filtros['buscar'] . '%';
+        }
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(' AND ', $conditions);
+        }
+
+        $query .= " GROUP BY p.numero_paciente ORDER BY p.fecha_registro DESC";
+
+        $pagina = max(1, (int) $pagina);
+        $porPagina = max(1, (int) $porPagina);
+        $offset = ($pagina - 1) * $porPagina;
+
+        $query .= " LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->conn->prepare($query);
+
+        foreach ($params as $key => $val) {
+            $tipo = is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR;
+            $stmt->bindValue($key, $val, $tipo);
+        }
+
+        $stmt->bindValue(':limit', $porPagina, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+        try {
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en Paciente::getAll: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Contar total de pacientes (para paginación).
+     */
+    public function contarTotal($filtros = [])
+    {
+        $query = "
+        SELECT COUNT(DISTINCT p.numero_paciente) AS total
+        FROM paciente p
+        INNER JOIN estatus   s ON s.id_estatus      = p.id_estatus
+        LEFT  JOIN contactos c ON c.numero_paciente = p.numero_paciente
+    ";
+
+        $conditions = [];
+        $params = [];
+
+        if (isset($filtros['id_estatus'])) {
+            $conditions[] = "p.id_estatus = :id_estatus";
+            $params[':id_estatus'] = (int) $filtros['id_estatus'];
+        }
+
+        if (!empty($filtros['buscar'])) {
+            $conditions[] = "(
+            p.nombre                 LIKE :buscar OR
+            p.apellido_paterno       LIKE :buscar OR
+            p.apellido_materno       LIKE :buscar OR
+            p.id_paciente_expediente LIKE :buscar OR
+            EXISTS (
+                SELECT 1 FROM contactos cx
+                WHERE cx.numero_paciente = p.numero_paciente
+                  AND cx.valor LIKE :buscar
+            )
+        )";
             $params[':buscar'] = '%' . $filtros['buscar'] . '%';
         }
 
@@ -140,8 +143,14 @@ class Paciente
 
         $stmt = $this->conn->prepare($query);
 
+        // bindValue explícito para evitar problemas con parámetros nombrados repetidos
+        foreach ($params as $key => $val) {
+            $tipo = is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR;
+            $stmt->bindValue($key, $val, $tipo);
+        }
+
         try {
-            $stmt->execute($params);
+            $stmt->execute();
             return (int) $stmt->fetch(PDO::FETCH_ASSOC)['total'];
         } catch (PDOException $e) {
             error_log("Error en Paciente::contarTotal: " . $e->getMessage());
