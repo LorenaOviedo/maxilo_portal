@@ -58,24 +58,23 @@ class Database
     {
         try {
             $dsn = "mysql:host={$this->host};dbname={$this->database};charset={$this->charset}";
-
+            
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
                 PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$this->charset}"
             ];
-
+            
             $this->connection = new PDO($dsn, $this->username, $this->password, $options);
-
-            // Forzar zona horaria de México en MySQL
-            $this->connection->exec("SET time_zone = '-06:00'");
-
+            
+            // Log solo en desarrollo
             if (Env::get('APP_ENV') !== 'production') {
-                error_log("Conexión a base de datos establecida");
+                error_log("✓ Conexión a base de datos establecida");
             }
-
+            
         } catch (PDOException $e) {
+            // En producción (no mostrar detalles de error)
             if (Env::get('APP_ENV') === 'production') {
                 error_log("Error de conexión a BD: " . $e->getMessage());
                 die("Error al conectar con la base de datos. Por favor contacta al administrador.");
@@ -84,6 +83,7 @@ class Database
             }
         }
     }
+    
 
     //Obtener conexión PDO
     public function getConnection()
