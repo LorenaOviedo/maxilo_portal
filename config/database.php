@@ -16,61 +16,66 @@ try {
 
 // CONFIGURACIÓN DE BASE DE DATOS
 
-class Database {
-    
+class Database
+{
+
     private static $instance = null;
     private $connection;
-    
+
     // Configuración desde variables de entorno
     private $host;
     private $database;
     private $username;
     private $password;
     private $charset;
-    
+
     /**
      * Constructor privado (Singleton)
      */
-    private function __construct() {
+    private function __construct()
+    {
         // Cargar configuración desde .env
         $this->host = Env::require('DB_HOST');
         $this->database = Env::require('DB_NAME');
         $this->username = Env::require('DB_USER');
         $this->password = Env::require('DB_PASS');
         $this->charset = Env::get('DB_CHARSET', 'utf8mb4');
-        
+
         $this->connect();
     }
-    
+
     //Obtener instancia única de la base de datos
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
     }
-    
+
     //Conectar a la base de datos
-    private function connect() {
+    private function connect()
+    {
         try {
             $dsn = "mysql:host={$this->host};dbname={$this->database};charset={$this->charset}";
-            
+
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
-                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$this->charset}; SET time_zone = '-06:00'"
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$this->charset}"
             ];
-            
+
             $this->connection = new PDO($dsn, $this->username, $this->password, $options);
-            
-            // Log solo en desarrollo
+
+            // Forzar zona horaria de México en MySQL
+            $this->connection->exec("SET time_zone = '-06:00'");
+
             if (Env::get('APP_ENV') !== 'production') {
-                error_log("✓ Conexión a base de datos establecida");
+                error_log("Conexión a base de datos establecida");
             }
-            
+
         } catch (PDOException $e) {
-            // En producción (no mostrar detalles de error)
             if (Env::get('APP_ENV') === 'production') {
                 error_log("Error de conexión a BD: " . $e->getMessage());
                 die("Error al conectar con la base de datos. Por favor contacta al administrador.");
@@ -79,19 +84,23 @@ class Database {
             }
         }
     }
-    
+
     //Obtener conexión PDO
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->connection;
     }
-    
+
     //Evitar clonación
-    private function __clone() {}
-    
+    private function __clone()
+    {
+    }
+
     /**
      * Prevenir deserialización
      */
-    public function __wakeup() {
+    public function __wakeup()
+    {
         throw new Exception("No se puede deserializar un singleton");
     }
 }
@@ -103,7 +112,8 @@ class Database {
  * 
  * @return PDO Conexión PDO
  */
-function getDB() {
+function getDB()
+{
     return Database::getInstance()->getConnection();
 }
 
@@ -126,6 +136,7 @@ define('DB_CHARSET', Env::get('DB_CHARSET', 'utf8mb4'));
  * 
  * @deprecated Usar getDB() en su lugar
  */
-function conectarDB() {
+function conectarDB()
+{
     return getDB();
 }
