@@ -59,7 +59,7 @@ class Database {
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
-                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$this->charset}, ; SET time_zone = '-06:00'",
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$this->charset}; SET time_zone = '-06:00'"
             ];
             
             $this->connection = new PDO($dsn, $this->username, $this->password, $options);
