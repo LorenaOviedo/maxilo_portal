@@ -27,79 +27,81 @@ class Paciente
      */
     public function getAll($filtros = [], $pagina = 1, $porPagina = 10)
     {
-        $query = "
-            SELECT
-                p.numero_paciente,
-                p.id_paciente_expediente,
-                CONCAT(p.nombre, ' ', p.apellido_paterno, ' ', IFNULL(p.apellido_materno,'')) AS nombre_completo,
-                p.fecha_nacimiento,
-                TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURDATE())                            AS edad,
-                p.sexo,
-                p.id_estatus,
-                s.estatus,
-                p.fecha_registro,
-                -- Primer contacto tipo celular (id 1 = Celular Personal)
-                MAX(CASE WHEN c.id_tipo_contacto IN (1,2,3,4,5) THEN c.valor END) AS telefono,
-                -- Correo electrónico (id 6 = Correo electrónico)
-                MAX(CASE WHEN c.id_tipo_contacto = 6 THEN c.valor END) AS email,
-                -- Última cita
-                (SELECT MAX(ci.fecha_cita)
-                 FROM cita ci
-                 WHERE ci.numero_paciente = p.numero_paciente) AS ultima_visita
-            FROM paciente p
-            INNER JOIN estatus s ON s.id_estatus = p.id_estatus
-            LEFT  JOIN contactos c ON c.numero_paciente = p.numero_paciente
-        ";
-
-        $conditions = [];
-        $params = [];
-
-        if (isset($filtros['id_estatus'])) {
-            $conditions[] = "p.id_estatus = :id_estatus";
-            $params[':id_estatus'] = (int) $filtros['id_estatus'];
-        }
-
-        if (!empty($filtros['buscar'])) {
-            $conditions[] = "(
-                p.nombre                LIKE :buscar OR
-                p.apellido_paterno      LIKE :buscar OR
-                p.apellido_materno      LIKE :buscar OR
-                p.id_paciente_expediente LIKE :buscar OR
-                c.valor                 LIKE :buscar
-            )";
-            $params[':buscar'] = '%' . $filtros['buscar'] . '%';
-        }
-
-        if (!empty($conditions)) {
-            $query .= " WHERE " . implode(' AND ', $conditions);
-        }
-
-        $query .= " GROUP BY p.numero_paciente ORDER BY p.fecha_registro DESC";
-
-        $pagina = max(1, (int) $pagina);
-        $porPagina = max(1, (int) $porPagina);
-        $offset = ($pagina - 1) * $porPagina;
-
-        $query .= " LIMIT :limit OFFSET :offset";
-
-        $stmt = $this->conn->prepare($query);
-
-        foreach ($params as $key => $val) {
-            $tipo = ($key === ':buscar') ? PDO::PARAM_STR : PDO::PARAM_INT;
-            $stmt->bindValue($key, $val, $tipo);
-        }
-
-        $stmt->bindValue(':limit', $porPagina, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-
-        try {
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error en Paciente::getAll: " . $e->getMessage());
-            return [];
-        }
+    $query = "
+        SELECT
+            p.numero_paciente,
+            p.id_paciente_expediente,
+            CONCAT(p.nombre, ' ', p.apellido_paterno, ' ', IFNULL(p.apellido_materno,'')) AS nombre_completo,
+            p.fecha_nacimiento,
+            TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURDATE())                            AS edad,
+            p.sexo,
+            p.id_estatus,
+            s.estatus,
+            p.fecha_registro,
+            MAX(CASE WHEN c.id_tipo_contacto IN (1,2,3,4,5) THEN c.valor END) AS telefono,
+            MAX(CASE WHEN c.id_tipo_contacto = 6             THEN c.valor END) AS email,
+            (SELECT MAX(ci.fecha_cita)
+             FROM cita ci
+             WHERE ci.numero_paciente = p.numero_paciente) AS ultima_visita
+        FROM paciente p
+        INNER JOIN estatus   s ON s.id_estatus      = p.id_estatus
+        LEFT  JOIN contactos c ON c.numero_paciente = p.numero_paciente
+    ";
+ 
+    $conditions = [];
+    $params     = [];
+ 
+    if (isset($filtros['id_estatus'])) {
+        $conditions[] = "p.id_estatus = :id_estatus";
+        $params[':id_estatus'] = (int) $filtros['id_estatus'];
     }
+ 
+    if (!empty($filtros['buscar'])) {
+        // ── FIX: c.valor se mueve a EXISTS para no romper el LEFT JOIN ──
+        $conditions[] = "(
+            p.nombre                 LIKE :buscar OR
+            p.apellido_paterno       LIKE :buscar OR
+            p.apellido_materno       LIKE :buscar OR
+            p.id_paciente_expediente LIKE :buscar OR
+            EXISTS (
+                SELECT 1 FROM contactos cx
+                WHERE cx.numero_paciente = p.numero_paciente
+                  AND cx.valor LIKE :buscar
+            )
+        )";
+        $params[':buscar'] = '%' . $filtros['buscar'] . '%';
+    }
+ 
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(' AND ', $conditions);
+    }
+ 
+    $query .= " GROUP BY p.numero_paciente ORDER BY p.fecha_registro DESC";
+ 
+    $pagina    = max(1, (int) $pagina);
+    $porPagina = max(1, (int) $porPagina);
+    $offset    = ($pagina - 1) * $porPagina;
+ 
+    $query .= " LIMIT :limit OFFSET :offset";
+ 
+    $stmt = $this->conn->prepare($query);
+ 
+    foreach ($params as $key => $val) {
+        $tipo = is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR;
+        $stmt->bindValue($key, $val, $tipo);
+    }
+ 
+    $stmt->bindValue(':limit',  $porPagina, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset,    PDO::PARAM_INT);
+ 
+    try {
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error en Paciente::getAll: " . $e->getMessage());
+        return [];
+    }
+}
 
     /**
      * Contar total de pacientes (para paginación).
