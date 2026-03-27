@@ -8,7 +8,7 @@ class AuthController
     private $db;
     private $userModel;
     private $maxIntentos = 3;
-    private $tiempoBloqueo = 900; // 15 minutos en segundos
+    private $tiempoBloqueo = 60; // 15 minutos en segundos
 
     public function __construct()
     {
