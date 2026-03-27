@@ -57,18 +57,23 @@ class Paciente
         }
 
         if (!empty($filtros['buscar'])) {
+            $termino = '%' . $filtros['buscar'] . '%';
             $conditions[] = "(
-            p.nombre                 LIKE :buscar OR
-            p.apellido_paterno       LIKE :buscar OR
-            p.apellido_materno       LIKE :buscar OR
-            p.id_paciente_expediente LIKE :buscar OR
+            p.nombre                 LIKE :buscar  OR
+            p.apellido_paterno       LIKE :buscar2 OR
+            p.apellido_materno       LIKE :buscar3 OR
+            p.id_paciente_expediente LIKE :buscar4 OR
             EXISTS (
                 SELECT 1 FROM contactos cx
                 WHERE cx.numero_paciente = p.numero_paciente
-                  AND cx.valor LIKE :buscar
+                  AND cx.valor LIKE :buscar5
             )
         )";
-            $params[':buscar'] = '%' . $filtros['buscar'] . '%';
+            $params[':buscar'] = $termino;
+            $params[':buscar2'] = $termino;
+            $params[':buscar3'] = $termino;
+            $params[':buscar4'] = $termino;
+            $params[':buscar5'] = $termino;
         }
 
         if (!empty($conditions)) {
@@ -123,18 +128,23 @@ class Paciente
         }
 
         if (!empty($filtros['buscar'])) {
+            $termino = '%' . $filtros['buscar'] . '%';
             $conditions[] = "(
-            p.nombre                 LIKE :buscar OR
-            p.apellido_paterno       LIKE :buscar OR
-            p.apellido_materno       LIKE :buscar OR
-            p.id_paciente_expediente LIKE :buscar OR
+            p.nombre                 LIKE :buscar  OR
+            p.apellido_paterno       LIKE :buscar2 OR
+            p.apellido_materno       LIKE :buscar3 OR
+            p.id_paciente_expediente LIKE :buscar4 OR
             EXISTS (
                 SELECT 1 FROM contactos cx
                 WHERE cx.numero_paciente = p.numero_paciente
-                  AND cx.valor LIKE :buscar
+                  AND cx.valor LIKE :buscar5
             )
         )";
-            $params[':buscar'] = '%' . $filtros['buscar'] . '%';
+            $params[':buscar'] = $termino;
+            $params[':buscar2'] = $termino;
+            $params[':buscar3'] = $termino;
+            $params[':buscar4'] = $termino;
+            $params[':buscar5'] = $termino;
         }
 
         if (!empty($conditions)) {
@@ -143,7 +153,6 @@ class Paciente
 
         $stmt = $this->conn->prepare($query);
 
-        // bindValue explícito para evitar problemas con parámetros nombrados repetidos
         foreach ($params as $key => $val) {
             $tipo = is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR;
             $stmt->bindValue($key, $val, $tipo);
