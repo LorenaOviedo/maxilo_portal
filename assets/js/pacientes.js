@@ -18,6 +18,17 @@ let busquedaTimer = null;
 
 // ── Inicialización ─────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", function () {
+  CatalogTable.initSearch = function () {};
+  CatalogTable.filterTable = function () {};
+  CatalogTable.clearSearch = function () {
+    const input = document.getElementById("searchInput");
+    if (input) {
+      input.value = "";
+    }
+    busquedaActual = "";
+    paginaActual = 1;
+    buscarPacientes();
+  };
   iniciarBusqueda();
 });
 
