@@ -783,48 +783,296 @@ class Paciente
             return 'El formato de la fecha de nacimiento no es válido';
         }
 
-        // No. Expediente (opcional, solo números)
+        // No. Expediente (solo números)
         if (
             !empty($data['id_paciente_expediente']) &&
             !preg_match('/^\d+$/', trim($data['id_paciente_expediente']))
         )
             return 'El No. Expediente solo debe contener números';
 
-        // Código postal (opcional, 5 dígitos)
+        // Código postal (5 dígitos)
         if (
             !empty($data['codigo_postal']) &&
             !preg_match('/^\d{5}$/', trim($data['codigo_postal']))
         )
             return 'El Código postal debe tener exactamente 5 dígitos';
 
-        // Email (opcional)
+        // Email
         if (
             !empty($data['email']) &&
             !filter_var($data['email'], FILTER_VALIDATE_EMAIL)
         )
             return 'El formato del correo electrónico no es válido';
 
-        // Teléfono (opcional, 10 dígitos)
+        // Teléfono (10 dígitos)
         if (
             !empty($data['telefono']) &&
             !preg_match('/^\d{10}$/', trim($data['telefono']))
         )
             return 'El Teléfono debe tener exactamente 10 dígitos';
 
-        // Teléfono emergencia (opcional, 10 dígitos)
+        // Teléfono emergencia (10 dígitos)
         if (
             !empty($data['telefono_emergencia']) &&
             !preg_match('/^\d{10}$/', trim($data['telefono_emergencia']))
         )
             return 'El Teléfono de emergencia debe tener exactamente 10 dígitos';
 
-        // Contacto emergencia (opcional, solo letras)
+        // Contacto emergencia (solo letras)
         if (
             !empty($data['contacto_emergencia']) &&
             !preg_match('/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/u', trim($data['contacto_emergencia']))
         )
             return 'El nombre del contacto de emergencia solo debe contener letras';
 
+        return null; // todo válido
+    }
+
+    // ── Obtener anamnesis del paciente ───────────────────────────
+    private function getAnamnesis($numeroPaciente)
+    {
+        $stmt = $this->conn->prepare("
+            SELECT
+                id_anamnesis,
+                enfermedades_cronicas,
+                alergia_latex,
+                antecedentes_familiares,
+                numero_comidas,
+                consumo_agua,
+                salud_general,
+                actividad_fisica,
+                toma_alcohol,
+                fuma,
+                veces_cepillado,
+                sensibilidad_dental,
+                bruxismo,
+                ulceras_frecuentes,
+                historial_extracciones
+            FROM anamnesis
+            WHERE numero_paciente = :id
+            LIMIT 1
+        ");
+        $stmt->bindValue(':id', (int) $numeroPaciente, PDO::PARAM_INT);
+ 
+        try {
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) return null;
+ 
+            // Castear booleanos para que JS los reciba como true/false
+            foreach (['alergia_latex','toma_alcohol','fuma','sensibilidad_dental',
+                      'bruxismo','ulceras_frecuentes'] as $campo) {
+                $row[$campo] = (bool)(int)$row[$campo];
+            }
+            $row['numero_comidas']  = $row['numero_comidas'] !== null ? (int)$row['numero_comidas'] : null;
+            $row['veces_cepillado'] = (int)$row['veces_cepillado'];
+ 
+            return $row;
+ 
+        } catch (PDOException $e) {
+            error_log("Error en Paciente::getAnamnesis: " . $e->getMessage());
+            return null;
+        }
+    }
+ 
+    // ── Crear anamnesis (se llama en create()) ───────────────────
+    private function crearAnamnesis($numeroPaciente, $data)
+    {
+        // Solo crear si viene algún campo de anamnesis
+        $camposAnamnesis = ['enfermedades_cronicas','alergia_latex','antecedentes_familiares',
+            'numero_comidas','consumo_agua','salud_general','actividad_fisica',
+            'toma_alcohol','fuma','veces_cepillado','sensibilidad_dental',
+            'bruxismo','ulceras_frecuentes','historial_extracciones'];
+ 
+        $tieneDatos = false;
+        foreach ($camposAnamnesis as $campo) {
+            if (!empty($data[$campo])) { $tieneDatos = true; break; }
+        }
+        if (!$tieneDatos) return;
+ 
+        $stmt = $this->conn->prepare("
+            INSERT INTO anamnesis
+                (numero_paciente, enfermedades_cronicas, alergia_latex,
+                 antecedentes_familiares, numero_comidas, consumo_agua,
+                 salud_general, actividad_fisica, toma_alcohol, fuma,
+                 veces_cepillado, sensibilidad_dental, bruxismo,
+                 ulceras_frecuentes, historial_extracciones)
+            VALUES
+                (:paciente, :enf_cronicas, :alergia_latex,
+                 :ant_familiares, :num_comidas, :consumo_agua,
+                 :salud_general, :actividad_fisica, :toma_alcohol, :fuma,
+                 :veces_cepillado, :sensibilidad, :bruxismo,
+                 :ulceras, :hist_extracciones)
+        ");
+        $this->bindAnamnesisValues($stmt, $numeroPaciente, $data);
+        $stmt->execute();
+    }
+ 
+    // ── Actualizar anamnesis (se llama en update()) ──────────────
+    private function sincronizarAnamnesis($numeroPaciente, $data)
+    {
+        // Verificar si ya existe
+        $stmt = $this->conn->prepare(
+            "SELECT id_anamnesis FROM anamnesis WHERE numero_paciente = :id LIMIT 1"
+        );
+        $stmt->bindValue(':id', (int)$numeroPaciente, PDO::PARAM_INT);
+        $stmt->execute();
+        $existe = $stmt->fetch(PDO::FETCH_ASSOC);
+ 
+        if ($existe) {
+            $stmt = $this->conn->prepare("
+                UPDATE anamnesis SET
+                    enfermedades_cronicas   = :enf_cronicas,
+                    alergia_latex           = :alergia_latex,
+                    antecedentes_familiares = :ant_familiares,
+                    numero_comidas          = :num_comidas,
+                    consumo_agua            = :consumo_agua,
+                    salud_general           = :salud_general,
+                    actividad_fisica        = :actividad_fisica,
+                    toma_alcohol            = :toma_alcohol,
+                    fuma                    = :fuma,
+                    veces_cepillado         = :veces_cepillado,
+                    sensibilidad_dental     = :sensibilidad,
+                    bruxismo                = :bruxismo,
+                    ulceras_frecuentes      = :ulceras,
+                    historial_extracciones  = :hist_extracciones
+                WHERE numero_paciente = :paciente
+            ");
+        } else {
+            $stmt = $this->conn->prepare("
+                INSERT INTO anamnesis
+                    (numero_paciente, enfermedades_cronicas, alergia_latex,
+                     antecedentes_familiares, numero_comidas, consumo_agua,
+                     salud_general, actividad_fisica, toma_alcohol, fuma,
+                     veces_cepillado, sensibilidad_dental, bruxismo,
+                     ulceras_frecuentes, historial_extracciones)
+                VALUES
+                    (:paciente, :enf_cronicas, :alergia_latex,
+                     :ant_familiares, :num_comidas, :consumo_agua,
+                     :salud_general, :actividad_fisica, :toma_alcohol, :fuma,
+                     :veces_cepillado, :sensibilidad, :bruxismo,
+                     :ulceras, :hist_extracciones)
+            ");
+        }
+ 
+        $this->bindAnamnesisValues($stmt, $numeroPaciente, $data);
+        $stmt->execute();
+    }
+ 
+    // ── Bind reutilizable para INSERT y UPDATE de anamnesis ──────
+    private function bindAnamnesisValues($stmt, $numeroPaciente, $data)
+    {
+        $stmt->bindValue(':paciente',        (int)$numeroPaciente,                              PDO::PARAM_INT);
+        $stmt->bindValue(':enf_cronicas',    trim($data['enfermedades_cronicas']    ?? ''));
+        $stmt->bindValue(':alergia_latex',   (int)($data['alergia_latex']           ?? 0),      PDO::PARAM_INT);
+        $stmt->bindValue(':ant_familiares',  trim($data['antecedentes_familiares']  ?? ''));
+        $stmt->bindValue(':num_comidas',     !empty($data['numero_comidas'])
+                                                ? (int)$data['numero_comidas'] : null,          PDO::PARAM_INT);
+        $stmt->bindValue(':consumo_agua',    trim($data['consumo_agua']             ?? ''));
+        $stmt->bindValue(':salud_general',   trim($data['salud_general']            ?? ''));
+        $stmt->bindValue(':actividad_fisica',trim($data['actividad_fisica']         ?? ''));
+        $stmt->bindValue(':toma_alcohol',    (int)($data['toma_alcohol']            ?? 0),      PDO::PARAM_INT);
+        $stmt->bindValue(':fuma',            (int)($data['fuma']                    ?? 0),      PDO::PARAM_INT);
+        $stmt->bindValue(':veces_cepillado', (int)($data['veces_cepillado']         ?? 0),      PDO::PARAM_INT);
+        $stmt->bindValue(':sensibilidad',    (int)($data['sensibilidad_dental']     ?? 0),      PDO::PARAM_INT);
+        $stmt->bindValue(':bruxismo',        (int)($data['bruxismo']                ?? 0),      PDO::PARAM_INT);
+        $stmt->bindValue(':ulceras',         (int)($data['ulceras_frecuentes']      ?? 0),      PDO::PARAM_INT);
+        $stmt->bindValue(':hist_extracciones',trim($data['historial_extracciones']  ?? ''));
+    }
+
+
+    /* Validaciones específicas para el formulario de anamnesis */
+     private function validarAnamnesis(array $data): ?string
+    {
+        // ── Enfermedades crónicas (texto libre seguro) ──
+        if (!empty($data['enfermedades_cronicas'])) {
+            $val = trim($data['enfermedades_cronicas']);
+            if (mb_strlen($val, 'UTF-8') > 500) {
+                return 'El campo "Enfermedades crónicas" no debe superar 500 caracteres';
+            }
+            if (!preg_match('/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s,.()\-\/]+$/u', $val)) {
+                return 'El campo "Enfermedades crónicas" contiene caracteres no permitidos';
+            }
+        }
+ 
+        // ── Antecedentes familiares (texto libre seguro) ─
+        if (!empty($data['antecedentes_familiares'])) {
+            $val = trim($data['antecedentes_familiares']);
+            if (mb_strlen($val, 'UTF-8') > 500) {
+                return 'El campo "Antecedentes familiares" no debe superar 500 caracteres';
+            }
+            if (!preg_match('/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s,.()\-\/]+$/u', $val)) {
+                return 'El campo "Antecedentes familiares" contiene caracteres no permitidos';
+            }
+        }
+ 
+        // ── Salud general (enum) ────────────────────────
+        if (!empty($data['salud_general'])) {
+            $permitidos = ['mala', 'buena', 'muy_buena', 'excelente'];
+            if (!in_array($data['salud_general'], $permitidos, true)) {
+                return 'El valor de "Salud general" no es válido';
+            }
+        }
+ 
+        // ── Actividad física (enum) ─────────────────────
+        if (!empty($data['actividad_fisica'])) {
+            $permitidos = ['sedentario', 'ligero', 'activo', 'muy_activo'];
+            if (!in_array($data['actividad_fisica'], $permitidos, true)) {
+                return 'El valor de "Actividad física" no es válido';
+            }
+        }
+ 
+        // ── Consumo de agua (enum) ──────────────────────
+        if (!empty($data['consumo_agua'])) {
+            $permitidos = ['muy_poca', 'poca', 'regular', 'mucha'];
+            if (!in_array($data['consumo_agua'], $permitidos, true)) {
+                return 'El valor de "Consumo de agua" no es válido';
+            }
+        }
+ 
+        // ── Número de comidas (entero 1-10) ─────────────
+        if (isset($data['numero_comidas']) && $data['numero_comidas'] !== '') {
+            $val = (int) $data['numero_comidas'];
+            if (!is_numeric($data['numero_comidas']) || $val < 1 || $val > 10) {
+                return 'El campo "Número de comidas" debe ser un número entre 1 y 10';
+            }
+        }
+ 
+        // ── Veces de cepillado (entero 0-10) ────────────
+        if (isset($data['veces_cepillado']) && $data['veces_cepillado'] !== '') {
+            $val = (int) $data['veces_cepillado'];
+            if (!is_numeric($data['veces_cepillado']) || $val < 0 || $val > 10) {
+                return 'El campo "Veces que se cepilla" debe ser un número entre 0 y 10';
+            }
+        }
+ 
+        // ── Booleanos (solo 0 o 1) ────────────────────────────────
+        $booleanos = [
+            'alergia_latex'      => 'Alergia al látex',
+            'toma_alcohol'       => 'Consume alcohol',
+            'fuma'               => 'Fuma',
+            'sensibilidad_dental'=> 'Sensibilidad dental',
+            'bruxismo'           => 'Bruxismo',
+            'ulceras_frecuentes' => 'Úlceras frecuentes',
+        ];
+ 
+        foreach ($booleanos as $campo => $label) {
+            if (isset($data[$campo]) && !in_array((string)$data[$campo], ['0', '1'], true)) {
+                return "El campo \"{$label}\" tiene un valor no válido";
+            }
+        }
+ 
+        // ── Historial de extracciones (texto libre seguro)
+        if (!empty($data['historial_extracciones'])) {
+            $val = trim($data['historial_extracciones']);
+            if (mb_strlen($val, 'UTF-8') > 500) {
+                return 'El campo "Historial de extracciones" no debe superar 500 caracteres';
+            }
+            if (!preg_match('/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s,.()\-\/]+$/u', $val)) {
+                return 'El campo "Historial de extracciones" contiene caracteres no permitidos';
+            }
+        }
+ 
         return null; // todo válido
     }
 }

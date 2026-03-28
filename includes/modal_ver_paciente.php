@@ -138,14 +138,14 @@ $modal_id = 'modalPaciente';
                     <div class="form-group">
                         <label class="form-label">Código postal</label>
                         <div style="display:flex; gap:8px;">
-                            <input type="text" name="codigo_postal" id="inputCP" class="form-input" maxlength="5"  autocomplete="off"
-                                placeholder="5 dígitos">
+                            <input type="text" name="codigo_postal" id="inputCP" class="form-input" maxlength="5"
+                                autocomplete="off" placeholder="5 dígitos">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Colonia<span class="required">*</span></label>
-                        <input type="text" name="colonia" id="inputColonia" class="form-input" list="listaColonias"  autocomplete="off"
-                            placeholder="Busca por CP o escribe la colonia">
+                        <input type="text" name="colonia" id="inputColonia" class="form-input" list="listaColonias"
+                            autocomplete="off" placeholder="Busca por CP o escribe la colonia">
                         <datalist id="listaColonias"></datalist>
                     </div>
                 </div>
@@ -154,11 +154,11 @@ $modal_id = 'modalPaciente';
                 <div class="form-row cols-3">
                     <div class="form-group">
                         <label class="form-label">Estado<span class="required">*</span></label>
-                        <input type="text" name="estado" id="inputEstado" class="form-input"  autocomplete="off">
+                        <input type="text" name="estado" id="inputEstado" class="form-input" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Municipio<span class="required">*</span></label>
-                        <input type="text" name="municipio" id="inputMunicipio" class="form-input"  autocomplete="off">
+                        <input type="text" name="municipio" id="inputMunicipio" class="form-input" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">País<span class="required">*</span></label>
@@ -263,6 +263,143 @@ $modal_id = 'modalPaciente';
                 </div>
             </div>
         </div>
+
+        !-- Tab Anamnesis -->
+        <div id="tabAnamnesis" class="modal-tab-content">
+            <div class="modal-form">
+
+                <!-- ── Sección 1: Antecedentes generales ──────────────── -->
+                <div class="form-section-title">Antecedentes generales</div>
+
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label class="form-label">Enfermedades crónicas</label>
+                        <textarea name="enfermedades_cronicas" class="form-input form-textarea" rows="3"
+                            placeholder="Ej: Diabetes, hipertensión, hipotiroidismo..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label class="form-label">Antecedentes familiares</label>
+                        <textarea name="antecedentes_familiares" class="form-input form-textarea" rows="3"
+                            placeholder="Ej: Padre con diabetes, madre con hipertensión..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row cols-1">
+                    <div class="form-group form-group--checkbox">
+                        <label class="form-checkbox-label">
+                            <input type="checkbox" name="alergia_latex" value="1" class="form-checkbox">
+                            <span>Alergia al látex</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- ── Sección 2: Estilo de vida ──────────────────────── -->
+                <div class="form-section-title" style="margin-top: 20px;">Estilo de vida</div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Salud general</label>
+                        <select name="salud_general" class="form-select">
+                            <option value="">Seleccionar</option>
+                            <option value="mala">Mala</option>
+                            <option value="buena">Buena</option>
+                            <option value="muy_buena">Muy buena</option>
+                            <option value="excelente">Excelente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Actividad física</label>
+                        <select name="actividad_fisica" class="form-select">
+                            <option value="">Seleccionar</option>
+                            <option value="sedentario">Sedentario</option>
+                            <option value="ligero">Ligero</option>
+                            <option value="activo">Activo</option>
+                            <option value="muy_activo">Muy activo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Número de comidas al día</label>
+                        <input type="number" name="numero_comidas" class="form-input" min="1" max="10"
+                            placeholder="Ej: 3">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Consumo de agua</label>
+                        <select name="consumo_agua" class="form-select">
+                            <option value="">Seleccionar</option>
+                            <option value="muy_poca">Muy poca</option>
+                            <option value="poca">Poca</option>
+                            <option value="regular">Regular</option>
+                            <option value="mucha">Mucha</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group form-group--checkbox">
+                        <label class="form-checkbox-label">
+                            <input type="checkbox" name="toma_alcohol" value="1" class="form-checkbox">
+                            <span>Consume alcohol</span>
+                        </label>
+                    </div>
+                    <div class="form-group form-group--checkbox">
+                        <label class="form-checkbox-label">
+                            <input type="checkbox" name="fuma" value="1" class="form-checkbox">
+                            <span>Fuma</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- ── Sección 3: Salud bucodental ────────────────────── -->
+                <div class="form-section-title" style="margin-top: 20px;">Salud bucodental</div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Veces que se cepilla al día</label>
+                        <input type="number" name="veces_cepillado" class="form-input" min="0" max="10"
+                            placeholder="Ej: 2">
+                    </div>
+                </div>
+
+                <div class="form-row cols-2">
+                    <div class="form-group form-group--checkbox">
+                        <label class="form-checkbox-label">
+                            <input type="checkbox" name="sensibilidad_dental" value="1" class="form-checkbox">
+                            <span>Sensibilidad dental</span>
+                        </label>
+                    </div>
+                    <div class="form-group form-group--checkbox">
+                        <label class="form-checkbox-label">
+                            <input type="checkbox" name="bruxismo" value="1" class="form-checkbox">
+                            <span>Bruxismo (rechinar dientes)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-row cols-1">
+                    <div class="form-group form-group--checkbox">
+                        <label class="form-checkbox-label">
+                            <input type="checkbox" name="ulceras_frecuentes" value="1" class="form-checkbox">
+                            <span>Úlceras bucales frecuentes</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label class="form-label">Historial de extracciones</label>
+                        <textarea name="historial_extracciones" class="form-input form-textarea" rows="3"
+                            placeholder="Describe extracciones dentales previas..."></textarea>
+                    </div>
+                </div>
+
+            </div>
+        </div><!-- /#tabAnamnesis -->
 
         <!-- Tab 4 planes de tratamiento -->
         <div id="tabPlanes" class="modal-tab-content">
