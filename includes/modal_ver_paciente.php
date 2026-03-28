@@ -293,7 +293,7 @@ $modal_id = 'modalPaciente';
 
                 <div class="form-row cols-1">
                     <div class="form-group form-group--checkbox">
-                        <label>Alergias</label>
+                        <label class="form-label">Alergias</label>
                         <label class="form-checkbox-label">
                             <input type="checkbox" name="alergia_latex" value="1" class="form-checkbox">
                             <span>Alergia al látex</span>
