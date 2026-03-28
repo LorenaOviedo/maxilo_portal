@@ -203,7 +203,6 @@ const odontogramaController = {
 
   // ─────────────────────────────────────────
   // COMUNICACIÓN CON EL SERVIDOR
-  // Endpoints pendientes de implementar en PHP
   // ─────────────────────────────────────────
 
   /**

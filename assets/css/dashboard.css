@@ -20,23 +20,6 @@ body {
     min-height: 100vh;
 }
 
-/*NAVBAR*/
-/*.navbar {
-    grid-area: navbar;
-    background-color: #ffffff;
-    border-bottom: 1px solid #e8e8e8;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 40px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-.navbar-brand {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}*/
 
 .navbar {
     grid-area: navbar;
