@@ -800,7 +800,7 @@
 
 .form-group--checkbox {
     display: flex;
-    align-items: center;
+    align-items: left;
     min-height: 40px;
 }
  
