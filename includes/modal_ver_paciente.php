@@ -264,7 +264,7 @@ $modal_id = 'modalPaciente';
             </div>
         </div>
 
-        !-- Tab Anamnesis -->
+        <!-- Tab Anamnesis -->
         <div id="tabAnamnesis" class="modal-tab-content">
             <div class="modal-form">
 
