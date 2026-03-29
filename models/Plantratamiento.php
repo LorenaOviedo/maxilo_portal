@@ -4,7 +4,7 @@
  * Sistema Maxilofacial Texcoco
  *
  * Tablas: plantratamiento, detalleplantratamiento,
- *         estadostratamiento, procedimientos, especialista
+ *         estadostratamiento, procedimientos, especialista.
  */
 class PlanTratamiento
 {
