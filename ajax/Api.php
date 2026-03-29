@@ -86,6 +86,14 @@ $modulos = [
         'archivo' => __DIR__ . '/../models/Paciente.php',
         'campo_id' => 'numero_paciente',
     ],
+
+    'planes' => [
+        'modelo' => 'PlanTratamiento',
+        'archivo' => __DIR__ . '/../models/PlanTratamiento.php',
+        'campo_id' => 'id_plan_tratamiento',
+    ],
+
+
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
     //     'archivo'  => __DIR__ . '/../models/Especialidad.php',
