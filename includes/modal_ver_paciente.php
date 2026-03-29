@@ -281,14 +281,6 @@ $modal_id = 'modalPaciente';
 
                 <div class="form-row cols-1">
                     <div class="form-group">
-                        <label class="form-label">Enfermedades crónicas</label>
-                        <textarea name="enfermedades_cronicas" class="form-input form-textarea" rows="3"
-                            placeholder="Ej: Diabetes, hipertensión, hipotiroidismo..."></textarea>
-                    </div>
-                </div>
-
-                <div class="form-row cols-1">
-                    <div class="form-group">
                         <label class="form-label">Antecedentes familiares</label>
                         <textarea name="antecedentes_familiares" class="form-input form-textarea" rows="3"
                             placeholder="Ej: Padre con diabetes, madre con hipertensión..."></textarea>

@@ -542,7 +542,7 @@ function recolectarHistorial(formData) {
 
 // ── Tab Anamnesis ─────────────────────────────────────────────────
 function poblarAnamnesis(datos) {
-  ["enfermedades_cronicas","antecedentes_familiares","salud_general",
+  ["antecedentes_familiares","salud_general",
    "actividad_fisica","consumo_agua","historial_extracciones"].forEach((campo) => {
     const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
     if (el) el.value = datos[`anam_${campo}`] ?? "";
