@@ -2,7 +2,7 @@
  * CONTROLADOR - AntecedentesController.js
  *
  * Responsabilidad: estado reactivo Vue para el componente
- * de chips de antecedentes médicos.
+ * de chips de antecedentes médicos..
  
  *
  * Depende de: vue.global.js, antecedentesModel.js

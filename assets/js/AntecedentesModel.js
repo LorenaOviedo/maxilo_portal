@@ -2,7 +2,7 @@
  * MODELO - AntecedentesModel.js
  *
  * Responsabilidad: datos del catálogo de antecedentes.
- * No conoce la vista ni el controlador.
+ * No conoce la vista ni el controlador..
  * Se carga antes que AntecedentesController.js
  */
 
