@@ -78,7 +78,7 @@ const planesController = {
                 <div class="plan-accordion-header"
                      onclick="planesController._toggleAcordeon(${plan.id_plan_tratamiento})">
                     <div class="plan-accordion-info">
-                        <span class="plan-nombre">Plan #${plan.id_plan_tratamiento}</span>
+                        <span class="plan-nombre">Plan #${plan.numero_plan}</span>
                         <span class="plan-meta">
                             <strong>Especialista:</strong> ${escHtml(plan.especialista)}
                             &nbsp;·&nbsp;

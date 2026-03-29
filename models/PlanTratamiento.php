@@ -28,7 +28,14 @@ class PlanTratamiento
                 CONCAT(e.nombre, ' ', e.apellido_paterno) AS especialista,
                 et.estatus_tratamiento,
                 et.id_estatus_tratamiento,
-                -- Costo total del plan (suma de precios base con descuento)
+                -- Número relativo del plan por paciente (1, 2, 3...)
+                (
+                    SELECT COUNT(*)
+                    FROM plantratamiento pt2
+                    WHERE pt2.numero_paciente = pt.numero_paciente
+                      AND pt2.id_plan_tratamiento <= pt.id_plan_tratamiento
+                ) AS numero_plan,
+                -- Costo total del plan
                 COALESCE((
                     SELECT SUM(
                         CASE WHEN d.costo_descuento IS NOT NULL
@@ -52,7 +59,6 @@ class PlanTratamiento
             $stmt->execute();
             $planes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Cargar detalle de cada plan
             foreach ($planes as &$plan) {
                 $plan['detalle'] = $this->getDetalle($plan['id_plan_tratamiento']);
             }
@@ -63,6 +69,7 @@ class PlanTratamiento
             return [];
         }
     }
+
 
     // ── Obtener detalle de un plan ────────────────────────────────
     public function getDetalle(int $idPlan): array
