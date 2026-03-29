@@ -30,11 +30,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     busquedaActual = "";
     paginaActual = 1;
-    buscarPacientes();
-    cargarCatalogosHistorial();
   };
 
   iniciarBusqueda();
+  cargarCatalogosHistorial();
 });
 
 function iniciarEventosCP() {
@@ -343,7 +342,7 @@ function abrirModalNuevoPaciente() {
 
 function abrirModalVerPaciente(id) {
   cargarPaciente(id, (p) => {
-    verEnModal(MODAL_PAC_ID, mapearDatosPaciente(p));
+    const mapped = mapearDatosPaciente(p);
     document.getElementById("modalPacienteNumero").textContent =
       p.id_paciente_expediente;
     document.getElementById("formPaciente").dataset.numeroPaciente =
@@ -351,23 +350,24 @@ function abrirModalVerPaciente(id) {
     document.querySelector('[name="pais"]').value = "MEXICO";
     iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
-    poblarHistorial(datos);
-    poblarAnamnesis(datos);
+    poblarHistorial(mapped);
+    poblarAnamnesis(mapped);
   });
 }
 
 function abrirModalEditarPaciente(id) {
   cargarPaciente(id, (p) => {
-    editarEnModal(MODAL_PAC_ID, mapearDatosPaciente(p));
+    const mapped = mapearDatosPaciente(p); 
+    editarEnModal(MODAL_PAC_ID, mapped);
     document.getElementById("modalPacienteNumero").textContent =
       p.id_paciente_expediente;
     document.getElementById("formPaciente").dataset.numeroPaciente =
-      p.numero_paciente; // ← guardar
+      p.numero_paciente;
     document.querySelector('[name="pais"]').value = "MEXICO";
     iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
-    poblarHistorial(datos);
-    poblarAnamnesis(datos);
+    poblarHistorial(mapped);
+    poblarAnamnesis(mapped);
   });
 }
 
@@ -656,7 +656,6 @@ function toggleChip(chip) {
 
 // ── Poblar tab Historial Clínico ──────────────────────────────────
 function poblarHistorial(datos) {
-  
   // Select tipo de sangre
   const selectSangre = document.getElementById("selectTipoSangre");
   if (selectSangre) selectSangre.value = datos.id_tipo_sangre ?? "";
