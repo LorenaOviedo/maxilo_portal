@@ -287,41 +287,41 @@ class Paciente
         }
     }
 
-    /**
-     * Obtener historial médico de un paciente.
-     */
     private function getHistorial($numeroPaciente)
     {
-        $query = "
+        $stmt = $this->conn->prepare("
             SELECT
                 hm.id_historial,
-                hm.notas,
+                hm.id_tipo_sangre,
                 ts.tipo_sangre,
-                GROUP_CONCAT(am.nombre_antecedente SEPARATOR ', ') AS antecedentes
+                hm.notas
             FROM historialmedico hm
-            LEFT JOIN tipossangre        ts ON ts.id_tipo_sangre = hm.id_tipo_sangre
-            LEFT JOIN antecedentemedico am ON am.id_antecedente IN (
-                SELECT ap.id_antecedente
-                FROM antecedentemedico ap
-                INNER JOIN antecedentemedico am2 ON am2.id_antecedente = ap.id_antecedente
-            )
+            LEFT JOIN tipossangre ts ON ts.id_tipo_sangre = hm.id_tipo_sangre
             WHERE hm.numero_paciente = :id
-            GROUP BY hm.id_historial
             LIMIT 1
-        ";
-
-        $stmt = $this->conn->prepare($query);
+        ");
         $stmt->bindValue(':id', (int) $numeroPaciente, PDO::PARAM_INT);
 
         try {
             $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+            $historial = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$historial)
+                return null;
+
+            // IDs de antecedentes marcados para este paciente
+            $historial['antecedentes_ids'] = $this->getAntecedentesPaciente(
+                $historial['id_historial']
+            );
+
+            return $historial;
+
         } catch (PDOException $e) {
             error_log("Error en Paciente::getHistorial: " . $e->getMessage());
             return null;
         }
     }
 
+    
     // ==================== ESCRITURA ====================
 
     /**
@@ -384,6 +384,12 @@ class Paciente
 
             // 5. Historial médico inicial
             $this->crearHistorial($numeroPaciente, $data);
+
+            // Guardar antecedentes si vienen datos
+            $historialNuevo = $this->getHistorial($numeroPaciente);
+            if ($historialNuevo && !empty($data['antecedentes_ids'])) {
+                $this->guardarAntecedentes($historialNuevo['id_historial'], $data);
+            }
 
             $this->conn->commit();
             return $numeroPaciente;
@@ -462,6 +468,12 @@ class Paciente
             // 4. Actualizar historial
             if (isset($data['notas']) || isset($data['tipo_sangre'])) {
                 $this->actualizarHistorial($id, $data);
+            }
+
+            // Guardar antecedentes seleccionados
+            $historialActual = $this->getHistorial($id);
+            if ($historialActual) {
+                $this->guardarAntecedentes($historialActual['id_historial'], $data);
             }
 
             $this->conn->commit();
@@ -710,6 +722,70 @@ class Paciente
         return true;
     }
 
+
+    // ── IDs de antecedentes del paciente ─────────────────────────
+    // Devuelve array plano de ids: [1, 5, 8]
+    private function getAntecedentesPaciente($idHistorial)
+    {
+        $stmt = $this->conn->prepare("
+            SELECT id_antecedente
+            FROM antecedentepaciente
+            WHERE id_historial = :id_historial
+        ");
+        $stmt->bindValue(':id_historial', (int) $idHistorial, PDO::PARAM_INT);
+
+        try {
+            $stmt->execute();
+            return array_column(
+                $stmt->fetchAll(PDO::FETCH_ASSOC),
+                'id_antecedente'
+            );
+        } catch (PDOException $e) {
+            error_log("Error en Paciente::getAntecedentesPaciente: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // ── Guardar antecedentes (DELETE + INSERT) ────────────────────
+    // Tabla: antecedentepaciente
+    // Campos: id_historial, id_antecedente, descripcion_adicional
+    private function guardarAntecedentes($idHistorial, $data)
+    {
+        // Eliminar antecedentes anteriores del historial
+        $stmt = $this->conn->prepare(
+            "DELETE FROM antecedentepaciente WHERE id_historial = :id"
+        );
+        $stmt->bindValue(':id', (int) $idHistorial, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Normalizar ids: puede llegar como array ['1','5'] o string '1,5'
+        $ids = $data['antecedentes_ids'] ?? [];
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        if (empty($ids))
+            return;
+
+        $stmt = $this->conn->prepare("
+            INSERT INTO antecedentepaciente
+                (id_historial, id_antecedente, descripcion_adicional)
+            VALUES
+                (:historial, :antecedente, :descripcion)
+        ");
+
+        foreach ($ids as $idAntecedente) {
+            $idAntecedente = (int) trim($idAntecedente);
+            if ($idAntecedente <= 0)
+                continue;
+
+            $stmt->bindValue(':historial', (int) $idHistorial, PDO::PARAM_INT);
+            $stmt->bindValue(':antecedente', $idAntecedente, PDO::PARAM_INT);
+            // descripcion_adicional queda vacía por ahora (se puede extender)
+            $stmt->bindValue(':descripcion', '');
+            $stmt->execute();
+        }
+    }
+
     // ==================== CATÁLOGOS ====================
 
     public function getTiposSangre()
@@ -744,6 +820,36 @@ class Paciente
             return [];
         }
     }
+
+    // ── Catálogos para tab Historial (una sola llamada API) ───────
+    public function getCatalogosHistorial(): array
+    {
+        return [
+            'tipos_sangre' => $this->getTiposSangre(),
+            'antecedentes_catalogo' => $this->getAntecedentesCatalogo(),
+        ];
+    }
+
+    // ── Catálogo de antecedentes agrupados por tipo ───────────────
+    private function getAntecedentesCatalogo(): array
+    {
+        try {
+            $stmt = $this->conn->query("
+                SELECT
+                    id_antecedente,
+                    implica_alerta_medica,
+                    tipo,
+                    nombre_antecedente
+                FROM antecedentemedico
+                ORDER BY tipo, nombre_antecedente
+            ");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en Paciente::getAntecedentesCatalogo: " . $e->getMessage());
+            return [];
+        }
+    }
+   
 
     //Validaciones para el módulo de pacientes
     public function validar(array $data): ?string
@@ -853,43 +959,66 @@ class Paciente
             LIMIT 1
         ");
         $stmt->bindValue(':id', (int) $numeroPaciente, PDO::PARAM_INT);
- 
+
         try {
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$row) return null;
- 
+            if (!$row)
+                return null;
+
             // Castear booleanos para que JS los reciba como true/false
-            foreach (['alergia_latex','toma_alcohol','fuma','sensibilidad_dental',
-                      'bruxismo','ulceras_frecuentes'] as $campo) {
-                $row[$campo] = (bool)(int)$row[$campo];
+            foreach ([
+                'alergia_latex',
+                'toma_alcohol',
+                'fuma',
+                'sensibilidad_dental',
+                'bruxismo',
+                'ulceras_frecuentes'
+            ] as $campo) {
+                $row[$campo] = (bool) (int) $row[$campo];
             }
-            $row['numero_comidas']  = $row['numero_comidas'] !== null ? (int)$row['numero_comidas'] : null;
-            $row['veces_cepillado'] = (int)$row['veces_cepillado'];
- 
+            $row['numero_comidas'] = $row['numero_comidas'] !== null ? (int) $row['numero_comidas'] : null;
+            $row['veces_cepillado'] = (int) $row['veces_cepillado'];
+
             return $row;
- 
+
         } catch (PDOException $e) {
             error_log("Error en Paciente::getAnamnesis: " . $e->getMessage());
             return null;
         }
     }
- 
+
     // ── Crear anamnesis (se llama en create()) ───────────────────
     private function crearAnamnesis($numeroPaciente, $data)
     {
         // Solo crear si viene algún campo de anamnesis
-        $camposAnamnesis = ['enfermedades_cronicas','alergia_latex','antecedentes_familiares',
-            'numero_comidas','consumo_agua','salud_general','actividad_fisica',
-            'toma_alcohol','fuma','veces_cepillado','sensibilidad_dental',
-            'bruxismo','ulceras_frecuentes','historial_extracciones'];
- 
+        $camposAnamnesis = [
+            'enfermedades_cronicas',
+            'alergia_latex',
+            'antecedentes_familiares',
+            'numero_comidas',
+            'consumo_agua',
+            'salud_general',
+            'actividad_fisica',
+            'toma_alcohol',
+            'fuma',
+            'veces_cepillado',
+            'sensibilidad_dental',
+            'bruxismo',
+            'ulceras_frecuentes',
+            'historial_extracciones'
+        ];
+
         $tieneDatos = false;
         foreach ($camposAnamnesis as $campo) {
-            if (!empty($data[$campo])) { $tieneDatos = true; break; }
+            if (!empty($data[$campo])) {
+                $tieneDatos = true;
+                break;
+            }
         }
-        if (!$tieneDatos) return;
- 
+        if (!$tieneDatos)
+            return;
+
         $stmt = $this->conn->prepare("
             INSERT INTO anamnesis
                 (numero_paciente, enfermedades_cronicas, alergia_latex,
@@ -907,7 +1036,7 @@ class Paciente
         $this->bindAnamnesisValues($stmt, $numeroPaciente, $data);
         $stmt->execute();
     }
- 
+
     // ── Actualizar anamnesis (se llama en update()) ──────────────
     private function sincronizarAnamnesis($numeroPaciente, $data)
     {
@@ -915,10 +1044,10 @@ class Paciente
         $stmt = $this->conn->prepare(
             "SELECT id_anamnesis FROM anamnesis WHERE numero_paciente = :id LIMIT 1"
         );
-        $stmt->bindValue(':id', (int)$numeroPaciente, PDO::PARAM_INT);
+        $stmt->bindValue(':id', (int) $numeroPaciente, PDO::PARAM_INT);
         $stmt->execute();
         $existe = $stmt->fetch(PDO::FETCH_ASSOC);
- 
+
         if ($existe) {
             $stmt = $this->conn->prepare("
                 UPDATE anamnesis SET
@@ -954,35 +1083,35 @@ class Paciente
                      :ulceras, :hist_extracciones)
             ");
         }
- 
+
         $this->bindAnamnesisValues($stmt, $numeroPaciente, $data);
         $stmt->execute();
     }
- 
+
     // ── Bind reutilizable para INSERT y UPDATE de anamnesis ──────
     private function bindAnamnesisValues($stmt, $numeroPaciente, $data)
     {
-        $stmt->bindValue(':paciente',        (int)$numeroPaciente,                              PDO::PARAM_INT);
-        $stmt->bindValue(':enf_cronicas',    trim($data['enfermedades_cronicas']    ?? ''));
-        $stmt->bindValue(':alergia_latex',   (int)($data['alergia_latex']           ?? 0),      PDO::PARAM_INT);
-        $stmt->bindValue(':ant_familiares',  trim($data['antecedentes_familiares']  ?? ''));
-        $stmt->bindValue(':num_comidas',     !empty($data['numero_comidas'])
-                                                ? (int)$data['numero_comidas'] : null,          PDO::PARAM_INT);
-        $stmt->bindValue(':consumo_agua',    trim($data['consumo_agua']             ?? ''));
-        $stmt->bindValue(':salud_general',   trim($data['salud_general']            ?? ''));
-        $stmt->bindValue(':actividad_fisica',trim($data['actividad_fisica']         ?? ''));
-        $stmt->bindValue(':toma_alcohol',    (int)($data['toma_alcohol']            ?? 0),      PDO::PARAM_INT);
-        $stmt->bindValue(':fuma',            (int)($data['fuma']                    ?? 0),      PDO::PARAM_INT);
-        $stmt->bindValue(':veces_cepillado', (int)($data['veces_cepillado']         ?? 0),      PDO::PARAM_INT);
-        $stmt->bindValue(':sensibilidad',    (int)($data['sensibilidad_dental']     ?? 0),      PDO::PARAM_INT);
-        $stmt->bindValue(':bruxismo',        (int)($data['bruxismo']                ?? 0),      PDO::PARAM_INT);
-        $stmt->bindValue(':ulceras',         (int)($data['ulceras_frecuentes']      ?? 0),      PDO::PARAM_INT);
-        $stmt->bindValue(':hist_extracciones',trim($data['historial_extracciones']  ?? ''));
+        $stmt->bindValue(':paciente', (int) $numeroPaciente, PDO::PARAM_INT);
+        $stmt->bindValue(':enf_cronicas', trim($data['enfermedades_cronicas'] ?? ''));
+        $stmt->bindValue(':alergia_latex', (int) ($data['alergia_latex'] ?? 0), PDO::PARAM_INT);
+        $stmt->bindValue(':ant_familiares', trim($data['antecedentes_familiares'] ?? ''));
+        $stmt->bindValue(':num_comidas', !empty($data['numero_comidas'])
+            ? (int) $data['numero_comidas'] : null, PDO::PARAM_INT);
+        $stmt->bindValue(':consumo_agua', trim($data['consumo_agua'] ?? ''));
+        $stmt->bindValue(':salud_general', trim($data['salud_general'] ?? ''));
+        $stmt->bindValue(':actividad_fisica', trim($data['actividad_fisica'] ?? ''));
+        $stmt->bindValue(':toma_alcohol', (int) ($data['toma_alcohol'] ?? 0), PDO::PARAM_INT);
+        $stmt->bindValue(':fuma', (int) ($data['fuma'] ?? 0), PDO::PARAM_INT);
+        $stmt->bindValue(':veces_cepillado', (int) ($data['veces_cepillado'] ?? 0), PDO::PARAM_INT);
+        $stmt->bindValue(':sensibilidad', (int) ($data['sensibilidad_dental'] ?? 0), PDO::PARAM_INT);
+        $stmt->bindValue(':bruxismo', (int) ($data['bruxismo'] ?? 0), PDO::PARAM_INT);
+        $stmt->bindValue(':ulceras', (int) ($data['ulceras_frecuentes'] ?? 0), PDO::PARAM_INT);
+        $stmt->bindValue(':hist_extracciones', trim($data['historial_extracciones'] ?? ''));
     }
 
 
     /* Validaciones específicas para el formulario de anamnesis */
-     private function validarAnamnesis(array $data): ?string
+    private function validarAnamnesis(array $data): ?string
     {
         // ── Enfermedades crónicas (texto libre seguro) ──
         if (!empty($data['enfermedades_cronicas'])) {
@@ -994,7 +1123,7 @@ class Paciente
                 return 'El campo "Enfermedades crónicas" contiene caracteres no permitidos';
             }
         }
- 
+
         // ── Antecedentes familiares (texto libre seguro) ─
         if (!empty($data['antecedentes_familiares'])) {
             $val = trim($data['antecedentes_familiares']);
@@ -1005,7 +1134,7 @@ class Paciente
                 return 'El campo "Antecedentes familiares" contiene caracteres no permitidos';
             }
         }
- 
+
         // ── Salud general (enum) ────────────────────────
         if (!empty($data['salud_general'])) {
             $permitidos = ['mala', 'buena', 'muy_buena', 'excelente'];
@@ -1013,7 +1142,7 @@ class Paciente
                 return 'El valor de "Salud general" no es válido';
             }
         }
- 
+
         // ── Actividad física (enum) ─────────────────────
         if (!empty($data['actividad_fisica'])) {
             $permitidos = ['sedentario', 'ligero', 'activo', 'muy_activo'];
@@ -1021,7 +1150,7 @@ class Paciente
                 return 'El valor de "Actividad física" no es válido';
             }
         }
- 
+
         // ── Consumo de agua (enum) ──────────────────────
         if (!empty($data['consumo_agua'])) {
             $permitidos = ['muy_poca', 'poca', 'regular', 'mucha'];
@@ -1029,7 +1158,7 @@ class Paciente
                 return 'El valor de "Consumo de agua" no es válido';
             }
         }
- 
+
         // ── Número de comidas (entero 1-10) ─────────────
         if (isset($data['numero_comidas']) && $data['numero_comidas'] !== '') {
             $val = (int) $data['numero_comidas'];
@@ -1037,7 +1166,7 @@ class Paciente
                 return 'El campo "Número de comidas" debe ser un número entre 1 y 10';
             }
         }
- 
+
         // ── Veces de cepillado (entero 0-10) ────────────
         if (isset($data['veces_cepillado']) && $data['veces_cepillado'] !== '') {
             $val = (int) $data['veces_cepillado'];
@@ -1045,23 +1174,23 @@ class Paciente
                 return 'El campo "Veces que se cepilla" debe ser un número entre 0 y 10';
             }
         }
- 
+
         // ── Booleanos (solo 0 o 1) ────────────────────────────────
         $booleanos = [
-            'alergia_latex'      => 'Alergia al látex',
-            'toma_alcohol'       => 'Consume alcohol',
-            'fuma'               => 'Fuma',
-            'sensibilidad_dental'=> 'Sensibilidad dental',
-            'bruxismo'           => 'Bruxismo',
+            'alergia_latex' => 'Alergia al látex',
+            'toma_alcohol' => 'Consume alcohol',
+            'fuma' => 'Fuma',
+            'sensibilidad_dental' => 'Sensibilidad dental',
+            'bruxismo' => 'Bruxismo',
             'ulceras_frecuentes' => 'Úlceras frecuentes',
         ];
- 
+
         foreach ($booleanos as $campo => $label) {
-            if (isset($data[$campo]) && !in_array((string)$data[$campo], ['0', '1'], true)) {
+            if (isset($data[$campo]) && !in_array((string) $data[$campo], ['0', '1'], true)) {
                 return "El campo \"{$label}\" tiene un valor no válido";
             }
         }
- 
+
         // ── Historial de extracciones (texto libre seguro)
         if (!empty($data['historial_extracciones'])) {
             $val = trim($data['historial_extracciones']);
@@ -1072,7 +1201,7 @@ class Paciente
                 return 'El campo "Historial de extracciones" contiene caracteres no permitidos';
             }
         }
- 
+
         return null; // todo válido
     }
 }

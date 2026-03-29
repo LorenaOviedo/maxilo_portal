@@ -15,19 +15,23 @@ const POR_PAGINA = 10;
 let busquedaActual = "";
 let paginaActual = 1;
 let busquedaTimer = null;
+let catalogoAntecedentes = [];
 
 // ── Inicialización ─────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", function () {
   // Neutralizar la búsqueda local de CatalogTable —
   // pacientes.js usa búsqueda AJAX propia que reemplaza el tbody completo
-  CatalogTable.initSearch   = function () {};
-  CatalogTable.filterTable  = function () {};
-  CatalogTable.clearSearch  = function () {
-    const input = document.getElementById('searchInput');
-    if (input) { input.value = ''; }
-    busquedaActual = '';
-    paginaActual   = 1;
+  CatalogTable.initSearch = function () {};
+  CatalogTable.filterTable = function () {};
+  CatalogTable.clearSearch = function () {
+    const input = document.getElementById("searchInput");
+    if (input) {
+      input.value = "";
+    }
+    busquedaActual = "";
+    paginaActual = 1;
     buscarPacientes();
+    cargarCatalogosHistorial();
   };
 
   iniciarBusqueda();
@@ -302,8 +306,8 @@ function mapearDatosPaciente(p) {
     telefono_emergencia: ce.telefono_contacto_emergencia || "",
 
     // Tab 3: Historial — coincide con name= del modal
-    tipo_sangre: hist.tipo_sangre || "",
-    antecedentes_medicos: hist.antecedentes || "",
+    id_tipo_sangre: hist.id_tipo_sangre ?? "",
+    _antecedentes: hist.antecedentes_ids ?? [],
     notas_historial: hist.notas || "",
   };
 }
@@ -317,6 +321,8 @@ function abrirModalNuevoPaciente() {
   document.getElementById("grupoCampoId")?.style &&
     (document.getElementById("grupoCampoId").style.display = "none");
   iniciarEventosCP();
+  limpiarHistorial();
+  limpiarAnamnesis();
 
   const inputId = document.querySelector('#formPaciente [name="id"]');
 
@@ -345,6 +351,8 @@ function abrirModalVerPaciente(id) {
     document.querySelector('[name="pais"]').value = "MEXICO";
     iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
+    poblarHistorial(datos);
+    poblarAnamnesis(datos);
   });
 }
 
@@ -358,6 +366,8 @@ function abrirModalEditarPaciente(id) {
     document.querySelector('[name="pais"]').value = "MEXICO";
     iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
+    poblarHistorial(datos);
+    poblarAnamnesis(datos);
   });
 }
 
@@ -537,6 +547,9 @@ document
 
     CatalogTable.showLoading(true);
 
+    recolectarHistorial(formData);
+    recolectarAnamnesis(formData);
+
     fetch(API_URL, { method: "POST", body: formData })
       .then((r) => r.json())
       .then((data) => {
@@ -558,169 +571,314 @@ document
       });
   });
 
+function cargarCatalogosHistorial() {
+  fetch(`${API_URL}?modulo=pacientes&accion=get_catalogos_historial`)
+    .then((r) => r.json())
+    .then((data) => {
+      if (!data.success) return;
 
-  function validarAnamnesis() {
- 
-    const reglas = [
-        // ── Enfermedades crónicas (opcional, solo texto) ─────────
-        {
-            name: 'enfermedades_cronicas',
-            label: 'Enfermedades crónicas',
-            requerido: false,
-            regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s,.()\-\/]+$/u,
-            msgRegex: 'El campo "Enfermedades crónicas" contiene caracteres no permitidos',
-        },
- 
-        // ── Antecedentes familiares (opcional, solo texto) ───────
-        {
-            name: 'antecedentes_familiares',
-            label: 'Antecedentes familiares',
-            requerido: false,
-            regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s,.()\-\/]+$/u,
-            msgRegex: 'El campo "Antecedentes familiares" contiene caracteres no permitidos',
-        },
- 
-        // ── Salud general (opcional, valores permitidos) ─────────
-        {
-            name: 'salud_general',
-            label: 'Salud general',
-            requerido: false,
-            validar: (valor) => {
-                const permitidos = ['', 'mala', 'buena', 'muy_buena', 'excelente'];
-                if (!permitidos.includes(valor)) {
-                    return 'Selecciona una opción válida para "Salud general"';
-                }
-                return null;
-            },
-        },
- 
-        // ── Actividad física (opcional, valores permitidos) ──────
-        {
-            name: 'actividad_fisica',
-            label: 'Actividad física',
-            requerido: false,
-            validar: (valor) => {
-                const permitidos = ['', 'sedentario', 'ligero', 'activo', 'muy_activo'];
-                if (!permitidos.includes(valor)) {
-                    return 'Selecciona una opción válida para "Actividad física"';
-                }
-                return null;
-            },
-        },
- 
-        // ── Consumo de agua (opcional, valores permitidos) ───────
-        {
-            name: 'consumo_agua',
-            label: 'Consumo de agua',
-            requerido: false,
-            validar: (valor) => {
-                const permitidos = ['', 'muy_poca', 'poca', 'regular', 'mucha'];
-                if (!permitidos.includes(valor)) {
-                    return 'Selecciona una opción válida para "Consumo de agua"';
-                }
-                return null;
-            },
-        },
- 
-        // ── Número de comidas (opcional, entero 1-10) ────────────
-        {
-            name: 'numero_comidas',
-            label: 'Número de comidas al día',
-            requerido: false,
-            validar: (valor) => {
-                if (valor === '' || valor === null) return null;
-                const num = parseInt(valor, 10);
-                if (isNaN(num) || !Number.isInteger(num)) {
-                    return 'El campo "Número de comidas" debe ser un número entero';
-                }
-                if (num < 1 || num > 10) {
-                    return 'El campo "Número de comidas" debe estar entre 1 y 10';
-                }
-                return null;
-            },
-        },
- 
-        // ── Veces de cepillado (opcional, entero 0-10) ───────────
-        {
-            name: 'veces_cepillado',
-            label: 'Veces que se cepilla al día',
-            requerido: false,
-            validar: (valor) => {
-                if (valor === '' || valor === null) return null;
-                const num = parseInt(valor, 10);
-                if (isNaN(num) || !Number.isInteger(num)) {
-                    return 'El campo "Veces que se cepilla" debe ser un número entero';
-                }
-                if (num < 0 || num > 10) {
-                    return 'El campo "Veces que se cepilla" debe estar entre 0 y 10';
-                }
-                return null;
-            },
-        },
- 
-        // ── Historial de extracciones (opcional, solo texto) ─────
-        {
-            name: 'historial_extracciones',
-            label: 'Historial de extracciones',
-            requerido: false,
-            regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s,.()\-\/]+$/u,
-            msgRegex: 'El campo "Historial de extracciones" contiene caracteres no permitidos',
-        },
-    ];
- 
-    // ── Ejecutar reglas (mismo patrón que btnGuardarPaciente) ────
-    for (const regla of reglas) {
-        const el    = document.querySelector(`#tabAnamnesis [name="${regla.name}"]`);
-        const valor = el ? el.value.trim() : '';
- 
-        // Requerido
-        if (regla.requerido && !valor) {
-            CatalogTable.showNotification(
-                `El campo "${regla.label}" es obligatorio`,
-                'error'
-            );
-            el?.focus();
-            // Cambiar al tab de anamnesis si no está activo
-            cambiarTab('modalPaciente', 'tabAnamnesis');
-            return false;
+      // 1. Poblar select de tipo de sangre
+      const selectSangre = document.getElementById("selectTipoSangre");
+      if (selectSangre && data.tipos_sangre) {
+        selectSangre.innerHTML = '<option value="">Seleccionar</option>';
+        data.tipos_sangre.forEach((ts) => {
+          const opt = document.createElement("option");
+          opt.value = ts.id_tipo_sangre;
+          opt.textContent = ts.tipo_sangre;
+          selectSangre.appendChild(opt);
+        });
+      }
+
+      // 2. Guardar catálogo de antecedentes en memoria
+      if (data.antecedentes_catalogo) {
+        catalogoAntecedentes = data.antecedentes_catalogo;
+      }
+    })
+    .catch(() => console.warn("No se pudieron cargar catálogos de historial"));
+}
+
+// ── Renderizar chips de antecedentes agrupados por tipo ───────────
+function renderChipsAntecedentes(seleccionados = []) {
+  const contenedor = document.getElementById("contenedorAntecedentes");
+  if (!contenedor || !catalogoAntecedentes.length) return;
+
+  // Agrupar por tipo
+  const grupos = {};
+  catalogoAntecedentes.forEach((ant) => {
+    if (!grupos[ant.tipo]) grupos[ant.tipo] = [];
+    grupos[ant.tipo].push(ant);
+  });
+
+  const idsSeleccionados = seleccionados.map((id) => parseInt(id));
+
+  let html = "";
+  Object.entries(grupos).forEach(([tipo, items]) => {
+    html += `<div class="antecedentes-grupo">
+            <p class="antecedentes-grupo-titulo">${tipo}</p>
+            <div class="chips-container">`;
+
+    items.forEach((ant) => {
+      const marcado = idsSeleccionados.includes(ant.id_antecedente)
+        ? "chip--activo"
+        : "";
+      const alerta =
+        parseInt(ant.implica_alerta_medica) === 1 ? "chip--alerta" : "";
+      const alertaIcon =
+        parseInt(ant.implica_alerta_medica) === 1
+          ? '<i class="ri-alert-line chip-alerta-icon"></i>'
+          : "";
+
+      html += `
+                <div class="chip ${marcado} ${alerta}"
+                     data-id="${ant.id_antecedente}"
+                     data-alerta="${ant.implica_alerta_medica}"
+                     onclick="toggleChip(this)"
+                     title="${ant.implica_alerta_medica == 1 ? "Implica alerta médica" : ""}">
+                    ${alertaIcon}
+                    ${escHtmlAnamnesis(ant.nombre_antecedente)}
+                </div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  contenedor.innerHTML = html;
+}
+
+// ── Toggle de chip (marcar/desmarcar) ─────────────────────────────
+function toggleChip(chip) {
+  // No hacer nada en modo ver (readonly)
+  const modal = document.getElementById("modalPaciente");
+  if (modal && modal.classList.contains("modal--readonly")) return;
+
+  chip.classList.toggle("chip--activo");
+}
+
+// ── Poblar tab Historial Clínico ──────────────────────────────────
+function poblarHistorial(datos) {
+  
+  // Select tipo de sangre
+  const selectSangre = document.getElementById("selectTipoSangre");
+  if (selectSangre) selectSangre.value = datos.id_tipo_sangre ?? "";
+
+  // Chips de antecedentes
+  renderChipsAntecedentes(datos._antecedentes ?? []);
+
+  // Notas del historial
+  const notas = document.querySelector('[name="notas_historial"]');
+  if (notas) notas.value = datos.notas_historial ?? "";
+}
+
+// ── Limpiar tab Historial ─────────────────────────────────────────
+function limpiarHistorial() {
+  const selectSangre = document.getElementById("selectTipoSangre");
+  if (selectSangre) selectSangre.value = "";
+
+  renderChipsAntecedentes([]);
+
+  const notas = document.querySelector('[name="notas_historial"]');
+  if (notas) notas.value = "";
+}
+
+// ── Recolectar campos del historial para el FormData ──────────────
+function recolectarHistorial(formData) {
+  // Tipo de sangre
+  const selectSangre = document.getElementById("selectTipoSangre");
+  if (selectSangre && !formData.has("id_tipo_sangre")) {
+    formData.append("id_tipo_sangre", selectSangre.value);
+  }
+
+  // Antecedentes seleccionados (chips marcados)
+  const chipsActivos = document.querySelectorAll(
+    "#contenedorAntecedentes .chip--activo",
+  );
+  chipsActivos.forEach((chip) => {
+    formData.append("antecedentes_ids[]", chip.dataset.id);
+  });
+
+  // Notas
+  const notas = document.querySelector('[name="notas_historial"]');
+  if (notas && !formData.has("notas_historial")) {
+    formData.append("notas_historial", notas.value);
+  }
+}
+
+// ── Helper escape HTML ────────────────────────────────────────────
+function escHtmlAnamnesis(str) {
+  const d = document.createElement("div");
+  d.textContent = str ?? "";
+  return d.innerHTML;
+}
+
+function validarAnamnesis() {
+  const reglas = [
+    // ── Enfermedades crónicas (opcional, solo texto) ─────────
+    {
+      name: "enfermedades_cronicas",
+      label: "Enfermedades crónicas",
+      requerido: false,
+      regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s,.()\-\/]+$/u,
+      msgRegex:
+        'El campo "Enfermedades crónicas" contiene caracteres no permitidos',
+    },
+
+    // ── Antecedentes familiares (opcional, solo texto) ───────
+    {
+      name: "antecedentes_familiares",
+      label: "Antecedentes familiares",
+      requerido: false,
+      regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s,.()\-\/]+$/u,
+      msgRegex:
+        'El campo "Antecedentes familiares" contiene caracteres no permitidos',
+    },
+
+    // ── Salud general (opcional, valores permitidos) ─────────
+    {
+      name: "salud_general",
+      label: "Salud general",
+      requerido: false,
+      validar: (valor) => {
+        const permitidos = ["", "mala", "buena", "muy_buena", "excelente"];
+        if (!permitidos.includes(valor)) {
+          return 'Selecciona una opción válida para "Salud general"';
         }
- 
-        // Regex (solo si tiene valor)
-        if (valor && regla.regex && !regla.regex.test(valor)) {
-            CatalogTable.showNotification(regla.msgRegex, 'error');
-            el?.focus();
-            cambiarTab('modalPaciente', 'tabAnamnesis');
-            return false;
+        return null;
+      },
+    },
+
+    // ── Actividad física (opcional, valores permitidos) ──────
+    {
+      name: "actividad_fisica",
+      label: "Actividad física",
+      requerido: false,
+      validar: (valor) => {
+        const permitidos = ["", "sedentario", "ligero", "activo", "muy_activo"];
+        if (!permitidos.includes(valor)) {
+          return 'Selecciona una opción válida para "Actividad física"';
         }
- 
-        // Validación personalizada (solo si tiene valor o es requerida)
-        if (regla.validar) {
-            const error = regla.validar(valor);
-            if (error) {
-                CatalogTable.showNotification(error, 'error');
-                el?.focus();
-                cambiarTab('modalPaciente', 'tabAnamnesis');
-                return false;
-            }
+        return null;
+      },
+    },
+
+    // ── Consumo de agua (opcional, valores permitidos) ───────
+    {
+      name: "consumo_agua",
+      label: "Consumo de agua",
+      requerido: false,
+      validar: (valor) => {
+        const permitidos = ["", "muy_poca", "poca", "regular", "mucha"];
+        if (!permitidos.includes(valor)) {
+          return 'Selecciona una opción válida para "Consumo de agua"';
         }
+        return null;
+      },
+    },
+
+    // ── Número de comidas (opcional, entero 1-10) ────────────
+    {
+      name: "numero_comidas",
+      label: "Número de comidas al día",
+      requerido: false,
+      validar: (valor) => {
+        if (valor === "" || valor === null) return null;
+        const num = parseInt(valor, 10);
+        if (isNaN(num) || !Number.isInteger(num)) {
+          return 'El campo "Número de comidas" debe ser un número entero';
+        }
+        if (num < 1 || num > 10) {
+          return 'El campo "Número de comidas" debe estar entre 1 y 10';
+        }
+        return null;
+      },
+    },
+
+    // ── Veces de cepillado (opcional, entero 0-10) ───────────
+    {
+      name: "veces_cepillado",
+      label: "Veces que se cepilla al día",
+      requerido: false,
+      validar: (valor) => {
+        if (valor === "" || valor === null) return null;
+        const num = parseInt(valor, 10);
+        if (isNaN(num) || !Number.isInteger(num)) {
+          return 'El campo "Veces que se cepilla" debe ser un número entero';
+        }
+        if (num < 0 || num > 10) {
+          return 'El campo "Veces que se cepilla" debe estar entre 0 y 10';
+        }
+        return null;
+      },
+    },
+
+    // ── Historial de extracciones (opcional, solo texto) ─────
+    {
+      name: "historial_extracciones",
+      label: "Historial de extracciones",
+      requerido: false,
+      regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s,.()\-\/]+$/u,
+      msgRegex:
+        'El campo "Historial de extracciones" contiene caracteres no permitidos',
+    },
+  ];
+
+  // ── Ejecutar reglas (mismo patrón que btnGuardarPaciente) ────
+  for (const regla of reglas) {
+    const el = document.querySelector(`#tabAnamnesis [name="${regla.name}"]`);
+    const valor = el ? el.value.trim() : "";
+
+    // Requerido
+    if (regla.requerido && !valor) {
+      CatalogTable.showNotification(
+        `El campo "${regla.label}" es obligatorio`,
+        "error",
+      );
+      el?.focus();
+      // Cambiar al tab de anamnesis si no está activo
+      cambiarTab("modalPaciente", "tabAnamnesis");
+      return false;
     }
- 
-    // ── Validar checkboxes (solo que sean 0 o 1) ─────────────────
-    const checkboxes = [
-        'alergia_latex', 'toma_alcohol', 'fuma',
-        'sensibilidad_dental', 'bruxismo', 'ulceras_frecuentes'
-    ];
-    for (const campo of checkboxes) {
-        const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
-        if (el && el.type !== 'checkbox') {
-            CatalogTable.showNotification(
-                `El campo "${campo}" no es válido`, 'error'
-            );
-            return false;
-        }
+
+    // Regex (solo si tiene valor)
+    if (valor && regla.regex && !regla.regex.test(valor)) {
+      CatalogTable.showNotification(regla.msgRegex, "error");
+      el?.focus();
+      cambiarTab("modalPaciente", "tabAnamnesis");
+      return false;
     }
- 
-    return true;
+
+    // Validación personalizada (solo si tiene valor o es requerida)
+    if (regla.validar) {
+      const error = regla.validar(valor);
+      if (error) {
+        CatalogTable.showNotification(error, "error");
+        el?.focus();
+        cambiarTab("modalPaciente", "tabAnamnesis");
+        return false;
+      }
+    }
+  }
+
+  // ── Validar checkboxes (solo que sean 0 o 1) ─────────────────
+  const checkboxes = [
+    "alergia_latex",
+    "toma_alcohol",
+    "fuma",
+    "sensibilidad_dental",
+    "bruxismo",
+    "ulceras_frecuentes",
+  ];
+  for (const campo of checkboxes) {
+    const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
+    if (el && el.type !== "checkbox") {
+      CatalogTable.showNotification(
+        `El campo "${campo}" no es válido`,
+        "error",
+      );
+      return false;
+    }
+  }
+
+  return true;
 }
 
 // ── Cambiar estatus ────────────────────────────────────────────────
@@ -785,100 +943,105 @@ function cargarCPyPreseleccionar(codigoPostal, coloniaActual) {
 
 /* Mapear los campos de anamnesis del paciente a los inputs del tab Anamnesis.*/
 function poblarAnamnesis(datos) {
- 
-    // Campos de texto / select
-    const campos = [
-        'enfermedades_cronicas',
-        'antecedentes_familiares',
-        'salud_general',
-        'actividad_fisica',
-        'consumo_agua',
-        'historial_extracciones',
-    ];
- 
-    campos.forEach(campo => {
-        const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
-        if (el) el.value = datos[`anam_${campo}`] ?? '';
-    });
- 
-    // Número de comidas y veces de cepillado
-    const numComidas = document.querySelector('#tabAnamnesis [name="numero_comidas"]');
-    if (numComidas) numComidas.value = datos.anam_numero_comidas ?? '';
- 
-    const vecesCep = document.querySelector('#tabAnamnesis [name="veces_cepillado"]');
-    if (vecesCep) vecesCep.value = datos.anam_veces_cepillado ?? 0;
- 
-    // Checkboxes booleanos
-    const booleanos = [
-        'alergia_latex',
-        'toma_alcohol',
-        'fuma',
-        'sensibilidad_dental',
-        'bruxismo',
-        'ulceras_frecuentes',
-    ];
- 
-    booleanos.forEach(campo => {
-        const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
-        if (el) el.checked = !!datos[`anam_${campo}`];
-    });
+  // Campos de texto / select
+  const campos = [
+    "enfermedades_cronicas",
+    "antecedentes_familiares",
+    "salud_general",
+    "actividad_fisica",
+    "consumo_agua",
+    "historial_extracciones",
+  ];
+
+  campos.forEach((campo) => {
+    const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
+    if (el) el.value = datos[`anam_${campo}`] ?? "";
+  });
+
+  // Número de comidas y veces de cepillado
+  const numComidas = document.querySelector(
+    '#tabAnamnesis [name="numero_comidas"]',
+  );
+  if (numComidas) numComidas.value = datos.anam_numero_comidas ?? "";
+
+  const vecesCep = document.querySelector(
+    '#tabAnamnesis [name="veces_cepillado"]',
+  );
+  if (vecesCep) vecesCep.value = datos.anam_veces_cepillado ?? 0;
+
+  // Checkboxes booleanos
+  const booleanos = [
+    "alergia_latex",
+    "toma_alcohol",
+    "fuma",
+    "sensibilidad_dental",
+    "bruxismo",
+    "ulceras_frecuentes",
+  ];
+
+  booleanos.forEach((campo) => {
+    const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
+    if (el) el.checked = !!datos[`anam_${campo}`];
+  });
 }
- 
+
 /**
  * Recolectar todos los campos del tab Anamnesis y agregarlos al FormData.
  * Se llama desde el listener de btnGuardarPaciente antes del fetch POST.
  */
 function recolectarAnamnesis(formData) {
- 
-    // Campos de texto / textarea / select
-    const textos = [
-        'enfermedades_cronicas',
-        'antecedentes_familiares',
-        'salud_general',
-        'actividad_fisica',
-        'consumo_agua',
-        'historial_extracciones',
-        'numero_comidas',
-        'veces_cepillado',
-    ];
- 
-    textos.forEach(campo => {
-        const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
-        if (el && !formData.has(campo)) {
-            formData.append(campo, el.value ?? '');
-        }
-    });
- 
-    // Checkboxes booleanos — enviar "1" si marcado, "0" si no
-    const booleanos = [
-        'alergia_latex',
-        'toma_alcohol',
-        'fuma',
-        'sensibilidad_dental',
-        'bruxismo',
-        'ulceras_frecuentes',
-    ];
- 
-    booleanos.forEach(campo => {
-        const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
-        // Siempre agregar el valor, esté o no marcado
-        if (!formData.has(campo)) {
-            formData.append(campo, el && el.checked ? '1' : '0');
-        }
-    });
+  // Campos de texto / textarea / select
+  const textos = [
+    "enfermedades_cronicas",
+    "antecedentes_familiares",
+    "salud_general",
+    "actividad_fisica",
+    "consumo_agua",
+    "historial_extracciones",
+    "numero_comidas",
+    "veces_cepillado",
+  ];
+
+  textos.forEach((campo) => {
+    const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
+    if (el && !formData.has(campo)) {
+      formData.append(campo, el.value ?? "");
+    }
+  });
+
+  // Checkboxes booleanos — enviar "1" si marcado, "0" si no
+  const booleanos = [
+    "alergia_latex",
+    "toma_alcohol",
+    "fuma",
+    "sensibilidad_dental",
+    "bruxismo",
+    "ulceras_frecuentes",
+  ];
+
+  booleanos.forEach((campo) => {
+    const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
+    // Siempre agregar el valor, esté o no marcado
+    if (!formData.has(campo)) {
+      formData.append(campo, el && el.checked ? "1" : "0");
+    }
+  });
 }
- 
+
 /**
  * Limpiar el tab de Anamnesis al abrir el modal en modo "Nuevo".
  * Agregar llamada en abrirModalNuevoPaciente().
  */
 function limpiarAnamnesis() {
-    document.querySelectorAll('#tabAnamnesis input, #tabAnamnesis select, #tabAnamnesis textarea')
-        .forEach(el => {
-            if (el.type === 'checkbox') {
-                el.checked = false;
-            } else {
-                el.value = '';
-            }
-        });
+  document
+    .querySelectorAll(
+      "#tabAnamnesis input, #tabAnamnesis select, #tabAnamnesis textarea",
+    )
+    .forEach((el) => {
+      if (el.type === "checkbox") {
+        el.checked = false;
+      } else {
+        el.value = "";
+      }
+    });
 }

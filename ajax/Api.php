@@ -319,6 +319,10 @@ switch ($accion) {
         responder(true, 'OK', $controller->resumen());
         break;
 
+    case 'get_catalogos_historial':
+        responder(true, 'OK', $model->getCatalogosHistorial());
+        break;
+
     // ── Acción no reconocida ──────────────────────────────────────
     default:
         http_response_code(400);

@@ -227,46 +227,52 @@ $modal_id = 'modalPaciente';
         <!-- Tab 3 historial clínico -->
         <div id="tabHistorial" class="modal-tab-content">
             <div class="modal-form">
-                <!-- Tipo de sangre y antecedentes médicos -->
+
+                <!-- Tipo de sangre -->
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Tipo de sangre</label>
-                        <input type="text" name="tipo_sangre" class="form-input" placeholder="Ej: A+, B-, O+...">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Antecedentes médicos</label>
-                        <input type="text" name="antecedentes_medicos" class="form-input">
-                    </div>
-                </div>
-
-                <!-- Medicamentos actuales -->
-                <div class="form-row cols-1">
-                    <div class="form-group">
-                        <label class="form-label">Medicamentos actuales</label>
-                        <textarea name="medicamentos" class="form-input form-textarea" rows="3"
-                            placeholder="Lista los medicamentos que toma actualmente."></textarea>
+                        <select name="id_tipo_sangre" id="selectTipoSangre" class="form-select">
+                            <option value="">Seleccionar</option>
+                            <?php foreach (json_decode($catalogosJson, true)['tiposSangre'] as $ts): ?>
+                                <option value="<?php echo $ts['id_tipo_sangre']; ?>">
+                                    <?php echo htmlspecialchars($ts['tipo_sangre']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </div>
 
-                <!-- Cirugías previas -->
+                <!-- Antecedentes médicos: chips agrupados por tipo -->
                 <div class="form-row cols-1">
                     <div class="form-group">
-                        <label class="form-label">Cirugías previas</label>
-                        <textarea name="cirugias_previas" class="form-input form-textarea" rows="3"
-                            placeholder="Describe cirugías o procedimientos previos."></textarea>
+                        <label class="form-label">
+                            Antecedentes médicos
+                            <span class="antecedentes-leyenda">
+                                <span class="chip chip--alerta chip--demo">
+                                    <i class="ri-alert-line chip-alerta-icon"></i> Implica alerta médica
+                                </span>
+                            </span>
+                        </label>
+                        <!-- Los chips se renderizan dinámicamente desde JS -->
+                        <div id="contenedorAntecedentes" class="contenedor-antecedentes">
+                            <p class="antecedentes-cargando">Cargando antecedentes...</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Notas -->
+                <!-- Notas del historial -->
                 <div class="form-row cols-1">
                     <div class="form-group">
-                        <label class="form-label">Complicaciones en cirugías previas (opcional)</label>
+                        <label class="form-label">Notas del historial clínico</label>
                         <textarea name="notas_historial" class="form-input form-textarea" rows="3"
-                            placeholder="Notas adicionales del historial clínico."></textarea>
+                            placeholder="Notas adicionales, complicaciones previas, observaciones...">
+                </textarea>
                     </div>
                 </div>
+
             </div>
-        </div>
+        </div><!-- /#tabHistorial -->
 
         <!-- Tab Anamnesis -->
         <div id="tabAnamnesis" class="modal-tab-content">
