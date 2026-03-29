@@ -282,4 +282,57 @@ class PlanTratamiento
         }
         return null;
     }
+
+    /**
+     * Eliminar plan completo y su detalle. 
+     */
+    public function eliminarPlan(int $idPlan): bool
+    {
+        try {
+            $this->conn->beginTransaction();
+ 
+            // Eliminar detalle primero
+            $stmt = $this->conn->prepare(
+                "DELETE FROM detalleplantratamiento WHERE id_plan_tratamiento = :id"
+            );
+            $stmt->bindValue(':id', $idPlan, PDO::PARAM_INT);
+            $stmt->execute();
+ 
+            // Eliminar plan
+            $stmt = $this->conn->prepare(
+                "DELETE FROM plantratamiento WHERE id_plan_tratamiento = :id"
+            );
+            $stmt->bindValue(':id', $idPlan, PDO::PARAM_INT);
+            $stmt->execute();
+ 
+            $this->conn->commit();
+            return true;
+ 
+        } catch (PDOException $e) {
+            $this->conn->rollBack();
+            error_log("Error en PlanTratamiento::eliminarPlan: " . $e->getMessage());
+            return false;
+        }
+    }
+ 
+    /**
+     * Validar fecha — no puede ser futura
+     *
+     *   $errorFecha = $this->validarFecha($data['fecha_creacion'] ?? '');
+     *   if ($errorFecha) return $errorFecha;
+     */
+    private function validarFecha(string $fecha): ?string
+    {
+        if (empty($fecha)) return null; // ya validado arriba
+        try {
+            $fechaDate = new DateTime($fecha);
+            $hoy       = new DateTime('today');
+            if ($fechaDate > $hoy) {
+                return 'La fecha de creación no puede ser futura';
+            }
+        } catch (Exception $e) {
+            return 'El formato de la fecha no es válido';
+        }
+        return null;
+    }
 }

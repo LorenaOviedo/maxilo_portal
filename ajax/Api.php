@@ -413,6 +413,18 @@ switch ($accion) {
         responder($ok, $ok ? 'Procedimiento eliminado' : 'Error al eliminar procedimiento');
         break;
 
+    case 'eliminar_plan':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Método no permitido');
+
+        $idPlan = (int) ($_POST['id_plan_tratamiento'] ?? 0);
+        if (!$idPlan)
+            responder(false, 'Plan requerido');
+
+        $ok = $model->eliminarPlan($idPlan);
+        responder($ok, $ok ? 'Plan eliminado correctamente' : 'Error al eliminar el plan');
+        break;
+
     // ── Acción no reconocida ──────────────────────────────────────
     default:
         http_response_code(400);
