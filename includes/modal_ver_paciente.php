@@ -803,6 +803,12 @@ $modal_id = 'modalPaciente';
         window.cerrarModal = function (modalId) {
             if (typeof _cerrarModalOrig === 'function') _cerrarModalOrig(modalId);
             odontogramaController.desmontar();
+
+        }
+
+        if (tabId === 'tabPlanes') {
+            const num = document.getElementById('formPaciente').dataset.numeroPaciente;
+            planesController.cargar(num);
         };
     });
 </script>

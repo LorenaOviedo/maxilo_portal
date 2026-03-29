@@ -37,6 +37,8 @@ $scripts_globales = [
 <script src="<?php echo asset('js/odontogramaModel.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
 <script src="<?php echo asset('js/odontogramaController.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
 
+<script src="<?php echo asset('js/planes.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+
 
 <!-- JavaScript de la página actual -->
 <?php if (isset($page_js)): ?>
