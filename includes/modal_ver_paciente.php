@@ -794,21 +794,16 @@ $modal_id = 'modalPaciente';
 
         window.cambiarTab = function (modalId, tabId) {
             if (typeof _cambiarTabOrig === 'function') _cambiarTabOrig(modalId, tabId);
+
             if (tabId === 'tabOdontograma') {
                 const numeroPaciente = document.querySelector('#formPaciente [name="id"]')?.value || null;
                 odontogramaController.montar(numeroPaciente);
             }
-        };
 
-        window.cerrarModal = function (modalId) {
-            if (typeof _cerrarModalOrig === 'function') _cerrarModalOrig(modalId);
-            odontogramaController.desmontar();
-
-        }
-
-        if (tabId === 'tabPlanes') {
-            const num = document.getElementById('formPaciente').dataset.numeroPaciente;
-            planesController.cargar(num);
+            if (tabId === 'tabPlanes') {
+                const num = document.getElementById('formPaciente').dataset.numeroPaciente;
+                planesController.cargar(num);
+            }
         };
     });
 </script>

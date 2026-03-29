@@ -4,14 +4,6 @@
  *
  * Lógica del tab Planes de Tratamiento dentro del modal de paciente.
  * Depende de: catalogos-tabla.js (CatalogTable), API_URL
- *
- * AGREGAR en footer.php:
- * <script src="<?php echo asset('js/planes.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
- *
- * AGREGAR en modal_ver_paciente.php script (en cambiarTab):
- * if (tabId === 'tabPlanes') {
- *     const num = document.getElementById('formPaciente').dataset.numeroPaciente;
- *     planesController.cargar(num);
  * }
  */
 
