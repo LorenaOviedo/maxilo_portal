@@ -105,14 +105,14 @@ class PlanTratamiento
                 VALUES
                     (:fecha, :estatus, :notas, :paciente, :especialista)
             ");
-            $stmt->bindValue(':fecha',       $data['fecha_creacion'] ?? date('Y-m-d'));
-            $stmt->bindValue(':estatus',     (int)($data['id_estatus_tratamiento'] ?? 1), PDO::PARAM_INT);
-            $stmt->bindValue(':notas',       trim($data['notas'] ?? ''));
-            $stmt->bindValue(':paciente',    (int)$data['numero_paciente'],  PDO::PARAM_INT);
-            $stmt->bindValue(':especialista',(int)$data['id_especialista'],  PDO::PARAM_INT);
+            $stmt->bindValue(':fecha', $data['fecha_creacion'] ?? date('Y-m-d'));
+            $stmt->bindValue(':estatus', (int) ($data['id_estatus_tratamiento'] ?? 1), PDO::PARAM_INT);
+            $stmt->bindValue(':notas', trim($data['notas'] ?? ''));
+            $stmt->bindValue(':paciente', (int) $data['numero_paciente'], PDO::PARAM_INT);
+            $stmt->bindValue(':especialista', (int) $data['id_especialista'], PDO::PARAM_INT);
             $stmt->execute();
 
-            $idPlan = (int)$this->conn->lastInsertId();
+            $idPlan = (int) $this->conn->lastInsertId();
 
             // 2. Insertar detalle (array de procedimientos)
             $procedimientos = $data['procedimientos'] ?? [];
@@ -139,7 +139,7 @@ class PlanTratamiento
             WHERE id_plan_tratamiento  = :id
         ");
         $stmt->bindValue(':estatus', $nuevoEstatus, PDO::PARAM_INT);
-        $stmt->bindValue(':id',      $idPlan,       PDO::PARAM_INT);
+        $stmt->bindValue(':id', $idPlan, PDO::PARAM_INT);
 
         try {
             return $stmt->execute();
@@ -181,9 +181,9 @@ class PlanTratamiento
     public function getCatalogos(): array
     {
         return [
-            'estatus'       => $this->getEstatus(),
+            'estatus' => $this->getEstatus(),
             'especialistas' => $this->getEspecialistas(),
-            'procedimientos'=> $this->getProcedimientos(),
+            'procedimientos' => $this->getProcedimientos(),
         ];
     }
 
@@ -199,12 +199,12 @@ class PlanTratamiento
         ");
 
         foreach ($procedimientos as $proc) {
-            $stmt->bindValue(':plan',         $idPlan,                                    PDO::PARAM_INT);
-            $stmt->bindValue(':procedimiento',(int)$proc['id_procedimiento'],              PDO::PARAM_INT);
-            $stmt->bindValue(':pieza',        !empty($proc['numero_pieza'])
-                                                ? (int)$proc['numero_pieza'] : null,       PDO::PARAM_INT);
-            $stmt->bindValue(':descuento',    !empty($proc['costo_descuento'])
-                                                ? (float)$proc['costo_descuento'] : null);
+            $stmt->bindValue(':plan', $idPlan, PDO::PARAM_INT);
+            $stmt->bindValue(':procedimiento', (int) $proc['id_procedimiento'], PDO::PARAM_INT);
+            $stmt->bindValue(':pieza', !empty($proc['numero_pieza'])
+                ? (int) $proc['numero_pieza'] : null, PDO::PARAM_INT);
+            $stmt->bindValue(':descuento', !empty($proc['costo_descuento'])
+                ? (float) $proc['costo_descuento'] : null);
             $stmt->execute();
         }
     }
@@ -260,10 +260,10 @@ class PlanTratamiento
     // ── Validación ────────────────────────────────────────────────
     public function validar(array $data): ?string
     {
-        if (empty($data['numero_paciente']) || !(int)$data['numero_paciente']) {
+        if (empty($data['numero_paciente']) || !(int) $data['numero_paciente']) {
             return 'El paciente es requerido';
         }
-        if (empty($data['id_especialista']) || !(int)$data['id_especialista']) {
+        if (empty($data['id_especialista']) || !(int) $data['id_especialista']) {
             return 'El especialista es requerido';
         }
         if (empty($data['fecha_creacion'])) {
@@ -276,10 +276,15 @@ class PlanTratamiento
         }
         if (!empty($data['id_estatus_tratamiento'])) {
             $permitidos = [1, 2, 3, 4];
-            if (!in_array((int)$data['id_estatus_tratamiento'], $permitidos, true)) {
+            if (!in_array((int) $data['id_estatus_tratamiento'], $permitidos, true)) {
                 return 'El estatus del plan no es válido';
             }
         }
+
+        $errorFecha = $this->validarFecha($data['fecha_creacion'] ?? '');
+        if ($errorFecha)
+            return $errorFecha;
+
         return null;
     }
 
@@ -290,31 +295,31 @@ class PlanTratamiento
     {
         try {
             $this->conn->beginTransaction();
- 
+
             // Eliminar detalle primero
             $stmt = $this->conn->prepare(
                 "DELETE FROM detalleplantratamiento WHERE id_plan_tratamiento = :id"
             );
             $stmt->bindValue(':id', $idPlan, PDO::PARAM_INT);
             $stmt->execute();
- 
+
             // Eliminar plan
             $stmt = $this->conn->prepare(
                 "DELETE FROM plantratamiento WHERE id_plan_tratamiento = :id"
             );
             $stmt->bindValue(':id', $idPlan, PDO::PARAM_INT);
             $stmt->execute();
- 
+
             $this->conn->commit();
             return true;
- 
+
         } catch (PDOException $e) {
             $this->conn->rollBack();
             error_log("Error en PlanTratamiento::eliminarPlan: " . $e->getMessage());
             return false;
         }
     }
- 
+
     /**
      * Validar fecha — no puede ser futura
      *
@@ -323,10 +328,11 @@ class PlanTratamiento
      */
     private function validarFecha(string $fecha): ?string
     {
-        if (empty($fecha)) return null; // ya validado arriba
+        if (empty($fecha))
+            return null; // ya validado arriba
         try {
             $fechaDate = new DateTime($fecha);
-            $hoy       = new DateTime('today');
+            $hoy = new DateTime('today');
             if ($fechaDate > $hoy) {
                 return 'La fecha de creación no puede ser futura';
             }
