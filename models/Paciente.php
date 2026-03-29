@@ -321,7 +321,7 @@ class Paciente
         }
     }
 
-    
+
     // ==================== ESCRITURA ====================
 
     /**
@@ -466,15 +466,18 @@ class Paciente
             }
 
             // 4. Actualizar historial
-            if (isset($data['notas']) || isset($data['tipo_sangre'])) {
+            if (isset($data['notas_historial']) || isset($data['id_tipo_sangre'])) {
                 $this->actualizarHistorial($id, $data);
             }
 
-            // Guardar antecedentes seleccionados
+            // 5. Guardar antecedentes seleccionados
             $historialActual = $this->getHistorial($id);
             if ($historialActual) {
                 $this->guardarAntecedentes($historialActual['id_historial'], $data);
             }
+
+            // 6. Crear o actualizar anamnesis
+            $this->sincronizarAnamnesis($id, $data);
 
             $this->conn->commit();
             return true;
@@ -649,13 +652,17 @@ class Paciente
     private function actualizarHistorial($numeroPaciente, $data)
     {
         $stmt = $this->conn->prepare("
-            UPDATE historialmedico SET
-                id_tipo_sangre = :sangre,
-                notas          = :notas
-            WHERE numero_paciente = :paciente
-        ");
-        $stmt->bindValue(':sangre', !empty($data['id_tipo_sangre']) ? (int) $data['id_tipo_sangre'] : null, PDO::PARAM_INT);
-        $stmt->bindValue(':notas', $this->normalizar($data['notas'] ?? ''));
+        UPDATE historialmedico SET
+            id_tipo_sangre = :sangre,
+            notas          = :notas
+        WHERE numero_paciente = :paciente
+    ");
+        $stmt->bindValue(
+            ':sangre',
+            !empty($data['id_tipo_sangre']) ? (int) $data['id_tipo_sangre'] : null,
+            PDO::PARAM_INT
+        );
+        $stmt->bindValue(':notas', trim($data['notas_historial'] ?? ''));
         $stmt->bindValue(':paciente', (int) $numeroPaciente, PDO::PARAM_INT);
         $stmt->execute();
     }
@@ -849,7 +856,7 @@ class Paciente
             return [];
         }
     }
-   
+
 
     //Validaciones para el módulo de pacientes
     public function validar(array $data): ?string
