@@ -44,6 +44,7 @@ const planesController = {
         this._readonly       = readonly;
 
         await this.inicializar();
+        this._poblarSelects();
         this._mostrarLoading(true);
 
         try {
