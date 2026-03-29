@@ -879,8 +879,8 @@
     border-radius: 20px;
     font-size: 12px;
     font-weight: 500;
-    border: 1.5px solid var(--color-border-secondary);
-    background: var(--color-background-primary);
+    border: 1.5px solid #c5c3bb !important;
+    background: #f1efe8 !important;
     color: var(--color-text-secondary);
     cursor: pointer;
     user-select: none;
@@ -895,15 +895,15 @@
  
 /* Chip seleccionado */
 .chip--activo {
-    background: rgba(32, 168, 158, 0.12);
-    border-color: #20a89e;
-    color: #0f6e56;
+    border-color: #20a89e !important;
+    background: rgba(32, 168, 158, 0.12) !important;
+    color: #0f6e56 !important;
 }
  
 /* Chip con alerta médica (no seleccionado) */
 .chip--alerta {
-    border-color: #f0997b;
-    color: #993c1d;
+    border-color: #f0997b !important;
+    background: #faece7 !important;
 }
  
 .chip--alerta:hover {
@@ -913,9 +913,9 @@
  
 /* Chip con alerta médica Y seleccionado */
 .chip--alerta.chip--activo {
-    background: rgba(216, 90, 48, 0.12);
-    border-color: #d85a30;
-    color: #993c1d;
+    border-color: #d85a30 !important;
+    background: rgba(216, 90, 48, 0.12) !important;
+    color: #993c1d !important;
 }
  
 /* Ícono de alerta dentro del chip */
