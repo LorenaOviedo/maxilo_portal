@@ -32,7 +32,6 @@ const planesController = {
             if (!data.success) return;
 
             this._catalogos = data;
-            this._poblarSelects();
         } catch (err) {
             console.warn('planesController: no se pudieron cargar catálogos', err);
         }
