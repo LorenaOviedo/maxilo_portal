@@ -302,8 +302,15 @@ function mapearDatosPaciente(p) {
 }
 
 // ── Modales ───────────────────────────────────────────────────────
+
+function resetearEstadoModalPaciente() {
+  cambiarTab(MODAL_PAC_ID, "tabInfoPersonal");
+  planesController?.limpiar?.();
+}
+
 function abrirModalNuevoPaciente() {
   nuevoEnModal(MODAL_PAC_ID);
+  resetearEstadoModalPaciente();
   document.querySelector('[name="pais"]').value = "MEXICO";
   document.getElementById("modalPacienteNumero").textContent = "";
   document.getElementById("formPaciente").dataset.numeroPaciente = "";
@@ -327,6 +334,7 @@ function abrirModalVerPaciente(id) {
   cargarPaciente(id, (p) => {
     const mapped = mapearDatosPaciente(p);
     verEnModal(MODAL_PAC_ID, mapped);
+    resetearEstadoModalPaciente();
     document.getElementById("modalPacienteNumero").textContent      = p.id_paciente_expediente;
     document.getElementById("formPaciente").dataset.numeroPaciente  = p.numero_paciente;
     document.querySelector('[name="pais"]').value = "MEXICO";
