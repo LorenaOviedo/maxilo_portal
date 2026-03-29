@@ -913,9 +913,9 @@
  
 /* Chip con alerta médica Y seleccionado */
 .chip--alerta.chip--activo {
-    border-color: #d85a30 !important;
-    background: rgba(216, 90, 48, 0.12) !important;
-    color: #993c1d !important;
+    border-color: #20a89e !important;
+    background: rgba(32, 168, 158, 0.12) !important;
+    color: #0f6e56 !important;
 }
  
 /* Ícono de alerta dentro del chip */
