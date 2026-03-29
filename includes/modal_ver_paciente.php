@@ -254,10 +254,8 @@ $modal_id = 'modalPaciente';
                                 </span>
                             </span>
                         </label>
-                        <!-- Los chips se renderizan dinámicamente desde JS -->
-                        <div id="contenedorAntecedentes" class="contenedor-antecedentes">
-                            <p class="antecedentes-cargando">Cargando antecedentes...</p>
-                        </div>
+                        <!-- Los chips se renderizan-->
+                        <div id="app-antecedentes"></div>
                     </div>
                 </div>
 

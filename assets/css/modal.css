@@ -17,7 +17,7 @@
     display: block;
 }
 
-/*CONTENEDOR DEL MODAL CONTAINER*/
+/*CONTENEDOR DEL MODAL*/
 .modal-container {
     display: none; /* Oculto*/
     position: fixed;

@@ -15,62 +15,65 @@ $scripts_globales = [
 ];
 
 ?>
-    </div> <!-- Cierre de dashboard-container -->
-    
-    <!-- jQuery (pendiente producción) -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    
-    <!-- JavaScript general -->
-    <script src="<?php echo asset('js/burger-menu.js'); ?>"></script>
+</div> <!-- Cierre de dashboard-container -->
 
-    <script src="<?php echo asset('js/catalogos-tabla.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
-    <script src="<?php echo asset('js/modal.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+<!-- jQuery (pendiente producción) -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
-    <!-- Vue.js — debe cargarse ANTES que OdontogramaModel y OdontogramaController -->
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"></script>-->
-    <script src="<?php echo asset('js/vue.global.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+<!-- JavaScript general -->
+<script src="<?php echo asset('js/burger-menu.js'); ?>"></script>
 
-    <!-- Odontograma MVC — Model siempre ANTES que Controller -->
-    <script src="<?php echo asset('js/odontogramaModel.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
-    <script src="<?php echo asset('js/odontogramaController.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+<script src="<?php echo asset('js/catalogos-tabla.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+<script src="<?php echo asset('js/modal.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
 
-    
-    <!-- JavaScript de la página actual -->
-    <?php if (isset($page_js)): ?>
-        <?php foreach ((array)$page_js as $js): ?>
-            <script src="<?php echo asset('js/' . $js); ?>?v=<?php echo SITE_VERSION; ?>"></script>
-        <?php endforeach; ?>
-    <?php endif; ?>
-    
-    <!-- JavaScript extra -->
-    <?php if (isset($additional_js)): ?>
-        <?php echo $additional_js; ?>
-    <?php endif; ?>
+<!-- Vue.js — debe cargarse ANTES que OdontogramaModel y OdontogramaController -->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"></script>-->
+<script src="<?php echo asset('js/vue.global.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
 
-     <!-- Timeout de sesión -->
-    <script>
-        (function () {
-            const TIMEOUT_MS = <?php echo SESSION_LIFETIME * 1000; ?>;
-            const LOGOUT_URL = '<?php echo url("index.php?logout=1"); ?>';
+<script src="<?php echo asset('js/antecedentesModel.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+<script src="<?php echo asset('js/antecedentesController.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
 
-            function iniciarTimeout() {
-                return setTimeout(function () {
-                    alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
-                    window.location.href = LOGOUT_URL;
-                }, TIMEOUT_MS);
-            }
+<!-- Odontograma MVC — Model siempre ANTES que Controller -->
+<script src="<?php echo asset('js/odontogramaModel.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+<script src="<?php echo asset('js/odontogramaController.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
 
-            let sessionTimeout = iniciarTimeout();
 
-            // Resetear con cada click del usuario
-            document.addEventListener('click', function () {
-                clearTimeout(sessionTimeout);
-                sessionTimeout = iniciarTimeout();
-            });
-        })();
-    </script>
-    
-    <!-- Script para cierre de sesión, configuración del timeout 
+<!-- JavaScript de la página actual -->
+<?php if (isset($page_js)): ?>
+    <?php foreach ((array) $page_js as $js): ?>
+        <script src="<?php echo asset('js/' . $js); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<!-- JavaScript extra -->
+<?php if (isset($additional_js)): ?>
+    <?php echo $additional_js; ?>
+<?php endif; ?>
+
+<!-- Timeout de sesión -->
+<script>
+    (function () {
+        const TIMEOUT_MS = <?php echo SESSION_LIFETIME * 1000; ?>;
+        const LOGOUT_URL = '<?php echo url("index.php?logout=1"); ?>';
+
+        function iniciarTimeout() {
+            return setTimeout(function () {
+                alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+                window.location.href = LOGOUT_URL;
+            }, TIMEOUT_MS);
+        }
+
+        let sessionTimeout = iniciarTimeout();
+
+        // Resetear con cada click del usuario
+        document.addEventListener('click', function () {
+            clearTimeout(sessionTimeout);
+            sessionTimeout = iniciarTimeout();
+        });
+    })();
+</script>
+
+<!-- Script para cierre de sesión, configuración del timeout 
     <script>
         // Timeout de sesión (<?php echo SESSION_LIFETIME; ?> segundos)
         let sessionTimeout = setTimeout(function() {
@@ -88,4 +91,5 @@ $scripts_globales = [
         });
     </script>-->
 </body>
+
 </html>
