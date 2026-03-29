@@ -323,6 +323,88 @@ switch ($accion) {
         responder(true, 'OK', $model->getCatalogosHistorial());
         break;
 
+    case 'get_by_paciente':
+        $numeroPaciente = (int) ($_GET['numero_paciente'] ?? 0);
+        if (!$numeroPaciente)
+            responder(false, 'Paciente requerido');
+        responder(true, 'OK', ['planes' => $model->getByPaciente($numeroPaciente)]);
+        break;
+
+    //Planes de tratamiento    
+
+    case 'get_catalogos_planes':
+        responder(true, 'OK', $model->getCatalogos());
+        break;
+
+    case 'crear_plan':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Método no permitido');
+
+        // Decodificar procedimientos desde JSON
+        $data = $_POST;
+        if (!empty($_POST['procedimientos_json'])) {
+            $data['procedimientos'] = json_decode($_POST['procedimientos_json'], true) ?? [];
+        }
+
+        $error = $model->validar($data);
+        if ($error)
+            responder(false, $error);
+
+        $idPlan = $model->crear($data);
+        if ($idPlan) {
+            responder(true, 'Plan creado correctamente', ['id_plan' => $idPlan]);
+        } else {
+            responder(false, 'Error al crear el plan');
+        }
+        break;
+
+    case 'cambiar_estatus_plan':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Método no permitido');
+
+        $idPlan = (int) ($_POST['id_plan_tratamiento'] ?? 0);
+        $nuevoEstatus = (int) ($_POST['id_estatus_tratamiento'] ?? 0);
+
+        if (!$idPlan || !$nuevoEstatus)
+            responder(false, 'Parámetros inválidos');
+
+        $ok = $model->cambiarEstatus($idPlan, $nuevoEstatus);
+        responder($ok, $ok ? 'Estatus actualizado' : 'Error al actualizar estatus');
+        break;
+
+    case 'agregar_procedimiento':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Método no permitido');
+
+        $idPlan = (int) ($_POST['id_plan_tratamiento'] ?? 0);
+        if (!$idPlan)
+            responder(false, 'Plan requerido');
+
+        $proc = [
+            'id_procedimiento' => (int) ($_POST['id_procedimiento'] ?? 0),
+            'numero_pieza' => $_POST['numero_pieza'] ?? null,
+            'costo_descuento' => $_POST['costo_descuento'] ?? null,
+        ];
+
+        if (!$proc['id_procedimiento'])
+            responder(false, 'Procedimiento requerido');
+
+        $ok = $model->agregarProcedimiento($idPlan, $proc);
+        responder($ok, $ok ? 'Procedimiento agregado' : 'Error al agregar procedimiento');
+        break;
+
+    case 'eliminar_procedimiento':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Método no permitido');
+
+        $idDetalle = (int) ($_POST['id_detalle_plan'] ?? 0);
+        if (!$idDetalle)
+            responder(false, 'Detalle requerido');
+
+        $ok = $model->eliminarProcedimiento($idDetalle);
+        responder($ok, $ok ? 'Procedimiento eliminado' : 'Error al eliminar procedimiento');
+        break;
+
     // ── Acción no reconocida ──────────────────────────────────────
     default:
         http_response_code(400);

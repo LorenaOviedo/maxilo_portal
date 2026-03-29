@@ -404,91 +404,139 @@ $modal_id = 'modalPaciente';
         <!-- Tab 4 planes de tratamiento -->
         <div id="tabPlanes" class="modal-tab-content">
             <div class="modal-form">
-                <!-- Botón agregar nuevo plan -->
+
+                <!-- Toolbar -->
                 <div class="tab-toolbar">
-                    <button type="button" class="btn-modal-add" onclick="agregarPlan()">
-                        Agregar nuevo <i class="fas fa-plus"></i>
+                    <button type="button" class="btn-modal-add" id="btnNuevoPlan">
+                        <i class="ri-add-line"></i> Nuevo plan
                     </button>
                 </div>
 
-                <!-- Contenedor de planes (se llena dinámicamente) -->
-                <div id="listaPlanesContainer">
-                    <!-- Ejemplo de tarjeta de plan -->
-                    <div class="plan-card form-card">
-                        <div class="plan-card-header">
-                            <div class="plan-card-info">
-                                <span class="plan-nombre">Plan de Ortodoncia</span>
-                                <span class="plan-descripcion">Tratamiento de ortodoncia con brackets metálicos</span>
-                                <span class="plan-meta"><strong>Creado:</strong> 08/08/2025</span>
-                                <span class="plan-meta"><strong>Estatus:</strong> En Progreso</span>
+                <!-- Formulario nuevo plan (oculto por defecto) -->
+                <div id="formNuevoPlanContainer" style="display:none;">
+                    <div class="plan-form-card">
+                        <h4 class="plan-form-titulo">Nuevo plan de tratamiento</h4>
+
+                        <div class="form-row cols-2">
+                            <div class="form-group">
+                                <label class="form-label">Fecha de creación <span class="required">*</span></label>
+                                <input type="date" id="planFecha" class="form-input">
                             </div>
-                            <div class="plan-card-totales">
-                                <span><strong>Costo total:</strong> $17700.00</span>
-                                <span><strong>Pagado:</strong> $17000.00</span>
+                            <div class="form-group">
+                                <label class="form-label">Especialista <span class="required">*</span></label>
+                                <select id="planEspecialista" class="form-select">
+                                    <option value="">Seleccionar</option>
+                                </select>
                             </div>
                         </div>
 
-                        <!-- Tabla de procedimientos del plan -->
-                        <table class="plan-table">
-                            <thead>
-                                <tr>
-                                    <th>PROCEDIMIENTO</th>
-                                    <th>FECHA</th>
-                                    <th>COSTO</th>
-                                    <th>ESTATUS</th>
-                                    <th>ACCIONES</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>ESTUDIO RADIOGRAFÍA CEFALICA LATERAL</td>
-                                    <td>07/10/2025</td>
-                                    <td>$2000.00</td>
-                                    <td><span class="badge-estatus completado">COMPLETADO</span></td>
-                                    <td class="acciones-cell">
-                                        <button class="btn-accion editar" onclick="editarProcedimientoPlan(1)"><i
-                                                class="ri-edit-box-line"></i></button>
-                                        <button class="btn-accion eliminar" onclick="eliminarProcedimientoPlan(1)"><i
-                                                class="ri-delete-bin-6-line"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>CIMENTACIÓN DE BRACKETS</td>
-                                    <td>07/10/2025</td>
-                                    <td>$14000.00</td>
-                                    <td><span class="badge-estatus completado">COMPLETADO</span></td>
-                                    <td class="acciones-cell">
-                                        <button class="btn-accion editar" onclick="editarProcedimientoPlan(2)"><i
-                                                class="ri-edit-box-line"></i></button>
-                                        <button class="btn-accion eliminar" onclick="eliminarProcedimientoPlan(2)"><i
-                                                class="ri-delete-bin-6-line"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>AJUSTE MENSUAL</td>
-                                    <td>08/12/2025</td>
-                                    <td>$700.00</td>
-                                    <td><span class="badge-estatus pendiente">PENDIENTE</span></td>
-                                    <td class="acciones-cell">
-                                        <button class="btn-accion editar" onclick="editarProcedimientoPlan(3)"><i
-                                                class="ri-edit-box-line"></i></button>
-                                        <button class="btn-accion eliminar" onclick="eliminarProcedimientoPlan(3)"><i
-                                                class="ri-delete-bin-6-line"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div><!-- /.plan-card -->
-                </div><!-- /#listaPlanesContainer -->
+                        <div class="form-row cols-2">
+                            <div class="form-group">
+                                <label class="form-label">Estatus</label>
+                                <select id="planEstatus" class="form-select">
+                                    <option value="">Seleccionar</option>
+                                </select>
+                            </div>
+                        </div>
 
-                <!-- Botón imprimir -->
+                        <div class="form-row cols-1">
+                            <div class="form-group">
+                                <label class="form-label">Notas del plan</label>
+                                <textarea id="planNotas" class="form-input form-textarea" rows="2"
+                                    placeholder="Observaciones, descripción del tratamiento..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Procedimientos del plan -->
+                        <div class="plan-procedimientos-section">
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                <label class="form-label" style="margin:0;">Procedimientos</label>
+                                <button type="button" class="btn-agregar-proc" id="btnAgregarProcPlan">
+                                    <i class="ri-add-line"></i> Agregar procedimiento
+                                </button>
+                            </div>
+
+                            <!-- Fila para agregar procedimiento -->
+                            <div id="rowAgregarProc" class="proc-add-row" style="display:none;">
+                                <select id="procSelect" class="form-select proc-select">
+                                    <option value="">Seleccionar procedimiento...</option>
+                                </select>
+                                <input type="number" id="procPieza" class="form-input proc-pieza"
+                                    placeholder="No. pieza" min="11" max="48">
+                                <input type="number" id="procDescuento" class="form-input proc-descuento"
+                                    placeholder="Precio especial" step="0.01" min="0">
+                                <button type="button" class="btn-confirmar-proc" id="btnConfirmarProc">
+                                    <i class="ri-check-line"></i>
+                                </button>
+                                <button type="button" class="btn-cancelar-proc" id="btnCancelarProc">
+                                    <i class="ri-close-line"></i>
+                                </button>
+                            </div>
+
+                            <!-- Lista de procedimientos agregados -->
+                            <table class="plan-table" id="tablaProcsPlan">
+                                <thead>
+                                    <tr>
+                                        <th>PROCEDIMIENTO</th>
+                                        <th>PIEZA</th>
+                                        <th>PRECIO BASE</th>
+                                        <th>PRECIO ESPECIAL</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bodyProcsPlan">
+                                    <tr id="rowSinProcs">
+                                        <td colspan="5" style="text-align:center; color:#adb5bd; padding:16px;">
+                                            Sin procedimientos agregados
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" style="text-align:right; font-weight:600; padding:8px 12px;">
+                                            Total estimado:
+                                        </td>
+                                        <td id="totalPlan" style="font-weight:700; color:#20a89e; padding:8px 12px;">
+                                            $0.00
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Botones del formulario -->
+                        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:16px;">
+                            <button type="button" class="btn-modal-cancel" id="btnCancelarPlan">Cancelar</button>
+                            <button type="button" class="btn-modal-save" id="btnGuardarPlan">
+                                <i class="ri-save-line"></i> Guardar plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de planes existentes -->
+                <div id="listaPlanesContainer">
+                    <div id="planesLoading" style="text-align:center; padding:30px; color:#adb5bd; display:none;">
+                        <i class="ri-loader-4-line" style="font-size:24px;"></i>
+                        <p>Cargando planes...</p>
+                    </div>
+                    <div id="planesSinDatos" style="text-align:center; padding:30px; color:#adb5bd;">
+                        <i class="ri-file-list-3-line" style="font-size:36px; display:block; margin-bottom:8px;"></i>
+                        <p>Sin planes de tratamiento registrados</p>
+                    </div>
+                </div>
+
+                <!-- Footer acciones -->
                 <div class="tab-footer-actions">
                     <button type="button" class="btn-imprimir" onclick="imprimirPlanes()">
-                        Imprimir
+                        <i class="ri-printer-line"></i> Imprimir
                     </button>
                 </div>
+
             </div>
-        </div>
+        </div><!-- /#tabPlanes -->
 
         <!-- Tab 5 odontograma -->
         <div id="tabOdontograma" class="modal-tab-content">
