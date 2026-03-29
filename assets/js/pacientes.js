@@ -349,6 +349,7 @@ function abrirModalEditarPaciente(id) {
   cargarPaciente(id, (p) => {
     const mapped = mapearDatosPaciente(p);
     editarEnModal(MODAL_PAC_ID, mapped);
+    resetearEstadoModalPaciente();
     document.getElementById("modalPacienteNumero").textContent      = p.id_paciente_expediente;
     document.getElementById("formPaciente").dataset.numeroPaciente  = p.numero_paciente;
     document.querySelector('[name="pais"]').value = "MEXICO";
