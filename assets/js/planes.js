@@ -411,30 +411,35 @@ const planesController = {
         // Especialistas
         const selEsp = document.getElementById('planEspecialista');
         if (selEsp && this._catalogos?.especialistas) {
+            selEsp.innerHTML = '<option value="">Seleccionar</option>'; // limpiar primero
             this._catalogos.especialistas.forEach(e => {
-                const opt = document.createElement('option');
+                const opt       = document.createElement('option');
                 opt.value       = e.id_especialista;
                 opt.textContent = e.nombre_completo;
                 selEsp.appendChild(opt);
             });
         }
+ 
         // Estatus
         const selEst = document.getElementById('planEstatus');
         if (selEst && this._catalogos?.estatus) {
+            selEst.innerHTML = '<option value="">Seleccionar</option>'; // limpiar primero
             this._catalogos.estatus.forEach(e => {
-                const opt = document.createElement('option');
+                const opt       = document.createElement('option');
                 opt.value       = e.id_estatus_tratamiento;
                 opt.textContent = e.estatus_tratamiento;
                 selEst.appendChild(opt);
             });
         }
+ 
         // Procedimientos del nuevo plan
         const selProc = document.getElementById('procSelect');
         if (selProc && this._catalogos?.procedimientos) {
+            selProc.innerHTML = '<option value="">Seleccionar procedimiento...</option>'; // limpiar primero
             this._catalogos.procedimientos.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value       = p.id_procedimiento;
-                opt.textContent = `${p.nombre_procedimiento} — $${parseFloat(p.precio_base).toLocaleString('es-MX',{minimumFractionDigits:2})}`;
+                const opt          = document.createElement('option');
+                opt.value          = p.id_procedimiento;
+                opt.textContent    = `${p.nombre_procedimiento} — $${parseFloat(p.precio_base).toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
                 opt.dataset.precio = p.precio_base;
                 selProc.appendChild(opt);
             });
