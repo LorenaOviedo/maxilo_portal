@@ -350,7 +350,7 @@ class Odontograma
         $hoy = date('Y-m-d');
 
         $stmt = $this->db->prepare("
-            SELECT id_cita FROM Cita
+            SELECT id_cita FROM cita
             WHERE  numero_paciente    = :paciente
               AND  id_especialista    = :especialista
               AND  fecha_cita         = :hoy
