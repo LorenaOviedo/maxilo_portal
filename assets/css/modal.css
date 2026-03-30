@@ -1348,9 +1348,9 @@
 /* Tarjeta de plan existente */
 .plan-card {
     margin-bottom: 16px;
-    /* Usamos un borde un poco más grueso o un color más oscuro para probar */
+    /* Se usa un borde un poco más grueso o un color más oscuro para probar */
     border: 1.5px solid var(--color-border-tertiary) !important; 
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--border-radius-md);
     overflow: hidden;
     background-color: #ffffff;
     /* Agregamos una sombra sutil para que el contorno se "separe" del fondo del modal */
