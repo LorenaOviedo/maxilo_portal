@@ -402,19 +402,19 @@ class Odontograma
                 'sql'   => "SELECT id_motivo_consulta AS id FROM motivoconsulta
                             WHERE motivo_consulta = 'Registro odontograma' LIMIT 1",
                 'campo' => 'id',
-                'label' => "MotivoConsulta 'Registro odontograma'",
+                'label' => "motivoconsulta 'Registro odontograma'",
             ],
             'idEstatusCitaDiag'   => [
                 'sql'   => "SELECT id_estatus_cita AS id FROM estadoscita
                             WHERE estatus_cita = 'Registro diagnóstico' LIMIT 1",
                 'campo' => 'id',
-                'label' => "EstadosCita 'Registro diagnóstico'",
+                'label' => "estadoscita 'Registro diagnóstico'",
             ],
             'idProcSinAsignar'    => [
                 'sql'   => "SELECT id_procedimiento AS id FROM procedimientos
                             WHERE nombre_procedimiento = 'Sin procedimiento asignado' LIMIT 1",
                 'campo' => 'id',
-                'label' => "Procedimiento 'Sin procedimiento asignado'",
+                'label' => "procedimientos 'Sin procedimiento asignado'",
             ],
         ];
 
