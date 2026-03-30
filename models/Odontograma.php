@@ -148,7 +148,7 @@ class Odontograma
             JOIN  carasdentales           cd  ON cd.id_cara_dental        = o.id_cara_dental
             JOIN  especialista            esp ON esp.id_especialista      = c.id_especialista
             LEFT JOIN procedimientos       p  ON p.id_procedimiento       = td.id_procedimiento
-            LEFT JOIN planTratamiento     pt  ON pt.id_plan_tratamiento   = td.id_plan_tratamiento
+            LEFT JOIN plantratamiento     pt  ON pt.id_plan_tratamiento   = td.id_plan_tratamiento
             LEFT JOIN estadostratamiento  et  ON et.id_estatus_tratamiento= pt.id_estatus_tratamiento
             WHERE c.numero_paciente = :numero_paciente
             ORDER BY o.numero_posicion ASC,
@@ -370,7 +370,7 @@ class Odontograma
         }
 
         $stmt = $this->db->prepare("
-            INSERT INTO Cita
+            INSERT INTO cita
                 (fecha_cita, hora_inicio, paciente_primera_vez,
                  id_estatus_cita, id_motivo_consulta,
                  id_especialista, numero_paciente)
