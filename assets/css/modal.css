@@ -1342,6 +1342,7 @@
 .plan-card {
     margin-bottom: 16px;
     border: 1px solid var(--color-border-tertiary);
+    border-color: #20a89e !important;;
     border-radius: var(--border-radius-lg);
     overflow: hidden;
 }
