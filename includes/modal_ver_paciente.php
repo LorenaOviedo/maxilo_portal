@@ -43,7 +43,6 @@ $modal_id = 'modalPaciente';
         <button class="modal-tab" data-tab="tabHistorial"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabHistorial')">
             Historial Clínico
-            <br>
         </button>
         <button class="modal-tab" data-tab="tabAnamnesis"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabAnamnesis')">
@@ -51,17 +50,14 @@ $modal_id = 'modalPaciente';
         </button>
         <button class="modal-tab" data-tab="tabPlanes" onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabPlanes')">
             Planes de Tratamiento
-            <br>
         </button>
         <button class="modal-tab" data-tab="tabOdontograma"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabOdontograma')">
             Odontograma
-            <br>
         </button>
         <button class="modal-tab" data-tab="tabArchivos"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabArchivos')">
             Archivos médicos
-            <br>
         </button>
     </div>
 
