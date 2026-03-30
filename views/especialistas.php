@@ -162,12 +162,12 @@ include '../includes/sidebar.php';
                                     <?php if ($e['id_estatus'] == 1): ?>
                                         <button type="button" class="btn-action btn-delete" title="Desactivar especialista"
                                             onclick="especialistaController.cambiarEstatus(<?php echo $e['id_especialista']; ?>, 2)">
-                                            <i class="ri-toggle-line"></i>
+                                            <i class="ri-delete-bin-6-line"></i>
                                         </button>
                                     <?php else: ?>
                                         <button type="button" class="btn-action btn-edit" title="Activar especialista"
                                             onclick="especialistaController.cambiarEstatus(<?php echo $e['id_especialista']; ?>, 1)">
-                                            <i class="ri-toggle-fill"></i>
+                                            <i class="ri-delete-bin-6-line"></i>
                                         </button>
                                     <?php endif; ?>
                                 </div>
