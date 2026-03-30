@@ -122,13 +122,24 @@
 
 /*TABS DEL MODAL*/
 .modal-tabs {
-    overflow: hidden; /* --->los tabs no se desbordan, revisar funcionalidad en movil*/
     display: flex;
-    gap: 5px;
-    padding: 0 30px;
+    gap: 10px;               /* Espacio entre pestañas */
+    padding: 0 20px;         /* Espacio a los lados */
     background-color: #ffffff;
     border-bottom: 2px solid #e8e8e8;
-    overflow-x: auto;
+    
+    /* ACTIVAR SCROLL PERO OCULTAR BARRA */
+    overflow-x: auto;        /* Permite deslizar horizontalmente */
+    scroll-behavior: smooth; /* Hace que el cambio sea suave */
+    
+    /* Ocultar barra en Firefox */
+    scrollbar-width: none;   
+    /* Ocultar barra en Internet Explorer/Edge */
+    -ms-overflow-style: none;
+}
+
+.modal-tabs::-webkit-scrollbar {
+    display: none;
 }
 
 .modal-tab {
@@ -143,6 +154,12 @@
     white-space: nowrap;
     border-bottom: 3px solid transparent;
     margin-bottom: -2px;
+
+    flex-shrink: 0;          /* IMPORTANTE: evita que los nombres se aplasten */
+    white-space: nowrap;     /* Evita que el texto salte a dos líneas */
+    padding: 15px 12px;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
 }
 
 .modal-tab:hover {
