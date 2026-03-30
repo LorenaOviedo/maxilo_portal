@@ -6,61 +6,60 @@
  */
 
 const odontogramaModel = {
-
-  // ─────────────────────────────────────────
-  // CATÁLOGOS (deben coincidir con la BD)
-  // ─────────────────────────────────────────
-
-  catalogoAnomalias: [
-    'Caries',
-    'Fractura',
-    'Ausente',
-    'Restauración previa',
-    'Corona',
-    'Endodoncia previa',
-    'Enfermedad periodontal',
-    'Movilidad dental',
-    'Manchas / Hipoplasia',
-    'Impactado / Retenido',
-    'Extrusión / Intrusión',
-    'Otro',
-  ],
-
-  catalogoCaras: [
-    'Vestibular',
-    'Palatina',
-    'Mesial',
-    'Oclusal',
-    'Lingual',
-    'General',
-  ],
-
-  catalogoProcedimientos: [
-    'Obturación (resina)',
-    'Obturación (amalgama)',
-    'Extracción simple',
-    'Extracción quirúrgica',
-    'Endodoncia',
-    'Corona dental',
-    'Implante dental',
-    'Raspado y alisado radicular',
-    'Gingivectomía',
-    'Blanqueamiento',
-    'Sellador dental',
-    'Aplicación de flúor',
-    'Otro',
-  ],
-
-  catalogoEstatus: [
-    'Pendiente',
-    'En proceso',
-    'Tratado',
-  ],
-
-  // ─────────────────────────────────────────
-  // NOMBRES FDI DE PIEZAS DENTALES
-  // ─────────────────────────────────────────
-
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // CATÁLOGOS — se pueblan al llamar cargarCatalogos()
+  // Cada item: { id: int, nombre: string }
+  // ─────────────────────────────────────────────────────────────────────────
+ 
+  catalogoAnomalias:      [],
+  catalogoCaras:          [],
+  catalogoProcedimientos: [],  // items también tienen precio_base
+  catalogoEstatus:        [],
+  catalogoEspecialistas:  [],  // items tienen nombre_completo en lugar de nombre
+ 
+  _cargandoCatalogos: false,
+  _catalogosCargados: false,
+ 
+  /**
+   * Descarga los catálogos desde la API y los almacena en este modelo.
+   * Es idempotente: si ya se cargaron no vuelve a hacer la petición.
+   * @returns {Promise<boolean>}
+   */
+  async cargarCatalogos() {
+    if (this._catalogosCargados)  return true;
+    if (this._cargandoCatalogos)  return false;
+ 
+    this._cargandoCatalogos = true;
+    try {
+      const res = await fetch(
+        'ajax/api.php?modulo=odontograma&accion=get_catalogos_odontograma'
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+ 
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+ 
+      this.catalogoAnomalias      = data.anomalias      ?? [];
+      this.catalogoCaras          = data.caras          ?? [];
+      this.catalogoProcedimientos = data.procedimientos ?? [];
+      this.catalogoEstatus        = data.estatus        ?? [];
+      this.catalogoEspecialistas  = data.especialistas  ?? [];
+ 
+      this._catalogosCargados = true;
+      return true;
+    } catch (err) {
+      console.error('odontogramaModel.cargarCatalogos:', err);
+      return false;
+    } finally {
+      this._cargandoCatalogos = false;
+    }
+  },
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // NOMBRES FDI
+  // ─────────────────────────────────────────────────────────────────────────
+ 
   nombresPiezas: {
     11: 'Inc. central sup. der.',   12: 'Inc. lateral sup. der.',
     13: 'Canino sup. der.',         14: '1er premolar sup. der.',
@@ -79,80 +78,81 @@ const odontogramaModel = {
     45: '2do premolar inf. der.',   46: '1er molar inf. der.',
     47: '2do molar inf. der.',      48: '3er molar inf. der.',
   },
-
-  // ─────────────────────────────────────────
-  // ARCADAS (numeración FDI)
-  // ─────────────────────────────────────────
-
-  numerosSuperior: [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28],
-  numerosInferior: [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38],
-
-  // ─────────────────────────────────────────
-  // MÉTODOS DE CONSTRUCCIÓN
-  // ─────────────────────────────────────────
-
-  /**
-   * Retorna el nombre de una pieza por su número FDI
-   * @param {number} numero
-   * @returns {string}
-   */
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // ARCADAS
+  // ─────────────────────────────────────────────────────────────────────────
+ 
+  numerosSuperior: [18,17,16,15,14,13,12,11, 21,22,23,24,25,26,27,28],
+  numerosInferior: [48,47,46,45,44,43,42,41, 31,32,33,34,35,36,37,38],
+ 
   getNombrePieza(numero) {
     return this.nombresPiezas[numero] || `Pieza ${numero}`;
   },
-
-  /**
-   * Construye el array de objetos de pieza para una arcada
-   * @param {number[]} numeros
-   * @param {string}   arcada  - 'Superior' | 'Inferior'
-   * @returns {Array<{numero, nombre, arcada, icono}>}
-   */
+ 
   construirArcada(numeros, arcada) {
-    return numeros.map((numero) => ({
+    return numeros.map(numero => ({
       numero,
       nombre: this.getNombrePieza(numero),
       arcada,
-      icono: this._iconoPorNumero(numero),
+      icono:  this._iconoPorNumero(numero),
     }));
   },
-
-  /**
-   * Retorna el icono según el tipo de pieza
-   * @param {number} numero
-   * @returns {string}
-   */
+ 
   _iconoPorNumero(numero) {
-    // Terceros molares (muelas del juicio)
-    //if ([18, 28, 38, 48].includes(numero)) return 'ri-tooth-line';
-    //return 'ri-tooth-line'; // Icono genérico para todas las piezas
-    
-    const base = ASSETS_URL;
-    
-    // Terceros molares (muelas del juicio)
-    if ([18, 28, 38, 48].includes(numero)) return `${base}3molar.png`;
-    
-    // Molares
-    if ([16, 17, 26, 27, 36, 37, 46, 47].includes(numero)) return `${base}molar.png`;
-    
-    // Premolares
-    if ([14, 15, 24, 25, 34, 35, 44, 45].includes(numero)) return `${base}premolar.png`;
-    
-    // Caninos
-    if ([13, 23, 33, 43].includes(numero)) return `${base}canino.png`;
-    
-    // Incisivos
+    const base = (typeof ASSETS_URL !== 'undefined') ? ASSETS_URL : '';
+    if ([18,28,38,48].includes(numero))                   return `${base}3molar.png`;
+    if ([16,17,26,27,36,37,46,47].includes(numero))       return `${base}molar.png`;
+    if ([14,15,24,25,34,35,44,45].includes(numero))       return `${base}premolar.png`;
+    if ([13,23,33,43].includes(numero))                   return `${base}canino.png`;
     return `${base}incisivo.png`;
   },
-
-  /**
-   * Crea un objeto de registro vacío (estructura base)
-   * @returns {{anomalia, caras, procedimiento, estatus}}
-   */
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // FORMULARIO VACÍO
+  // Todos los campos son IDs de BD para enviar directamente a la API.
+  // ─────────────────────────────────────────────────────────────────────────
+ 
   registroVacio() {
     return {
-      anomalia:      '',
-      caras:         [],
-      procedimiento: '',
-      estatus:       '',
+      id_anomalia:      null,   // int   — FK AnomaliasDentales
+      id_caras:         [],     // int[] — FK CarasDentales (múltiple)
+      id_procedimiento: null,   // int   — FK Procedimientos (obligatorio)
+      id_estatus:       null,   // int   — FK EstadosTratamiento (visual)
     };
+  },
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // HELPERS de presentación
+  // ─────────────────────────────────────────────────────────────────────────
+ 
+  nombreAnomalia(id) {
+    return this.catalogoAnomalias.find(a => +a.id === +id)?.nombre
+           ?? `Anomalía #${id}`;
+  },
+ 
+  /** Retorna un string con los nombres de las caras separados por coma */
+  nombresCaras(ids) {
+    return (ids ?? [])
+      .map(id => this.catalogoCaras.find(c => +c.id === +id)?.nombre ?? `Cara #${id}`)
+      .join(', ');
+  },
+ 
+  nombreProcedimiento(id) {
+    if (!id) return null;
+    return this.catalogoProcedimientos.find(p => +p.id === +id)?.nombre
+           ?? `Procedimiento #${id}`;
+  },
+ 
+  nombreEstatus(id) {
+    if (!id) return 'Pendiente';
+    return this.catalogoEstatus.find(e => +e.id === +id)?.nombre
+           ?? `Estatus #${id}`;
+  },
+ 
+  nombreEspecialista(id) {
+    if (!id) return null;
+    const esp = this.catalogoEspecialistas.find(e => +e.id === +id);
+    return esp?.nombre_completo ?? `Especialista #${id}`;
   },
 };
