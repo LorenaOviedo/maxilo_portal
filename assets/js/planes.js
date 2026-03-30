@@ -1,396 +1,676 @@
 /**
  * planes.js
- * Sistema Maxilofacial Texcoco
  *
  * Lógica del tab Planes de Tratamiento dentro del modal de paciente.
  * Depende de: catalogos-tabla.js (CatalogTable), API_URL
  * }
  */
 
-const odontogramaController = {
- 
+const planesController = {
   _numeroPaciente: null,
-  _catalogos:      null,   // { anomalias, caras, procedimientos, estatus, especialistas }
-  _appInstance:    null,   // instancia Vue activa
- 
-  // ─────────────────────────────────────────────────────────────────────────
-  // PUNTO DE ENTRADA — igual que planesController.cargar()
-  // Llamar desde modal_ver_paciente.php al activar el tab:
-  //   odontogramaController.cargar(numeroPaciente)
-  // ─────────────────────────────────────────────────────────────────────────
- 
-  async cargar(numeroPaciente) {
-    this._numeroPaciente = parseInt(numeroPaciente);
- 
-    // 1. Cargar catálogos (solo la primera vez, igual que planes)
-    await this._inicializar();
- 
-    // 2. Poblar selects del toolbar con DOM vanilla
-    this._poblarSelects();
- 
-    // 3. Montar Vue (si no está montado aún)
-    this._montarVue();
-  },
- 
-  limpiar() {
-    this._numeroPaciente = null;
-    this._desmontar();
-    // Resetear toolbar
-    const sel = document.getElementById('odontEspecialista');
-    if (sel) sel.value = '';
-  },
- 
-  // ─────────────────────────────────────────────────────────────────────────
-  // INICIALIZACIÓN DE CATÁLOGOS — idéntico a planesController.inicializar()
-  // ─────────────────────────────────────────────────────────────────────────
- 
-  async _inicializar() {
-    if (this._catalogos) return;   // ya cargados, no repetir
- 
+  _catalogos: null,
+  _procsTemp: [],
+  _readonly: false,
+
+  async inicializar() {
+    if (this._catalogos) return;
     try {
       const r = await fetch(
-        `${API_URL}?modulo=odontograma&accion=get_catalogos_odontograma`
+        `${API_URL}?modulo=planes&accion=get_catalogos_planes`,
       );
       const data = await r.json();
-      if (!data.success) {
-        console.warn('odontogramaController: no se pudieron cargar catálogos', data.message);
-        return;
-      }
+      if (!data.success) return;
       this._catalogos = data;
     } catch (err) {
-      console.warn('odontogramaController: error al cargar catálogos', err);
+      console.warn("planesController: no se pudieron cargar catálogos", err);
     }
   },
+
+  async cargar(numeroPaciente, readonly = false) {
+    this._numeroPaciente = parseInt(numeroPaciente);
+    this._readonly = readonly;
+
+    await this.inicializar();
+    this._poblarSelects();
+    this._mostrarLoading(true);
+
+    try {
+      const r = await fetch(
+        `${API_URL}?modulo=planes&accion=get_by_paciente&numero_paciente=${this._numeroPaciente}`,
+      );
+      const data = await r.json();
+      this._mostrarLoading(false);
+      if (data.success) this._renderPlanes(data.planes);
+    } catch (err) {
+      this._mostrarLoading(false);
+      console.warn("planesController: error al cargar planes", err);
+    }
+  },
+
+  limpiar() {
+    this._numeroPaciente = null;
+    this._procsTemp = [];
+    this._ocultarFormulario();
+    document.getElementById("listaPlanesContainer").innerHTML = `
+            <div id="planesSinDatos" style="text-align:center; padding:30px; color:#adb5bd;">
+                <i class="ri-file-list-3-line" style="font-size:36px; display:block; margin-bottom:8px;"></i>
+                <p>Sin planes de tratamiento registrados</p>
+            </div>`;
+  },
+
+  // ── Renderizar planes como acordeón ───────────────────────────
+  _renderPlanes(planes) {
+    const contenedor = document.getElementById("listaPlanesContainer");
+
+    if (!planes || !planes.length) {
+      contenedor.innerHTML = `
+                <div id="planesSinDatos" style="text-align:center; padding:30px; color:#adb5bd;">
+                    <i class="ri-file-list-3-line" style="font-size:36px; display:block; margin-bottom:8px;"></i>
+                    <p>Sin planes de tratamiento registrados</p>
+                </div>`;
+      return;
+    }
+
+    contenedor.innerHTML = planes
+      .map(
+        (plan, idx) => `
+            <div class="plan-card form-card" data-id="${plan.id_plan_tratamiento}">
  
-  // ─────────────────────────────────────────────────────────────────────────
-  // POBLAR SELECTS — mismo patrón que planesController._poblarSelects()
-  // ─────────────────────────────────────────────────────────────────────────
+                <!-- Cabecera del acordeón (siempre visible) -->
+                <div class="plan-accordion-header"
+                     onclick="planesController._toggleAcordeon(${plan.id_plan_tratamiento})">
+                    <div class="plan-accordion-info">
+                        <span class="plan-nombre">Plan #${plan.numero_plan}</span>
+                        <span class="plan-meta">
+                            <strong>Especialista:</strong> ${escHtml(plan.especialista)}
+                            &nbsp;·&nbsp;
+                            <strong>Creado:</strong> ${formatFecha(plan.fecha_creacion)}
+                            &nbsp;·&nbsp;
+                            <span class="badge-estatus ${badgeClase(plan.estatus_tratamiento)}">
+                                ${plan.estatus_tratamiento.toUpperCase()}
+                            </span>
+                            &nbsp;·&nbsp;
+                            <strong>Total:</strong>
+                            $${parseFloat(plan.costo_total).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                        </span>
+                    </div>
+                    <div class="plan-accordion-actions" onclick="event.stopPropagation()">
+                        ${
+                          !this._readonly
+                            ? `
+                        <select class="select-estatus-plan"
+                                data-id="${plan.id_plan_tratamiento}"
+                                onchange="planesController.actualizarEstatus(this)">
+                            ${this._optionsEstatus(plan.id_estatus_tratamiento)}
+                        </select>
+                        <button class="btn-eliminar-plan" title="Eliminar plan"
+                                onclick="planesController.eliminarPlan(${plan.id_plan_tratamiento})">
+                            <i class="ri-delete-bin-6-line"></i>
+                        </button>`
+                            : ""
+                        }
+                        <i class="ri-arrow-down-s-line plan-accordion-icon"
+                           id="iconAcordeon_${plan.id_plan_tratamiento}"></i>
+                    </div>
+                </div>
  
+                <!-- Cuerpo del acordeón (colapsado por defecto) -->
+                <div class="plan-accordion-body" id="bodyAcordeon_${plan.id_plan_tratamiento}"
+                     style="display:none;">
+ 
+                    ${
+                      plan.notas
+                        ? `
+                    <div class="plan-notas">
+                        <i class="ri-file-text-line"></i> ${escHtml(plan.notas)}
+                    </div>`
+                        : ""
+                    }
+ 
+                    <table class="plan-table">
+                        <thead>
+                            <tr>
+                                <th>PROCEDIMIENTO</th>
+                                <th>PIEZA</th>
+                                <th>PRECIO BASE</th>
+                                <th>PRECIO ESPECIAL</th>
+                                ${!this._readonly ? "<th></th>" : ""}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${
+                              plan.detalle.length
+                                ? plan.detalle
+                                    .map(
+                                      (d) => `
+                                <tr>
+                                    <td>${escHtml(d.nombre_procedimiento)}</td>
+                                    <td class="text-center">${d.numero_pieza || "—"}</td>
+                                    <td>$${parseFloat(d.precio_base).toLocaleString("es-MX", { minimumFractionDigits: 2 })}</td>
+                                    <td>${
+                                      d.costo_descuento
+                                        ? "$" +
+                                          parseFloat(
+                                            d.costo_descuento,
+                                          ).toLocaleString("es-MX", {
+                                            minimumFractionDigits: 2,
+                                          })
+                                        : "—"
+                                    }</td>
+                                    ${
+                                      !this._readonly
+                                        ? `
+                                    <td class="acciones-cell">
+                                        <button class="btn-accion eliminar"
+                                            onclick="planesController.eliminarProcedimiento(${d.id_detalle_plan}, ${plan.id_plan_tratamiento})">
+                                            <i class="ri-delete-bin-6-line"></i>
+                                        </button>
+                                    </td>`
+                                        : ""
+                                    }
+                                </tr>`,
+                                    )
+                                    .join("")
+                                : `
+                                <tr>
+                                    <td colspan="${this._readonly ? 4 : 5}"
+                                        style="text-align:center; color:#adb5bd; padding:12px;">
+                                        Sin procedimientos
+                                    </td>
+                                </tr>`
+                            }
+                        </tbody>
+                    </table>
+ 
+                    ${
+                      !this._readonly
+                        ? `
+                    <div class="proc-add-inline" id="addProc_${plan.id_plan_tratamiento}" style="display:none;">
+                        <select class="form-select proc-select" id="procSelExist_${plan.id_plan_tratamiento}">
+                            <option value="">Seleccionar procedimiento...</option>
+                            ${this._optionsProcedimientos()}
+                        </select>
+                        <input type="number" class="form-input proc-pieza"
+                            id="procPiezaExist_${plan.id_plan_tratamiento}"
+                            placeholder="No. pieza" min="11" max="48">
+                        <input type="number" class="form-input proc-descuento"
+                            id="procDescExist_${plan.id_plan_tratamiento}"
+                            placeholder="Precio especial" step="0.01" min="0">
+                        <button class="btn-confirmar-proc"
+                            onclick="planesController.confirmarProcExistente(${plan.id_plan_tratamiento})">
+                            <i class="ri-check-line"></i>
+                        </button>
+                        <button class="btn-cancelar-proc"
+                            onclick="document.getElementById('addProc_${plan.id_plan_tratamiento}').style.display='none'">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                    <button class="btn-agregar-proc"
+                        onclick="document.getElementById('addProc_${plan.id_plan_tratamiento}').style.display='flex'"
+                        style="margin:10px 16px;">
+                        <i class="ri-add-line"></i> Agregar procedimiento
+                    </button>`
+                        : ""
+                    }
+ 
+                </div><!-- /.plan-accordion-body -->
+            </div>`,
+      )
+      .join("");
+  },
+
+  // ── Toggle acordeón ───────────────────────────────────────────
+  _toggleAcordeon(idPlan) {
+    const body = document.getElementById(`bodyAcordeon_${idPlan}`);
+    const icon = document.getElementById(`iconAcordeon_${idPlan}`);
+    if (!body) return;
+
+    const abierto = body.style.display !== "none";
+    body.style.display = abierto ? "none" : "block";
+    icon.classList.toggle("ri-arrow-down-s-line", abierto);
+    icon.classList.toggle("ri-arrow-up-s-line", !abierto);
+  },
+
+  // ── Eliminar plan completo ────────────────────────────────────
+  async eliminarPlan(idPlan) {
+    if (
+      !confirm(
+        "¿Eliminar este plan de tratamiento y todos sus procedimientos? Esta acción no se puede deshacer.",
+      )
+    )
+      return;
+
+    const formData = new FormData();
+    formData.append("modulo", "planes");
+    formData.append("accion", "eliminar_plan");
+    formData.append("id_plan_tratamiento", idPlan);
+
+    try {
+      const r = await fetch(API_URL, { method: "POST", body: formData });
+      const data = await r.json();
+      if (data.success) {
+        CatalogTable.showNotification(
+          "Plan eliminado correctamente",
+          "success",
+        );
+        this.cargar(this._numeroPaciente, this._readonly);
+      } else {
+        CatalogTable.showNotification(
+          data.message || "Error al eliminar",
+          "error",
+        );
+      }
+    } catch (err) {
+      CatalogTable.showNotification("Error de conexión", "error");
+    }
+  },
+
+  // ── Guardar nuevo plan ────────────────────────────────────────
+  async guardar() {
+    const fecha = document.getElementById("planFecha").value.trim();
+    const especialista = document.getElementById("planEspecialista").value;
+    const estatus = document.getElementById("planEstatus").value;
+    const notas = document.getElementById("planNotas").value.trim();
+
+    // Validar fecha requerida
+    if (!fecha) {
+      CatalogTable.showNotification(
+        "La fecha de creación es requerida",
+        "error",
+      );
+      return;
+    }
+
+    // Validar que la fecha no sea futura
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const fechaDate = new Date(fecha + "T00:00:00");
+    if (fechaDate < hoy) {
+      CatalogTable.showNotification(
+        "La fecha de creación no puede ser anterior a hoy",
+        "error",
+      );
+      document.getElementById("planFecha").focus();
+      return;
+    }
+
+    if (!especialista) {
+      CatalogTable.showNotification("El especialista es requerido", "error");
+      return;
+    }
+    if (this._procsTemp.length === 0) {
+      CatalogTable.showNotification(
+        "Agrega al menos un procedimiento al plan",
+        "warning",
+      );
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("modulo", "planes");
+    formData.append("accion", "crear_plan");
+    formData.append("numero_paciente", this._numeroPaciente);
+    formData.append("fecha_creacion", fecha);
+    formData.append("id_especialista", especialista);
+    formData.append("id_estatus_tratamiento", estatus || 1);
+    formData.append("notas", notas);
+    formData.append("procedimientos_json", JSON.stringify(this._procsTemp));
+
+    CatalogTable.showLoading(true);
+
+    try {
+      const r = await fetch(API_URL, { method: "POST", body: formData });
+      const data = await r.json();
+      CatalogTable.showLoading(false);
+
+      if (data.success) {
+        CatalogTable.showNotification("Plan creado correctamente", "success");
+        this._ocultarFormulario();
+        this.cargar(this._numeroPaciente, this._readonly);
+      } else {
+        CatalogTable.showNotification(
+          data.message || "Error al guardar",
+          "error",
+        );
+      }
+    } catch (err) {
+      CatalogTable.showLoading(false);
+      CatalogTable.showNotification("Error de conexión", "error");
+    }
+  },
+
+  async actualizarEstatus(select) {
+    const idPlan = parseInt(select.dataset.id);
+    const estatus = parseInt(select.value);
+
+    const formData = new FormData();
+    formData.append("modulo", "planes");
+    formData.append("accion", "cambiar_estatus_plan");
+    formData.append("id_plan_tratamiento", idPlan);
+    formData.append("id_estatus_tratamiento", estatus);
+
+    try {
+      const r = await fetch(API_URL, { method: "POST", body: formData });
+      const data = await r.json();
+      if (data.success) {
+        CatalogTable.showNotification("Estatus actualizado", "success");
+        this.cargar(this._numeroPaciente, this._readonly);
+      } else {
+        CatalogTable.showNotification(
+          data.message || "Error al actualizar",
+          "error",
+        );
+      }
+    } catch (err) {
+      CatalogTable.showNotification("Error de conexión", "error");
+    }
+  },
+
+  async eliminarProcedimiento(idDetalle, idPlan) {
+    if (!confirm("¿Eliminar este procedimiento del plan?")) return;
+
+    const formData = new FormData();
+    formData.append("modulo", "planes");
+    formData.append("accion", "eliminar_procedimiento");
+    formData.append("id_detalle_plan", idDetalle);
+
+    try {
+      const r = await fetch(API_URL, { method: "POST", body: formData });
+      const data = await r.json();
+      if (data.success) {
+        CatalogTable.showNotification("Procedimiento eliminado", "success");
+        this.cargar(this._numeroPaciente, this._readonly);
+      } else {
+        CatalogTable.showNotification(
+          data.message || "Error al eliminar",
+          "error",
+        );
+      }
+    } catch (err) {
+      CatalogTable.showNotification("Error de conexión", "error");
+    }
+  },
+
+  async confirmarProcExistente(idPlan) {
+    const procSel = document.getElementById(`procSelExist_${idPlan}`);
+    const pieza = document.getElementById(`procPiezaExist_${idPlan}`);
+    const desc = document.getElementById(`procDescExist_${idPlan}`);
+
+    if (!procSel.value) {
+      CatalogTable.showNotification("Selecciona un procedimiento", "warning");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("modulo", "planes");
+    formData.append("accion", "agregar_procedimiento");
+    formData.append("id_plan_tratamiento", idPlan);
+    formData.append("id_procedimiento", procSel.value);
+    if (pieza.value) formData.append("numero_pieza", pieza.value);
+    if (desc.value) formData.append("costo_descuento", desc.value);
+
+    try {
+      const r = await fetch(API_URL, { method: "POST", body: formData });
+      const data = await r.json();
+      if (data.success) {
+        CatalogTable.showNotification("Procedimiento agregado", "success");
+        this.cargar(this._numeroPaciente, this._readonly);
+      } else {
+        CatalogTable.showNotification(
+          data.message || "Error al agregar",
+          "error",
+        );
+      }
+    } catch (err) {
+      CatalogTable.showNotification("Error de conexión", "error");
+    }
+  },
+
+  agregarProcTemp() {
+    const sel = document.getElementById("procSelect");
+    const pieza = document.getElementById("procPieza");
+    const desc = document.getElementById("procDescuento");
+
+    if (!sel.value) {
+      CatalogTable.showNotification("Selecciona un procedimiento", "warning");
+      return;
+    }
+
+    // Validar precio especial
+    if (desc.value && parseFloat(desc.value) < 0) {
+      CatalogTable.showNotification(
+        "El precio especial no puede ser negativo",
+        "error",
+      );
+      return;
+    }
+
+    const proc = this._catalogos?.procedimientos?.find(
+      (p) => p.id_procedimiento == sel.value,
+    );
+    if (!proc) return;
+
+    this._procsTemp.push({
+      id_procedimiento: parseInt(sel.value),
+      nombre: proc.nombre_procedimiento,
+      precio_base: parseFloat(proc.precio_base),
+      numero_pieza: pieza.value || null,
+      costo_descuento: desc.value || null,
+    });
+
+    sel.value = "";
+    pieza.value = "";
+    desc.value = "";
+    document.getElementById("rowAgregarProc").style.display = "none";
+    this._renderProcsTemp();
+  },
+
+  quitarProcTemp(idx) {
+    this._procsTemp.splice(idx, 1);
+    this._renderProcsTemp();
+  },
+
+  _renderProcsTemp() {
+    const tbody = document.getElementById("bodyProcsPlan");
+    if (!tbody) return;
+
+    const total = this._procsTemp.reduce(
+      (sum, p) =>
+        sum +
+        (p.costo_descuento ? parseFloat(p.costo_descuento) : p.precio_base),
+      0,
+    );
+
+    const totalEl = document.getElementById("totalPlan");
+    if (totalEl)
+      totalEl.textContent =
+        "$" + total.toLocaleString("es-MX", { minimumFractionDigits: 2 });
+
+    if (!this._procsTemp.length) {
+      tbody.innerHTML = `
+                <tr id="rowSinProcs">
+                    <td colspan="5" style="text-align:center; color:#adb5bd; padding:16px;">
+                        Sin procedimientos agregados
+                    </td>
+                </tr>`;
+      return;
+    }
+
+    tbody.innerHTML = this._procsTemp
+      .map(
+        (p, i) => `
+            <tr>
+                <td>${escHtml(p.nombre)}</td>
+                <td class="text-center">${p.numero_pieza || "—"}</td>
+                <td>$${p.precio_base.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</td>
+                <td>${
+                  p.costo_descuento
+                    ? "$" +
+                      parseFloat(p.costo_descuento).toLocaleString("es-MX", {
+                        minimumFractionDigits: 2,
+                      })
+                    : "—"
+                }</td>
+                <td class="acciones-cell">
+                    <button class="btn-accion eliminar" onclick="planesController.quitarProcTemp(${i})">
+                        <i class="ri-delete-bin-6-line"></i>
+                    </button>
+                </td>
+            </tr>`,
+      )
+      .join("");
+  },
+
+  _mostrarLoading(show) {
+    const el = document.getElementById("planesLoading");
+    if (el) el.style.display = show ? "block" : "none";
+  },
+
+  _ocultarFormulario() {
+    const form = document.getElementById("formNuevoPlanContainer");
+    if (form) form.style.display = "none";
+    this._procsTemp = [];
+    this._renderProcsTemp();
+    ["planFecha", "planNotas"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+    ["planEspecialista", "planEstatus"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+  },
+
   _poblarSelects() {
-    // ── Especialistas (toolbar principal) ────────────────────────────────
-    const selEsp = document.getElementById('odontEspecialista');
+    const selEsp = document.getElementById("planEspecialista");
     if (selEsp && this._catalogos?.especialistas) {
-      selEsp.innerHTML = '<option value="">— Seleccionar especialista —</option>';
-      this._catalogos.especialistas.forEach(e => {
-        const opt = document.createElement('option');
-        opt.value       = e.id_especialista;
+      selEsp.innerHTML = '<option value="">Seleccionar</option>';
+      this._catalogos.especialistas.forEach((e) => {
+        const opt = document.createElement("option");
+        opt.value = e.id_especialista;
         opt.textContent = e.nombre_completo;
         selEsp.appendChild(opt);
       });
     }
-  },
- 
-  // ─────────────────────────────────────────────────────────────────────────
-  // GENERAR OPTIONS para selects dentro de Vue (igual que _optionsProcedimientos en planes)
-  // Vue no puede usar v-for sobre catálogos que no son reactivos,
-  // así que generamos el HTML de las options como string y lo inyectamos.
-  // ─────────────────────────────────────────────────────────────────────────
- 
-  _optionsAnomalias() {
-    if (!this._catalogos?.anomalias) return '';
-    return this._catalogos.anomalias
-      .map(a => `<option value="${a.id}">${escHtml(a.nombre)}</option>`)
-      .join('');
-  },
- 
-  _optionsCaras() {
-    if (!this._catalogos?.caras) return '';
-    return this._catalogos.caras
-      .map(c => `
-        <div>
-          <input type="checkbox"
-                 id="cara-od-${c.id}"
-                 value="${c.id}"
-                 class="cara-check odont-cara-cb">
-          <label for="cara-od-${c.id}" class="cara-label">${escHtml(c.nombre)}</label>
-        </div>`)
-      .join('');
-  },
- 
-  _optionsProcedimientos() {
-    if (!this._catalogos?.procedimientos) return '';
-    return this._catalogos.procedimientos
-      .map(p => `<option value="${p.id}">${escHtml(p.nombre)}</option>`)
-      .join('');
-  },
- 
-  _optionsEstatus() {
-    if (!this._catalogos?.estatus) return '';
-    return this._catalogos.estatus
-      .map(e => `<option value="${e.id}">${escHtml(e.nombre)}</option>`)
-      .join('');
-  },
- 
-  // ─────────────────────────────────────────────────────────────────────────
-  // MONTAR VUE — solo para arcadas, panel y estado reactivo
-  // Los selects del formulario se pueblan con DOM vanilla justo después de montar
-  // ─────────────────────────────────────────────────────────────────────────
- 
-  _montarVue() {
-    if (this._appInstance) return;   // ya montado
- 
-    const { createApp, ref, computed } = Vue;
-    const self = this;
- 
-    this._appInstance = createApp({
-      setup() {
- 
-        // Arcadas (estáticas)
-        const arcadaSuperior = odontogramaModel.construirArcada(
-          odontogramaModel.numerosSuperior, 'Superior'
-        );
-        const arcadaInferior = odontogramaModel.construirArcada(
-          odontogramaModel.numerosInferior, 'Inferior'
-        );
- 
-        // Estado reactivo
-        const dienteActivo = ref(null);
-        const registros    = ref({});
-        const cargando     = ref(false);
-        const notif        = ref({ visible: false, texto: '', tipo: 'success' });
- 
-        // Computadas
-        const registrosDiente = computed(() =>
-          dienteActivo.value
-            ? (registros.value[dienteActivo.value.numero] ?? [])
-            : []
-        );
- 
-        // Estado visual de cada diente
-        function estadoDiente(numero) {
-          const regs = registros.value[numero];
-          if (!regs || !regs.length)                                    return 'sano';
-          if (regs.every(r => r.estatus_tratamiento === 'Tratado'))     return 'tratado';
-          if (regs.some(r  => r.estatus_tratamiento === 'En proceso'))  return 'anomalia';
-          return 'atencion';
-        }
- 
-        // Seleccionar diente → poblar selects del panel con DOM vanilla
-        function seleccionarDiente(pieza) {
-          dienteActivo.value = pieza;
- 
-          // Poblar selects del panel lateral justo después de que Vue renderice
-          self._nextTick(() => self._poblarSelectsPanel());
-        }
- 
-        function cancelar() {
-          dienteActivo.value = null;
-        }
- 
-        async function guardarRegistro() {
-          // Leer valores de los selects DOM (no de v-model)
-          const idAnomalia      = parseInt(document.getElementById('odontAnomalia')?.value  || '0');
-          const idProcedimiento = parseInt(document.getElementById('odontProc')?.value      || '0');
-          const idEstatus       = parseInt(document.getElementById('odontEstatus')?.value   || '0');
-          const idEspecialista  = parseInt(document.getElementById('odontEspecialista')?.value || '0');
-          const numeroPieza     = dienteActivo.value?.numero;
- 
-          // Leer checkboxes de caras
-          const idCaras = [...document.querySelectorAll('.odont-cara-cb:checked')]
-            .map(cb => parseInt(cb.value));
- 
-          // Validar
-          if (!idEspecialista) {
-            mostrarNotif('Selecciona un especialista en la parte superior', 'error');
-            return;
-          }
-          if (!idAnomalia) {
-            mostrarNotif('Selecciona una anomalía', 'error');
-            return;
-          }
-          if (!idCaras.length) {
-            mostrarNotif('Selecciona al menos una cara', 'error');
-            return;
-          }
-          if (!idProcedimiento) {
-            mostrarNotif('Selecciona un procedimiento', 'error');
-            return;
-          }
-          if (!idEstatus) {
-            mostrarNotif('Selecciona un estatus', 'error');
-            return;
-          }
- 
-          // Optimistic update
-          const cat = self._catalogos;
-          const filasLocales = idCaras.map(idCara => ({
-            id_odontograma:       null,
-            numero_posicion:      numeroPieza,
-            nombre_anomalia:      cat.anomalias.find(a => a.id == idAnomalia)?.nombre      ?? '',
-            cara:                 cat.caras.find(c => c.id == idCara)?.nombre              ?? '',
-            nombre_procedimiento: cat.procedimientos.find(p => p.id == idProcedimiento)?.nombre ?? '',
-            estatus_tratamiento:  cat.estatus.find(e => e.id == idEstatus)?.nombre         ?? '',
-            nombre_especialista:  cat.especialistas.find(e => e.id_especialista == idEspecialista)?.nombre_completo ?? '',
-            fecha_cita:           new Date().toISOString().slice(0, 10),
-            _pendiente:           true,
-          }));
- 
-          if (!registros.value[numeroPieza]) registros.value[numeroPieza] = [];
-          registros.value[numeroPieza].unshift(...filasLocales);
- 
-          mostrarNotif('Guardando...', 'info');
- 
-          // Persistir en servidor
-          const resultado = await self._guardarEnServidor({
-            numero_paciente:  self._numeroPaciente,
-            id_especialista:  idEspecialista,
-            numero_pieza:     numeroPieza,
-            id_anomalia:      idAnomalia,
-            id_caras:         idCaras,
-            id_procedimiento: idProcedimiento,
-          });
- 
-          if (resultado?.success) {
-            await self._cargarRegistros(registros, cargando);
-            mostrarNotif(`Pieza ${numeroPieza} registrada correctamente`, 'success');
-            // Resetear selects del panel
-            self._resetearPanel();
-          } else {
-            // Revertir
-            registros.value[numeroPieza] = (registros.value[numeroPieza] ?? [])
-              .filter(r => !r._pendiente);
-            mostrarNotif(resultado?.message ?? 'Error al guardar', 'error');
-          }
-        }
- 
-        async function eliminarRegistro(idx) {
-          if (!confirm('¿Eliminar este registro?')) return;
- 
-          const num  = dienteActivo.value.numero;
-          const fila = registros.value[num]?.[idx];
-          if (!fila) return;
- 
-          registros.value[num].splice(idx, 1);
-          if (!registros.value[num].length) delete registros.value[num];
- 
-          const resultado = await self._eliminarEnServidor(
-            fila.id_odontograma,
-            self._numeroPaciente
-          );
- 
-          if (!resultado?.success) {
-            await self._cargarRegistros(registros, cargando);
-            mostrarNotif(resultado?.message ?? 'Error al eliminar', 'error');
-          } else {
-            mostrarNotif('Registro eliminado', 'success');
-          }
-        }
- 
-        function mostrarNotif(texto, tipo = 'success') {
-          notif.value = { visible: true, texto, tipo };
-          setTimeout(() => { notif.value.visible = false; }, 2800);
-        }
- 
-        // Carga inicial de registros
-        self._cargarRegistros(registros, cargando);
- 
-        return {
-          arcadaSuperior, arcadaInferior,
-          dienteActivo, registros, registrosDiente,
-          cargando, notif,
-          estadoDiente, seleccionarDiente, cancelar,
-          guardarRegistro, eliminarRegistro,
-        };
-      },
-    }).mount('#app-odontograma');
-  },
- 
-  // Poblar los selects del panel lateral (se llaman DESPUÉS de que Vue renderiza el panel)
-  _poblarSelectsPanel() {
-    const selAnom = document.getElementById('odontAnomalia');
-    if (selAnom && this._catalogos?.anomalias) {
-      selAnom.innerHTML = '<option value="">Seleccionar...</option>' + this._optionsAnomalias();
-    }
- 
-    const divCaras = document.getElementById('odontCarasGrid');
-    if (divCaras) {
-      divCaras.innerHTML = this._optionsCaras();
-    }
- 
-    const selProc = document.getElementById('odontProc');
-    if (selProc && this._catalogos?.procedimientos) {
-      selProc.innerHTML = '<option value="">Seleccionar...</option>' + this._optionsProcedimientos();
-    }
- 
-    const selEst = document.getElementById('odontEstatus');
+
+    const selEst = document.getElementById("planEstatus");
     if (selEst && this._catalogos?.estatus) {
-      selEst.innerHTML = '<option value="">Seleccionar...</option>' + this._optionsEstatus();
+      selEst.innerHTML = '<option value="">Seleccionar</option>';
+      this._catalogos.estatus.forEach((e) => {
+        const opt = document.createElement("option");
+        opt.value = e.id_estatus_tratamiento;
+        opt.textContent = e.estatus_tratamiento;
+        selEst.appendChild(opt);
+      });
+    }
+
+    const selProc = document.getElementById("procSelect");
+    if (selProc && this._catalogos?.procedimientos) {
+      selProc.innerHTML =
+        '<option value="">Seleccionar procedimiento...</option>';
+      this._catalogos.procedimientos.forEach((p) => {
+        const opt = document.createElement("option");
+        opt.value = p.id_procedimiento;
+        opt.textContent = `${p.nombre_procedimiento} — $${parseFloat(p.precio_base).toLocaleString("es-MX", { minimumFractionDigits: 2 })}`;
+        opt.dataset.precio = p.precio_base;
+        selProc.appendChild(opt);
+      });
     }
   },
- 
-  _resetearPanel() {
-    ['odontAnomalia', 'odontProc', 'odontEstatus'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-    document.querySelectorAll('.odont-cara-cb').forEach(cb => cb.checked = false);
+
+  _optionsEstatus(seleccionado) {
+    if (!this._catalogos?.estatus) return "";
+    return this._catalogos.estatus
+      .map(
+        (e) =>
+          `<option value="${e.id_estatus_tratamiento}"
+                ${e.id_estatus_tratamiento == seleccionado ? "selected" : ""}>
+                ${e.estatus_tratamiento}
+            </option>`,
+      )
+      .join("");
   },
- 
-  // Helper: ejecutar callback en el próximo ciclo de render
-  _nextTick(fn) {
-    setTimeout(fn, 0);
-  },
- 
-  _desmontar() {
-    if (this._appInstance) {
-      this._appInstance.unmount();
-      this._appInstance = null;
-    }
-  },
- 
-  // ─────────────────────────────────────────────────────────────────────────
-  // COMUNICACIÓN CON EL SERVIDOR
-  // ─────────────────────────────────────────────────────────────────────────
- 
-  async _cargarRegistros(registros, cargando) {
-    if (!this._numeroPaciente) return;
-    try {
-      cargando.value = true;
-      const r = await fetch(
-        `${API_URL}?modulo=odontograma&accion=get_by_paciente_odontograma&numero_paciente=${this._numeroPaciente}`
-      );
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const data = await r.json();
-      if (data.success) registros.value = data.registros ?? {};
-      else console.warn('odontogramaController:', data.message);
-    } catch (err) {
-      console.info('odontogramaController: modo local —', err.message);
-    } finally {
-      cargando.value = false;
-    }
-  },
- 
-  async _guardarEnServidor(payload) {
-    try {
-      const r = await fetch(
-        `${API_URL}?modulo=odontograma&accion=guardar_odontograma`,
-        {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify(payload),
-        }
-      );
-      return await r.json();
-    } catch (err) {
-      console.error('odontogramaController._guardarEnServidor:', err);
-      return null;
-    }
-  },
- 
-  async _eliminarEnServidor(idOdontograma, numeroPaciente) {
-    try {
-      const r = await fetch(
-        `${API_URL}?modulo=odontograma&accion=eliminar_odontograma`,
-        {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ id_odontograma: idOdontograma, numero_paciente: numeroPaciente }),
-        }
-      );
-      return await r.json();
-    } catch (err) {
-      console.error('odontogramaController._eliminarEnServidor:', err);
-      return null;
-    }
+
+  _optionsProcedimientos() {
+    if (!this._catalogos?.procedimientos) return "";
+    return this._catalogos.procedimientos
+      .map(
+        (p) =>
+          `<option value="${p.id_procedimiento}" data-precio="${p.precio_base}">
+                ${escHtml(p.nombre_procedimiento)} — $${parseFloat(p.precio_base).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+            </option>`,
+      )
+      .join("");
   },
 };
+
+// ── Helpers globales ──────────────────────────────────────────────
+function escHtml(str) {
+  const d = document.createElement("div");
+  d.textContent = str ?? "";
+  return d.innerHTML;
+}
+
+function formatFecha(fecha) {
+  if (!fecha) return "—";
+  const [y, m, d] = fecha.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+function badgeClase(estatus) {
+  const mapa = {
+    Programado: "programado",
+    "En curso": "en-curso",
+    Pausado: "pausado",
+    Terminado: "completado",
+  };
+  return mapa[estatus] || "pendiente";
+}
+
+function imprimirPlanes() {
+  window.print();
+}
+
+// ── Eventos ───────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("btnNuevoPlan")?.addEventListener("click", () => {
+    const form = document.getElementById("formNuevoPlanContainer");
+    if (!form) return;
+    const visible = form.style.display !== "none";
+    form.style.display = visible ? "none" : "block";
+    if (!visible) {
+      // Fecha de hoy por defecto al abrir
+      const inputFecha = document.getElementById("planFecha");
+      if (inputFecha && !inputFecha.value) {
+        inputFecha.value = new Date().toISOString().split("T")[0];
+      }
+      // Limitar fecha máxima a hoy
+      if (inputFecha) inputFecha.max = new Date().toISOString().split("T")[0];
+    }
+  });
+
+  document.getElementById("btnCancelarPlan")?.addEventListener("click", () => {
+    planesController._ocultarFormulario();
+  });
+
+  document.getElementById("btnGuardarPlan")?.addEventListener("click", () => {
+    planesController.guardar();
+  });
+
+  document
+    .getElementById("btnAgregarProcPlan")
+    ?.addEventListener("click", () => {
+      const row = document.getElementById("rowAgregarProc");
+      if (row) row.style.display = "flex";
+    });
+
+  document.getElementById("btnConfirmarProc")?.addEventListener("click", () => {
+    planesController.agregarProcTemp();
+  });
+
+  document.getElementById("btnCancelarProc")?.addEventListener("click", () => {
+    const row = document.getElementById("rowAgregarProc");
+    if (row) row.style.display = "none";
+  });
+});
