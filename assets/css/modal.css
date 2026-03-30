@@ -3,6 +3,7 @@
 :root {
     --color-border-tertiary: #d1d5db; /* Un gris visible */
     --border-radius-lg: 12px;
+    --border-radius-md: 8px;
     --color-background-secondary: #f9fafb;
 }
 
@@ -839,7 +840,7 @@
 /* Contenedor principal */
 .contenedor-antecedentes {
     border: 1px solid var(--color-border-tertiary);
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--border-radius-md);
     padding: 12px;
     background: var(--color-background-secondary);
     min-height: 60px;
