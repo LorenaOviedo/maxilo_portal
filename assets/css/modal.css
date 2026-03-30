@@ -977,34 +977,34 @@
     pointer-events: none;
 }
 
-/* ================================================================
-   Estilos para el tab Planes de Tratamiento
-   ================================================================ */
- 
-/* Tarjeta de plan */
-.plan-form-card {
+/* ==========================================================================
+   ESTILOS PARA EL TAB: PLANES DE TRATAMIENTO
+   ========================================================================== */
+
+/* 1. TARJETAS Y CONTENEDORES DE FORMULARIO */
+.plan-form-card, 
+.form-card {
     background: var(--color-background-secondary);
     border: 1px solid var(--color-border-tertiary);
     border-radius: var(--border-radius-lg);
-    padding: 20px;
+    padding: 24px;
     margin-bottom: 16px;
 }
- 
+
 .plan-form-titulo {
     font-size: 14px;
     font-weight: 600;
     color: var(--color-text-primary);
     margin: 0 0 16px 0;
 }
- 
-/* Sección de procedimientos dentro del formulario */
+
+/* 2. PROCEDIMIENTOS (INTERFAZ DE AGREGAR) */
 .plan-procedimientos-section {
     margin-top: 16px;
     border-top: 1px solid var(--color-border-tertiary);
     padding-top: 16px;
 }
- 
-/* Botón agregar procedimiento */
+
 .btn-agregar-proc {
     display: inline-flex;
     align-items: center;
@@ -1019,11 +1019,11 @@
     cursor: pointer;
     transition: all 0.15s ease;
 }
+
 .btn-agregar-proc:hover {
     background: rgba(32, 168, 158, 0.15);
 }
- 
-/* Fila para agregar procedimiento */
+
 .proc-add-row,
 .proc-add-inline {
     display: flex;
@@ -1033,11 +1033,11 @@
     flex-wrap: wrap;
     padding: 10px;
 }
- 
-.proc-select  { flex: 2; min-width: 160px; }
-.proc-pieza   { flex: 0.5; min-width: 80px; }
+
+.proc-select    { flex: 2; min-width: 160px; }
+.proc-pieza     { flex: 0.5; min-width: 80px; }
 .proc-descuento { flex: 0.8; min-width: 110px; }
- 
+
 .btn-confirmar-proc,
 .btn-cancelar-proc {
     width: 32px;
@@ -1051,167 +1051,50 @@
     justify-content: center;
     flex-shrink: 0;
 }
-.btn-confirmar-proc {
-    background: #20a89e;
-    color: white;
-}
+
+.btn-confirmar-proc { background: #20a89e; color: white; }
 .btn-confirmar-proc:hover { background: #0f6e56; }
 .btn-cancelar-proc {
     background: var(--color-background-primary);
     color: var(--color-text-secondary);
     border: 1px solid var(--color-border-secondary);
 }
- 
-/* Badges de estatus del plan */
-.badge-estatus { padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-.badge-estatus.programado  { background: #e6f1fb; color: #185fa5; }
-.badge-estatus.en-curso    { background: #e1f5ee; color: #0f6e56; }
-.badge-estatus.pausado     { background: #faeeda; color: #854f0b; }
-.badge-estatus.completado  { background: #eaf3de; color: #3b6d11; }
-.badge-estatus.pendiente   { background: #f1efe8; color: #5f5e5a; }
- 
-/* Select estatus inline en tarjeta */
-.select-estatus-plan {
-    font-size: 12px;
-    padding: 3px 8px;
-    border-radius: 6px;
-    border: 1px solid var(--color-border-secondary);
-    background: var(--color-background-primary);
-    color: var(--color-text-primary);
-    cursor: pointer;
-    margin-top: 6px;
-}
- 
-/* Tabla de procedimientos */
-* Tarjeta de plan */
-.plan-form-card {
-    background: var(--color-background-secondary);
-    border: 1px solid var(--color-border-tertiary);
-    border-radius: var(--border-radius-lg);
-    padding: 20px;
-    margin-bottom: 16px;
-}
- 
-.plan-form-titulo {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin: 0 0 16px 0;
-}
- 
-/* Sección de procedimientos dentro del formulario */
-.plan-procedimientos-section {
-    margin-top: 16px;
-    border-top: 1px solid var(--color-border-tertiary);
-    padding-top: 16px;
-}
- 
-/* Botón agregar procedimiento */
-.btn-agregar-proc {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 5px 12px;
-    font-size: 12px;
-    font-weight: 500;
-    color: #20a89e;
-    background: rgba(32, 168, 158, 0.08);
-    border: 1px solid #20a89e;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-.btn-agregar-proc:hover {
-    background: rgba(32, 168, 158, 0.15);
-}
- 
-/* Fila para agregar procedimiento */
-.proc-add-row,
-.proc-add-inline {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-}
- 
-.proc-select  { flex: 2; min-width: 160px; }
-.proc-pieza   { flex: 0.5; min-width: 80px; }
-.proc-descuento { flex: 0.8; min-width: 110px; }
- 
-.btn-confirmar-proc,
-.btn-cancelar-proc {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-.btn-confirmar-proc {
-    background: #20a89e;
-    color: white;
-}
-.btn-confirmar-proc:hover { background: #0f6e56; }
-.btn-cancelar-proc {
-    background: var(--color-background-primary);
-    color: var(--color-text-secondary);
-    border: 1px solid var(--color-border-secondary);
-}
- 
-/* Badges de estatus del plan */
-.badge-estatus { padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-.badge-estatus.programado  { background: #e6f1fb; color: #185fa5; }
-.badge-estatus.en-curso    { background: #e1f5ee; color: #0f6e56; }
-.badge-estatus.pausado     { background: #faeeda; color: #854f0b; }
-.badge-estatus.completado  { background: #eaf3de; color: #3b6d11; }
-.badge-estatus.pendiente   { background: #f1efe8; color: #5f5e5a; }
- 
-/* Select estatus inline en tarjeta */
-.select-estatus-plan {
-    font-size: 12px;
-    padding: 3px 8px;
-    border-radius: 6px;
-    border: 1px solid var(--color-border-secondary);
-    background: var(--color-background-primary);
-    color: var(--color-text-primary);
-    cursor: pointer;
-    margin-top: 6px;
-}
- 
-/* Tabla de procedimientos */
+
+/* 3. TABLA DE PROCEDIMIENTOS (LISTADO) */
 .plan-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    margin-top: 8px;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 0;
+    border-top: none !important;
 }
+
 .plan-table th {
     text-align: left;
-    padding: 8px 12px;
+    padding: 15px 20px;
     font-size: 11px;
     font-weight: 600;
     color: var(--color-text-secondary);
+    background-color: #ffffff !important;
     border-bottom: 1px solid var(--color-border-tertiary);
-    background: var(--color-background-secondary);
+    border-top: none !important;
 }
+
 .plan-table td {
-    padding: 8px 12px;
+    padding: 8px 20px;
     border-bottom: 1px solid var(--color-border-tertiary);
     color: var(--color-text-primary);
 }
+
 .plan-table tfoot td {
     border-top: 2px solid var(--color-border-secondary);
     border-bottom: none;
 }
+
 .plan-table .acciones-cell {
     text-align: center;
-    width: 60px;
+    width: 50px;
 }
+
 .btn-accion.eliminar {
     background: none;
     border: none;
@@ -1221,44 +1104,51 @@
     border-radius: 4px;
     font-size: 14px;
 }
+
 .btn-accion.eliminar:hover { background: #ffebee; }
- 
-/* Tarjeta de plan existente */
+
+/* 4. TARJETAS DE PLAN EXISTENTE (ACORDEÓN) */
 .plan-card {
     margin-bottom: 16px;
-    border: 1px solid var(--color-border-tertiary);
-    border-radius: var(--border-radius-lg);
+    border: 1.5px solid var(--color-border-tertiary) !important; 
+    border-radius: var(--border-radius-md);
     overflow: hidden;
+    background-color: #ffffff;
+    padding: 0;
 }
-.plan-card-header {
+
+.plan-card-header,
+.plan-accordion-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     padding: 14px 16px;
     background: var(--color-background-secondary);
     border-bottom: 1px solid var(--color-border-tertiary);
+    width: 100%;
     flex-wrap: wrap;
     gap: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s ease;
 }
-.plan-card-info {
+
+.plan-accordion-header:hover {
+    background: var(--color-background-tertiary);
+}
+
+.plan-card-info,
+.plan-accordion-info {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1;
 }
-.plan-nombre {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-text-primary);
-}
-.plan-meta {
-    font-size: 12px;
-    color: var(--color-text-secondary);
-}
-.plan-descripcion {
-    font-size: 12px;
-    color: var(--color-text-tertiary);
-    font-style: italic;
-}
+
+.plan-nombre { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
+.plan-meta { font-size: 12px; color: var(--color-text-secondary); }
+.plan-descripcion { font-size: 12px; color: var(--color-text-tertiary); font-style: italic; }
+
 .plan-card-totales {
     display: flex;
     flex-direction: column;
@@ -1267,44 +1157,25 @@
     font-size: 13px;
     color: var(--color-text-primary);
 }
- 
-/* Acordeón de planes  */
-.plan-accordion-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 16px;
-    background: var(--color-background-secondary);
-    cursor: pointer;
-    user-select: none;
-    gap: 12px;
-    flex-wrap: wrap;
-    transition: background 0.15s ease;
-}
-.plan-accordion-header:hover {
-    background: var(--color-background-tertiary);
-}
-.plan-accordion-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex: 1;
-}
+
 .plan-accordion-actions {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
 }
+
 .plan-accordion-icon {
     font-size: 18px;
     color: var(--color-text-secondary);
     transition: transform 0.2s ease;
 }
+
 .plan-accordion-body {
     border-top: 1px solid var(--color-border-tertiary);
-    padding: 0 0 12px 0;
+    padding: 0 !important;
 }
+
 .plan-notas {
     padding: 10px 16px;
     font-size: 13px;
@@ -1312,8 +1183,8 @@
     font-style: italic;
     border-bottom: 1px solid var(--color-border-tertiary);
 }
- 
-/* Botón eliminar plan */
+
+/* 5. BOTONES Y BADGES */
 .btn-eliminar-plan {
     width: 30px;
     height: 30px;
@@ -1328,129 +1199,23 @@
     justify-content: center;
     transition: all 0.15s ease;
 }
-.btn-eliminar-plan:hover {
-    background: rgba(216, 90, 48, 0.1);
-}
 
-.plan-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    margin-top: 8px;
-}
-.plan-table th {
-    text-align: left;
-    padding: 8px 12px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    border-bottom: 1px solid var(--color-border-tertiary);
-    background: var(--color-background-secondary);
-}
-.plan-table td {
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--color-border-tertiary);
+.btn-eliminar-plan:hover { background: rgba(216, 90, 48, 0.1); }
+
+.badge-estatus { padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.badge-estatus.programado { background: #e6f1fb; color: #185fa5; }
+.badge-estatus.en-curso { background: #e1f5ee; color: #0f6e56; }
+.badge-estatus.pausado { background: #faeeda; color: #854f0b; }
+.badge-estatus.completado { background: #eaf3de; color: #3b6d11; }
+.badge-estatus.pendiente { background: #f1efe8; color: #5f5e5a; }
+
+.select-estatus-plan {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border-secondary);
+    background: var(--color-background-primary);
     color: var(--color-text-primary);
-}
-.plan-table tfoot td {
-    border-top: 2px solid var(--color-border-secondary);
-    border-bottom: none;
-}
-.plan-table .acciones-cell {
-    text-align: center;
-    width: 60px;
-}
-.btn-accion.eliminar {
-    background: none;
-    border: none;
-    color: #dc3545;
     cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    font-size: 14px;
-}
-.btn-accion.eliminar:hover { background: #ffebee; }
- 
-/* Tarjeta de plan existente */
-.plan-card {
-    margin-bottom: 16px;
-    /* Se usa un borde un poco más grueso o un color más oscuro para probar */
-    border: 1.5px solid var(--color-border-tertiary) !important; 
-    border-radius: var(--border-radius-md);
-    overflow: hidden;
-    background-color: #ffffff;
-    padding: 0;
-}
-.plan-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 14px 16px;
-    background: var(--color-background-secondary);
-    border-bottom: 1px solid var(--color-border-tertiary);
-    width: 100%;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-.plan-card-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    
-}
-.plan-nombre {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-text-primary);
-}
-.plan-meta {
-    font-size: 12px;
-    color: var(--color-text-secondary);
-}
-.plan-descripcion {
-    font-size: 12px;
-    color: var(--color-text-tertiary);
-    font-style: italic;
-}
-.plan-card-totales {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-    font-size: 13px;
-    color: var(--color-text-primary);
-}
-
-.plan-table th {
-    background-color: #ffffff !important;
-    border-top: none !important;
-    padding-top: 15px;
-}
-
-/* Quita cualquier borde superior que pueda tener la tabla por herencia */
-.plan-table {
-    border-top: none !important;
-}
-
-/* Deja solo el borde inferior */
-.plan-table thead tr {
-    border-top: none !important;
-    border-bottom: 1px solid var(--color-border-tertiary);
-}
-
-
-.plan-accordion-body {
-    padding: 0 !important; /* Elimina el padding para que la tabla*/
-}
-
-/* El contenido no se pegue al borde*/
-.plan-table th, 
-.plan-table td {
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-.plan-table .acciones-cell {
-    width: 50px;
-    text-align: center;
+    margin-top: 6px;
 }
