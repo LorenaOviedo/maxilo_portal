@@ -96,6 +96,17 @@ const Modal = {
       selectedContent.classList.add("active");
     }
 
+    if (selectedTab) {
+      selectedTab.classList.add("active");
+
+      //Asegura que el tab sea visible en la barra de scroll
+      selectedTab.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+
     console.log("Tab cambiado:", tabId);
   },
 
@@ -231,6 +242,20 @@ const Modal = {
         this.close();
       }
     });
+
+    //Soporte para scroll horizontal con rueda del mouse en TABS
+    document.addEventListener(
+      "wheel",
+      (e) => {
+        // Solo si el mouse está sobre un contenedor de tabs
+        const tabs = e.target.closest(".modal-tabs");
+        if (tabs) {
+          e.preventDefault();
+          tabs.scrollLeft += e.deltaY;
+        }
+      },
+      { passive: false },
+    ); // 'passive: false' es necesario para usar preventDefault()
 
     console.log("Modal inicializado correctamente");
   },
