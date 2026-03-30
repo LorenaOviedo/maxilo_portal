@@ -131,6 +131,9 @@
     /* ACTIVAR SCROLL PERO OCULTAR BARRA */
     overflow-x: auto;        /* Permite deslizar horizontalmente */
     scroll-behavior: smooth; /* Hace que el cambio sea suave */
+
+    min-height: 55px;
+    align-items: stretch;
     
     /* Ocultar barra en Firefox */
     scrollbar-width: none;   
@@ -143,7 +146,13 @@
 }
 
 .modal-tab {
-    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 20px;
+    min-width: 120px;
+
     background-color: transparent;
     border: none;
     color: #6c757d;
@@ -157,8 +166,7 @@
 
     flex-shrink: 0;          /* Evita que los nombres se aplasten */
     white-space: nowrap;     /* Evita que el texto salte a dos líneas */
-    padding: 16px 12px;
-    min-width: 100px;
+
     border-bottom: 3px solid transparent;
     transition: all 0.2s ease;
 }
