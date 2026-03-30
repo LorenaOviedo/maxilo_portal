@@ -37,7 +37,7 @@ $catalogos = $model->getCatalogos();
 
 // CONFIGURACIÓN DE LA PÁGINA
 $page_title = 'Especialistas';
-$page_css = ['catalogos-tabla.css'];
+$page_css = ['catalogos-tabla.css', 'modal.css'];
 $page_js = ['especialistas.js'];
 
 include '../includes/header.php';
