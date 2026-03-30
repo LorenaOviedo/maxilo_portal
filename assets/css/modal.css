@@ -854,7 +854,6 @@
 /* Grupo por tipo */
 .antecedentes-grupo {
     margin-bottom: 12px;
-    border-radius: var(--border-radius-md);
 }
  
 .antecedentes-grupo:last-child {
@@ -875,6 +874,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    border-radius: var(--border-radius-md);
 }
  
 /* Chip base */
