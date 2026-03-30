@@ -201,13 +201,14 @@ switch ($accion) {
             responder(false, $validationError);
         }
 
-        $resultado = $model->update($id, $data);
+        $ok = $model->update($id, $data);
 
-        if ($resultado === true) {
+        if ($ok) {
             responder(true, 'Registro actualizado correctamente');
         } else {
-            responder(false, is_string($resultado) ? $resultado : 'Error al actualizar el registro');
+            responder(false, 'Error al actualizar el registro');
         }
+        break;
 
     // ── STATUS: cambiar estatus (activar / desactivar) ───────────
     case 'status':

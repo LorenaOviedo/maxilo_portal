@@ -487,7 +487,8 @@ class Paciente
 
         } catch (Exception $e) {
             $this->conn->rollBack();
-            return 'Error en Paciente::update: ' . $e->getMessage();
+            error_log("Error en Paciente::update: " . $e->getMessage());
+            return false;
         }
     }
 
@@ -1101,6 +1102,7 @@ class Paciente
     private function bindAnamnesisValues($stmt, $numeroPaciente, $data)
     {
         $stmt->bindValue(':paciente', (int) $numeroPaciente, PDO::PARAM_INT);
+         $stmt->bindValue(':enf_cronicas', trim($data['enfermedades_cronicas'] ?? ''));
         $stmt->bindValue(':alergia_latex', (int) ($data['alergia_latex'] ?? 0), PDO::PARAM_INT);
         $stmt->bindValue(':ant_familiares', trim($data['antecedentes_familiares'] ?? ''));
         $stmt->bindValue(':num_comidas', !empty($data['numero_comidas'])
