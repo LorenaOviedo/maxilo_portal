@@ -42,22 +42,27 @@ $modal_id = 'modalPaciente';
         </button>
         <button class="modal-tab" data-tab="tabHistorial"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabHistorial')">
-            Historial Clínico<br>
+            Historial Clínico
+            <br>
         </button>
         <button class="modal-tab" data-tab="tabAnamnesis"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabAnamnesis')">
-            Anamnesis<br>
+            Anamnesis
+            <br>
         </button>
         <button class="modal-tab" data-tab="tabPlanes" onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabPlanes')">
-            Planes<br>de Tratamiento
+            Planes de Tratamiento
+            <br>
         </button>
         <button class="modal-tab" data-tab="tabOdontograma"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabOdontograma')">
-            Odontograma<br>
+            Odontograma
+            <br>
         </button>
         <button class="modal-tab" data-tab="tabArchivos"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabArchivos')">
-            Archivos médicos<br>
+            Archivos médicos
+            <br>
         </button>
     </div>
 
