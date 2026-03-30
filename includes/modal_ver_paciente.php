@@ -541,21 +541,20 @@ $modal_id = 'modalPaciente';
         <!-- Tab 5 odontograma -->
         <div id="tabOdontograma" class="modal-tab-content">
 
-            <!-- ── Toolbar: especialista (DOM puro, igual que planes) ──────── -->
-            <div class="odonto-toolbar">
-                <div class="odonto-toolbar-grupo">
-                    <label class="campo-label">
-                        Especialista responsable <span class="required">*</span>
-                    </label>
-                    <!-- id="odontEspecialista" — poblado por odontogramaController._poblarSelects() -->
-                    <select id="odontEspecialista" class="form-select odonto-esp-select">
-                        <option value="">Seleccionar especialista</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- ── App Vue: arcadas + panel lateral ─────────────────────────── -->
+            <!-- ── App Vue — el toolbar DEBE estar dentro para que guardarRegistro() lea el select ── -->
             <div id="app-odontograma">
+
+                <!-- Toolbar: especialista (poblado por DOM vanilla en _poblarSelects()) -->
+                <div class="odonto-toolbar">
+                    <div class="odonto-toolbar-grupo">
+                        <label class="campo-label">
+                            Especialista responsable <span class="required">*</span>
+                        </label>
+                        <select id="odontEspecialista" class="form-select odonto-esp-select">
+                            <option value="">Seleccionar especialista</option>
+                        </select>
+                    </div>
+                </div>
 
                 <!-- Cargando registros -->
                 <div v-if="cargando" class="odonto-cargando">
@@ -715,7 +714,6 @@ $modal_id = 'modalPaciente';
                                         Nuevo registro
                                     </p>
 
-                                    <!-- Anomalía — poblado por _poblarSelectsPanel() -->
                                     <div class="campo-grupo">
                                         <label class="campo-label">Anomalía / Diagnóstico *</label>
                                         <select id="odontAnomalia" class="campo-select">
@@ -723,14 +721,11 @@ $modal_id = 'modalPaciente';
                                         </select>
                                     </div>
 
-                                    <!-- Caras — poblado por _poblarSelectsPanel() -->
                                     <div class="campo-grupo">
                                         <label class="campo-label">Cara(s) afectada(s) *</label>
-                                        <!-- id="odontCarasGrid" — innerHTML inyectado por el controlador -->
                                         <div id="odontCarasGrid" class="caras-grid"></div>
                                     </div>
 
-                                    <!-- Procedimiento — poblado por _poblarSelectsPanel() -->
                                     <div class="campo-grupo">
                                         <label class="campo-label">Procedimiento *</label>
                                         <select id="odontProc" class="campo-select">
@@ -738,7 +733,6 @@ $modal_id = 'modalPaciente';
                                         </select>
                                     </div>
 
-                                    <!-- Estatus — poblado por _poblarSelectsPanel() -->
                                     <div class="campo-grupo">
                                         <label class="campo-label">Estatus *</label>
                                         <select id="odontEstatus" class="campo-select">
@@ -748,7 +742,6 @@ $modal_id = 'modalPaciente';
 
                                 </div><!-- /.odonto-panel-body -->
 
-                                <!-- Footer -->
                                 <div class="odonto-panel-footer">
                                     <button class="btn-odonto-cancelar" @click="cancelar">
                                         Cancelar
@@ -819,16 +812,16 @@ $modal_id = 'modalPaciente';
 <script>
     window.addEventListener('load', function () {
         const _cambiarTabOrig = window.cambiarTab;
- 
+
         window.cambiarTab = function (modalId, tabId) {
             if (typeof _cambiarTabOrig === 'function') _cambiarTabOrig(modalId, tabId);
- 
+
             if (tabId === 'tabOdontograma') {
                 // Leer numero_paciente igual que lo hace planesController
                 const num = document.getElementById('formPaciente').dataset.numeroPaciente;
                 odontogramaController.cargar(num);   //cargar(), NO montar()
             }
- 
+
             if (tabId === 'tabPlanes') {
                 const num = document.getElementById('formPaciente').dataset.numeroPaciente;
                 planesController.cargar(num);
@@ -836,4 +829,3 @@ $modal_id = 'modalPaciente';
         };
     });
 </script>
- 
