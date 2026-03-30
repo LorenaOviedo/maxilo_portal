@@ -34,11 +34,11 @@ $modal_id = 'modalPaciente';
     <div class="modal-tabs">
         <button class="modal-tab active" data-tab="tabInfoPersonal"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabInfoPersonal')">
-            Información<br>Personal
+            Información Personal
         </button>
         <button class="modal-tab" data-tab="tabContacto"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabContacto')">
-            Información de<br>Contacto
+            Información de Contacto
         </button>
         <button class="modal-tab" data-tab="tabHistorial"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabHistorial')">
