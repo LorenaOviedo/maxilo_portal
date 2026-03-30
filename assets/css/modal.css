@@ -1397,8 +1397,8 @@
 
 plan-table th {
     background-color: #ffffff !important;
-    border-top: none !important; /* Quita la línea superior que señalas */
-    padding-top: 15px; /* Ajuste opcional para que no pegue con lo de arriba */
+    border-top: none !important;
+    padding-top: 15px;
 }
 
 /* Quita cualquier borde superior que pueda tener la tabla por herencia */
@@ -1406,7 +1406,7 @@ plan-table th {
     border-top: none !important;
 }
 
-/* Si quieres que la separación sea más limpia, deja solo el borde inferior */
+/* Deja solo el borde inferior */
 .plan-table thead tr {
     border-top: none !important;
     border-bottom: 1px solid var(--color-border-tertiary);
