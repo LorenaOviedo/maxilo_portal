@@ -184,6 +184,11 @@ const odontogramaController = {
         }
  
         async function guardarRegistro() {
+          const elEsp = document.getElementById('odontEspecialista');
+    console.log('ID elemento:', elEsp?.id);
+    console.log('Valor raw:', elEsp?.value);
+    console.log('Valor parseado:', parseInt(elEsp?.value || '0'));
+    console.log('Todos los selects con ese id:', document.querySelectorAll('#odontEspecialista').length);
           // Leer valores de los selects DOM (no de v-model)
           const idAnomalia      = parseInt(document.getElementById('odontAnomalia')?.value  || '0');
           const idProcedimiento = parseInt(document.getElementById('odontProc')?.value      || '0');
