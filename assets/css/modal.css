@@ -854,6 +854,7 @@
 /* Grupo por tipo */
 .antecedentes-grupo {
     margin-bottom: 12px;
+    border-radius: var(--border-radius-md);
 }
  
 .antecedentes-grupo:last-child {
