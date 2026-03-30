@@ -336,16 +336,19 @@ class PlanTratamiento
     private function validarFecha(string $fecha): ?string
     {
         if (empty($fecha))
-            return null; // ya validado arriba
+            return null;
+
         try {
             $fechaDate = new DateTime($fecha);
             $hoy = new DateTime('today');
-            if ($fechaDate > $hoy) {
-                return 'La fecha de creación no puede ser futura';
+
+            if ($fechaDate < $hoy) {
+                return 'La fecha de creación no puede ser anterior a hoy';
             }
         } catch (Exception $e) {
             return 'El formato de la fecha no es válido';
         }
+
         return null;
     }
 }

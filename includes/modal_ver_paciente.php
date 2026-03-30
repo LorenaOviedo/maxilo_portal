@@ -420,7 +420,7 @@ $modal_id = 'modalPaciente';
                         <div class="form-row cols-2">
                             <div class="form-group">
                                 <label class="form-label">Fecha de creación <span class="required">*</span></label>
-                                <input type="date" id="planFecha" class="form-input"  max="<?php echo date('Y-m-d'); ?>">
+                                <input type="date" id="planFecha" class="form-input"  min="<?php echo date('Y-m-d');?>">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Especialista <span class="required">*</span></label>
