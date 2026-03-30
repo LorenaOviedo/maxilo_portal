@@ -549,7 +549,7 @@ $modal_id = 'modalPaciente';
                     </label>
                     <!-- id="odontEspecialista" — poblado por odontogramaController._poblarSelects() -->
                     <select id="odontEspecialista" class="form-select odonto-esp-select">
-                        <option value="">— Seleccionar especialista —</option>
+                        <option value="">Seleccionar especialista</option>
                     </select>
                 </div>
             </div>
