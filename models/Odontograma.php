@@ -54,28 +54,28 @@ class Odontograma
             'anomalias'      => $this->_fetchAll("
                 SELECT id_anomalia_dental AS id,
                        nombre_anomalia    AS nombre
-                FROM   AnomaliasDentales
+                FROM   anomaliasdentales
                 ORDER BY nombre_anomalia
             "),
             'caras'          => $this->_fetchAll("
                 SELECT id_cara_dental AS id,
                        cara           AS nombre
-                FROM   CarasDentales
+                FROM   carasdentales
                 ORDER BY id_cara_dental
             "),
             'procedimientos' => $this->_fetchAll("
                 SELECT p.id_procedimiento   AS id,
                        p.nombre_procedimiento AS nombre,
                        p.precio_base
-                FROM   Procedimientos p
-                JOIN   Estatus        s ON s.id_estatus = p.id_estatus
+                FROM   procedimientos p
+                JOIN   estatus        s ON s.id_estatus = p.id_estatus
                 WHERE  s.estatus = 'Activo'
                 ORDER BY p.nombre_procedimiento
             "),
             'estatus'        => $this->_fetchAll("
                 SELECT id_estatus_tratamiento AS id,
                        estatus_tratamiento    AS nombre
-                FROM   EstadosTratamiento
+                FROM   estadostratamiento
                 ORDER BY id_estatus_tratamiento
             "),
             'especialistas'  => $this->_fetchAll("
@@ -85,8 +85,8 @@ class Odontograma
                            e.apellido_paterno,
                            e.apellido_materno
                        ) AS nombre_completo
-                FROM   Especialista e
-                JOIN   Estatus      s ON s.id_estatus = e.id_estatus
+                FROM   especialista e
+                JOIN   estatus      s ON s.id_estatus = e.id_estatus
                 WHERE  s.estatus = 'Activo'
                 ORDER BY e.apellido_paterno, e.nombre
             "),
@@ -141,15 +141,15 @@ class Odontograma
                 ) AS nombre_especialista,
                 COALESCE(et.id_estatus_tratamiento, 1)       AS id_estatus_tratamiento,
                 COALESCE(et.estatus_tratamiento, 'Pendiente') AS estatus_tratamiento
-            FROM  Odontograma             o
-            JOIN  TransaccionesDentales   td  ON td.id_transaccion_dental = o.id_transaccion_dental
-            JOIN  Cita                     c  ON c.id_cita                = td.id_cita
-            JOIN  AnomaliasDentales       ad  ON ad.id_anomalia_dental    = o.id_anomalia_dental
-            JOIN  CarasDentales           cd  ON cd.id_cara_dental        = o.id_cara_dental
-            JOIN  Especialista            esp ON esp.id_especialista      = c.id_especialista
-            LEFT JOIN Procedimientos       p  ON p.id_procedimiento       = td.id_procedimiento
-            LEFT JOIN PlanTratamiento     pt  ON pt.id_plan_tratamiento   = td.id_plan_tratamiento
-            LEFT JOIN EstadosTratamiento  et  ON et.id_estatus_tratamiento= pt.id_estatus_tratamiento
+            FROM  odontograma             o
+            JOIN  transaccionesdentales   td  ON td.id_transaccion_dental = o.id_transaccion_dental
+            JOIN  cita                     c  ON c.id_cita                = td.id_cita
+            JOIN  anomaliasdentales       ad  ON ad.id_anomalia_dental    = o.id_anomalia_dental
+            JOIN  carasdentales           cd  ON cd.id_cara_dental        = o.id_cara_dental
+            JOIN  especialista            esp ON esp.id_especialista      = c.id_especialista
+            LEFT JOIN procedimientos       p  ON p.id_procedimiento       = td.id_procedimiento
+            LEFT JOIN planTratamiento     pt  ON pt.id_plan_tratamiento   = td.id_plan_tratamiento
+            LEFT JOIN estadostratamiento  et  ON et.id_estatus_tratamiento= pt.id_estatus_tratamiento
             WHERE c.numero_paciente = :numero_paciente
             ORDER BY o.numero_posicion ASC,
                      c.fecha_cita     DESC,
@@ -212,7 +212,7 @@ class Odontograma
 
             // 2 ── Transacción dental ─────────────────────────────────────────
             $stmtTx = $this->db->prepare("
-                INSERT INTO TransaccionesDentales (id_cita, id_procedimiento)
+                INSERT INTO transaccionesdentales (id_cita, id_procedimiento)
                 VALUES (:id_cita, :id_procedimiento)
             ");
             $stmtTx->execute([
@@ -223,7 +223,7 @@ class Odontograma
 
             // 3 ── Un registro en Odontograma por cada cara seleccionada ──────
             $stmtOd = $this->db->prepare("
-                INSERT INTO Odontograma
+                INSERT INTO odontograma
                     (id_cara_dental, id_anomalia_dental,
                      id_transaccion_dental, numero_posicion)
                 VALUES
@@ -277,9 +277,9 @@ class Odontograma
             $stmt = $this->db->prepare("
                 SELECT o.id_transaccion_dental,
                        td.id_cita
-                FROM   Odontograma           o
-                JOIN   TransaccionesDentales td ON td.id_transaccion_dental = o.id_transaccion_dental
-                JOIN   Cita                   c ON c.id_cita                = td.id_cita
+                FROM   odontograma             o
+                JOIN   transaccionesdentales     td ON td.id_transaccion_dental = o.id_transaccion_dental
+                JOIN   cita                     c ON c.id_cita                = td.id_cita
                 WHERE  o.id_odontograma  = :id
                   AND  c.numero_paciente = :numero_paciente
             ");
@@ -297,28 +297,28 @@ class Odontograma
             $idCita        = (int) $fila['id_cita'];
 
             // Eliminar registro de Odontograma
-            $this->db->prepare("DELETE FROM Odontograma WHERE id_odontograma = :id")
+            $this->db->prepare("DELETE FROM odontograma WHERE id_odontograma = :id")
                      ->execute([':id' => $idOdontograma]);
 
             // Limpiar TransaccionesDentales si quedó sin hijos
             $cntOd = (int) $this->db->query(
-                "SELECT COUNT(*) FROM Odontograma
+                "SELECT COUNT(*) FROM odontograma
                  WHERE id_transaccion_dental = $idTransaccion"
             )->fetchColumn();
 
             if ($cntOd === 0) {
                 $this->db->prepare(
-                    "DELETE FROM TransaccionesDentales WHERE id_transaccion_dental = :id"
+                    "DELETE FROM transaccionesdentales WHERE id_transaccion_dental = :id"
                 )->execute([':id' => $idTransaccion]);
 
                 // Limpiar Cita si quedó sin transacciones Y es de tipo diagnóstico
                 $cntTx = (int) $this->db->query(
-                    "SELECT COUNT(*) FROM TransaccionesDentales WHERE id_cita = $idCita"
+                    "SELECT COUNT(*) FROM transaccionesdentales WHERE id_cita = $idCita"
                 )->fetchColumn();
 
                 if ($cntTx === 0) {
                     $this->db->prepare("
-                        DELETE FROM Cita
+                        DELETE FROM cita
                         WHERE  id_cita             = :id
                           AND  id_motivo_consulta  = :motivo
                     ")->execute([
@@ -399,19 +399,19 @@ class Odontograma
     {
         $checks = [
             'idMotivoOdontograma' => [
-                'sql'   => "SELECT id_motivo_consulta AS id FROM MotivoConsulta
+                'sql'   => "SELECT id_motivo_consulta AS id FROM motivoconsulta
                             WHERE motivo_consulta = 'Registro odontograma' LIMIT 1",
                 'campo' => 'id',
                 'label' => "MotivoConsulta 'Registro odontograma'",
             ],
             'idEstatusCitaDiag'   => [
-                'sql'   => "SELECT id_estatus_cita AS id FROM EstadosCita
+                'sql'   => "SELECT id_estatus_cita AS id FROM estadoscita
                             WHERE estatus_cita = 'Registro diagnóstico' LIMIT 1",
                 'campo' => 'id',
                 'label' => "EstadosCita 'Registro diagnóstico'",
             ],
             'idProcSinAsignar'    => [
-                'sql'   => "SELECT id_procedimiento AS id FROM Procedimientos
+                'sql'   => "SELECT id_procedimiento AS id FROM procedimientos
                             WHERE nombre_procedimiento = 'Sin procedimiento asignado' LIMIT 1",
                 'campo' => 'id',
                 'label' => "Procedimiento 'Sin procedimiento asignado'",
