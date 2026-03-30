@@ -73,7 +73,7 @@ const odontogramaController = {
         '<option value="">Seleccionar especialista...</option>';
       this._catalogos.especialistas.forEach((e) => {
         const opt = document.createElement("option");
-        opt.value = e.id_especialista;
+        opt.value = e.id;
         opt.textContent = e.nombre_completo;
         selEsp.appendChild(opt);
       });
@@ -245,7 +245,7 @@ const odontogramaController = {
             estatus_tratamiento:
               cat.estatus.find((e) => e.id == idEstatus)?.nombre ?? "",
             nombre_especialista:
-              cat.especialistas.find((e) => e.id_especialista == idEspecialista)
+              cat.especialistas.find((e) => e.id == idEspecialista)
                 ?.nombre_completo ?? "",
             fecha_cita: new Date().toISOString().slice(0, 10),
             _pendiente: true,
