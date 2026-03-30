@@ -75,7 +75,7 @@ const planesController = {
     contenedor.innerHTML = planes
       .map(
         (plan, idx) => `
-            <div class="plan-card" data-id="${plan.id_plan_tratamiento}">
+            <div class="plan-card form-card" data-id="${plan.id_plan_tratamiento}">
  
                 <!-- Cabecera del acordeón (siempre visible) -->
                 <div class="plan-accordion-header"

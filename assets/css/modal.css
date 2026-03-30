@@ -1394,33 +1394,3 @@
     font-size: 13px;
     color: var(--color-text-primary);
 }
-
-
-.plan-accordion-body {
-    border-top: 1px solid var(--color-border-tertiary);
-    padding: 0; /* <--- IMPORTANTE: 0 padding para que la tabla toque los bordes */
-    background-color: #ffffff;
-}
-
-/* Ajuste de la tabla */
-.plan-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 0;
-}
-
-.plan-table th {
-    background-color: var(--color-background-secondary); /* El mismo gris del header */
-    padding: 12px 16px;
-    font-size: 11px;
-    color: var(--color-text-secondary);
-    border-bottom: 1px solid var(--color-border-tertiary);
-}
-
-
-.plan-notas {
-    padding: 12px 16px;
-    background-color: #fffbeb; /* Un toque amarillento sutil para notas */
-    border-bottom: 1px solid var(--color-border-tertiary);
-    font-size: 13px;
-}
