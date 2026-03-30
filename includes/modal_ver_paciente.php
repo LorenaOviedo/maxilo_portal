@@ -48,7 +48,6 @@ $modal_id = 'modalPaciente';
         <button class="modal-tab" data-tab="tabAnamnesis"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabAnamnesis')">
             Anamnesis
-            <br>
         </button>
         <button class="modal-tab" data-tab="tabPlanes" onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabPlanes')">
             Planes de Tratamiento

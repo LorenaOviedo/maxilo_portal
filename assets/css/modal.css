@@ -123,8 +123,8 @@
 /*TABS DEL MODAL*/
 .modal-tabs {
     display: flex;
-    gap: 10px;               /* Espacio entre pestañas */
-    padding: 0 20px;         /* Espacio a los lados */
+    gap: 15px;               /* Espacio entre pestañas */
+    padding: 0 25px;         /* Espacio a los lados */
     background-color: #ffffff;
     border-bottom: 2px solid #e8e8e8;
     
@@ -134,7 +134,7 @@
     
     /* Ocultar barra en Firefox */
     scrollbar-width: none;   
-    /* Ocultar barra en Internet Explorer/Edge */
+    /* Ocultar barra en Edge */
     -ms-overflow-style: none;
 }
 
@@ -155,16 +155,17 @@
     border-bottom: 3px solid transparent;
     margin-bottom: -2px;
 
-    flex-shrink: 0;          /* IMPORTANTE: evita que los nombres se aplasten */
+    flex-shrink: 0;          /* Evita que los nombres se aplasten */
     white-space: nowrap;     /* Evita que el texto salte a dos líneas */
-    padding: 15px 12px;
+    padding: 16px 12px;
+    min-width: 100px;
     border-bottom: 3px solid transparent;
     transition: all 0.2s ease;
 }
 
 .modal-tab:hover {
     color: #20a89e;
-    background-color: #f8f9fa;
+    background-color: #f8f9fa;  
 }
 
 .modal-tab.active {
