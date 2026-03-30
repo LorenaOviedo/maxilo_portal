@@ -205,4 +205,16 @@ include '../includes/sidebar.php';
 
 </main>
 
+<!-- Variables globales — antes del modal y el JS -->
+<script>
+var API_URL   = '<?php echo ajax_url('Api.php'); ?>';
+var CATALOGOS = <?php echo $catalogosJson; ?>;
+</script>
+ 
+<!-- Modal especialista -->
+<?php include '../includes/modal_especialista.php'; ?>
+ 
+<!-- JS específico del módulo -->
+<script src="<?php echo asset('js/especialistas.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+
 <?php include '../includes/footer.php'; ?>
