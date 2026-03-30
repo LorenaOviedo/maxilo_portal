@@ -95,7 +95,7 @@ $modulos = [
 
     'odontograma' => [
         'modelo' => 'Odontograma',
-        'archivo' => __DIR__ . '/../assets/js/odontogramaModel.js',
+        'archivo' => __DIR__ . '/../models/Odontograma.php',
         'campo_id' => 'id_odontograma',
     ],
 
@@ -429,6 +429,92 @@ switch ($accion) {
 
         $ok = $model->eliminarPlan($idPlan);
         responder($ok, $ok ? 'Plan eliminado correctamente' : 'Error al eliminar el plan');
+        break;
+
+    // ── ODONTOGRAMA: catálogos ────────────────────────────────────────────────
+    // GET ajax/api.php?modulo=odontograma&accion=get_catalogos_odontograma
+    // Retorna: { success, anomalias[], caras[], procedimientos[], estatus[], especialistas[] }
+    case 'get_catalogos_odontograma':
+        responder(true, 'OK', $model->getCatalogos());
+        break;
+
+
+    // ── ODONTOGRAMA: registros de un paciente ─────────────────────────────────
+    // GET ajax/api.php?modulo=odontograma&accion=get_by_paciente_odontograma&numero_paciente=X
+    // Retorna: { success, registros: { "[pieza]": [...] } }
+    case 'get_by_paciente_odontograma':
+        $numeroPaciente = (int) ($_GET['numero_paciente'] ?? 0);
+        if (!$numeroPaciente)
+            responder(false, 'numero_paciente requerido');
+
+        $registros = $model->getByPaciente($numeroPaciente);
+        responder(true, 'OK', ['registros' => $registros]);
+        break;
+
+
+    // ── ODONTOGRAMA: guardar hallazgo ─────────────────────────────────────────
+    // POST ajax/api.php?modulo=odontograma&accion=guardar_odontograma
+    // Body JSON: { numero_paciente, id_especialista, numero_pieza,
+    //              id_anomalia, id_caras[], id_procedimiento }
+    case 'guardar_odontograma':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Método no permitido');
+
+        $body = json_decode(file_get_contents('php://input'), true) ?? [];
+
+        $numeroPaciente = (int) ($body['numero_paciente'] ?? 0);
+        $idEspecialista = (int) ($body['id_especialista'] ?? 0);
+        $numeroPieza = (int) ($body['numero_pieza'] ?? 0);
+        $idAnomalia = (int) ($body['id_anomalia'] ?? 0);
+        $idCaras = $body['id_caras'] ?? [];
+        $idProcedimiento = (int) ($body['id_procedimiento'] ?? 0);
+
+        if (!$numeroPaciente || !$idEspecialista || !$numeroPieza || !$idAnomalia)
+            responder(false, 'Campos requeridos: numero_paciente, id_especialista, numero_pieza, id_anomalia');
+
+        if (empty($idCaras))
+            responder(false, 'Se requiere al menos una cara dental (id_caras)');
+
+        if (!$idProcedimiento)
+            responder(false, 'El procedimiento es obligatorio (id_procedimiento)');
+
+        $resultado = $model->guardar([
+            'numero_paciente' => $numeroPaciente,
+            'id_especialista' => $idEspecialista,
+            'numero_pieza' => $numeroPieza,
+            'id_anomalia' => $idAnomalia,
+            'id_caras' => $idCaras,
+            'id_procedimiento' => $idProcedimiento,
+        ]);
+
+        responder(
+            $resultado['success'],
+            $resultado['message'] ?? 'Registro guardado correctamente',
+            $resultado
+        );
+        break;
+
+
+    // ── ODONTOGRAMA: eliminar hallazgo ────────────────────────────────────────
+    // POST ajax/api.php?modulo=odontograma&accion=eliminar_odontograma
+    // Body JSON: { id_odontograma, numero_paciente }
+    case 'eliminar_odontograma':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Método no permitido');
+
+        $body = json_decode(file_get_contents('php://input'), true) ?? [];
+
+        $idOdontograma = (int) ($body['id_odontograma'] ?? 0);
+        $numeroPaciente = (int) ($body['numero_paciente'] ?? 0);
+
+        if (!$idOdontograma || !$numeroPaciente)
+            responder(false, 'id_odontograma y numero_paciente son requeridos');
+
+        $resultado = $model->eliminar($idOdontograma, $numeroPaciente);
+        responder(
+            $resultado['success'],
+            $resultado['message'] ?? 'Registro eliminado correctamente'
+        );
         break;
 
     // ── Acción no reconocida ──────────────────────────────────────

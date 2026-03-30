@@ -540,303 +540,243 @@ $modal_id = 'modalPaciente';
 
         <!-- Tab 5 odontograma -->
         <div id="tabOdontograma" class="modal-tab-content">
+
+            <!-- ── Toolbar: especialista (DOM puro, igual que planes) ──────── -->
+            <div class="odonto-toolbar">
+                <div class="odonto-toolbar-grupo">
+                    <label class="campo-label">
+                        Especialista responsable <span class="required">*</span>
+                    </label>
+                    <!-- id="odontEspecialista" — poblado por odontogramaController._poblarSelects() -->
+                    <select id="odontEspecialista" class="form-select odonto-esp-select">
+                        <option value="">— Seleccionar especialista —</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- ── App Vue: arcadas + panel lateral ─────────────────────────── -->
             <div id="app-odontograma">
 
-                <!-- ── Estado de carga de catálogos ─────────────────────── -->
-                <div v-if="cargandoCatalogos" class="odonto-cargando">
+                <!-- Cargando registros -->
+                <div v-if="cargando" class="odonto-cargando">
                     <i class="fas fa-circle-notch fa-spin"></i>
                     Cargando odontograma...
                 </div>
 
-                <!-- ── Contenido principal ──────────────────────────────── -->
-                <template v-else>
+                <div v-else class="odonto-wrapper">
 
-                    <!-- ── Toolbar: selector de especialista ─────────────── -->
-                    <div class="odonto-toolbar">
-                        <div class="odonto-toolbar-grupo">
-                            <label class="campo-label">
-                                Especialista responsable
-                                <span class="required">*</span>
-                            </label>
-                            <select v-model="idEspecialistaSeleccionado" class="form-select odonto-esp-select">
-                                <option :value="null">— Seleccionar especialista —</option>
-                                <option v-for="esp in catalogoEspecialistas" :key="esp.id" :value="esp.id">
-                                    {{ esp.nombre_completo }}
-                                </option>
-                            </select>
-                        </div>
-                        <p class="odonto-toolbar-hint" v-if="!idEspecialistaSeleccionado">
-                            <i class="fas fa-info-circle"></i>
-                            Selecciona un especialista para poder registrar hallazgos
+                    <!-- PANEL IZQUIERDO: Arcadas -->
+                    <div class="arcadas-panel">
+                        <p class="arcadas-panel-sub">
+                            Haz clic en una pieza dental para ver su historial o registrar un avance
                         </p>
-                    </div>
 
-                    <!-- ── Cargando registros del paciente ───────────────── -->
-                    <div v-if="cargando" class="odonto-cargando">
-                        <i class="fas fa-circle-notch fa-spin"></i>
-                        Cargando registros...
-                    </div>
-
-                    <!-- ── Wrapper arcadas + panel ───────────────────────── -->
-                    <div v-else class="odonto-wrapper">
-
-                        <!-- PANEL IZQUIERDO: Arcadas dentales -->
-                        <div class="arcadas-panel">
-                            <p class="arcadas-panel-sub">
-                                Haz clic en una pieza dental para ver su historial o registrar un avance
-                            </p>
-
-                            <!-- Arcada Superior -->
-                            <div class="arcada-section">
-                                <p class="arcada-label">Arcada superior</p>
-                                <div class="arcada-row arcada-superior">
-                                    <div v-for="pieza in arcadaSuperior" :key="pieza.numero" class="diente"
-                                        @click="seleccionarDiente(pieza)">
-                                        <div class="diente-icon" :class="[
-                                            `estado-${estadoDiente(pieza.numero)}`,
-                                            { activo: dienteActivo?.numero === pieza.numero }
-                                        ]">
-                                            <img :src="pieza.icono" :alt="pieza.nombre"
-                                                style="width:18px; height:18px; object-fit:contain;">
-                                            <span v-if="registros[pieza.numero]?.length" class="diente-badge">
-                                                {{ registros[pieza.numero].length }}
-                                            </span>
-                                        </div>
-                                        <span class="diente-num">{{ pieza.numero }}</span>
+                        <!-- Arcada Superior -->
+                        <div class="arcada-section">
+                            <p class="arcada-label">Arcada superior</p>
+                            <div class="arcada-row arcada-superior">
+                                <div v-for="pieza in arcadaSuperior" :key="pieza.numero" class="diente"
+                                    @click="seleccionarDiente(pieza)">
+                                    <div class="diente-icon" :class="[
+                                        `estado-${estadoDiente(pieza.numero)}`,
+                                        { activo: dienteActivo?.numero === pieza.numero }
+                                    ]">
+                                        <img :src="pieza.icono" :alt="pieza.nombre"
+                                            style="width:18px; height:18px; object-fit:contain;">
+                                        <span v-if="registros[pieza.numero]?.length" class="diente-badge">
+                                            {{ registros[pieza.numero].length }}
+                                        </span>
                                     </div>
+                                    <span class="diente-num">{{ pieza.numero }}</span>
                                 </div>
                             </div>
-
-                            <div class="arcada-divider">Maxilar · Mandíbula</div>
-
-                            <!-- Arcada Inferior -->
-                            <div class="arcada-section">
-                                <p class="arcada-label">Arcada inferior</p>
-                                <div class="arcada-row arcada-inferior">
-                                    <div v-for="pieza in arcadaInferior" :key="pieza.numero" class="diente"
-                                        @click="seleccionarDiente(pieza)">
-                                        <div class="diente-icon" :class="[
-                                            `estado-${estadoDiente(pieza.numero)}`,
-                                            { activo: dienteActivo?.numero === pieza.numero }
-                                        ]">
-                                            <img :src="pieza.icono" :alt="pieza.nombre"
-                                                style="width:18px; height:18px; object-fit:contain;">
-                                            <span v-if="registros[pieza.numero]?.length" class="diente-badge">
-                                                {{ registros[pieza.numero].length }}
-                                            </span>
-                                        </div>
-                                        <span class="diente-num">{{ pieza.numero }}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Leyenda -->
-                            <div class="leyenda">
-                                <div class="leyenda-item">
-                                    <div class="leyenda-dot sano"></div>Sin registro
-                                </div>
-                                <div class="leyenda-item">
-                                    <div class="leyenda-dot anomalia"></div>En proceso
-                                </div>
-                                <div class="leyenda-item">
-                                    <div class="leyenda-dot atencion"></div>Pendiente
-                                </div>
-                                <div class="leyenda-item">
-                                    <div class="leyenda-dot tratado"></div>Tratado
-                                </div>
-                            </div>
-                        </div><!-- /.arcadas-panel -->
-
-                        <!-- PANEL DERECHO: Formulario de registro -->
-                        <div class="odonto-form-panel">
-
-                            <!-- Sin diente seleccionado -->
-                            <transition name="slide-fade">
-                                <div v-if="!dienteActivo" class="odonto-panel-empty">
-                                    <div class="odonto-panel-empty-icon">
-                                        <i class="ri-tooth-line"></i>
-                                    </div>
-                                    <p>Selecciona una pieza dental para ver su historial o registrar un nuevo avance</p>
-                                </div>
-                            </transition>
-
-                            <!-- Diente seleccionado -->
-                            <transition name="slide-fade">
-                                <div v-if="dienteActivo" class="odonto-panel-active">
-
-                                    <!-- Header de pieza -->
-                                    <div class="odonto-panel-header">
-                                        <div class="odonto-panel-header-icon">
-                                            <img :src="dienteActivo.icono" :alt="dienteActivo.nombre"
-                                                style="width:22px; height:22px; object-fit:contain;">
-                                        </div>
-                                        <div class="odonto-panel-header-info">
-                                            <h3>Pieza {{ dienteActivo.numero }}</h3>
-                                            <p>{{ dienteActivo.nombre }} · {{ dienteActivo.arcada }}</p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Cuerpo del panel -->
-                                    <div class="odonto-panel-body">
-
-                                        <!-- Registros anteriores -->
-                                        <div v-if="registrosDiente.length" class="registros-previos">
-                                            <p class="registros-titulo">
-                                                Registros anteriores ({{ registrosDiente.length }})
-                                            </p>
-                                            <div v-for="(reg, idx) in registrosDiente" :key="reg.id_odontograma ?? idx"
-                                                class="registro-item" :class="{ 'registro-pendiente': reg._pendiente }">
-
-                                                <!-- Fila superior: anomalía + estatus + eliminar -->
-                                                <div class="registro-item-top">
-                                                    <span class="registro-anomalia">
-                                                        {{ reg.nombre_anomalia }}
-                                                    </span>
-                                                    <div style="display:flex; gap:6px; align-items:center;">
-                                                        <span class="registro-estatus" :class="reg.estatus_tratamiento
-                                                                        .toLowerCase()
-                                                                        .replace(/\s+/g, '-')">
-                                                            {{ reg.estatus_tratamiento }}
-                                                        </span>
-                                                        <!-- No mostrar eliminar mientras está pendiente de servidor -->
-                                                        <button v-if="!reg._pendiente" class="btn-eliminar-registro"
-                                                            @click="eliminarRegistro(idx)" title="Eliminar registro">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                        <i v-else class="fas fa-circle-notch fa-spin"
-                                                            style="font-size:11px; color:#adb5bd;" title="Guardando...">
-                                                        </i>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Cara(s) -->
-                                                <div class="registro-cara" v-if="reg.cara">
-                                                    <i class="fas fa-map-marker-alt"
-                                                        style="font-size:9px; margin-right:3px;"></i>
-                                                    Cara(s): {{ reg.cara }}
-                                                </div>
-
-                                                <!-- Procedimiento -->
-                                                <div class="registro-procedimiento" v-if="reg.nombre_procedimiento &&
-                                                          reg.nombre_procedimiento !== 'Sin procedimiento asignado'">
-                                                    <i class="fas fa-stethoscope"
-                                                        style="font-size:9px; margin-right:3px;"></i>
-                                                    {{ reg.nombre_procedimiento }}
-                                                </div>
-
-                                                <!-- Especialista y fecha -->
-                                                <div class="registro-meta" v-if="reg.nombre_especialista">
-                                                    <i class="fas fa-user-md"
-                                                        style="font-size:9px; margin-right:3px;"></i>
-                                                    {{ reg.nombre_especialista }}
-                                                    <span v-if="reg.fecha_cita" style="margin-left:6px; color:#adb5bd;">
-                                                        · {{ reg.fecha_cita }}
-                                                    </span>
-                                                </div>
-
-                                            </div><!-- /.registro-item -->
-                                        </div><!-- /.registros-previos -->
-
-                                        <!-- ── Nuevo registro ─────────────────────────────── -->
-                                        <p class="nuevo-registro-titulo">
-                                            <i class="fas fa-plus" style="font-size:9px;"></i>
-                                            Nuevo registro
-                                        </p>
-
-                                        <!-- Aviso si no hay especialista -->
-                                        <div v-if="!idEspecialistaSeleccionado" class="odonto-aviso-esp">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                            Selecciona un especialista en la parte superior para registrar un hallazgo.
-                                        </div>
-
-                                        <template v-else>
-
-                                            <!-- Anomalía -->
-                                            <div class="campo-grupo">
-                                                <label class="campo-label">Anomalía / Diagnóstico *</label>
-                                                <select v-model="form.id_anomalia" class="campo-select">
-                                                    <option :value="null">Seleccionar...</option>
-                                                    <option v-for="a in catalogoAnomalias" :key="a.id" :value="a.id">
-                                                        {{ a.nombre }}
-                                                    </option>
-                                                </select>
-                                            </div>
-
-                                            <!-- Caras -->
-                                            <div class="campo-grupo">
-                                                <label class="campo-label">Cara(s) afectada(s) *</label>
-                                                <div class="caras-grid">
-                                                    <div v-for="cara in catalogoCaras" :key="cara.id">
-                                                        <input type="checkbox"
-                                                            :id="`cara-${cara.id}-${dienteActivo.numero}`"
-                                                            :value="cara.id" v-model="form.id_caras" class="cara-check">
-                                                        <label :for="`cara-${cara.id}-${dienteActivo.numero}`"
-                                                            class="cara-label">
-                                                            {{ cara.nombre }}
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Procedimiento -->
-                                            <div class="campo-grupo">
-                                                <label class="campo-label">Procedimiento *</label>
-                                                <select v-model="form.id_procedimiento" class="campo-select">
-                                                    <option :value="null">Seleccionar...</option>
-                                                    <option v-for="p in catalogoProcedimientos" :key="p.id"
-                                                        :value="p.id">
-                                                        {{ p.nombre }}
-                                                    </option>
-                                                </select>
-                                            </div>
-
-                                            <!-- Estatus -->
-                                            <div class="campo-grupo">
-                                                <label class="campo-label">Estatus *</label>
-                                                <select v-model="form.id_estatus" class="campo-select">
-                                                    <option :value="null">Seleccionar...</option>
-                                                    <option v-for="e in catalogoEstatus" :key="e.id" :value="e.id">
-                                                        {{ e.nombre }}
-                                                    </option>
-                                                </select>
-                                            </div>
-
-                                        </template><!-- /v-else especialista -->
-
-                                    </div><!-- /.odonto-panel-body -->
-
-                                    <!-- Footer botones -->
-                                    <div class="odonto-panel-footer">
-                                        <button class="btn-odonto-cancelar" @click="cancelar">
-                                            Cancelar
-                                        </button>
-                                        <button class="btn-odonto-guardar" :disabled="!formularioValido"
-                                            @click="guardarRegistro">
-                                            <i class="fas fa-save" style="font-size:11px; margin-right:4px;"></i>
-                                            Guardar
-                                        </button>
-                                    </div>
-
-                                </div><!-- /.odonto-panel-active -->
-                            </transition>
-
-                        </div><!-- /.odonto-form-panel -->
-
-                    </div><!-- /.odonto-wrapper -->
-
-                    <!-- Notificación flotante -->
-                    <transition name="notif">
-                        <div v-if="notif.visible" class="odonto-notif" :class="`odonto-notif--${notif.tipo}`">
-                            <i :class="{
-                                'fas fa-check-circle':         notif.tipo === 'success',
-                                'fas fa-exclamation-circle':   notif.tipo === 'error',
-                                'fas fa-circle-notch fa-spin': notif.tipo === 'info'
-                            }"></i>
-                            {{ notif.texto }}
                         </div>
-                    </transition>
 
-                </template><!-- /v-else cargandoCatalogos -->
+                        <div class="arcada-divider">Maxilar · Mandíbula</div>
+
+                        <!-- Arcada Inferior -->
+                        <div class="arcada-section">
+                            <p class="arcada-label">Arcada inferior</p>
+                            <div class="arcada-row arcada-inferior">
+                                <div v-for="pieza in arcadaInferior" :key="pieza.numero" class="diente"
+                                    @click="seleccionarDiente(pieza)">
+                                    <div class="diente-icon" :class="[
+                                        `estado-${estadoDiente(pieza.numero)}`,
+                                        { activo: dienteActivo?.numero === pieza.numero }
+                                    ]">
+                                        <img :src="pieza.icono" :alt="pieza.nombre"
+                                            style="width:18px; height:18px; object-fit:contain;">
+                                        <span v-if="registros[pieza.numero]?.length" class="diente-badge">
+                                            {{ registros[pieza.numero].length }}
+                                        </span>
+                                    </div>
+                                    <span class="diente-num">{{ pieza.numero }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Leyenda -->
+                        <div class="leyenda">
+                            <div class="leyenda-item">
+                                <div class="leyenda-dot sano"></div>Sin registro
+                            </div>
+                            <div class="leyenda-item">
+                                <div class="leyenda-dot anomalia"></div>En proceso
+                            </div>
+                            <div class="leyenda-item">
+                                <div class="leyenda-dot atencion"></div>Pendiente
+                            </div>
+                            <div class="leyenda-item">
+                                <div class="leyenda-dot tratado"></div>Tratado
+                            </div>
+                        </div>
+                    </div><!-- /.arcadas-panel -->
+
+                    <!-- PANEL DERECHO: Formulario -->
+                    <div class="odonto-form-panel">
+
+                        <!-- Sin diente seleccionado -->
+                        <transition name="slide-fade">
+                            <div v-if="!dienteActivo" class="odonto-panel-empty">
+                                <div class="odonto-panel-empty-icon"><i class="ri-tooth-line"></i></div>
+                                <p>Selecciona una pieza dental para ver su historial o registrar un nuevo avance</p>
+                            </div>
+                        </transition>
+
+                        <!-- Diente seleccionado -->
+                        <transition name="slide-fade">
+                            <div v-if="dienteActivo" class="odonto-panel-active">
+
+                                <!-- Header de pieza -->
+                                <div class="odonto-panel-header">
+                                    <div class="odonto-panel-header-icon">
+                                        <img :src="dienteActivo.icono" :alt="dienteActivo.nombre"
+                                            style="width:22px; height:22px; object-fit:contain;">
+                                    </div>
+                                    <div class="odonto-panel-header-info">
+                                        <h3>Pieza {{ dienteActivo.numero }}</h3>
+                                        <p>{{ dienteActivo.nombre }} · {{ dienteActivo.arcada }}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Cuerpo -->
+                                <div class="odonto-panel-body">
+
+                                    <!-- Registros anteriores -->
+                                    <div v-if="registrosDiente.length" class="registros-previos">
+                                        <p class="registros-titulo">
+                                            Registros anteriores ({{ registrosDiente.length }})
+                                        </p>
+                                        <div v-for="(reg, idx) in registrosDiente" :key="reg.id_odontograma ?? idx"
+                                            class="registro-item" :class="{ 'registro-pendiente': reg._pendiente }">
+
+                                            <div class="registro-item-top">
+                                                <span class="registro-anomalia">{{ reg.nombre_anomalia }}</span>
+                                                <div style="display:flex; gap:6px; align-items:center;">
+                                                    <span class="registro-estatus"
+                                                        :class="reg.estatus_tratamiento.toLowerCase().replace(/\s+/g,'-')">
+                                                        {{ reg.estatus_tratamiento }}
+                                                    </span>
+                                                    <button v-if="!reg._pendiente" class="btn-eliminar-registro"
+                                                        @click="eliminarRegistro(idx)" title="Eliminar">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                    <i v-else class="fas fa-circle-notch fa-spin"
+                                                        style="font-size:11px; color:#adb5bd;"></i>
+                                                </div>
+                                            </div>
+
+                                            <div class="registro-cara" v-if="reg.cara">
+                                                <i class="fas fa-map-marker-alt"
+                                                    style="font-size:9px; margin-right:3px;"></i>
+                                                Cara(s): {{ reg.cara }}
+                                            </div>
+
+                                            <div class="registro-procedimiento" v-if="reg.nombre_procedimiento &&
+                                                      reg.nombre_procedimiento !== 'Sin procedimiento asignado'">
+                                                <i class="fas fa-stethoscope"
+                                                    style="font-size:9px; margin-right:3px;"></i>
+                                                {{ reg.nombre_procedimiento }}
+                                            </div>
+
+                                            <div class="registro-meta" v-if="reg.nombre_especialista">
+                                                <i class="fas fa-user-md" style="font-size:9px; margin-right:3px;"></i>
+                                                {{ reg.nombre_especialista }}
+                                                <span v-if="reg.fecha_cita" style="margin-left:6px; color:#adb5bd;">
+                                                    · {{ reg.fecha_cita }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Nuevo registro -->
+                                    <p class="nuevo-registro-titulo">
+                                        <i class="fas fa-plus" style="font-size:9px;"></i>
+                                        Nuevo registro
+                                    </p>
+
+                                    <!-- Anomalía — poblado por _poblarSelectsPanel() -->
+                                    <div class="campo-grupo">
+                                        <label class="campo-label">Anomalía / Diagnóstico *</label>
+                                        <select id="odontAnomalia" class="campo-select">
+                                            <option value="">Seleccionar...</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Caras — poblado por _poblarSelectsPanel() -->
+                                    <div class="campo-grupo">
+                                        <label class="campo-label">Cara(s) afectada(s) *</label>
+                                        <!-- id="odontCarasGrid" — innerHTML inyectado por el controlador -->
+                                        <div id="odontCarasGrid" class="caras-grid"></div>
+                                    </div>
+
+                                    <!-- Procedimiento — poblado por _poblarSelectsPanel() -->
+                                    <div class="campo-grupo">
+                                        <label class="campo-label">Procedimiento *</label>
+                                        <select id="odontProc" class="campo-select">
+                                            <option value="">Seleccionar...</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Estatus — poblado por _poblarSelectsPanel() -->
+                                    <div class="campo-grupo">
+                                        <label class="campo-label">Estatus *</label>
+                                        <select id="odontEstatus" class="campo-select">
+                                            <option value="">Seleccionar...</option>
+                                        </select>
+                                    </div>
+
+                                </div><!-- /.odonto-panel-body -->
+
+                                <!-- Footer -->
+                                <div class="odonto-panel-footer">
+                                    <button class="btn-odonto-cancelar" @click="cancelar">
+                                        Cancelar
+                                    </button>
+                                    <button class="btn-odonto-guardar" @click="guardarRegistro">
+                                        <i class="fas fa-save" style="font-size:11px; margin-right:4px;"></i>
+                                        Guardar
+                                    </button>
+                                </div>
+
+                            </div><!-- /.odonto-panel-active -->
+                        </transition>
+
+                    </div><!-- /.odonto-form-panel -->
+
+                </div><!-- /.odonto-wrapper -->
+
+                <!-- Notificación flotante -->
+                <transition name="notif">
+                    <div v-if="notif.visible" class="odonto-notif" :class="`odonto-notif--${notif.tipo}`">
+                        <i :class="{
+                            'fas fa-check-circle':         notif.tipo === 'success',
+                            'fas fa-exclamation-circle':   notif.tipo === 'error',
+                            'fas fa-circle-notch fa-spin': notif.tipo === 'info'
+                        }"></i>
+                        {{ notif.texto }}
+                    </div>
+                </transition>
 
             </div><!-- /#app-odontograma -->
         </div><!-- /#tabOdontograma -->
@@ -877,19 +817,18 @@ $modal_id = 'modalPaciente';
 
 <!-- JavaScript del modal, lógica se pasa a pacientes.js -->
 <script>
-    // El odontograma necesita interceptar cambiarTab y cerrarModal
     window.addEventListener('load', function () {
         const _cambiarTabOrig = window.cambiarTab;
-        const _cerrarModalOrig = window.cerrarModal;
-
+ 
         window.cambiarTab = function (modalId, tabId) {
             if (typeof _cambiarTabOrig === 'function') _cambiarTabOrig(modalId, tabId);
-
+ 
             if (tabId === 'tabOdontograma') {
-                const numeroPaciente = document.querySelector('#formPaciente [name="id"]')?.value || null;
-                odontogramaController.montar(numeroPaciente);
+                // Leer numero_paciente igual que lo hace planesController
+                const num = document.getElementById('formPaciente').dataset.numeroPaciente;
+                odontogramaController.cargar(num);   //cargar(), NO montar()
             }
-
+ 
             if (tabId === 'tabPlanes') {
                 const num = document.getElementById('formPaciente').dataset.numeroPaciente;
                 planesController.cargar(num);
@@ -897,3 +836,4 @@ $modal_id = 'modalPaciente';
         };
     });
 </script>
+ 
