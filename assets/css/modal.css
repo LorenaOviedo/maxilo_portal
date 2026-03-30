@@ -1174,6 +1174,10 @@
 .plan-accordion-body {
     border-top: 1px solid var(--color-border-tertiary);
     padding: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    overflow: hidden;           /* Recorta la tabla para que no se salga de las esquinas */
+    display: block;
 }
 
 .plan-notas {
