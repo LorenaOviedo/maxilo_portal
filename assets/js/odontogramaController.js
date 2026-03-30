@@ -9,333 +9,385 @@
  */
 
 const odontogramaController = {
-
-  _appInstance: null,
-
-  /**
-   * Monta la app Vue en #app-odontograma.
-   * @param {number|string} numeroPaciente
-   */
-  montar(numeroPaciente) {
-    if (this._appInstance) return;
-
+ 
+  _numeroPaciente: null,
+  _catalogos:      null,   // { anomalias, caras, procedimientos, estatus, especialistas }
+  _appInstance:    null,   // instancia Vue activa
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Llamar desde modal_ver_paciente.php al activar el tab:
+  //   odontogramaController.cargar(numeroPaciente)
+  // ─────────────────────────────────────────────────────────────────────────
+ 
+  async cargar(numeroPaciente) {
+    this._numeroPaciente = parseInt(numeroPaciente);
+ 
+    // 1. Cargar catálogos (solo la primera vez, igual que planes)
+    await this._inicializar();
+ 
+    // 2. Poblar selects del toolbar con DOM vanilla
+    this._poblarSelects();
+ 
+    // 3. Montar Vue (si no está montado aún)
+    this._montarVue();
+  },
+ 
+  limpiar() {
+    this._numeroPaciente = null;
+    this._desmontar();
+    // Resetear toolbar
+    const sel = document.getElementById('odontEspecialista');
+    if (sel) sel.value = '';
+  },
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // INICIALIZACIÓN DE CATÁLOGOS — idéntico a planesController.inicializar()
+  // ─────────────────────────────────────────────────────────────────────────
+ 
+  async _inicializar() {
+    if (this._catalogos) return;   // ya cargados, no repetir
+ 
+    try {
+      const r = await fetch(
+        `${API_URL}?modulo=odontograma&accion=get_catalogos_odontograma`
+      );
+      const data = await r.json();
+      if (!data.success) {
+        console.warn('odontogramaController: no se pudieron cargar catálogos', data.message);
+        return;
+      }
+      this._catalogos = data;
+    } catch (err) {
+      console.warn('odontogramaController: error al cargar catálogos', err);
+    }
+  },
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // POBLAR SELECTS — mismo patrón que planesController._poblarSelects()
+  // ─────────────────────────────────────────────────────────────────────────
+ 
+  _poblarSelects() {
+    // ── Especialistas (toolbar principal) ────────────────────────────────
+    const selEsp = document.getElementById('odontEspecialista');
+    if (selEsp && this._catalogos?.especialistas) {
+      selEsp.innerHTML = '<option value="">— Seleccionar especialista —</option>';
+      this._catalogos.especialistas.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value       = e.id_especialista;
+        opt.textContent = e.nombre_completo;
+        selEsp.appendChild(opt);
+      });
+    }
+  },
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // GENERAR OPTIONS para selects dentro de Vue (igual que _optionsProcedimientos en planes)
+  // Vue no puede usar v-for sobre catálogos que no son reactivos,
+  // así que generamos el HTML de las options como string y lo inyectamos.
+  // ─────────────────────────────────────────────────────────────────────────
+ 
+  _optionsAnomalias() {
+    if (!this._catalogos?.anomalias) return '';
+    return this._catalogos.anomalias
+      .map(a => `<option value="${a.id}">${escHtml(a.nombre)}</option>`)
+      .join('');
+  },
+ 
+  _optionsCaras() {
+    if (!this._catalogos?.caras) return '';
+    return this._catalogos.caras
+      .map(c => `
+        <div>
+          <input type="checkbox"
+                 id="cara-od-${c.id}"
+                 value="${c.id}"
+                 class="cara-check odont-cara-cb">
+          <label for="cara-od-${c.id}" class="cara-label">${escHtml(c.nombre)}</label>
+        </div>`)
+      .join('');
+  },
+ 
+  _optionsProcedimientos() {
+    if (!this._catalogos?.procedimientos) return '';
+    return this._catalogos.procedimientos
+      .map(p => `<option value="${p.id}">${escHtml(p.nombre)}</option>`)
+      .join('');
+  },
+ 
+  _optionsEstatus() {
+    if (!this._catalogos?.estatus) return '';
+    return this._catalogos.estatus
+      .map(e => `<option value="${e.id}">${escHtml(e.nombre)}</option>`)
+      .join('');
+  },
+ 
+  // ─────────────────────────────────────────────────────────────────────────
+  // MONTAR VUE — solo para arcadas, panel y estado reactivo
+  // Los selects del formulario se pueblan con DOM vanilla justo después de montar
+  // ─────────────────────────────────────────────────────────────────────────
+ 
+  _montarVue() {
+    if (this._appInstance) return;   // ya montado
+ 
     const { createApp, ref, computed } = Vue;
     const self = this;
-
+ 
     this._appInstance = createApp({
       setup() {
-
-        // ── Catálogos (se pueblan al cargar) ───────────────────────────────
-        const catalogoAnomalias      = ref([]);
-        const catalogoCaras          = ref([]);
-        const catalogoProcedimientos = ref([]);
-        const catalogoEstatus        = ref([]);
-        const catalogoEspecialistas  = ref([]);
-        const cargandoCatalogos      = ref(true);
-
-        // ── Arcadas (estáticas) ────────────────────────────────────────────
+ 
+        // Arcadas (estáticas)
         const arcadaSuperior = odontogramaModel.construirArcada(
           odontogramaModel.numerosSuperior, 'Superior'
         );
         const arcadaInferior = odontogramaModel.construirArcada(
           odontogramaModel.numerosInferior, 'Inferior'
         );
-
-        // ── Estado reactivo ────────────────────────────────────────────────
-
-        /**
-         * Especialista elegido en el formulario principal.
-         * Se comparte para todos los registros de la sesión de hoy.
-         */
-        const idEspecialistaSeleccionado = ref(null);
-
-        /** Pieza activa { numero, nombre, arcada, icono } */
+ 
+        // Estado reactivo
         const dienteActivo = ref(null);
-
-        /**
-         * Registros del paciente indexados por número FDI de pieza.
-         * Estructura devuelta por getByPaciente():
-         * { "11": [{ id_odontograma, nombre_anomalia, cara, ... }], ... }
-         */
-        const registros = ref({});
-
-        /** Formulario del panel de pieza (IDs de BD) */
-        const form = ref(odontogramaModel.registroVacio());
-
-        /** Notificación flotante temporal */
-        const notif = ref({ visible: false, texto: '', tipo: 'success' });
-
-        /** true durante la carga inicial de registros del paciente */
-        const cargando = ref(false);
-
-        // ── Computadas ─────────────────────────────────────────────────────
-
-        /** Registros de la pieza activa */
+        const registros    = ref({});
+        const cargando     = ref(false);
+        const notif        = ref({ visible: false, texto: '', tipo: 'success' });
+ 
+        // Computadas
         const registrosDiente = computed(() =>
           dienteActivo.value
             ? (registros.value[dienteActivo.value.numero] ?? [])
             : []
         );
-
-        /**
-         * Formulario válido cuando:
-         *  • hay especialista seleccionado
-         *  • hay anomalía
-         *  • hay al menos una cara
-         *  • hay procedimiento (obligatorio en BD)
-         *  • hay estatus
-         */
-        const formularioValido = computed(() =>
-          !!idEspecialistaSeleccionado.value &&
-          !!form.value.id_anomalia           &&
-          form.value.id_caras.length > 0     &&
-          !!form.value.id_procedimiento      &&
-          !!form.value.id_estatus
-        );
-
-        // ── Color visual de diente ─────────────────────────────────────────
-
-        /**
-         * @param {number} numero
-         * @returns {'sano'|'tratado'|'anomalia'|'atencion'}
-         */
+ 
+        // Estado visual de cada diente
         function estadoDiente(numero) {
           const regs = registros.value[numero];
           if (!regs || !regs.length)                                    return 'sano';
           if (regs.every(r => r.estatus_tratamiento === 'Tratado'))     return 'tratado';
           if (regs.some(r  => r.estatus_tratamiento === 'En proceso'))  return 'anomalia';
-          return 'atencion'; // alguno pendiente
+          return 'atencion';
         }
-
-        // ── Acciones ───────────────────────────────────────────────────────
-
+ 
+        // Seleccionar diente → poblar selects del panel con DOM vanilla
         function seleccionarDiente(pieza) {
           dienteActivo.value = pieza;
-          form.value = odontogramaModel.registroVacio();
+ 
+          // Poblar selects del panel lateral justo después de que Vue renderice
+          self._nextTick(() => self._poblarSelectsPanel());
         }
-
+ 
         function cancelar() {
           dienteActivo.value = null;
-          form.value = odontogramaModel.registroVacio();
         }
-
-        /**
-         * Guarda el hallazgo de la pieza activa.
-         * Hace optimistic-update local y luego persiste en servidor.
-         * Si el servidor falla, revierte el cambio local.
-         */
+ 
         async function guardarRegistro() {
-          if (!formularioValido.value) return;
-
-          const num = dienteActivo.value.numero;
-
-          // Copia del form antes de resetearlo
-          const payload = {
-            id_anomalia:      form.value.id_anomalia,
-            id_caras:         [...form.value.id_caras],
-            id_procedimiento: form.value.id_procedimiento,
-            id_estatus:       form.value.id_estatus,
-          };
-
-          // Optimistic-update: construir fila local por cada cara seleccionada
-          // (igual que lo hace el servidor: 1 row Odontograma por cara)
-          const filasLocales = payload.id_caras.map(idCara => ({
-            id_odontograma:         null,   // aún no tenemos el id real
-            numero_posicion:        num,
-            id_anomalia_dental:     payload.id_anomalia,
-            nombre_anomalia:        odontogramaModel.nombreAnomalia(payload.id_anomalia),
-            id_cara_dental:         idCara,
-            cara:                   odontogramaModel.nombresCaras([idCara]),
-            id_procedimiento:       payload.id_procedimiento,
-            nombre_procedimiento:   odontogramaModel.nombreProcedimiento(payload.id_procedimiento),
-            id_estatus_tratamiento: payload.id_estatus,
-            estatus_tratamiento:    odontogramaModel.nombreEstatus(payload.id_estatus),
-            fecha_cita:             new Date().toISOString().slice(0, 10),
-            id_especialista:        idEspecialistaSeleccionado.value,
-            nombre_especialista:    odontogramaModel.nombreEspecialista(idEspecialistaSeleccionado.value),
-            _pendiente:             true,
+          // Leer valores de los selects DOM (no de v-model)
+          const idAnomalia      = parseInt(document.getElementById('odontAnomalia')?.value  || '0');
+          const idProcedimiento = parseInt(document.getElementById('odontProc')?.value      || '0');
+          const idEstatus       = parseInt(document.getElementById('odontEstatus')?.value   || '0');
+          const idEspecialista  = parseInt(document.getElementById('odontEspecialista')?.value || '0');
+          const numeroPieza     = dienteActivo.value?.numero;
+ 
+          // Leer checkboxes de caras
+          const idCaras = [...document.querySelectorAll('.odont-cara-cb:checked')]
+            .map(cb => parseInt(cb.value));
+ 
+          // Validar
+          if (!idEspecialista) {
+            mostrarNotif('Selecciona un especialista en la parte superior', 'error');
+            return;
+          }
+          if (!idAnomalia) {
+            mostrarNotif('Selecciona una anomalía', 'error');
+            return;
+          }
+          if (!idCaras.length) {
+            mostrarNotif('Selecciona al menos una cara', 'error');
+            return;
+          }
+          if (!idProcedimiento) {
+            mostrarNotif('Selecciona un procedimiento', 'error');
+            return;
+          }
+          if (!idEstatus) {
+            mostrarNotif('Selecciona un estatus', 'error');
+            return;
+          }
+ 
+          // Optimistic update
+          const cat = self._catalogos;
+          const filasLocales = idCaras.map(idCara => ({
+            id_odontograma:       null,
+            numero_posicion:      numeroPieza,
+            nombre_anomalia:      cat.anomalias.find(a => a.id == idAnomalia)?.nombre      ?? '',
+            cara:                 cat.caras.find(c => c.id == idCara)?.nombre              ?? '',
+            nombre_procedimiento: cat.procedimientos.find(p => p.id == idProcedimiento)?.nombre ?? '',
+            estatus_tratamiento:  cat.estatus.find(e => e.id == idEstatus)?.nombre         ?? '',
+            nombre_especialista:  cat.especialistas.find(e => e.id_especialista == idEspecialista)?.nombre_completo ?? '',
+            fecha_cita:           new Date().toISOString().slice(0, 10),
+            _pendiente:           true,
           }));
-
-          if (!registros.value[num]) registros.value[num] = [];
-          registros.value[num].unshift(...filasLocales);
-
+ 
+          if (!registros.value[numeroPieza]) registros.value[numeroPieza] = [];
+          registros.value[numeroPieza].unshift(...filasLocales);
+ 
           mostrarNotif('Guardando...', 'info');
-          form.value = odontogramaModel.registroVacio();
-
+ 
           // Persistir en servidor
           const resultado = await self._guardarEnServidor({
-            numero_paciente:  numeroPaciente,
-            id_especialista:  idEspecialistaSeleccionado.value,
-            numero_pieza:     num,
-            id_anomalia:      payload.id_anomalia,
-            id_caras:         payload.id_caras,
-            id_procedimiento: payload.id_procedimiento,
+            numero_paciente:  self._numeroPaciente,
+            id_especialista:  idEspecialista,
+            numero_pieza:     numeroPieza,
+            id_anomalia:      idAnomalia,
+            id_caras:         idCaras,
+            id_procedimiento: idProcedimiento,
           });
-
+ 
           if (resultado?.success) {
-            // Recargar para obtener ids_odontograma reales del servidor
-            await self._cargarRegistros(numeroPaciente, registros, ref(false));
-            mostrarNotif(`Pieza ${num} registrada correctamente`, 'success');
+            await self._cargarRegistros(registros, cargando);
+            mostrarNotif(`Pieza ${numeroPieza} registrada correctamente`, 'success');
+            // Resetear selects del panel
+            self._resetearPanel();
           } else {
-            // Revertir optimistic-update
-            registros.value[num] = (registros.value[num] ?? []).filter(r => !r._pendiente);
-            if (!registros.value[num].length) delete registros.value[num];
+            // Revertir
+            registros.value[numeroPieza] = (registros.value[numeroPieza] ?? [])
+              .filter(r => !r._pendiente);
             mostrarNotif(resultado?.message ?? 'Error al guardar', 'error');
           }
         }
-
-        /**
-         * Elimina un registro por su índice en el array de la pieza activa.
-         * El servidor limpia también la transacción y la cita si quedan vacías.
-         * @param {number} idx
-         */
+ 
         async function eliminarRegistro(idx) {
           if (!confirm('¿Eliminar este registro?')) return;
-
+ 
           const num  = dienteActivo.value.numero;
           const fila = registros.value[num]?.[idx];
           if (!fila) return;
-
-          // Optimistic remove
+ 
           registros.value[num].splice(idx, 1);
           if (!registros.value[num].length) delete registros.value[num];
-
+ 
           const resultado = await self._eliminarEnServidor(
             fila.id_odontograma,
-            numeroPaciente
+            self._numeroPaciente
           );
-
+ 
           if (!resultado?.success) {
-            // Revertir recargando desde servidor
-            await self._cargarRegistros(numeroPaciente, registros, ref(false));
+            await self._cargarRegistros(registros, cargando);
             mostrarNotif(resultado?.message ?? 'Error al eliminar', 'error');
           } else {
             mostrarNotif('Registro eliminado', 'success');
           }
         }
-
+ 
         function mostrarNotif(texto, tipo = 'success') {
           notif.value = { visible: true, texto, tipo };
           setTimeout(() => { notif.value.visible = false; }, 2800);
         }
-
-        // ── Carga inicial ──────────────────────────────────────────────────
-        (async () => {
-          // 1. Catálogos desde BD
-          await odontogramaModel.cargarCatalogos();
-          catalogoAnomalias.value      = odontogramaModel.catalogoAnomalias;
-          catalogoCaras.value          = odontogramaModel.catalogoCaras;
-          catalogoProcedimientos.value = odontogramaModel.catalogoProcedimientos;
-          catalogoEstatus.value        = odontogramaModel.catalogoEstatus;
-          catalogoEspecialistas.value  = odontogramaModel.catalogoEspecialistas;
-          cargandoCatalogos.value      = false;
-
-          // 2. Registros del paciente
-          await self._cargarRegistros(numeroPaciente, registros, cargando);
-        })();
-
-        // ── Exponer a la Vista ─────────────────────────────────────────────
+ 
+        // Carga inicial de registros
+        self._cargarRegistros(registros, cargando);
+ 
         return {
-          // Catálogos
-          catalogoAnomalias,
-          catalogoCaras,
-          catalogoProcedimientos,
-          catalogoEstatus,
-          catalogoEspecialistas,
-          cargandoCatalogos,
-          // Arcadas
-          arcadaSuperior,
-          arcadaInferior,
-          // Estado
-          idEspecialistaSeleccionado,
-          dienteActivo,
-          registros,
-          registrosDiente,
-          form,
-          notif,
-          cargando,
-          formularioValido,
-          // Métodos
-          estadoDiente,
-          seleccionarDiente,
-          cancelar,
-          guardarRegistro,
-          eliminarRegistro,
+          arcadaSuperior, arcadaInferior,
+          dienteActivo, registros, registrosDiente,
+          cargando, notif,
+          estadoDiente, seleccionarDiente, cancelar,
+          guardarRegistro, eliminarRegistro,
         };
       },
     }).mount('#app-odontograma');
   },
-
-  desmontar() {
+ 
+  // Poblar los selects del panel lateral (se llaman DESPUÉS de que Vue renderiza el panel)
+  _poblarSelectsPanel() {
+    const selAnom = document.getElementById('odontAnomalia');
+    if (selAnom && this._catalogos?.anomalias) {
+      selAnom.innerHTML = '<option value="">Seleccionar...</option>' + this._optionsAnomalias();
+    }
+ 
+    const divCaras = document.getElementById('odontCarasGrid');
+    if (divCaras) {
+      divCaras.innerHTML = this._optionsCaras();
+    }
+ 
+    const selProc = document.getElementById('odontProc');
+    if (selProc && this._catalogos?.procedimientos) {
+      selProc.innerHTML = '<option value="">Seleccionar...</option>' + this._optionsProcedimientos();
+    }
+ 
+    const selEst = document.getElementById('odontEstatus');
+    if (selEst && this._catalogos?.estatus) {
+      selEst.innerHTML = '<option value="">Seleccionar...</option>' + this._optionsEstatus();
+    }
+  },
+ 
+  _resetearPanel() {
+    ['odontAnomalia', 'odontProc', 'odontEstatus'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.querySelectorAll('.odont-cara-cb').forEach(cb => cb.checked = false);
+  },
+ 
+  // Helper: ejecutar callback en el próximo ciclo de render
+  _nextTick(fn) {
+    setTimeout(fn, 0);
+  },
+ 
+  _desmontar() {
     if (this._appInstance) {
       this._appInstance.unmount();
       this._appInstance = null;
     }
   },
-
+ 
   // ─────────────────────────────────────────────────────────────────────────
   // COMUNICACIÓN CON EL SERVIDOR
   // ─────────────────────────────────────────────────────────────────────────
-
-  async _cargarRegistros(numeroPaciente, registros, cargando) {
-    if (!numeroPaciente) return;
+ 
+  async _cargarRegistros(registros, cargando) {
+    if (!this._numeroPaciente) return;
     try {
       cargando.value = true;
-      const res = await fetch(
-        `ajax/api.php?modulo=odontograma&accion=get_by_paciente_odontograma&numero_paciente=${numeroPaciente}`
+      const r = await fetch(
+        `${API_URL}?modulo=odontograma&accion=get_by_paciente_odontograma&numero_paciente=${this._numeroPaciente}`
       );
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      if (data.success) {
-        registros.value = data.registros ?? {};
-      } else {
-        console.warn('odontogramaController: error al cargar —', data.message);
-      }
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+      if (data.success) registros.value = data.registros ?? {};
+      else console.warn('odontogramaController:', data.message);
     } catch (err) {
-      console.info('odontogramaController: modo local activo —', err.message);
+      console.info('odontogramaController: modo local —', err.message);
     } finally {
       cargando.value = false;
     }
   },
-
-  /**
-   * @param {{ numero_paciente, id_especialista, numero_pieza,
-   *            id_anomalia, id_caras, id_procedimiento }} payload
-   * @returns {Promise<{success, ...}|null>}
-   */
+ 
   async _guardarEnServidor(payload) {
     try {
-      const res = await fetch(
-        'ajax/api.php?modulo=odontograma&accion=guardar_odontograma',
+      const r = await fetch(
+        `${API_URL}?modulo=odontograma&accion=guardar_odontograma`,
         {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify(payload),
         }
       );
-      return await res.json();
+      return await r.json();
     } catch (err) {
       console.error('odontogramaController._guardarEnServidor:', err);
       return null;
     }
   },
-
-  /**
-   * @param {number} idOdontograma
-   * @param {number} numeroPaciente
-   * @returns {Promise<{success, message?}|null>}
-   */
+ 
   async _eliminarEnServidor(idOdontograma, numeroPaciente) {
     try {
-      const res = await fetch(
-        'ajax/api.php?modulo=odontograma&accion=eliminar_odontograma',
+      const r = await fetch(
+        `${API_URL}?modulo=odontograma&accion=eliminar_odontograma`,
         {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify({ id_odontograma: idOdontograma, numero_paciente: numeroPaciente }),
         }
       );
-      return await res.json();
+      return await r.json();
     } catch (err) {
       console.error('odontogramaController._eliminarEnServidor:', err);
       return null;
