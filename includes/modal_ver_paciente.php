@@ -567,7 +567,7 @@ $modal_id = 'modalPaciente';
                     <!-- PANEL IZQUIERDO: Arcadas -->
                     <div class="arcadas-panel">
                         <p class="arcadas-panel-sub">
-                            Haz clic en una pieza dental para ver su historial o registrar un avance
+                            Haz clic en una pieza dental para ver su historial o registrar un avance.
                         </p>
 
                         <!-- Arcada Superior -->

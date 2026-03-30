@@ -70,13 +70,19 @@ const odontogramaController = {
     // ── Especialistas (toolbar principal) ────────────────────────────────
     const selEsp = document.getElementById('odontEspecialista');
     if (selEsp && this._catalogos?.especialistas) {
-      selEsp.innerHTML = '<option value="">— Seleccionar especialista —</option>';
-      this._catalogos.especialistas.forEach(e => {
-        const opt = document.createElement('option');
-        opt.value       = e.id_especialista;
-        opt.textContent = e.nombre_completo;
-        selEsp.appendChild(opt);
-      });
+        // ── Guardar valor actual antes de repoblar ──
+        const valorActual = selEsp.value;
+
+        selEsp.innerHTML = '<option value="">Seleccionar especialista...</option>';
+        this._catalogos.especialistas.forEach(e => {
+            const opt = document.createElement('option');
+            opt.value       = e.id_especialista;
+            opt.textContent = e.nombre_completo;
+            selEsp.appendChild(opt);
+        });
+
+        // ── Restaurar valor si existía ──
+        if (valorActual) selEsp.value = valorActual;
     }
   },
  
