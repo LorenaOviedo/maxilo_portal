@@ -487,8 +487,7 @@ class Paciente
 
         } catch (Exception $e) {
             $this->conn->rollBack();
-            error_log("Error en Paciente::update: " . $e->getMessage());
-            return false;
+            return 'Error en Paciente::update: ' . $e->getMessage();
         }
     }
 
