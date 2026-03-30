@@ -93,6 +93,12 @@ $modulos = [
         'campo_id' => 'id_plan_tratamiento',
     ],
 
+    'odontograma' => [
+        'modelo' => 'Odontograma',
+        'archivo' => __DIR__ . '/../assets/js/odontogramaModel.js',
+        'campo_id' => 'id_odontograma',
+    ],
+
 
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
