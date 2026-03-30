@@ -98,10 +98,10 @@ $modulos = [
         'archivo' => __DIR__ . '/../models/Odontograma.php',
         'campo_id' => 'id_odontograma',
     ],
-    
+
     'especialistas' => [
-        'modelo'   => 'Especialista',
-        'archivo'  => __DIR__ . '/../models/Especialista.php',
+        'modelo' => 'Especialista',
+        'archivo' => __DIR__ . '/../models/Especialista.php',
         'campo_id' => 'id_especialista',
     ],
 
@@ -522,6 +522,116 @@ switch ($accion) {
             $resultado['message'] ?? 'Registro eliminado correctamente'
         );
         break;
+
+
+    // ── Especialistas: catálogos ──────────────────────────────────────────────
+    case 'get_catalogos_especialistas':
+        responder(true, 'OK', $model->getCatalogos());
+        break;
+
+    // ── Especialistas: detalle por id ─────────────────────────────────────────
+    case 'get':
+        $id = (int) ($_GET['id'] ?? 0);
+        if (!$id)
+            responder(false, 'ID inválido');
+        $result = $model->getById($id);
+        if (!$result)
+            responder(false, 'Especialista no encontrado');
+        responder(true, 'OK', ['especialista' => $result]);
+        break;
+
+    // ── Especialistas: crear ──────────────────────────────────────────────────
+    case 'create':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Método no permitido');
+
+        $data = sanitizarPost($_POST);
+
+        // Especialidades vienen como JSON
+        if (!empty($_POST['especialidades_json'])) {
+            $data['especialidades'] = json_decode($_POST['especialidades_json'], true) ?? [];
+        }
+
+        $error = $model->validar($data);
+        if ($error)
+            responder(false, $error);
+
+        $id = $model->create($data);
+        if ($id) {
+            responder(true, 'Especialista creado correctamente', ['id' => $id]);
+        } else {
+            responder(false, 'Error al crear el especialista');
+        }
+        break;
+
+    // ── Especialistas: actualizar ─────────────────────────────────────────────
+    case 'update':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Método no permitido');
+
+        $id = (int) ($_POST['id_especialista'] ?? 0);
+        if (!$id)
+            responder(false, 'ID inválido');
+
+        $data = sanitizarPost($_POST);
+
+        if (!empty($_POST['especialidades_json'])) {
+            $data['especialidades'] = json_decode($_POST['especialidades_json'], true) ?? [];
+        }
+
+        $error = $model->validar($data);
+        if ($error)
+            responder(false, $error);
+
+        $ok = $model->update($id, $data);
+        responder($ok, $ok ? 'Especialista actualizado correctamente' : 'Error al actualizar');
+        break;
+
+    // ── Especialistas: cambiar estatus ────────────────────────────────────────
+    case 'status':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Método no permitido');
+
+        $id = (int) ($_POST['id_especialista'] ?? 0);
+        $nuevoEstatus = (int) ($_POST['id_estatus'] ?? 0);
+
+        if (!$id || !in_array($nuevoEstatus, [1, 2]))
+            responder(false, 'Parámetros inválidos');
+
+        $ok = $model->cambiarEstatus($id, $nuevoEstatus);
+        $accion = $nuevoEstatus === 1 ? 'activado' : 'desactivado';
+        responder($ok, $ok ? "Especialista {$accion} correctamente" : 'Error al cambiar estatus');
+        break;
+
+    // ── Especialistas: búsqueda / paginación ──────────────────────────────────
+    case 'search':
+        $buscar = trim($_GET['buscar'] ?? '');
+        $pagina = max(1, (int) ($_GET['pagina'] ?? 1));
+        $porPagina = max(1, (int) ($_GET['por_pagina'] ?? 10));
+
+        $filtros = [];
+        if ($buscar !== '')
+            $filtros['buscar'] = $buscar;
+
+        $total = $model->contarTotal($filtros);
+        $totalPags = max(1, (int) ceil($total / $porPagina));
+        $pagina = min($pagina, $totalPags);
+        $inicio = (($pagina - 1) * $porPagina) + 1;
+        $fin = min($pagina * $porPagina, $total);
+        $resultados = $model->getAll($filtros, $pagina, $porPagina);
+
+        responder(true, 'OK', [
+            'especialistas' => $resultados,
+            'paginacion' => [
+                'total' => $total,
+                'pagina_actual' => $pagina,
+                'total_paginas' => $totalPags,
+                'inicio' => $inicio,
+                'fin' => $fin,
+            ],
+        ]);
+        break;
+
 
     // ── Acción no reconocida ──────────────────────────────────────
     default:
