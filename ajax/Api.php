@@ -98,6 +98,12 @@ $modulos = [
         'archivo' => __DIR__ . '/../models/Odontograma.php',
         'campo_id' => 'id_odontograma',
     ],
+    
+    'especialistas' => [
+        'modelo'   => 'Especialista',
+        'archivo'  => __DIR__ . '/../models/Especialista.php',
+        'campo_id' => 'id_especialista',
+    ],
 
 
     // 'especialidades' => [
