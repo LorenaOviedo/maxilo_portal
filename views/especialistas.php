@@ -86,11 +86,11 @@ include '../includes/sidebar.php';
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="col-id" data-sort="id_especialista">NO.<br>ESPECIALISTA</th>
-                            <th class="col-name" data-sort="apellido_paterno">NOMBRE<br>COMPLETO</th>
+                            <th class="col-id" data-sort="id_especialista">NO. ESPECIALISTA</th>
+                            <th class="col-name" data-sort="apellido_paterno">NOMBRE COMPLETO</th>
                             <th data-sort="especialidades">ESPECIALIDAD(ES)</th>
                             <th class="col-tel">TELÉFONO</th>
-                            <th class="col-date" data-sort="fecha_contratacion">FECHA DE<br>CONTRATACIÓN</th>
+                            <th class="col-date" data-sort="fecha_contratacion">FECHA DE CONTRATACIÓN</th>
                             <th class="col-status">ESTATUS</th>
                             <th class="col-actions">ACCIONES</th>
                         </tr>
