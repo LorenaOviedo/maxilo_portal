@@ -8,7 +8,7 @@ class AuthController
     private $db;
     private $userModel;
     private $maxIntentos = 3;
-    private $tiempoBloqueo = 60; // 15 minutos en segundos
+    private $tiempoBloqueo = 900; // 15 minutos en segundos
 
     public function __construct()
     {
@@ -31,7 +31,7 @@ class AuthController
         }
 
         // Verificar si está bloqueado por múltiples intentos
-        if ($this->estaBloqueado()) {
+        if ($this->estaBloqueado($usuario)) {
             return [
                 'success' => false,
                 'message' => 'Demasiados intentos fallidos. Intente nuevamente en 15 minutos'
@@ -42,7 +42,7 @@ class AuthController
         $userData = $this->userModel->findByUsernameOrEmail($usuario);
 
         if (!$userData) {
-            $this->registrarIntentoFallido();
+            $this->registrarIntentoFallido($usuario);
             return [
                 'success' => false,
                 'message' => 'El usuario no existe o es incorrecto'
@@ -57,7 +57,7 @@ class AuthController
         //Verificar contraseña
         if (!password_verify($password, $userData['password'])) {
             //PRUEBA: die("FUNCIONA, el problema era un espacio o se trunca.");/
-            $this->registrarIntentoFallido();
+            $this->registrarIntentoFallido($usuario);
             return [
                 'success' => false,
                 'message' => 'Credenciales incorrectas - contraseña inválida'
@@ -65,7 +65,7 @@ class AuthController
         }
 
         // Login exitoso - limpiar intentos fallidos
-        $this->limpiarIntentosFallidos();
+        $this->limpiarIntentosFallidos($usuario);
 
         // Crear sesión
         $this->crearSesion($userData);
@@ -123,41 +123,69 @@ class AuthController
         }
     }
 
-    private function estaBloqueado()
+    private function estaBloqueado($usuario)
     {
-        if (!isset($_SESSION['intentos_fallidos'])) {
+        $key = $this->getIntentosKey($usuario);
+
+        if (!isset($_SESSION['intentos_fallidos'][$key])) {
             return false;
         }
 
-        if ($_SESSION['intentos_fallidos'] >= $this->maxIntentos) {
-            $transcurrido = time() - ($_SESSION['tiempo_bloqueo'] ?? 0);
+        $registro = $_SESSION['intentos_fallidos'][$key];
+        if (($registro['conteo'] ?? 0) >= $this->maxIntentos) {
+            $transcurrido = time() - ($registro['tiempo_bloqueo'] ?? 0);
 
             if ($transcurrido < $this->tiempoBloqueo) {
                 return true;
             }
 
-            $this->limpiarIntentosFallidos();
+            $this->limpiarIntentosFallidos($usuario);
         }
 
         return false;
     }
 
-    private function registrarIntentoFallido()
+    private function registrarIntentoFallido($usuario)
     {
-        if (!isset($_SESSION['intentos_fallidos'])) {
-            $_SESSION['intentos_fallidos'] = 0;
+        $key = $this->getIntentosKey($usuario);
+
+        if (!isset($_SESSION['intentos_fallidos']) || !is_array($_SESSION['intentos_fallidos'])) {
+            $_SESSION['intentos_fallidos'] = [];
         }
 
-        $_SESSION['intentos_fallidos']++;
+        if (!isset($_SESSION['intentos_fallidos'][$key])) {
+            $_SESSION['intentos_fallidos'][$key] = [
+                'conteo' => 0,
+                'tiempo_bloqueo' => null,
+            ];
+        }
 
-        if ($_SESSION['intentos_fallidos'] >= $this->maxIntentos) {
-            $_SESSION['tiempo_bloqueo'] = time();
+        $_SESSION['intentos_fallidos'][$key]['conteo']++;
+
+        if ($_SESSION['intentos_fallidos'][$key]['conteo'] >= $this->maxIntentos) {
+            $_SESSION['intentos_fallidos'][$key]['tiempo_bloqueo'] = time();
         }
     }
 
-    private function limpiarIntentosFallidos()
+    private function limpiarIntentosFallidos($usuario = null)
     {
-        unset($_SESSION['intentos_fallidos'], $_SESSION['tiempo_bloqueo']);
+        if ($usuario === null) {
+            unset($_SESSION['intentos_fallidos']);
+            return;
+        }
+
+        $key = $this->getIntentosKey($usuario);
+        unset($_SESSION['intentos_fallidos'][$key]);
+
+        if (empty($_SESSION['intentos_fallidos'])) {
+            unset($_SESSION['intentos_fallidos']);
+        }
+    }
+
+    private function getIntentosKey($usuario)
+    {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'sin_ip';
+        return hash('sha256', mb_strtolower(trim((string) $usuario), 'UTF-8') . '|' . $ip);
     }
 
     public function logout()
