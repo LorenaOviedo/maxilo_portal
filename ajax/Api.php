@@ -560,6 +560,7 @@ switch ($accion) {
         if ($id) {
             responder(true, 'Especialista creado correctamente', ['id' => $id]);
         } else {
+            error_log('API especialistas create payload: ' . json_encode($data, JSON_UNESCAPED_UNICODE));
             responder(false, 'Error al crear el especialista');
         }
         break;
@@ -584,8 +585,16 @@ switch ($accion) {
             responder(false, $error);
 
         $ok = $model->update($id, $data);
+        if (!$ok) {
+            error_log('API especialistas update payload: ' . json_encode([
+                'id_especialista' => $id,
+                'data' => $data,
+                'last_error' => method_exists($model, 'getLastError') ? $model->getLastError() : null,
+            ], JSON_UNESCAPED_UNICODE));
+        }
         responder($ok, $ok ? 'Especialista actualizado correctamente' : 'Error al actualizar');
         break;
+
 
     // ── Especialistas: cambiar estatus ────────────────────────────────────────
     case 'status':
