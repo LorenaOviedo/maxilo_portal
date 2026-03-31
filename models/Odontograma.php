@@ -2,18 +2,6 @@
 /**
  * Odontograma.php — Modelo
  *
- * Flujo de persistencia (trazable para pagos):
- *   guardar()
- *     ├─ Crea o reutiliza Cita de tipo "Registro odontograma"
- *     │    (agrupada por día + paciente + especialista seleccionado)
- *     ├─ Crea TransaccionesDentales con el procedimiento elegido
- *     │    (o "Sin procedimiento asignado" si viene null)
- *     └─ Inserta N filas en Odontograma — una por cada cara seleccionada
- *
- * Flujo de lectura:
- *   getByPaciente()
- *     └─ JOIN Cita → TransaccionesDentales → Odontograma
- *        Retorna array agrupado por numero_posicion (pieza FDI)
  */
 class Odontograma
 {
