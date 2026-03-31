@@ -530,7 +530,7 @@ switch ($accion) {
         break;
 
     // ── Especialistas: detalle por id ─────────────────────────────────────────
-    case 'get':
+    case 'get_especialista':
         $id = (int) ($_GET['id'] ?? 0);
         if (!$id)
             responder(false, 'ID inválido');
@@ -541,13 +541,13 @@ switch ($accion) {
         break;
 
     // ── Especialistas: crear ──────────────────────────────────────────────────
-    case 'create':
+    case 'crear_especialista':
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
             responder(false, 'Método no permitido');
 
         $data = sanitizarPost($_POST);
 
-        // Especialidades vienen como JSON
+        // Decodificar especialidades — sanitizarPost rompería el JSON si no se hace antes
         if (!empty($_POST['especialidades_json'])) {
             $data['especialidades'] = json_decode($_POST['especialidades_json'], true) ?? [];
         }
@@ -560,13 +560,12 @@ switch ($accion) {
         if ($id) {
             responder(true, 'Especialista creado correctamente', ['id' => $id]);
         } else {
-            error_log('API especialistas create payload: ' . json_encode($data, JSON_UNESCAPED_UNICODE));
-            responder(false, 'Error al crear el especialista');
+            responder(false, $model->getLastError() ?? 'Error al crear el especialista');
         }
         break;
 
     // ── Especialistas: actualizar ─────────────────────────────────────────────
-    case 'update':
+    case 'actualizar_especialista':
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
             responder(false, 'Método no permitido');
 
@@ -576,6 +575,7 @@ switch ($accion) {
 
         $data = sanitizarPost($_POST);
 
+        // Decodificar especialidades ANTES de sanitizarPost (ya aplicado arriba)
         if (!empty($_POST['especialidades_json'])) {
             $data['especialidades'] = json_decode($_POST['especialidades_json'], true) ?? [];
         }
@@ -585,19 +585,15 @@ switch ($accion) {
             responder(false, $error);
 
         $ok = $model->update($id, $data);
-        if (!$ok) {
-            error_log('API especialistas update payload: ' . json_encode([
-                'id_especialista' => $id,
-                'data' => $data,
-                'last_error' => method_exists($model, 'getLastError') ? $model->getLastError() : null,
-            ], JSON_UNESCAPED_UNICODE));
-        }
-        responder($ok, $ok ? 'Especialista actualizado correctamente' : 'Error al actualizar');
+        responder(
+            $ok,
+            $ok ? 'Especialista actualizado correctamente'
+            : ($model->getLastError() ?? 'Error al actualizar')
+        );
         break;
 
-
     // ── Especialistas: cambiar estatus ────────────────────────────────────────
-    case 'status':
+    case 'status_especialista':
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
             responder(false, 'Método no permitido');
 
@@ -612,8 +608,8 @@ switch ($accion) {
         responder($ok, $ok ? "Especialista {$accion} correctamente" : 'Error al cambiar estatus');
         break;
 
-    // ── Especialistas: búsqueda / paginación ──────────────────────────────────
-    case 'search':
+    // ── Especialistas: búsqueda paginada ──────────────────────────────────────
+    case 'buscar_especialistas':
         $buscar = trim($_GET['buscar'] ?? '');
         $pagina = max(1, (int) ($_GET['pagina'] ?? 1));
         $porPagina = max(1, (int) ($_GET['por_pagina'] ?? 10));
@@ -627,10 +623,9 @@ switch ($accion) {
         $pagina = min($pagina, $totalPags);
         $inicio = (($pagina - 1) * $porPagina) + 1;
         $fin = min($pagina * $porPagina, $total);
-        $resultados = $model->getAll($filtros, $pagina, $porPagina);
 
         responder(true, 'OK', [
-            'especialistas' => $resultados,
+            'especialistas' => $model->getAll($filtros, $pagina, $porPagina),
             'paginacion' => [
                 'total' => $total,
                 'pagina_actual' => $pagina,

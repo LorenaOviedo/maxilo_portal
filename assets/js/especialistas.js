@@ -183,7 +183,7 @@ const especialistaController = {
 
     const formData = new FormData();
     formData.append("modulo", "especialistas");
-    formData.append("accion", this._modoEdicion ? "update" : "create");
+    formData.append("accion", this._modoEdicion ? "actualizar_especialista" : "crear_especialista");
 
     if (this._modoEdicion) formData.append("id_especialista", this._idActual);
 
@@ -257,7 +257,7 @@ const especialistaController = {
 
     const formData = new FormData();
     formData.append("modulo", "especialistas");
-    formData.append("accion", "status");
+    formData.append("accion", "status_especialista");
     formData.append("id_especialista", id);
     formData.append("id_estatus", nuevoEstatus);
 
