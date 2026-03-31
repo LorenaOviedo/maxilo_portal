@@ -38,7 +38,7 @@ include '../includes/sidebar.php';
 <!-- Contenido principal -->
 <main class="main-content">
     <div class="content-header">
-        <h1>Bienvenido de nuevo, Dr. <?php echo htmlspecialchars(explode(' ', $nombreUsuario)[0]); ?></h1>
+        <h1>Bienvenido de nuevo, <?php echo htmlspecialchars(explode(' ', $nombreUsuario)[0]); ?></h1>
     </div>
 
     <!-- Fila 1: Métricas de citas -->
