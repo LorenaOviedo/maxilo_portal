@@ -10,16 +10,10 @@
 class Especialista
 {
     private PDO $db;
-    private ?string $lastError = null;
 
     public function __construct(PDO $db)
     {
         $this->db = $db;
-    }
-
-    public function getLastError(): ?string
-    {
-        return $this->lastError;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -28,7 +22,7 @@ class Especialista
 
     public function getAll(array $filtros = [], int $pagina = 1, int $porPagina = 10): array
     {
-        $where  = $this->_buildWhere($filtros);
+        $where = $this->_buildWhere($filtros);
         $offset = ($pagina - 1) * $porPagina;
 
         $stmt = $this->db->prepare("
@@ -64,11 +58,13 @@ class Especialista
         ");
 
         foreach ($filtros as $k => $v) {
-            if ($k === 'buscar') $stmt->bindValue(':buscar', "%$v%");
-            if ($k === 'id_estatus') $stmt->bindValue(':id_estatus', (int) $v, PDO::PARAM_INT);
+            if ($k === 'buscar')
+                $stmt->bindValue(':buscar', "%$v%");
+            if ($k === 'id_estatus')
+                $stmt->bindValue(':id_estatus', (int) $v, PDO::PARAM_INT);
         }
-        $stmt->bindValue(':limit',  $porPagina, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset,    PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $porPagina, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -77,15 +73,17 @@ class Especialista
     public function contarTotal(array $filtros = []): int
     {
         $where = $this->_buildWhere($filtros);
-        $stmt  = $this->db->prepare("
+        $stmt = $this->db->prepare("
             SELECT COUNT(DISTINCT e.id_especialista)
             FROM  especialista e
             JOIN  estatus      s ON s.id_estatus = e.id_estatus
             $where
         ");
         foreach ($filtros as $k => $v) {
-            if ($k === 'buscar')     $stmt->bindValue(':buscar',     "%$v%");
-            if ($k === 'id_estatus') $stmt->bindValue(':id_estatus', (int) $v, PDO::PARAM_INT);
+            if ($k === 'buscar')
+                $stmt->bindValue(':buscar', "%$v%");
+            if ($k === 'id_estatus')
+                $stmt->bindValue(':id_estatus', (int) $v, PDO::PARAM_INT);
         }
         $stmt->execute();
         return (int) $stmt->fetchColumn();
@@ -128,7 +126,8 @@ class Especialista
         $stmt->execute([':id' => $id]);
         $especialista = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$especialista) return null;
+        if (!$especialista)
+            return null;
 
         // Contactos (teléfono, email)
         $especialista['contactos'] = $this->_getContactos($id);
@@ -145,7 +144,6 @@ class Especialista
 
     public function create(array $data): int|false
     {
-        $this->lastError = null;
         $this->db->beginTransaction();
         try {
             // 1. Dirección
@@ -163,12 +161,12 @@ class Especialista
                      :id_dir, :id_estatus)
             ");
             $stmt->execute([
-                ':nombre'     => mb_strtoupper(trim($data['nombre']),          'UTF-8'),
-                ':ap_pat'     => mb_strtoupper(trim($data['apellido_paterno']), 'UTF-8'),
-                ':ap_mat'     => mb_strtoupper(trim($data['apellido_materno'] ?? ''), 'UTF-8'),
-                ':fecha_nac'  => $data['fecha_nacimiento']   ?? null,
+                ':nombre' => mb_strtoupper(trim($data['nombre']), 'UTF-8'),
+                ':ap_pat' => mb_strtoupper(trim($data['apellido_paterno']), 'UTF-8'),
+                ':ap_mat' => mb_strtoupper(trim($data['apellido_materno'] ?? ''), 'UTF-8'),
+                ':fecha_nac' => $data['fecha_nacimiento'] ?? null,
                 ':fecha_cont' => $data['fecha_contratacion'] ?? null,
-                ':id_dir'     => $idDireccion,
+                ':id_dir' => $idDireccion,
                 ':id_estatus' => (int) ($data['id_estatus'] ?? 1),
             ]);
             $idEspecialista = (int) $this->db->lastInsertId();
@@ -183,8 +181,7 @@ class Especialista
             return $idEspecialista;
         } catch (\Throwable $e) {
             $this->db->rollBack();
-            $this->lastError = $e->getMessage();
-            error_log('Especialista::create - ' . $e->getMessage());
+            error_log('Especialista::create — ' . $e->getMessage());
             return false;
         }
     }
@@ -195,7 +192,6 @@ class Especialista
 
     public function update(int $id, array $data): bool
     {
-        $this->lastError = null;
         $this->db->beginTransaction();
         try {
             // Obtener id_direccion actual
@@ -216,13 +212,13 @@ class Especialista
                 WHERE id_especialista = :id
             ");
             $stmt->execute([
-                ':nombre'     => mb_strtoupper(trim($data['nombre']),          'UTF-8'),
-                ':ap_pat'     => mb_strtoupper(trim($data['apellido_paterno']), 'UTF-8'),
-                ':ap_mat'     => mb_strtoupper(trim($data['apellido_materno'] ?? ''), 'UTF-8'),
-                ':fecha_nac'  => $data['fecha_nacimiento']   ?? null,
+                ':nombre' => mb_strtoupper(trim($data['nombre']), 'UTF-8'),
+                ':ap_pat' => mb_strtoupper(trim($data['apellido_paterno']), 'UTF-8'),
+                ':ap_mat' => mb_strtoupper(trim($data['apellido_materno'] ?? ''), 'UTF-8'),
+                ':fecha_nac' => $data['fecha_nacimiento'] ?? null,
                 ':fecha_cont' => $data['fecha_contratacion'] ?? null,
-                ':id_dir'     => $idDireccion,
-                ':id'         => $id,
+                ':id_dir' => $idDireccion,
+                ':id' => $id,
             ]);
 
             $this->_syncContactos($id, $data);
@@ -232,8 +228,7 @@ class Especialista
             return true;
         } catch (\Throwable $e) {
             $this->db->rollBack();
-            $this->lastError = $e->getMessage();
-            error_log('Especialista::update - ' . $e->getMessage());
+            error_log('Especialista::update — ' . $e->getMessage());
             return false;
         }
     }
@@ -278,10 +273,78 @@ class Especialista
 
     public function validar(array $data): ?string
     {
+        $soloLetras = '/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/u';
+
+        // Nombre
         if (empty(trim($data['nombre'] ?? '')))
-            return 'El nombre es requerido';
+            return 'El campo "Nombre" es obligatorio';
+        if (!preg_match($soloLetras, trim($data['nombre'])))
+            return 'El campo "Nombre" solo debe contener letras';
+
+        // Apellido paterno
         if (empty(trim($data['apellido_paterno'] ?? '')))
-            return 'El apellido paterno es requerido';
+            return 'El campo "Apellido paterno" es obligatorio';
+        if (!preg_match($soloLetras, trim($data['apellido_paterno'])))
+            return 'El campo "Apellido paterno" solo debe contener letras';
+
+        // Apellido materno (opcional)
+        if (
+            !empty($data['apellido_materno']) &&
+            !preg_match($soloLetras, trim($data['apellido_materno']))
+        )
+            return 'El campo "Apellido materno" solo debe contener letras';
+
+        // Fecha de nacimiento (opcional pero valida si se proporciona)
+        if (!empty($data['fecha_nacimiento'])) {
+            try {
+                $fecha = new DateTime($data['fecha_nacimiento']);
+                $hoy = new DateTime('today');
+                $minima = (new DateTime())->modify('-120 years');
+                if ($fecha >= $hoy)
+                    return 'La fecha de nacimiento no puede ser igual o futura a hoy';
+                if ($fecha < $minima)
+                    return 'La fecha de nacimiento no parece valida';
+            } catch (\Exception $e) {
+                return 'El formato de la fecha de nacimiento no es valido';
+            }
+        }
+
+        // Fecha de contratacion (opcional pero no futura)
+        if (!empty($data['fecha_contratacion'])) {
+            try {
+                $fechaCont = new DateTime($data['fecha_contratacion']);
+                $hoy = new DateTime('today');
+                $minima = (new DateTime())->modify('-80 years');
+                if ($fechaCont > $hoy)
+                    return 'La fecha de contratacion no puede ser futura';
+                if ($fechaCont < $minima)
+                    return 'La fecha de contratacion no parece valida';
+            } catch (\Exception $e) {
+                return 'El formato de la fecha de contratacion no es valido';
+            }
+        }
+
+        // Telefono (10 digitos si se proporciona)
+        if (
+            !empty($data['telefono']) &&
+            !preg_match('/^\d{10}$/', trim($data['telefono']))
+        )
+            return 'El Telefono debe tener exactamente 10 digitos';
+
+        // Email
+        if (
+            !empty($data['email']) &&
+            !filter_var(trim($data['email']), FILTER_VALIDATE_EMAIL)
+        )
+            return 'El formato del correo electronico no es valido';
+
+        // Codigo postal (5 digitos si se proporciona)
+        if (
+            !empty($data['codigo_postal']) &&
+            !preg_match('/^\d{5}$/', trim($data['codigo_postal']))
+        )
+            return 'El Codigo postal debe tener exactamente 5 digitos';
+
         return null;
     }
 
@@ -325,12 +388,13 @@ class Especialista
      */
     private function _upsertDireccion(?int $idDireccion, array $data): ?int
     {
-        $idCp    = !empty($data['id_cp'])    ? (int) $data['id_cp']    : null;
-        $calle   = trim($data['calle']            ?? '');
-        $numExt  = trim($data['numero_exterior']  ?? '');
-        $numInt  = trim($data['numero_interior']  ?? '');
+        $idCp = !empty($data['id_cp']) ? (int) $data['id_cp'] : null;
+        $calle = trim($data['calle'] ?? '');
+        $numExt = trim($data['numero_exterior'] ?? '');
+        $numInt = trim($data['numero_interior'] ?? '');
 
-        if (!$idCp && !$calle) return $idDireccion; // sin datos de dirección
+        if (!$idCp && !$calle)
+            return $idDireccion; // sin datos de dirección
 
         if ($idDireccion) {
             $stmt = $this->db->prepare("
@@ -342,11 +406,11 @@ class Especialista
                 WHERE id_direccion = :id
             ");
             $stmt->execute([
-                ':calle'   => $calle,
+                ':calle' => $calle,
                 ':num_ext' => $numExt ?: null,
                 ':num_int' => $numInt ?: null,
-                ':id_cp'   => $idCp,
-                ':id'      => $idDireccion,
+                ':id_cp' => $idCp,
+                ':id' => $idDireccion,
             ]);
             return $idDireccion;
         }
@@ -356,10 +420,10 @@ class Especialista
             VALUES (:calle, :num_ext, :num_int, :id_cp)
         ");
         $stmt->execute([
-            ':calle'   => $calle,
+            ':calle' => $calle,
             ':num_ext' => $numExt ?: null,
             ':num_int' => $numInt ?: null,
-            ':id_cp'   => $idCp,
+            ':id_cp' => $idCp,
         ]);
         return (int) $this->db->lastInsertId();
     }
@@ -380,24 +444,20 @@ class Especialista
         ");
 
         // Teléfono
-        $telefono = trim($data['telefono'] ?? '');
-        $idTipoTelefono = (int) ($data['id_tipo_contacto_telefono'] ?? 0);
-        if ($telefono !== '' && $idTipoTelefono > 0) {
+        if (!empty(trim($data['telefono'] ?? ''))) {
             $stmt->execute([
-                ':tipo'        => $idTipoTelefono,
-                ':especialista'=> $idEspecialista,
-                ':valor'       => $telefono,
+                ':tipo' => (int) $data['id_tipo_contacto_telefono'],
+                ':especialista' => $idEspecialista,
+                ':valor' => trim($data['telefono']),
             ]);
         }
 
         // Email
-        $email = trim($data['email'] ?? '');
-        $idTipoEmail = (int) ($data['id_tipo_contacto_email'] ?? 0);
-        if ($email !== '' && $idTipoEmail > 0) {
+        if (!empty(trim($data['email'] ?? ''))) {
             $stmt->execute([
-                ':tipo'        => $idTipoEmail,
-                ':especialista'=> $idEspecialista,
-                ':valor'       => $email,
+                ':tipo' => (int) $data['id_tipo_contacto_email'],
+                ':especialista' => $idEspecialista,
+                ':valor' => trim($data['email']),
             ]);
         }
     }
@@ -412,7 +472,8 @@ class Especialista
             "DELETE FROM especialidadespecialista WHERE id_especialista = :id"
         )->execute([':id' => $idEspecialista]);
 
-        if (empty($especialidades)) return;
+        if (empty($especialidades))
+            return;
 
         $stmt = $this->db->prepare("
             INSERT INTO especialidadespecialista
@@ -422,12 +483,13 @@ class Especialista
         ");
 
         foreach ($especialidades as $esp) {
-            if (empty($esp['id_especialidad'])) continue;
+            if (empty($esp['id_especialidad']))
+                continue;
             $stmt->execute([
-                ':id_esp'          => (int) $esp['id_especialidad'],
+                ':id_esp' => (int) $esp['id_especialidad'],
                 ':id_especialista' => $idEspecialista,
-                ':cedula'          => trim($esp['cedula_profesional'] ?? '') ?: null,
-                ':institucion'     => trim($esp['institucion']        ?? '') ?: null,
+                ':cedula' => trim($esp['cedula_profesional'] ?? '') ?: null,
+                ':institucion' => trim($esp['institucion'] ?? '') ?: null,
             ]);
         }
     }
