@@ -88,6 +88,13 @@ function is_active($page)
             </a>
         </li>
 
+        <li class="menu-item <?php echo is_active('configuracion'); ?>">
+            <a href="<?php echo view_url('configuracion.php'); ?>">
+                <span class="menu-icon"><i class="ri-settings-3-line"></i></span>
+                <span class="menu-text">Configuración</span>
+            </a>
+        </li>
+
         <?php if ($rol === 'admin'): ?>
             <li class="menu-item <?php echo is_active('configuracion'); ?>">
                 <a href="<?php echo view_url('configuracion.php'); ?>">
