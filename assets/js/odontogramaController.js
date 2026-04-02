@@ -17,11 +17,17 @@ const odontogramaController = {
     async cargar(numeroPaciente) {
         const num = parseInt(numeroPaciente);
  
-        // Siempre desmontar para garantizar que Vue recargue con el paciente correcto
+        // Siempre desmontar para garantizar estado limpio
         this._desmontar();
  
         this._numeroPaciente = num;
         await this._inicializar();
+ 
+        // Re-habilitar inputs dentro de #app-odontograma que Modal.setReadOnly()
+        // pudo haber deshabilitado al abrir el modal en modo lectura
+        document.querySelectorAll('#app-odontograma input, #app-odontograma select, #app-odontograma textarea')
+            .forEach(el => { el.disabled = false; });
+ 
         this._montarVue(num);
         setTimeout(() => this._poblarSelects(), 100);
     },
@@ -362,3 +368,4 @@ const odontogramaController = {
         } catch (err) { return null; }
     },
 };
+ 
