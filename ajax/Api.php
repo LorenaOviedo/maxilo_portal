@@ -437,9 +437,6 @@ switch ($accion) {
         responder($ok, $ok ? 'Plan eliminado correctamente' : 'Error al eliminar el plan');
         break;
 
-    // ── ODONTOGRAMA: catálogos ────────────────────────────────────────────────
-    // GET ajax/api.php?modulo=odontograma&accion=get_catalogos_odontograma
-    // Retorna: { success, anomalias[], caras[], procedimientos[], estatus[], especialistas[] }
     case 'get_catalogos_odontograma':
         responder(true, 'OK', $model->getCatalogos());
         break;
@@ -474,6 +471,7 @@ switch ($accion) {
         $idAnomalia = (int) ($body['id_anomalia'] ?? 0);
         $idCaras = $body['id_caras'] ?? [];
         $idProcedimiento = (int) ($body['id_procedimiento'] ?? 0);
+        $idEstatus = (int) ($body['id_estatus_hallazgo'] ?? 1);
 
         if (!$numeroPaciente || !$idEspecialista || !$numeroPieza || !$idAnomalia)
             responder(false, 'Campos requeridos: numero_paciente, id_especialista, numero_pieza, id_anomalia');
@@ -491,6 +489,7 @@ switch ($accion) {
             'id_anomalia' => $idAnomalia,
             'id_caras' => $idCaras,
             'id_procedimiento' => $idProcedimiento,
+            'id_estatus_hallazgo' => $idEstatus,
         ]);
 
         responder(
@@ -522,7 +521,6 @@ switch ($accion) {
             $resultado['message'] ?? 'Registro eliminado correctamente'
         );
         break;
-
 
     // ── Especialistas: catálogos ──────────────────────────────────────────────
     case 'get_catalogos_especialistas':
@@ -635,6 +633,8 @@ switch ($accion) {
             ],
         ]);
         break;
+
+
 
 
     // ── Acción no reconocida ──────────────────────────────────────
