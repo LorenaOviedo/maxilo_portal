@@ -17,13 +17,12 @@ const odontogramaController = {
     async cargar(numeroPaciente) {
         const num = parseInt(numeroPaciente);
  
-        if (this._appInstance && this._numeroPaciente !== num) {
-            this._desmontar();
-        }
+        // Siempre desmontar para garantizar que Vue recargue con el paciente correcto
+        this._desmontar();
  
         this._numeroPaciente = num;
         await this._inicializar();
-        this._montarVue();
+        this._montarVue(num);
         setTimeout(() => this._poblarSelects(), 100);
     },
  
@@ -114,11 +113,15 @@ const odontogramaController = {
         document.querySelectorAll('.odont-cara-cb').forEach(cb => cb.checked = false);
     },
  
-    _montarVue() {
+    _montarVue(numeroPaciente) {
         if (this._appInstance) return;
  
         const { createApp, ref, computed } = Vue;
         const self = this;
+ 
+        // Capturar en variable local para que el closure no dependa
+        // de pacienteId que puede cambiar entre pacientes
+        const pacienteId = numeroPaciente;
  
         this._appInstance = createApp({
             setup() {
@@ -184,11 +187,11 @@ const odontogramaController = {
                     if (!nuevoId) { mostrarNotif('Selecciona un estatus', 'error'); return; }
  
                     const resultado = await self._actualizarEstatusEnServidor(
-                        idOdontograma, nuevoId, self._numeroPaciente
+                        idOdontograma, nuevoId, pacienteId
                     );
  
                     if (resultado?.success) {
-                        await self._cargarRegistros(registros, cargando);
+                        await self._cargarRegistros(registros, cargando, pacienteId);
                         const set = new Set(editandoEstatus.value);
                         set.delete(idOdontograma);
                         editandoEstatus.value = set;
@@ -232,7 +235,7 @@ const odontogramaController = {
                     mostrarNotif('Guardando...', 'info');
  
                     const resultado = await self._guardarEnServidor({
-                        numero_paciente:     self._numeroPaciente,
+                        numero_paciente:     pacienteId,
                         id_especialista:     idEspecialista,
                         numero_pieza:        numeroPieza,
                         id_anomalia:         idAnomalia,
@@ -242,7 +245,7 @@ const odontogramaController = {
                     });
  
                     if (resultado?.success) {
-                        await self._cargarRegistros(registros, cargando);
+                        await self._cargarRegistros(registros, cargando, pacienteId);
                         mostrarNotif(`Pieza ${numeroPieza} registrada`, 'success');
                         self._resetearPanel();
                     } else {
@@ -262,11 +265,11 @@ const odontogramaController = {
                     if (!registros.value[num].length) delete registros.value[num];
  
                     const resultado = await self._eliminarEnServidor(
-                        fila.id_odontograma, self._numeroPaciente
+                        fila.id_odontograma, pacienteId
                     );
  
                     if (!resultado?.success) {
-                        await self._cargarRegistros(registros, cargando);
+                        await self._cargarRegistros(registros, cargando, pacienteId);
                         mostrarNotif(resultado?.message ?? 'Error al eliminar', 'error');
                     } else {
                         mostrarNotif('Registro eliminado', 'success');
@@ -278,7 +281,7 @@ const odontogramaController = {
                     setTimeout(() => { notif.value.visible = false; }, 2800);
                 }
  
-                self._cargarRegistros(registros, cargando);
+                self._cargarRegistros(registros, cargando, pacienteId);
  
                 return {
                     arcadaSuperior, arcadaInferior,
@@ -302,12 +305,12 @@ const odontogramaController = {
         }
     },
  
-    async _cargarRegistros(registros, cargando) {
-        if (!this._numeroPaciente) return;
+    async _cargarRegistros(registros, cargando, numeroPaciente) {
+        if (!numeroPaciente) return;
         try {
             cargando.value = true;
             const r = await fetch(
-                `${API_URL}?modulo=odontograma&accion=get_by_paciente_odontograma&numero_paciente=${this._numeroPaciente}`
+                `${API_URL}?modulo=odontograma&accion=get_by_paciente_odontograma&numero_paciente=${numeroPaciente}`
             );
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             const data = await r.json();
