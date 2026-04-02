@@ -437,6 +437,10 @@ switch ($accion) {
         responder($ok, $ok ? 'Plan eliminado correctamente' : 'Error al eliminar el plan');
         break;
 
+
+    // ── ODONTOGRAMA: registros de un paciente ─────────────────────────────────
+    // GET ajax/api.php?modulo=odontograma&accion=get_by_paciente_odontograma&numero_paciente=X
+    // Retorna: { success, registros: { "[pieza]": [...] } }
     case 'get_catalogos_odontograma':
         responder(true, 'OK', $model->getCatalogos());
         break;
@@ -500,6 +504,29 @@ switch ($accion) {
         break;
 
 
+    // ── ODONTOGRAMA: actualizar estatus de hallazgo ───────────────────────────
+    // POST Body JSON: { id_odontograma, id_estatus_hallazgo, numero_paciente }
+    case 'actualizar_estatus_odontograma':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Método no permitido');
+
+        $body = json_decode(file_get_contents('php://input'), true) ?? [];
+
+        $idOdontograma = (int) ($body['id_odontograma'] ?? 0);
+        $idEstatus = (int) ($body['id_estatus_hallazgo'] ?? 0);
+        $numeroPaciente = (int) ($body['numero_paciente'] ?? 0);
+
+        if (!$idOdontograma || !$idEstatus || !$numeroPaciente)
+            responder(false, 'id_odontograma, id_estatus_hallazgo y numero_paciente son requeridos');
+
+        $resultado = $model->actualizarEstatus($idOdontograma, $idEstatus, $numeroPaciente);
+        responder(
+            $resultado['success'],
+            $resultado['message'] ?? 'Estatus actualizado correctamente'
+        );
+        break;
+
+
     // ── ODONTOGRAMA: eliminar hallazgo ────────────────────────────────────────
     // POST ajax/api.php?modulo=odontograma&accion=eliminar_odontograma
     // Body JSON: { id_odontograma, numero_paciente }
@@ -521,6 +548,7 @@ switch ($accion) {
             $resultado['message'] ?? 'Registro eliminado correctamente'
         );
         break;
+
 
     // ── Especialistas: catálogos ──────────────────────────────────────────────
     case 'get_catalogos_especialistas':

@@ -14,24 +14,16 @@ const odontogramaController = {
     _catalogos:      null,
     _appInstance:    null,
  
-    // ─────────────────────────────────────────────────────────────────────
-    // PUNTO DE ENTRADA
-    // ─────────────────────────────────────────────────────────────────────
- 
     async cargar(numeroPaciente) {
         const num = parseInt(numeroPaciente);
  
-        // Si cambia el paciente, desmontar Vue para que recargue limpio
         if (this._appInstance && this._numeroPaciente !== num) {
             this._desmontar();
         }
  
         this._numeroPaciente = num;
- 
         await this._inicializar();
         this._montarVue();
- 
-        // Poblar selects DESPUÉS de que Vue monte el DOM
         setTimeout(() => this._poblarSelects(), 100);
     },
  
@@ -42,82 +34,76 @@ const odontogramaController = {
         if (sel) sel.value = '';
     },
  
-    // ─────────────────────────────────────────────────────────────────────
-    // CATÁLOGOS
-    // ─────────────────────────────────────────────────────────────────────
- 
     async _inicializar() {
         if (this._catalogos) return;
         try {
             const r    = await fetch(`${API_URL}?modulo=odontograma&accion=get_catalogos_odontograma`);
             const data = await r.json();
-            if (data.success) {
-                this._catalogos = data;
-            } else {
-                console.warn('odontogramaController: catálogos no disponibles', data.message);
-            }
+            if (data.success) this._catalogos = data;
+            else console.warn('odontogramaController: catálogos no disponibles', data.message);
         } catch (err) {
             console.warn('odontogramaController: error al cargar catálogos', err);
         }
     },
  
-    // ─────────────────────────────────────────────────────────────────────
-    // POBLAR SELECTS — DOM vanilla
-    // ─────────────────────────────────────────────────────────────────────
- 
     _poblarSelects() {
         const selEsp = document.getElementById('odontEspecialista');
-        if (selEsp && this._catalogos?.especialistas) {
-            const valorActual = selEsp.value;
-            selEsp.innerHTML  = '<option value="">— Seleccionar especialista —</option>';
-            this._catalogos.especialistas.forEach(e => {
-                const opt       = document.createElement('option');
-                opt.value       = e.id;
-                opt.textContent = e.nombre_completo;
-                selEsp.appendChild(opt);
-            });
-            if (valorActual) selEsp.value = valorActual;
-        }
+        if (!selEsp || !this._catalogos?.especialistas) return;
+        const valorActual = selEsp.value;
+        selEsp.innerHTML  = '<option value="">Seleccionar especialista</option>';
+        this._catalogos.especialistas.forEach(e => {
+            const opt       = document.createElement('option');
+            opt.value       = e.id;
+            opt.textContent = e.nombre_completo;
+            selEsp.appendChild(opt);
+        });
+        if (valorActual) selEsp.value = valorActual;
     },
  
     _poblarSelectsPanel() {
-        // Anomalía
         const selAnom = document.getElementById('odontAnomalia');
         if (selAnom && this._catalogos?.anomalias) {
             selAnom.innerHTML = '<option value="">Seleccionar...</option>' +
-                this._catalogos.anomalias
-                    .map(a => `<option value="${a.id}">${escHtml(a.nombre)}</option>`)
-                    .join('');
+                this._catalogos.anomalias.map(a =>
+                    `<option value="${a.id}">${escHtml(a.nombre)}</option>`
+                ).join('');
         }
  
-        // Caras (checkboxes)
         const divCaras = document.getElementById('odontCarasGrid');
         if (divCaras && this._catalogos?.caras) {
             divCaras.innerHTML = this._catalogos.caras.map(c => `
                 <div>
-                    <input type="checkbox" id="cara-od-${c.id}" value="${c.id}"
-                        class="cara-check odont-cara-cb">
+                    <input type="checkbox" id="cara-od-${c.id}"
+                           value="${c.id}" class="cara-check odont-cara-cb">
                     <label for="cara-od-${c.id}" class="cara-label">${escHtml(c.nombre)}</label>
                 </div>`).join('');
         }
  
-        // Procedimiento
         const selProc = document.getElementById('odontProc');
         if (selProc && this._catalogos?.procedimientos) {
             selProc.innerHTML = '<option value="">Seleccionar...</option>' +
-                this._catalogos.procedimientos
-                    .map(p => `<option value="${p.id}">${escHtml(p.nombre)}</option>`)
-                    .join('');
+                this._catalogos.procedimientos.map(p =>
+                    `<option value="${p.id}">${escHtml(p.nombre)}</option>`
+                ).join('');
         }
  
-        // Estatus hallazgo
         const selEst = document.getElementById('odontEstatus');
         if (selEst && this._catalogos?.estatus) {
             selEst.innerHTML = '<option value="">Seleccionar...</option>' +
-                this._catalogos.estatus
-                    .map(e => `<option value="${e.id}">${escHtml(e.nombre)}</option>`)
-                    .join('');
+                this._catalogos.estatus.map(e =>
+                    `<option value="${e.id}">${escHtml(e.nombre)}</option>`
+                ).join('');
         }
+    },
+ 
+    _poblarSelectEditarEstatus(idRegistro, idEstatusActual) {
+        const sel = document.getElementById(`odontEditarEstatus_${idRegistro}`);
+        if (!sel || !this._catalogos?.estatus) return;
+        sel.innerHTML = this._catalogos.estatus.map(e =>
+            `<option value="${e.id}" ${e.id == idEstatusActual ? 'selected' : ''}>
+                ${escHtml(e.nombre)}
+             </option>`
+        ).join('');
     },
  
     _resetearPanel() {
@@ -128,10 +114,6 @@ const odontogramaController = {
         document.querySelectorAll('.odont-cara-cb').forEach(cb => cb.checked = false);
     },
  
-    // ─────────────────────────────────────────────────────────────────────
-    // MONTAR VUE
-    // ─────────────────────────────────────────────────────────────────────
- 
     _montarVue() {
         if (this._appInstance) return;
  
@@ -140,7 +122,7 @@ const odontogramaController = {
  
         this._appInstance = createApp({
             setup() {
-                // Arcadas estáticas
+ 
                 const arcadaSuperior = odontogramaModel.construirArcada(
                     odontogramaModel.numerosSuperior, 'Superior'
                 );
@@ -148,11 +130,11 @@ const odontogramaController = {
                     odontogramaModel.numerosInferior, 'Inferior'
                 );
  
-                // Estado reactivo
-                const dienteActivo = ref(null);
-                const registros    = ref({});
-                const cargando     = ref(false);
-                const notif        = ref({ visible: false, texto: '', tipo: 'success' });
+                const dienteActivo    = ref(null);
+                const registros       = ref({});
+                const cargando        = ref(false);
+                const notif           = ref({ visible: false, texto: '', tipo: 'success' });
+                const editandoEstatus = ref(new Set());
  
                 const registrosDiente = computed(() =>
                     dienteActivo.value
@@ -160,26 +142,63 @@ const odontogramaController = {
                         : []
                 );
  
-                // Color de diente según estatus_hallazgo
                 function estadoDiente(numero) {
                     const regs = registros.value[numero];
                     if (!regs || !regs.length)                                return 'sano';
                     if (regs.every(r => r.estatus_hallazgo === 'Tratado'))    return 'tratado';
                     if (regs.some(r  => r.estatus_hallazgo === 'En proceso')) return 'anomalia';
-                    return 'atencion'; // Pendiente
+                    return 'atencion';
+                }
+ 
+                function estaEditando(idOdontograma) {
+                    return editandoEstatus.value.has(idOdontograma);
                 }
  
                 function seleccionarDiente(pieza) {
-                    dienteActivo.value = pieza;
+                    dienteActivo.value    = pieza;
+                    editandoEstatus.value = new Set();
                     self._nextTick(() => self._poblarSelectsPanel());
                 }
  
                 function cancelar() {
-                    dienteActivo.value = null;
+                    dienteActivo.value    = null;
+                    editandoEstatus.value = new Set();
+                }
+ 
+                function toggleEditarEstatus(idOdontograma, idEstatusActual) {
+                    const set = new Set(editandoEstatus.value);
+                    if (set.has(idOdontograma)) {
+                        set.delete(idOdontograma);
+                    } else {
+                        set.add(idOdontograma);
+                        self._nextTick(() =>
+                            self._poblarSelectEditarEstatus(idOdontograma, idEstatusActual)
+                        );
+                    }
+                    editandoEstatus.value = set;
+                }
+ 
+                async function guardarEstatus(idOdontograma) {
+                    const sel      = document.getElementById(`odontEditarEstatus_${idOdontograma}`);
+                    const nuevoId  = parseInt(sel?.value || '0');
+                    if (!nuevoId) { mostrarNotif('Selecciona un estatus', 'error'); return; }
+ 
+                    const resultado = await self._actualizarEstatusEnServidor(
+                        idOdontograma, nuevoId, self._numeroPaciente
+                    );
+ 
+                    if (resultado?.success) {
+                        await self._cargarRegistros(registros, cargando);
+                        const set = new Set(editandoEstatus.value);
+                        set.delete(idOdontograma);
+                        editandoEstatus.value = set;
+                        mostrarNotif('Estatus actualizado', 'success');
+                    } else {
+                        mostrarNotif(resultado?.message ?? 'Error al actualizar', 'error');
+                    }
                 }
  
                 async function guardarRegistro() {
-                    // Leer valores del DOM
                     const idAnomalia      = parseInt(document.getElementById('odontAnomalia')?.value  || '0');
                     const idProcedimiento = parseInt(document.getElementById('odontProc')?.value      || '0');
                     const idEstatus       = parseInt(document.getElementById('odontEstatus')?.value   || '0');
@@ -188,17 +207,13 @@ const odontogramaController = {
                     const idCaras         = [...document.querySelectorAll('.odont-cara-cb:checked')]
                                             .map(cb => parseInt(cb.value));
  
-                    // Validaciones
-                    if (!idEspecialista) { mostrarNotif('Selecciona un especialista', 'error'); return; }
-                    if (!idAnomalia)     { mostrarNotif('Selecciona una anomalía', 'error'); return; }
-                    if (!idCaras.length) { mostrarNotif('Selecciona al menos una cara', 'error'); return; }
-                    if (!idProcedimiento){ mostrarNotif('Selecciona un procedimiento', 'error'); return; }
-                    if (!idEstatus)      { mostrarNotif('Selecciona un estatus', 'error'); return; }
+                    if (!idEspecialista)  { mostrarNotif('Selecciona un especialista', 'error');  return; }
+                    if (!idAnomalia)      { mostrarNotif('Selecciona una anomalía', 'error');      return; }
+                    if (!idCaras.length)  { mostrarNotif('Selecciona al menos una cara', 'error'); return; }
+                    if (!idProcedimiento) { mostrarNotif('Selecciona un procedimiento', 'error');  return; }
+                    if (!idEstatus)       { mostrarNotif('Selecciona un estatus', 'error');        return; }
  
-                    // Nombres para optimistic update
-                    const cat            = self._catalogos;
-                    const nombreEstatus  = cat.estatus.find(e => e.id == idEstatus)?.nombre ?? '';
- 
+                    const cat = self._catalogos;
                     const filasLocales = idCaras.map(idCara => ({
                         id_odontograma:       null,
                         numero_posicion:      numeroPieza,
@@ -206,7 +221,7 @@ const odontogramaController = {
                         cara:                 cat.caras.find(c => c.id == idCara)?.nombre ?? '',
                         nombre_procedimiento: cat.procedimientos.find(p => p.id == idProcedimiento)?.nombre ?? '',
                         id_estatus_hallazgo:  idEstatus,
-                        estatus_hallazgo:     nombreEstatus,
+                        estatus_hallazgo:     cat.estatus.find(e => e.id == idEstatus)?.nombre ?? '',
                         nombre_especialista:  cat.especialistas.find(e => e.id == idEspecialista)?.nombre_completo ?? '',
                         fecha_cita:           new Date().toISOString().slice(0, 10),
                         _pendiente:           true,
@@ -217,18 +232,18 @@ const odontogramaController = {
                     mostrarNotif('Guardando...', 'info');
  
                     const resultado = await self._guardarEnServidor({
-                        numero_paciente:      self._numeroPaciente,
-                        id_especialista:      idEspecialista,
-                        numero_pieza:         numeroPieza,
-                        id_anomalia:          idAnomalia,
-                        id_caras:             idCaras,
-                        id_procedimiento:     idProcedimiento,
-                        id_estatus_hallazgo:  idEstatus,
+                        numero_paciente:     self._numeroPaciente,
+                        id_especialista:     idEspecialista,
+                        numero_pieza:        numeroPieza,
+                        id_anomalia:         idAnomalia,
+                        id_caras:            idCaras,
+                        id_procedimiento:    idProcedimiento,
+                        id_estatus_hallazgo: idEstatus,
                     });
  
                     if (resultado?.success) {
                         await self._cargarRegistros(registros, cargando);
-                        mostrarNotif(`Pieza ${numeroPieza} registrada correctamente`, 'success');
+                        mostrarNotif(`Pieza ${numeroPieza} registrada`, 'success');
                         self._resetearPanel();
                     } else {
                         registros.value[numeroPieza] = (registros.value[numeroPieza] ?? [])
@@ -239,7 +254,6 @@ const odontogramaController = {
  
                 async function eliminarRegistro(idx) {
                     if (!confirm('¿Eliminar este registro?')) return;
- 
                     const num  = dienteActivo.value.numero;
                     const fila = registros.value[num]?.[idx];
                     if (!fila) return;
@@ -248,8 +262,7 @@ const odontogramaController = {
                     if (!registros.value[num].length) delete registros.value[num];
  
                     const resultado = await self._eliminarEnServidor(
-                        fila.id_odontograma,
-                        self._numeroPaciente
+                        fila.id_odontograma, self._numeroPaciente
                     );
  
                     if (!resultado?.success) {
@@ -265,15 +278,16 @@ const odontogramaController = {
                     setTimeout(() => { notif.value.visible = false; }, 2800);
                 }
  
-                // Carga inicial
                 self._cargarRegistros(registros, cargando);
  
                 return {
                     arcadaSuperior, arcadaInferior,
                     dienteActivo, registros, registrosDiente,
                     cargando, notif,
-                    estadoDiente, seleccionarDiente, cancelar,
+                    estadoDiente, estaEditando,
+                    seleccionarDiente, cancelar,
                     guardarRegistro, eliminarRegistro,
+                    toggleEditarEstatus, guardarEstatus,
                 };
             },
         }).mount('#app-odontograma');
@@ -288,15 +302,11 @@ const odontogramaController = {
         }
     },
  
-    // ─────────────────────────────────────────────────────────────────────
-    // COMUNICACIÓN CON EL SERVIDOR
-    // ─────────────────────────────────────────────────────────────────────
- 
     async _cargarRegistros(registros, cargando) {
         if (!this._numeroPaciente) return;
         try {
             cargando.value = true;
-            const r    = await fetch(
+            const r = await fetch(
                 `${API_URL}?modulo=odontograma&accion=get_by_paciente_odontograma&numero_paciente=${this._numeroPaciente}`
             );
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -314,33 +324,38 @@ const odontogramaController = {
         try {
             const r = await fetch(
                 `${API_URL}?modulo=odontograma&accion=guardar_odontograma`,
+                { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
+            );
+            return await r.json();
+        } catch (err) { return null; }
+    },
+ 
+    async _actualizarEstatusEnServidor(idOdontograma, idEstatus, numeroPaciente) {
+        try {
+            const r = await fetch(
+                `${API_URL}?modulo=odontograma&accion=actualizar_estatus_odontograma`,
                 {
-                    method:  'POST',
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body:    JSON.stringify(payload),
+                    body: JSON.stringify({
+                        id_odontograma:      idOdontograma,
+                        id_estatus_hallazgo: idEstatus,
+                        numero_paciente:     numeroPaciente,
+                    }),
                 }
             );
             return await r.json();
-        } catch (err) {
-            console.error('odontogramaController._guardarEnServidor:', err);
-            return null;
-        }
+        } catch (err) { return null; }
     },
  
     async _eliminarEnServidor(idOdontograma, numeroPaciente) {
         try {
             const r = await fetch(
                 `${API_URL}?modulo=odontograma&accion=eliminar_odontograma`,
-                {
-                    method:  'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body:    JSON.stringify({ id_odontograma: idOdontograma, numero_paciente: numeroPaciente }),
-                }
+                { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ id_odontograma: idOdontograma, numero_paciente: numeroPaciente }) }
             );
             return await r.json();
-        } catch (err) {
-            console.error('odontogramaController._eliminarEnServidor:', err);
-            return null;
-        }
+        } catch (err) { return null; }
     },
 };

@@ -195,6 +195,43 @@ class Odontograma
     }
  
     // ─────────────────────────────────────────────────────────────────────────
+    // ESCRITURA — actualizar estatus del hallazgo
+    // ─────────────────────────────────────────────────────────────────────────
+ 
+    /**
+     * Actualiza solo el id_estatus_hallazgo de un registro de odontograma.
+     * Verifica que el registro pertenezca al paciente antes de actualizar.
+     */
+    public function actualizarEstatus(int $idOdontograma, int $idEstatus, int $numeroPaciente): array
+    {
+        try {
+            // Verificar propiedad
+            $stmt = $this->db->prepare("
+                SELECT o.id_odontograma
+                FROM   odontograma           o
+                JOIN   transaccionesdentales td ON td.id_transaccion_dental = o.id_transaccion_dental
+                JOIN   cita                   c ON c.id_cita                = td.id_cita
+                WHERE  o.id_odontograma  = :id
+                  AND  c.numero_paciente = :numero_paciente
+            ");
+            $stmt->execute([':id' => $idOdontograma, ':numero_paciente' => $numeroPaciente]);
+ 
+            if (!$stmt->fetch())
+                return ['success' => false, 'message' => 'Registro no encontrado o sin permiso.'];
+ 
+            $this->db->prepare("
+                UPDATE odontograma
+                SET    id_estatus_hallazgo = :estatus
+                WHERE  id_odontograma      = :id
+            ")->execute([':estatus' => $idEstatus, ':id' => $idOdontograma]);
+ 
+            return ['success' => true];
+        } catch (\Throwable $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+ 
+    // ─────────────────────────────────────────────────────────────────────────
     // ESCRITURA — eliminar
     // ─────────────────────────────────────────────────────────────────────────
  

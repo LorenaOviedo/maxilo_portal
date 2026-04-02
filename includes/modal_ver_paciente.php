@@ -540,11 +540,9 @@ $modal_id = 'modalPaciente';
 
         <!-- Tab 5 odontograma -->
         <div id="tabOdontograma" class="modal-tab-content">
-
-            <!-- ── App Vue — el toolbar DEBE estar dentro para que guardarRegistro() lea el select ── -->
             <div id="app-odontograma">
 
-                <!-- Toolbar: especialista (poblado por DOM vanilla en _poblarSelects()) -->
+                <!-- Toolbar especialista -->
                 <div class="odonto-toolbar">
                     <div class="odonto-toolbar-grupo">
                         <label class="campo-label">
@@ -556,7 +554,7 @@ $modal_id = 'modalPaciente';
                     </div>
                 </div>
 
-                <!-- Cargando registros -->
+                <!-- Cargando -->
                 <div v-if="cargando" class="odonto-cargando">
                     <i class="fas fa-circle-notch fa-spin"></i>
                     Cargando odontograma...
@@ -570,7 +568,6 @@ $modal_id = 'modalPaciente';
                             Haz clic en una pieza dental para ver su historial o registrar un avance.
                         </p>
 
-                        <!-- Arcada Superior -->
                         <div class="arcada-section">
                             <p class="arcada-label">Arcada superior</p>
                             <div class="arcada-row arcada-superior">
@@ -593,7 +590,6 @@ $modal_id = 'modalPaciente';
 
                         <div class="arcada-divider">Maxilar · Mandíbula</div>
 
-                        <!-- Arcada Inferior -->
                         <div class="arcada-section">
                             <p class="arcada-label">Arcada inferior</p>
                             <div class="arcada-row arcada-inferior">
@@ -614,7 +610,6 @@ $modal_id = 'modalPaciente';
                             </div>
                         </div>
 
-                        <!-- Leyenda -->
                         <div class="leyenda">
                             <div class="leyenda-item">
                                 <div class="leyenda-dot sano"></div>Sin registro
@@ -631,10 +626,9 @@ $modal_id = 'modalPaciente';
                         </div>
                     </div><!-- /.arcadas-panel -->
 
-                    <!-- PANEL DERECHO: Formulario -->
+                    <!-- PANEL DERECHO -->
                     <div class="odonto-form-panel">
 
-                        <!-- Sin diente seleccionado -->
                         <transition name="slide-fade">
                             <div v-if="!dienteActivo" class="odonto-panel-empty">
                                 <div class="odonto-panel-empty-icon"><i class="ri-tooth-line"></i></div>
@@ -642,11 +636,10 @@ $modal_id = 'modalPaciente';
                             </div>
                         </transition>
 
-                        <!-- Diente seleccionado -->
                         <transition name="slide-fade">
                             <div v-if="dienteActivo" class="odonto-panel-active">
 
-                                <!-- Header de pieza -->
+                                <!-- Header -->
                                 <div class="odonto-panel-header">
                                     <div class="odonto-panel-header-icon">
                                         <img :src="dienteActivo.icono" :alt="dienteActivo.nombre"
@@ -661,36 +654,81 @@ $modal_id = 'modalPaciente';
                                 <!-- Cuerpo -->
                                 <div class="odonto-panel-body">
 
-                                    <!-- Registros anteriores -->
+                                    <!-- ── Registros existentes ── -->
                                     <div v-if="registrosDiente.length" class="registros-previos">
                                         <p class="registros-titulo">
-                                            Registros anteriores ({{ registrosDiente.length }})
+                                            Registros ({{ registrosDiente.length }})
                                         </p>
+
                                         <div v-for="(reg, idx) in registrosDiente" :key="reg.id_odontograma ?? idx"
                                             class="registro-item" :class="{ 'registro-pendiente': reg._pendiente }">
 
+                                            <!-- Fila superior: anomalía + estatus + acciones -->
                                             <div class="registro-item-top">
-                                                <span class="registro-anomalia">{{ reg.nombre_anomalia }}</span>
-                                                <div style="display:flex; gap:6px; align-items:center;">
-                                                    <span class="registro-estatus"
-                                                        :class="reg.estatus_tratamiento.toLowerCase().replace(/\s+/g,'-')">
-                                                        {{ reg.estatus_tratamiento }}
+                                                <span class="registro-anomalia">
+                                                    {{ reg.nombre_anomalia }}
+                                                </span>
+                                                <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;">
+
+                                                    <!-- Badge de estatus (cuando no está editando) -->
+                                                    <span v-if="!estaEditando(reg.id_odontograma)"
+                                                        class="registro-estatus"
+                                                        :class="(reg.estatus_hallazgo ?? '').toLowerCase().replace(/\s+/g,'-')">
+                                                        {{ reg.estatus_hallazgo }}
                                                     </span>
-                                                    <button v-if="!reg._pendiente" class="btn-eliminar-registro"
-                                                        @click="eliminarRegistro(idx)" title="Eliminar">
+
+                                                    <!-- Select inline de edición de estatus -->
+                                                    <template
+                                                        v-if="!reg._pendiente && estaEditando(reg.id_odontograma)">
+                                                        <select :id="`odontEditarEstatus_${reg.id_odontograma}`"
+                                                            class="campo-select"
+                                                            style="font-size:11px; padding:2px 4px; height:24px; min-width:100px;">
+                                                        </select>
+                                                        <!-- Confirmar -->
+                                                        <button class="btn-confirmar-proc"
+                                                            style="height:24px; width:24px; padding:0;"
+                                                            @click="guardarEstatus(reg.id_odontograma)"
+                                                            title="Guardar estatus">
+                                                            <i class="ri-check-line" style="font-size:12px;"></i>
+                                                        </button>
+                                                        <!-- Cancelar edición -->
+                                                        <button class="btn-cancelar-proc"
+                                                            style="height:24px; width:24px; padding:0;"
+                                                            @click="toggleEditarEstatus(reg.id_odontograma, reg.id_estatus_hallazgo)"
+                                                            title="Cancelar">
+                                                            <i class="ri-close-line" style="font-size:12px;"></i>
+                                                        </button>
+                                                    </template>
+
+                                                    <!-- Botón editar estatus (lápiz) -->
+                                                    <button v-if="!reg._pendiente && !estaEditando(reg.id_odontograma)"
+                                                        class="btn-eliminar-registro" style="color:#20a89e;"
+                                                        @click="toggleEditarEstatus(reg.id_odontograma, reg.id_estatus_hallazgo)"
+                                                        title="Editar estatus">
+                                                        <i class="fas fa-pen" style="font-size:10px;"></i>
+                                                    </button>
+
+                                                    <!-- Botón eliminar -->
+                                                    <button v-if="!reg._pendiente && !estaEditando(reg.id_odontograma)"
+                                                        class="btn-eliminar-registro" @click="eliminarRegistro(idx)"
+                                                        title="Eliminar registro">
                                                         <i class="fas fa-times"></i>
                                                     </button>
-                                                    <i v-else class="fas fa-circle-notch fa-spin"
+
+                                                    <!-- Spinner pendiente -->
+                                                    <i v-if="reg._pendiente" class="fas fa-circle-notch fa-spin"
                                                         style="font-size:11px; color:#adb5bd;"></i>
                                                 </div>
                                             </div>
 
+                                            <!-- Cara(s) -->
                                             <div class="registro-cara" v-if="reg.cara">
                                                 <i class="fas fa-map-marker-alt"
                                                     style="font-size:9px; margin-right:3px;"></i>
                                                 Cara(s): {{ reg.cara }}
                                             </div>
 
+                                            <!-- Procedimiento -->
                                             <div class="registro-procedimiento" v-if="reg.nombre_procedimiento &&
                                                       reg.nombre_procedimiento !== 'Sin procedimiento asignado'">
                                                 <i class="fas fa-stethoscope"
@@ -698,6 +736,7 @@ $modal_id = 'modalPaciente';
                                                 {{ reg.nombre_procedimiento }}
                                             </div>
 
+                                            <!-- Especialista y fecha -->
                                             <div class="registro-meta" v-if="reg.nombre_especialista">
                                                 <i class="fas fa-user-md" style="font-size:9px; margin-right:3px;"></i>
                                                 {{ reg.nombre_especialista }}
@@ -705,10 +744,11 @@ $modal_id = 'modalPaciente';
                                                     · {{ reg.fecha_cita }}
                                                 </span>
                                             </div>
-                                        </div>
-                                    </div>
 
-                                    <!-- Nuevo registro -->
+                                        </div><!-- /.registro-item -->
+                                    </div><!-- /.registros-previos -->
+
+                                    <!-- ── Nuevo registro ── -->
                                     <p class="nuevo-registro-titulo">
                                         <i class="fas fa-plus" style="font-size:9px;"></i>
                                         Nuevo registro
