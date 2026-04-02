@@ -851,21 +851,78 @@ $modal_id = 'modalPaciente';
 <!-- JavaScript del modal, lógica se pasa a pacientes.js -->
 <script>
     window.addEventListener('load', function () {
-        const _cambiarTabOrig = window.cambiarTab;
-
+ 
+        // ── Referencias originales ────────────────────────────────────────
+        const _cambiarTabOrig  = window.cambiarTab;
+        const _cerrarModalOrig = window.cerrarModal;
+ 
+        // ── Parchear Modal.setReadOnly ────────────────────────────────────
+        // El original deshabilita TODOS los inputs del modal, incluyendo
+        // los selects de Vue dentro de #app-odontograma. Los excluimos.
+        Modal.setReadOnly = function (modalId, readOnly = true) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+ 
+            modal.querySelectorAll('input, select, textarea').forEach(el => {
+                // Excluir cualquier elemento dentro del app de odontograma
+                if (!el.closest('#app-odontograma')) {
+                    el.disabled = readOnly;
+                }
+            });
+ 
+            const saveBtn = modal.querySelector('.btn-modal-save');
+            if (saveBtn) saveBtn.style.display = readOnly ? 'none' : 'block';
+ 
+            console.log('Modo solo lectura:', readOnly);
+        };
+ 
+        // ── Parchear Modal.clear ──────────────────────────────────────────
+        // El original limpia TODOS los inputs incluyendo los de Vue.
+        // Excluimos #app-odontograma y llamamos limpiar() del controlador.
+        const _clearOrig = Modal.clear.bind(Modal);
+        Modal.clear = function (modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+ 
+            // Limpiar solo inputs FUERA del odontograma
+            modal.querySelectorAll(
+                'input:not([type="radio"]):not([type="checkbox"]), textarea, select'
+            ).forEach(el => {
+                if (el.closest('#app-odontograma')) return; // excluir Vue
+                if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                else el.value = '';
+            });
+ 
+            modal.querySelectorAll('input[type="checkbox"], input[type="radio"]')
+                .forEach(el => {
+                    if (!el.closest('#app-odontograma')) el.checked = false;
+                });
+ 
+            // Limpiar odontograma por su propio controlador
+            odontogramaController.limpiar();
+ 
+            console.log('Modal limpiado:', modalId);
+        };
+ 
+        // ── Interceptar cambiarTab ────────────────────────────────────────
         window.cambiarTab = function (modalId, tabId) {
             if (typeof _cambiarTabOrig === 'function') _cambiarTabOrig(modalId, tabId);
-
+ 
             if (tabId === 'tabOdontograma') {
-                // Leer numero_paciente igual que lo hace planesController
                 const num = document.getElementById('formPaciente').dataset.numeroPaciente;
-                odontogramaController.cargar(num);   //cargar(), NO montar()
+                if (num) odontogramaController.cargar(num);
             }
-
+ 
             if (tabId === 'tabPlanes') {
                 const num = document.getElementById('formPaciente').dataset.numeroPaciente;
-                planesController.cargar(num);
+                if (num) planesController.cargar(num);
             }
+        };
+ 
+        // ── Interceptar cerrarModal ───────────────────────────────────────
+        window.cerrarModal = function (modalId) {
+            odontogramaController.limpiar();
+            if (typeof _cerrarModalOrig === 'function') _cerrarModalOrig(modalId);
         };
     });
 </script>
