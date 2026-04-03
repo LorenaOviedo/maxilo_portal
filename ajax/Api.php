@@ -586,7 +586,7 @@ switch ($accion) {
         if ($id) {
             responder(true, 'Especialista creado correctamente', ['id' => $id]);
         } else {
-            responder(false, $model->getLastError() ?? 'Error al crear el especialista');
+            responder(false, 'Error al crear el especialista');
         }
         break;
 
@@ -613,8 +613,7 @@ switch ($accion) {
         $ok = $model->update($id, $data);
         responder(
             $ok,
-            $ok ? 'Especialista actualizado correctamente'
-            : ($model->getLastError() ?? 'Error al actualizar')
+            $ok ? 'Especialista actualizado correctamente' : 'Error al actualizar'
         );
         break;
 
