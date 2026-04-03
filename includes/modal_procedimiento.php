@@ -4,7 +4,7 @@
 $modal_id = 'modalProcedimiento';
 ?>
  
-!-- Overlay -->
+<!-- Overlay -->
 <div id="<?php echo $modal_esp_id; ?>-overlay" class="modal-overlay"></div>
  
 <!-- Contenedor del modal -->
