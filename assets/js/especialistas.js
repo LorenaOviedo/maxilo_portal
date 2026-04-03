@@ -224,6 +224,14 @@ const especialistaController = {
             }
         }
  
+        // Si el CP está vacío, limpiar id_cp para evitar FK inválido por autocompletado del navegador
+        if (!this._getVal('espCP')) {
+            this._setVal('espIdCp', '');
+            this._setVal('espColonia', '');
+            this._setVal('espEstado', '');
+            this._setVal('espMunicipio', '');
+        }
+ 
         const formData = new FormData();
         formData.append('modulo', 'especialistas');
         formData.append('accion', this._modoEdicion ? 'actualizar_especialista' : 'crear_especialista');

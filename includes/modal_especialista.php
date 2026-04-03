@@ -5,10 +5,10 @@ $modal_esp_id = 'modalEspecialista';
 
 <!-- Overlay -->
 <div id="<?php echo $modal_esp_id; ?>-overlay" class="modal-overlay"></div>
-
+ 
 <!-- Contenedor del modal -->
 <div id="<?php echo $modal_esp_id; ?>" class="modal-container">
-
+ 
     <!-- Header -->
     <div class="modal-header">
         <div class="modal-title-wrapper">
@@ -24,7 +24,7 @@ $modal_esp_id = 'modalEspecialista';
             </button>
         </div>
     </div>
-
+ 
     <!-- Tabs -->
     <div class="modal-tabs">
         <button class="modal-tab active" data-tab="tabEspPersonal"
@@ -40,69 +40,72 @@ $modal_esp_id = 'modalEspecialista';
             Educación
         </button>
     </div>
-
+ 
     <!-- Body -->
     <div class="modal-body">
-
+ 
         <!-- ── Tab 1: Información Personal ───────────────────────────────── -->
         <div id="tabEspPersonal" class="modal-tab-content active">
-            <form class="modal-form" id="formEspecialista">
-                <input type="hidden" name="id_especialista" id="espId">
-
+            <form class="modal-form" id="formEspecialista" autocomplete="off">
+                <input type="text" style="display:none" name="prevent_autofill" autocomplete="off">
+                <input type="password" style="display:none" name="prevent_autofill_pw" autocomplete="new-password">
+ 
+                <input type="hidden" name="id_especialista" id="espId" autocomplete="off">
+ 
                 <!-- F1: Nombre, apellido paterno -->
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Nombre(s) <span class="required">*</span></label>
                         <input type="text" name="nombre" id="espNombre" class="form-input"
                             pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$"
-                            title="Solo letras y espacios">
+                            title="Solo letras y espacios" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Apellido paterno <span class="required">*</span></label>
                         <input type="text" name="apellido_paterno" id="espApPat" class="form-input"
-                            pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$">
+                            pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$" autocomplete="off">
                     </div>
                 </div>
-
+ 
                 <!-- F2: Apellido materno, fecha nacimiento -->
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Apellido materno</label>
                         <input type="text" name="apellido_materno" id="espApMat" class="form-input"
-                            pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$">
+                            pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Fecha de nacimiento</label>
-                        <input type="date" name="fecha_nacimiento" id="espFechaNac" class="form-input">
+                        <input type="date" name="fecha_nacimiento" id="espFechaNac" class="form-input" autocomplete="off">
                     </div>
                 </div>
-
+ 
                 <!-- F3: Fecha contratación -->
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Fecha de contratación</label>
-                        <input type="date" name="fecha_contratacion" id="espFechaCont" class="form-input">
+                        <input type="date" name="fecha_contratacion" id="espFechaCont" class="form-input" autocomplete="off">
                     </div>
                 </div>
-
+ 
                 <!-- F4: Dirección -->
                 <div class="form-section-title" style="margin-top:16px;">Dirección</div>
-
+ 
                 <div class="form-row cols-3">
                     <div class="form-group">
                         <label class="form-label">Calle</label>
-                        <input type="text" name="calle" id="espCalle" class="form-input">
+                        <input type="text" name="calle" id="espCalle" class="form-input" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Número Exterior</label>
-                        <input type="text" name="numero_exterior" id="espNumExt" class="form-input">
+                        <input type="text" name="numero_exterior" id="espNumExt" class="form-input" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Número Interior</label>
-                        <input type="text" name="numero_interior" id="espNumInt" class="form-input">
+                        <input type="text" name="numero_interior" id="espNumInt" class="form-input" autocomplete="off">
                     </div>
                 </div>
-
+ 
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Código postal</label>
@@ -114,60 +117,60 @@ $modal_esp_id = 'modalEspecialista';
                         <input type="text" name="colonia" id="espColonia" class="form-input"
                             list="espListaColonias" autocomplete="off">
                         <datalist id="espListaColonias"></datalist>
-                        <input type="hidden" name="id_cp" id="espIdCp">
+                        <input type="hidden" name="id_cp" id="espIdCp" autocomplete="off">
                     </div>
                 </div>
-
+ 
                 <div class="form-row cols-3">
                     <div class="form-group">
                         <label class="form-label">Estado</label>
-                        <input type="text" name="estado" id="espEstado" class="form-input" readonly>
+                        <input type="text" name="estado" id="espEstado" class="form-input" readonly autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Municipio</label>
-                        <input type="text" name="municipio" id="espMunicipio" class="form-input" readonly>
+                        <input type="text" name="municipio" id="espMunicipio" class="form-input" readonly autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">País</label>
-                        <input type="text" name="pais" class="form-input" value="MEXICO" readonly>
+                        <input type="text" name="pais" class="form-input" value="MEXICO" readonly autocomplete="off">
                     </div>
                 </div>
-
+ 
             </form>
         </div><!-- /#tabEspPersonal -->
-
+ 
         <!-- ── Tab 2: Contacto ───────────────────────────────────────────── -->
         <div id="tabEspContacto" class="modal-tab-content">
-            <form class="modal-form" id="formEspContacto">
-
+            <form class="modal-form" id="formEspContacto" autocomplete="off">
+ 
                 <div class="form-section-title">Datos de contacto</div>
-
+ 
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Teléfono</label>
                         <input type="tel" name="telefono" id="espTelefono" class="form-input"
-                            maxlength="10" placeholder="10 dígitos">
+                            maxlength="10" placeholder="10 dígitos" autocomplete="off">
                         <input type="hidden" name="id_tipo_contacto_telefono"
-                            id="espIdTipoTel">
+                            id="espIdTipoTel" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Correo electrónico</label>
                         <input type="email" name="email" id="espEmail" class="form-input"
-                            placeholder="correo@ejemplo.com">
+                            placeholder="correo@ejemplo.com" autocomplete="off">
                         <input type="hidden" name="id_tipo_contacto_email"
-                            id="espIdTipoEmail">
+                            id="espIdTipoEmail" autocomplete="off">
                     </div>
                 </div>
-
+ 
             </form>
         </div><!-- /#tabEspContacto -->
-
+ 
         <!-- ── Tab 3: Educación ──────────────────────────────────────────── -->
         <div id="tabEspEducacion" class="modal-tab-content">
             <div class="modal-form">
-
+ 
                 <div class="form-section-title">Especialidades y formación académica</div>
-
+ 
                 <!-- Toolbar para agregar especialidad -->
                 <div class="tab-toolbar" style="margin-bottom:12px;">
                     <button type="button" class="btn-modal-add" id="btnAgregarEsp"
@@ -175,16 +178,16 @@ $modal_esp_id = 'modalEspecialista';
                         <i class="ri-add-line"></i> Agregar especialidad
                     </button>
                 </div>
-
+ 
                 <!-- Fila para nueva especialidad (oculta por defecto) -->
                 <div id="rowNuevaEsp" class="proc-add-row" style="display:none; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
                     <select id="espSelectEsp" class="form-select" style="min-width:180px;">
                         <option value="">Seleccionar especialidad...</option>
                     </select>
                     <input type="text" id="espCedula" class="form-input"
-                        placeholder="Cédula profesional" style="max-width:180px;">
+                        placeholder="Cédula profesional" style="max-width:180px;" autocomplete="off">
                     <input type="text" id="espInstitucion" class="form-input"
-                        placeholder="Institución de egreso" style="max-width:200px;">
+                        placeholder="Institución de egreso" style="max-width:200px;" autocomplete="off">
                     <button type="button" class="btn-confirmar-proc"
                         onclick="especialistaController.confirmarEsp()">
                         <i class="ri-check-line"></i>
@@ -194,7 +197,7 @@ $modal_esp_id = 'modalEspecialista';
                         <i class="ri-close-line"></i>
                     </button>
                 </div>
-
+ 
                 <!-- Tabla de especialidades -->
                 <table class="plan-table" id="tablaEspecialidades">
                     <thead>
@@ -213,15 +216,15 @@ $modal_esp_id = 'modalEspecialista';
                         </tr>
                     </tbody>
                 </table>
-
+ 
                 <!-- JSON oculto que se envía al guardar -->
-                <input type="hidden" id="espEspecialidadesJson" name="especialidades_json" value="[]">
-
+                <input type="hidden" id="espEspecialidadesJson" name="especialidades_json" value="[]" autocomplete="off">
+ 
             </div>
         </div><!-- /#tabEspEducacion -->
-
+ 
     </div><!-- /.modal-body -->
-
+ 
     <!-- Footer -->
     <div class="modal-footer">
         <button type="button" class="btn-modal-cancel"
@@ -232,5 +235,5 @@ $modal_esp_id = 'modalEspecialista';
             Guardar cambios
         </button>
     </div>
-
+ 
 </div><!-- /#modalEspecialista -->
