@@ -18,18 +18,21 @@ const especialistaController = {
     // ─────────────────────────────────────────────────────────────────────
  
     async inicializar() {
-        if (this._catalogos) return;
-        try {
-            const r    = await fetch(`${API_URL}?modulo=especialistas&accion=get_catalogos_especialistas`);
-            const data = await r.json();
-            if (data.success) {
-                this._catalogos = data;
-                this._poblarSelectEspecialidades();
-                this._resolverTiposContacto();
+        // Si los catálogos aún no se han cargado, hacer fetch
+        if (!this._catalogos) {
+            try {
+                const r    = await fetch(`${API_URL}?modulo=especialistas&accion=get_catalogos_especialistas`);
+                const data = await r.json();
+                if (data.success) {
+                    this._catalogos = data;
+                    this._poblarSelectEspecialidades();
+                }
+            } catch (err) {
+                console.warn('especialistaController: catálogos no disponibles', err);
             }
-        } catch (err) {
-            console.warn('especialistaController: catálogos no disponibles', err);
         }
+        // Siempre reponer los hidden de tipo contacto porque _limpiarFormulario los borra
+        this._resolverTiposContacto();
     },
  
     // ─────────────────────────────────────────────────────────────────────
