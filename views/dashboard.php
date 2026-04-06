@@ -17,7 +17,7 @@ if (!$auth->verificarSesion()) {
 // Configuración de la página
 $page_title = 'Dashboard';
 
-// Obtener datos de la BD — mismo patrón que pacientes.php
+// Obtener datos de la BD
 $db = getDB();
 $dashboard = new Dashboard($db);
 $datos = $dashboard->resumen();

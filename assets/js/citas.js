@@ -2,523 +2,917 @@
  * Módulo de Citas - JavaScript
  */
 
-// ==================== ESTADO GLOBAL ====================
-const CitasApp = {
-    fechaSeleccionada: new Date(),
-    mesActual: new Date().getMonth() + 1,
-    anioActual: new Date().getFullYear(),
-    citasFecha: [],
-    citasFiltradas: [],
-    filtroActivo: 'todas',
-    citaEditandoId: null,
-    diasConCitas: {},
-    apiUrl: '../controllers/CitasController.php'
+'use strict';
+ 
+// ─────────────────────────────────────────────
+//  CONFIGURACIÓN
+// ─────────────────────────────────────────────
+const API = 'CitasController.php';   // Ruta relativa al controlador
+ 
+// Mapeo de estatus de BD → id_estatus_cita
+// Ajusta los IDs según los valores reales en tu tabla EstadosCita
+const ESTATUS_MAP = {
+    'Pendiente':   1,
+    'Confirmada':  2,
+    'Cancelada':   3,
+    'Completada':  4,
 };
-
-// ==================== INICIALIZACIÓN ====================
-document.addEventListener('DOMContentLoaded', () => {
-    inicializarEventos();
-    cargarSelects();
-    renderCalendario(CitasApp.mesActual, CitasApp.anioActual);
-    seleccionarFecha(new Date());
-});
-
-// ==================== CALENDARIO ====================
-
-async function renderCalendario(mes, anio) {
-    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-                   'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-    document.getElementById('calendarTitle').textContent = `${meses[mes - 1]} ${anio}`;
-
-    await cargarDiasConCitas(mes, anio);
-
-    const body = document.getElementById('calendarBody');
-    body.innerHTML = '';
-
-    const primerDia   = new Date(anio, mes - 1, 1).getDay();
-    const diasEnMes   = new Date(anio, mes, 0).getDate();
-    const hoy         = new Date();
-    const fechaSelec  = CitasApp.fechaSeleccionada;
-
-    // Espacios vacíos
-    for (let i = 0; i < primerDia; i++) {
-        const el = document.createElement('div');
-        el.className = 'calendar-day empty';
-        body.appendChild(el);
-    }
-
-    // Días del mes
-    for (let dia = 1; dia <= diasEnMes; dia++) {
-        const el = document.createElement('div');
-        el.className = 'calendar-day';
-        el.textContent = dia;
-
-        const esHoy = hoy.getDate() === dia &&
-                      hoy.getMonth() + 1 === mes &&
-                      hoy.getFullYear() === anio;
-
-        const esSeleccionado = fechaSelec.getDate() === dia &&
-                               fechaSelec.getMonth() + 1 === mes &&
-                               fechaSelec.getFullYear() === anio;
-
-        if (esHoy) el.classList.add('today');
-        if (esSeleccionado) el.classList.add('selected');
-
-        // Disponibilidad
-        const datosDia = CitasApp.diasConCitas[dia];
-        if (datosDia) {
-            const total = parseInt(datosDia.total);
-            if (total >= 8) el.classList.add('no-disponible');
-            else if (total >= 4) el.classList.add('poca-disponibilidad');
-            else el.classList.add('disponible');
-        }
-
-        el.addEventListener('click', () => {
-            seleccionarFecha(new Date(anio, mes - 1, dia));
-        });
-
-        body.appendChild(el);
+ 
+// ─────────────────────────────────────────────
+//  ESTADO GLOBAL
+// ─────────────────────────────────────────────
+let estadoApp = {
+    fechaSeleccionada: null,   // Date object
+    mesActual: new Date(),     // Date object — primer día del mes visible
+    diasConCitas: {},          // { "YYYY-MM-DD": { total, pendientes, confirmadas } }
+    citaIdEditar: null,        // ID de cita en edición (null = nueva)
+    filtroEstatus: 'todas',
+};
+ 
+// ─────────────────────────────────────────────
+//  DOM — referencias cacheadas
+// ─────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const $q = sel => document.querySelector(sel);
+const $qa = sel => document.querySelectorAll(sel);
+ 
+// ─────────────────────────────────────────────
+//  UTILIDADES
+// ─────────────────────────────────────────────
+ 
+/** Formatea Date → "YYYY-MM-DD" */
+function formatDate(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}
+ 
+/** Formatea "YYYY-MM-DD" → "DD/MM/YYYY" */
+function formatDateDisplay(str) {
+    if (!str) return '';
+    const [y, m, d] = str.split('-');
+    return `${d}/${m}/${y}`;
+}
+ 
+/** Formatea "HH:MM:SS" → "HH:MM" */
+function formatTime(str) {
+    if (!str) return '';
+    return str.substring(0, 5);
+}
+ 
+/** Toast de notificación */
+function toast(mensaje, tipo = 'info') {
+    const container = $('toastContainer');
+    if (!container) return;
+ 
+    const colors = {
+        success: '#28a745',
+        error:   '#dc3545',
+        warning: '#ffc107',
+        info:    '#20a89e',
+    };
+    const icons = {
+        success: 'ri-checkbox-circle-line',
+        error:   'ri-error-warning-line',
+        warning: 'ri-alert-line',
+        info:    'ri-information-line',
+    };
+ 
+    const el = document.createElement('div');
+    el.className = 'toast-item';
+    el.style.cssText = `
+        display:flex; align-items:center; gap:10px;
+        background:${colors[tipo] ?? colors.info};
+        color:#fff; padding:14px 18px; border-radius:10px;
+        box-shadow:0 4px 16px rgba(0,0,0,.2);
+        font-size:14px; font-weight:500;
+        animation: toastIn .3s ease forwards;
+        margin-bottom:8px; min-width:260px; max-width:380px;
+        cursor:pointer;
+    `;
+    el.innerHTML = `<i class="${icons[tipo] ?? icons.info}" style="font-size:18px;flex-shrink:0"></i><span>${mensaje}</span>`;
+    el.addEventListener('click', () => removeToast(el));
+    container.appendChild(el);
+ 
+    setTimeout(() => removeToast(el), 4000);
+}
+ 
+function removeToast(el) {
+    el.style.animation = 'toastOut .3s ease forwards';
+    setTimeout(() => el.remove(), 300);
+}
+ 
+/** Mostrar/ocultar spinner dentro de un contenedor */
+function setLoading(contenedor, show) {
+    if (!contenedor) return;
+    let sp = contenedor.querySelector('.inline-spinner');
+    if (show && !sp) {
+        sp = document.createElement('div');
+        sp.className = 'inline-spinner';
+        sp.style.cssText = 'text-align:center;padding:30px;color:#6c757d;';
+        sp.innerHTML = '<i class="ri-loader-4-line spin" style="font-size:28px;"></i>';
+        contenedor.innerHTML = '';
+        contenedor.appendChild(sp);
+    } else if (!show && sp) {
+        sp.remove();
     }
 }
-
+ 
+/** Petición HTTP al controlador */
+async function apiFetch(params = {}, method = 'GET', body = null) {
+    const url = new URL(API, window.location.href);
+    if (method === 'GET') {
+        Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+    }
+ 
+    const opts = { method, headers: {} };
+    if (body) {
+        opts.headers['Content-Type'] = 'application/json';
+        opts.body = JSON.stringify(body);
+    }
+ 
+    const res = await fetch(url.toString(), opts);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+}
+ 
+// ─────────────────────────────────────────────
+//  CALENDARIO
+// ─────────────────────────────────────────────
+ 
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+               'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+ 
 async function cargarDiasConCitas(mes, anio) {
     try {
-        const resp = await fetch(`${CitasApp.apiUrl}?action=dias_con_citas&mes=${mes}&anio=${anio}`);
-        const data = await resp.json();
-        CitasApp.diasConCitas = data.success ? data.data : {};
+        const data = await apiFetch({ action: 'dias_con_citas', mes, anio });
+        estadoApp.diasConCitas = {};
+        if (data.success && Array.isArray(data.data)) {
+            data.data.forEach(item => {
+                estadoApp.diasConCitas[item.fecha] = item;
+            });
+        }
     } catch (e) {
-        CitasApp.diasConCitas = {};
+        console.error('Error cargando días con citas:', e);
     }
 }
-
-function seleccionarFecha(fecha) {
-    CitasApp.fechaSeleccionada = fecha;
-
-    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('citasFechaSeleccionada').textContent =
-        fecha.toLocaleDateString('es-MX', opciones);
-
-    renderCalendario(CitasApp.mesActual, CitasApp.anioActual);
-    cargarCitasDia(formatFecha(fecha));
+ 
+function renderCalendario() {
+    const mes = estadoApp.mesActual;
+    const anio = mes.getFullYear();
+    const numMes = mes.getMonth(); // 0-based
+ 
+    // Título
+    $('calendarTitle').textContent = `${MESES[numMes]} ${anio}`;
+ 
+    const body = $('calendarBody');
+    body.innerHTML = '';
+ 
+    const primerDia = new Date(anio, numMes, 1);
+    const ultimoDia = new Date(anio, numMes + 1, 0);
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+ 
+    // Días vacíos al inicio (domingo = 0)
+    const offsetInicio = primerDia.getDay();
+    for (let i = 0; i < offsetInicio; i++) {
+        const vacio = document.createElement('div');
+        vacio.className = 'calendar-day empty';
+        body.appendChild(vacio);
+    }
+ 
+    for (let d = 1; d <= ultimoDia.getDate(); d++) {
+        const fecha = new Date(anio, numMes, d);
+        fecha.setHours(0, 0, 0, 0);
+        const fechaStr = formatDate(fecha);
+        const info = estadoApp.diasConCitas[fechaStr];
+ 
+        const btn = document.createElement('button');
+        btn.className = 'calendar-day';
+        btn.textContent = d;
+        btn.dataset.fecha = fechaStr;
+ 
+        // Clase de hoy
+        if (fecha.getTime() === hoy.getTime()) btn.classList.add('today');
+ 
+        // Clase de seleccionado
+        if (estadoApp.fechaSeleccionada &&
+            formatDate(estadoApp.fechaSeleccionada) === fechaStr) {
+            btn.classList.add('selected');
+        }
+ 
+        // Indicador de disponibilidad
+        if (info) {
+            const total = parseInt(info.total ?? 0);
+            if (total === 0) {
+                btn.classList.add('disponible');
+            } else if (total < 4) {
+                btn.classList.add('poca');
+            } else {
+                btn.classList.add('ocupado');
+            }
+ 
+            // Dot indicator
+            const dot = document.createElement('span');
+            dot.className = 'day-dot';
+            btn.appendChild(dot);
+        }
+ 
+        btn.addEventListener('click', () => seleccionarFecha(fecha));
+        body.appendChild(btn);
+    }
 }
-
-function formatFecha(fecha) {
-    const y = fecha.getFullYear();
-    const m = String(fecha.getMonth() + 1).padStart(2, '0');
-    const d = String(fecha.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+ 
+async function seleccionarFecha(fecha) {
+    estadoApp.fechaSeleccionada = fecha;
+ 
+    // Actualizar UI del calendario
+    $qa('.calendar-day').forEach(btn => btn.classList.remove('selected'));
+    const fechaStr = formatDate(fecha);
+    const btnActivo = $q(`.calendar-day[data-fecha="${fechaStr}"]`);
+    if (btnActivo) btnActivo.classList.add('selected');
+ 
+    // Mostrar fecha en panel
+    const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    $('citasFechaSeleccionada').textContent =
+        fecha.toLocaleDateString('es-MX', opts);
+ 
+    await cargarCitasDelDia(fechaStr);
 }
-
-// ==================== CITAS DEL DÍA ====================
-
-async function cargarCitasDia(fecha) {
-    const lista = document.getElementById('citasLista');
-    lista.innerHTML = `
-        <div class="citas-loading">
-            <i class="ri-loader-4-line spin"></i>
-            <span>Cargando citas...</span>
-        </div>`;
+ 
+async function navegarMes(delta) {
+    const m = estadoApp.mesActual;
+    estadoApp.mesActual = new Date(m.getFullYear(), m.getMonth() + delta, 1);
+    await cargarDiasConCitas(
+        estadoApp.mesActual.getMonth() + 1,
+        estadoApp.mesActual.getFullYear()
+    );
+    renderCalendario();
+}
+ 
+// ─────────────────────────────────────────────
+//  CITAS DEL DÍA
+// ─────────────────────────────────────────────
+ 
+async function cargarCitasDelDia(fecha) {
+    const lista = $('citasLista');
+    setLoading(lista, true);
+ 
     try {
-        const resp = await fetch(`${CitasApp.apiUrl}?action=index&fecha=${fecha}`);
-        const data = await resp.json();
-        CitasApp.citasFecha = data.success ? data.data : [];
-        aplicarFiltro(CitasApp.filtroActivo);
+        const params = { action: 'index', fecha };
+        if (estadoApp.filtroEstatus !== 'todas') {
+            params.estatus = estadoApp.filtroEstatus;
+        }
+ 
+        const data = await apiFetch(params);
+ 
+        if (!data.success) throw new Error(data.message);
+ 
+        renderCitasLista(data.data ?? []);
     } catch (e) {
-        lista.innerHTML = `
+        console.error('Error cargando citas:', e);
+        $('citasLista').innerHTML = `
             <div class="citas-empty">
-                <i class="ri-wifi-off-line"></i>
-                <span>Error al cargar las citas</span>
+                <i class="ri-calendar-close-line"></i>
+                <p>Error al cargar citas</p>
+                <small>${e.message}</small>
             </div>`;
     }
 }
-
-function aplicarFiltro(filtro) {
-    CitasApp.filtroActivo = filtro;
-    CitasApp.citasFiltradas = filtro === 'todas'
-        ? CitasApp.citasFecha
-        : CitasApp.citasFecha.filter(c => c.estatus.toLowerCase() === filtro.toLowerCase());
-    renderCitas(CitasApp.citasFiltradas);
-}
-
-function renderCitas(citas) {
-    const lista = document.getElementById('citasLista');
-
+ 
+function renderCitasLista(citas) {
+    const lista = $('citasLista');
+ 
     if (!citas.length) {
         lista.innerHTML = `
             <div class="citas-empty">
-                <i class="ri-calendar-close-line"></i>
-                <span>No hay citas para este día</span>
+                <i class="ri-calendar-line"></i>
+                <p>Sin citas para este día</p>
+                <small>Haz clic en "Nueva cita" para agregar una</small>
             </div>`;
         return;
     }
-
-    lista.innerHTML = '';
-    citas.forEach(c => lista.appendChild(crearCitaCard(c)));
+ 
+    lista.innerHTML = citas.map(c => citaCard(c)).join('');
+ 
+    // Bind eventos de cada card
+    lista.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.stopPropagation();
+            const action = btn.dataset.action;
+            const id = btn.dataset.id;
+            if (action === 'ver')     abrirDetalle(id);
+            if (action === 'editar')  abrirModalEditar(id);
+            if (action === 'eliminar') confirmarEliminar(id);
+        });
+    });
+ 
+    // Click en la card completa → ver detalle
+    lista.querySelectorAll('.cita-card').forEach(card => {
+        card.addEventListener('click', () => abrirDetalle(card.dataset.id));
+    });
 }
-
-function crearCitaCard(cita) {
-    const estatus = (cita.estatus || 'pendiente').toLowerCase();
-    const hora    = cita.hora_inicio ? cita.hora_inicio.substring(0, 5) : '--:--';
-
-    const card = document.createElement('div');
-    card.className = `cita-card ${estatus}`;
-    card.innerHTML = `
-        <div class="cita-card-header">
-            <div class="cita-hora">
-                <i class="ri-time-line"></i>
-                ${hora}
-                <span class="cita-duracion">${cita.duracion_aproximada ?? 60} MIN</span>
+ 
+function citaCard(c) {
+    const estatus = c.estatus_cita ?? 'Pendiente';
+    const hora    = formatTime(c.hora_inicio);
+    const nombre  = c.nombre_paciente ?? '—';
+    const especialista = c.nombre_especialista ?? '—';
+    const motivo  = c.motivo_consulta ?? '—';
+ 
+    const badgeClass = {
+        'Pendiente':  'badge-warning',
+        'Confirmada': 'badge-success',
+        'Cancelada':  'badge-danger',
+        'Completada': 'badge-info',
+    }[estatus] ?? 'badge-secondary';
+ 
+    return `
+    <div class="cita-card" data-id="${c.id_cita}" style="cursor:pointer;">
+        <div class="cita-hora">${hora}</div>
+        <div class="cita-info">
+            <div class="cita-paciente">
+                <i class="ri-user-line"></i> ${nombre}
             </div>
-            <span class="estatus-badge ${estatus}">${cita.estatus}</span>
+            <div class="cita-especialista">
+                <i class="ri-stethoscope-line"></i> ${especialista}
+            </div>
+            <div class="cita-motivo">
+                <i class="ri-heart-pulse-line"></i> ${motivo}
+            </div>
         </div>
-        <div class="cita-card-body">
-            <div class="cita-paciente">${cita.nombre_paciente ?? 'Paciente no encontrado'}</div>
-            <div class="cita-motivo">${cita.motivo_consulta ?? ''}</div>
-        </div>
-        <div class="cita-card-footer">
-            <span class="cita-especialista">
-                <i class="ri-stethoscope-line"></i>
-                ${cita.nombre_especialista ?? 'Sin asignar'}
-            </span>
-            <div class="cita-actions">
-                <button class="cita-action-btn view" title="Ver detalle"
-                    onclick="event.stopPropagation(); verDetalle(${cita.id_cita})">
+        <div class="cita-acciones">
+            <span class="badge ${badgeClass}">${estatus}</span>
+            <div class="cita-btns">
+                <button class="btn-icon btn-icon-primary" title="Ver detalle"
+                    data-action="ver" data-id="${c.id_cita}">
                     <i class="ri-eye-line"></i>
                 </button>
-                <button class="cita-action-btn edit" title="Editar"
-                    onclick="event.stopPropagation(); abrirEditar(${cita.id_cita})">
+                <button class="btn-icon btn-icon-warning" title="Editar"
+                    data-action="editar" data-id="${c.id_cita}">
                     <i class="ri-edit-line"></i>
                 </button>
-                <button class="cita-action-btn delete" title="Eliminar"
-                    onclick="event.stopPropagation(); confirmarEliminar(${cita.id_cita})">
+                <button class="btn-icon btn-icon-danger" title="Eliminar"
+                    data-action="eliminar" data-id="${c.id_cita}">
                     <i class="ri-delete-bin-line"></i>
                 </button>
             </div>
-        </div>`;
-
-    card.addEventListener('click', () => verDetalle(cita.id_cita));
-    return card;
+        </div>
+    </div>`;
 }
-
-// ==================== SELECTS ====================
-
-async function cargarSelects() {
+ 
+// ─────────────────────────────────────────────
+//  CATÁLOGOS PARA SELECTS
+// ─────────────────────────────────────────────
+ 
+async function cargarCatalogos() {
     try {
-        // Pacientes
-        const rP = await fetch(`${CitasApp.apiUrl}?action=get_pacientes`);
-        const dP = await rP.json();
-        if (dP.success) llenarSelect('selectPaciente', dP.data, 'numero_paciente', 'nombre_completo');
-
-        // Especialistas
-        const rE = await fetch(`${CitasApp.apiUrl}?action=get_especialistas`);
-        const dE = await rE.json();
-        if (dE.success) llenarSelect('selectEspecialista', dE.data, 'id_especialista', 'nombre_completo');
-
-        // Motivos
-        const rM = await fetch(`${CitasApp.apiUrl}?action=get_motivos`);
-        const dM = await rM.json();
-        if (dM.success) llenarSelect('selectMotivo', dM.data, 'id_motivo_consulta', 'motivo_consulta');
-
+        const [resPacientes, resEspecialistas, resMotivos] = await Promise.all([
+            apiFetch({ action: 'get_pacientes' }),
+            apiFetch({ action: 'get_especialistas' }),
+            apiFetch({ action: 'get_motivos' }),
+        ]);
+ 
+        poblarSelect('selectPaciente', resPacientes.data ?? [], 'numero_paciente', 'nombre_completo');
+        poblarSelect('selectEspecialista', resEspecialistas.data ?? [], 'id_especialista', 'nombre_completo');
+        poblarSelect('selectMotivo', resMotivos.data ?? [], 'id_motivo_consulta', 'motivo_consulta');
     } catch (e) {
-        console.error('Error al cargar selects:', e);
+        console.error('Error cargando catálogos:', e);
+        toast('Error al cargar catálogos', 'error');
     }
 }
-
-function llenarSelect(selectId, items, valueKey, labelKey) {
-    const select = document.getElementById(selectId);
+ 
+function poblarSelect(selectId, items, valKey, labelKey) {
+    const sel = $(selectId);
+    if (!sel) return;
+    const primerOption = sel.options[0]; // "Seleccionar..."
+    sel.innerHTML = '';
+    sel.appendChild(primerOption);
     items.forEach(item => {
         const opt = document.createElement('option');
-        opt.value = item[valueKey];
+        opt.value = item[valKey];
         opt.textContent = item[labelKey];
-        select.appendChild(opt);
+        sel.appendChild(opt);
     });
 }
-
-// ==================== MODAL NUEVA CITA ====================
-
-function abrirNuevaCita() {
-    CitasApp.citaEditandoId = null;
-    document.getElementById('modalTitle').textContent = 'Nueva Cita';
-    document.getElementById('formCita').reset();
-    document.getElementById('groupEstatus').style.display = 'none';
-    document.getElementById('alertConflicto').style.display = 'none';
-    document.getElementById('inputFecha').value = formatFecha(CitasApp.fechaSeleccionada);
+ 
+// ─────────────────────────────────────────────
+//  MODAL NUEVA / EDITAR CITA
+// ─────────────────────────────────────────────
+ 
+function abrirModalNueva() {
+    estadoApp.citaIdEditar = null;
+    $('modalTitle').textContent = 'Nueva Cita';
+    $('formCita').reset();
+    $('citaId').value = '';
+    $('groupEstatus').style.display = 'none';
+    $('alertConflicto').style.display = 'none';
+ 
+    // Pre-llenar fecha seleccionada
+    if (estadoApp.fechaSeleccionada) {
+        $('inputFecha').value = formatDate(estadoApp.fechaSeleccionada);
+    }
+ 
     abrirModal('modalCita');
 }
-
-async function abrirEditar(id) {
+ 
+async function abrirModalEditar(id) {
+    estadoApp.citaIdEditar = id;
+    $('modalTitle').textContent = 'Editar Cita';
+    $('alertConflicto').style.display = 'none';
+    $('groupEstatus').style.display = '';
+ 
+    // Cargar datos de la cita
     try {
-        const resp = await fetch(`${CitasApp.apiUrl}?action=show&id=${id}`);
-        const data = await resp.json();
-
-        if (!data.success) { showToast('Error al cargar la cita', 'error'); return; }
-
+        const data = await apiFetch({ action: 'show', id });
+        if (!data.success) throw new Error(data.message);
+ 
         const c = data.data;
-        CitasApp.citaEditandoId = id;
-
-        document.getElementById('modalTitle').textContent = 'Editar Cita';
-        document.getElementById('citaId').value              = c.id_cita;
-        document.getElementById('selectPaciente').value      = c.id_paciente;
-        document.getElementById('selectEspecialista').value  = c.id_especialista;
-        document.getElementById('selectMotivo').value        = c.id_motivo_consulta;
-        document.getElementById('selectTipoPaciente').value  = c.tipoPaciente;
-        document.getElementById('inputFecha').value          = c.fecha_cita;
-        document.getElementById('inputHora').value           = c.hora_inicio ? c.hora_inicio.substring(0, 5) : '';
-        document.getElementById('selectDuracion').value      = c.duracion_aproximada ?? 60;
-        document.getElementById('inputCosto').value          = c.costo_estimado ?? '';
-        document.getElementById('selectEstatus').value       = c.estatus;
-        document.getElementById('groupEstatus').style.display  = 'block';
-        document.getElementById('alertConflicto').style.display = 'none';
-
-        cerrarModal('modalDetalle');
+        $('citaId').value        = c.id_cita;
+        $('selectPaciente').value    = c.numero_paciente;
+        $('selectTipoPaciente').value = c.paciente_primera_vez == 1 ? 'Primera vez' : 'Seguimiento';
+        $('selectEspecialista').value = c.id_especialista;
+        $('selectMotivo').value      = c.id_motivo_consulta;
+        $('inputFecha').value        = c.fecha_cita;
+        $('inputHora').value         = formatTime(c.hora_inicio);
+        $('selectDuracion').value    = c.duracion_aproximada ?? 60;
+        $('inputCosto').value        = c.costo_total ?? '';
+        $('selectEstatus').value     = c.estatus_cita ?? 'Pendiente';
+ 
         abrirModal('modalCita');
     } catch (e) {
-        showToast('Error al cargar la cita', 'error');
+        toast(`Error al cargar la cita: ${e.message}`, 'error');
     }
 }
-
+ 
 async function guardarCita() {
-    const form  = document.getElementById('formCita');
-    const alert = document.getElementById('alertConflicto');
-    const btn   = document.getElementById('btnGuardarCita');
-
-    if (!form.checkValidity()) { form.reportValidity(); return; }
-
-    btn.disabled = true;
-    btn.innerHTML = '<i class="ri-loader-4-line spin"></i> Guardando...';
-    alert.style.display = 'none';
-
-    const data = Object.fromEntries(new FormData(form).entries());
-
+    const form = $('formCita');
+    $('alertConflicto').style.display = 'none';
+ 
+    // Validación HTML5
+    if (!form.reportValidity()) return;
+ 
+    const tipoPaciente = $('selectTipoPaciente').value;
+    const payload = {
+        id_paciente:          $('selectPaciente').value,
+        tipoPaciente:         tipoPaciente,
+        id_especialista:      $('selectEspecialista').value,
+        id_motivo_consulta:   $('selectMotivo').value,
+        fecha_cita:           $('inputFecha').value,
+        hora_inicio:          $('inputHora').value,
+        duracion_aproximada:  $('selectDuracion').value,
+        costo_estimado:       $('inputCosto').value || null,
+    };
+ 
+    // Solo incluir estatus en modo edición
+    if (estadoApp.citaIdEditar) {
+        payload.estatus = $('selectEstatus').value;
+    }
+ 
+    // Validación frontend adicional
+    const errores = validarFormCita(payload);
+    if (errores.length) {
+        mostrarAlerta(errores.join(' · '));
+        return;
+    }
+ 
+    const btnGuardar = $('btnGuardarCita');
+    btnGuardar.disabled = true;
+    btnGuardar.innerHTML = '<i class="ri-loader-4-line spin"></i> Guardando...';
+ 
     try {
-        const url = CitasApp.citaEditandoId
-            ? `${CitasApp.apiUrl}?action=update&id=${CitasApp.citaEditandoId}`
-            : `${CitasApp.apiUrl}?action=store`;
-
-        const resp = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams(data).toString()
+        const action = estadoApp.citaIdEditar ? 'update' : 'store';
+        const params = { action };
+        if (estadoApp.citaIdEditar) params.id = estadoApp.citaIdEditar;
+ 
+        const data = await apiFetch(params, 'POST', payload);
+ 
+        if (!data.success) {
+            // Detectar conflicto de horario
+            if (data.message?.toLowerCase().includes('horario') ||
+                data.message?.toLowerCase().includes('conflicto')) {
+                mostrarAlerta(data.message);
+            } else {
+                toast(data.message, 'error');
+            }
+            return;
+        }
+ 
+        toast(
+            estadoApp.citaIdEditar ? 'Cita actualizada correctamente' : 'Cita creada correctamente',
+            'success'
+        );
+        cerrarModal('modalCita');
+        await refrescarVista();
+ 
+    } catch (e) {
+        toast(`Error: ${e.message}`, 'error');
+    } finally {
+        btnGuardar.disabled = false;
+        btnGuardar.innerHTML = '<i class="ri-save-line"></i> Guardar Cita';
+    }
+}
+ 
+function validarFormCita(data) {
+    const errores = [];
+    if (!data.id_paciente)        errores.push('Selecciona un paciente.');
+    if (!data.tipoPaciente)       errores.push('Selecciona el tipo de paciente.');
+    if (!data.id_especialista)    errores.push('Selecciona un especialista.');
+    if (!data.id_motivo_consulta) errores.push('Selecciona el motivo de consulta.');
+    if (!data.fecha_cita)         errores.push('Ingresa la fecha.');
+    if (!data.hora_inicio)        errores.push('Ingresa la hora.');
+    return errores;
+}
+ 
+function mostrarAlerta(msg) {
+    const alert = $('alertConflicto');
+    $('alertMessage').textContent = msg;
+    alert.style.display = 'flex';
+}
+ 
+// ─────────────────────────────────────────────
+//  MODAL DETALLE
+// ─────────────────────────────────────────────
+ 
+async function abrirDetalle(id) {
+    const content = $('detalleContent');
+    content.innerHTML = '<div style="text-align:center;padding:30px;"><i class="ri-loader-4-line spin" style="font-size:28px;color:#6c757d;"></i></div>';
+    abrirModal('modalDetalle');
+ 
+    try {
+        const data = await apiFetch({ action: 'show', id });
+        if (!data.success) throw new Error(data.message);
+ 
+        const c = data.data;
+        const estatus = c.estatus_cita ?? 'Pendiente';
+        const badgeClass = {
+            'Pendiente':  'badge-warning',
+            'Confirmada': 'badge-success',
+            'Cancelada':  'badge-danger',
+            'Completada': 'badge-info',
+        }[estatus] ?? 'badge-secondary';
+ 
+        content.innerHTML = `
+            <div class="detalle-grid">
+                <div class="detalle-row">
+                    <span class="detalle-label"><i class="ri-user-line"></i> Paciente</span>
+                    <span class="detalle-value">${c.nombre_paciente ?? '—'}</span>
+                </div>
+                <div class="detalle-row">
+                    <span class="detalle-label"><i class="ri-file-list-line"></i> Tipo Paciente</span>
+                    <span class="detalle-value">${c.paciente_primera_vez == 1 ? 'Primera vez' : 'Seguimiento'}</span>
+                </div>
+                <div class="detalle-row">
+                    <span class="detalle-label"><i class="ri-stethoscope-line"></i> Especialista</span>
+                    <span class="detalle-value">${c.nombre_especialista ?? '—'}</span>
+                </div>
+                <div class="detalle-row">
+                    <span class="detalle-label"><i class="ri-heart-pulse-line"></i> Motivo</span>
+                    <span class="detalle-value">${c.motivo_consulta ?? '—'}</span>
+                </div>
+                <div class="detalle-row">
+                    <span class="detalle-label"><i class="ri-calendar-line"></i> Fecha</span>
+                    <span class="detalle-value">${formatDateDisplay(c.fecha_cita)}</span>
+                </div>
+                <div class="detalle-row">
+                    <span class="detalle-label"><i class="ri-time-line"></i> Hora</span>
+                    <span class="detalle-value">${formatTime(c.hora_inicio)}</span>
+                </div>
+                <div class="detalle-row">
+                    <span class="detalle-label"><i class="ri-timer-line"></i> Duración</span>
+                    <span class="detalle-value">${c.duracion_aproximada ?? 60} min</span>
+                </div>
+                <div class="detalle-row">
+                    <span class="detalle-label"><i class="ri-money-dollar-circle-line"></i> Costo</span>
+                    <span class="detalle-value">${c.costo_total ? '$' + parseFloat(c.costo_total).toFixed(2) : '—'}</span>
+                </div>
+                <div class="detalle-row">
+                    <span class="detalle-label"><i class="ri-checkbox-circle-line"></i> Estatus</span>
+                    <span class="detalle-value"><span class="badge ${badgeClass}">${estatus}</span></span>
+                </div>
+            </div>
+ 
+            <div class="detalle-cambiar-estatus">
+                <label class="form-label">Cambiar estatus rápido:</label>
+                <div class="estatus-btns">
+                    <button class="btn-estatus ${estatus==='Confirmada'?'active':''}"
+                        data-estatus="Confirmada" data-id="${c.id_cita}">Confirmar</button>
+                    <button class="btn-estatus ${estatus==='Cancelada'?'active':''}"
+                        data-estatus="Cancelada" data-id="${c.id_cita}">Cancelar</button>
+                    <button class="btn-estatus ${estatus==='Completada'?'active':''}"
+                        data-estatus="Completada" data-id="${c.id_cita}">Completar</button>
+                </div>
+            </div>
+        `;
+ 
+        // Botón editar desde detalle
+        $('btnEditarDesdeDetalle').dataset.id = c.id_cita;
+        $('btnEditarDesdeDetalle').onclick = () => {
+            cerrarModal('modalDetalle');
+            abrirModalEditar(c.id_cita);
+        };
+ 
+        // Botones de cambio rápido de estatus
+        content.querySelectorAll('.btn-estatus').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                await cambiarEstatus(btn.dataset.id, btn.dataset.estatus);
+                cerrarModal('modalDetalle');
+                await refrescarVista();
+            });
         });
-
-        const result = await resp.json();
-
-        if (result.success) {
-            cerrarModal('modalCita');
-            showToast(result.message, 'success');
-            await cargarCitasDia(formatFecha(CitasApp.fechaSeleccionada));
-            await renderCalendario(CitasApp.mesActual, CitasApp.anioActual);
+ 
+    } catch (e) {
+        content.innerHTML = `<p style="color:#dc3545;text-align:center;">Error: ${e.message}</p>`;
+    }
+}
+ 
+// ─────────────────────────────────────────────
+//  CAMBIAR ESTATUS
+// ─────────────────────────────────────────────
+ 
+async function cambiarEstatus(id, nuevoEstatus) {
+    try {
+        const data = await apiFetch({ action: 'cambiar_estatus', id }, 'POST', { estatus: nuevoEstatus });
+        if (data.success) {
+            toast(`Estatus cambiado a "${nuevoEstatus}"`, 'success');
         } else {
-            alert.style.display = 'flex';
-            document.getElementById('alertMessage').textContent = result.message;
+            toast(data.message, 'error');
         }
     } catch (e) {
-        showToast('Error al guardar la cita', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="ri-save-line"></i> Guardar Cita';
+        toast(`Error: ${e.message}`, 'error');
     }
 }
-
-// ==================== MODAL DETALLE ====================
-
-async function verDetalle(id) {
-    try {
-        const resp = await fetch(`${CitasApp.apiUrl}?action=show&id=${id}`);
-        const data = await resp.json();
-        if (!data.success) { showToast('Error al cargar el detalle', 'error'); return; }
-
-        const c       = data.data;
-        const hora    = c.hora_inicio ? c.hora_inicio.substring(0, 5) : '--:--';
-        const estatus = (c.estatus || '').toLowerCase();
-
-        document.getElementById('detalleContent').innerHTML = `
-            <div class="detalle-grid">
-                <div class="detalle-item full">
-                    <span class="detalle-label">Paciente</span>
-                    <span class="detalle-value">${c.nombre_paciente ?? '-'}</span>
-                </div>
-                <div class="detalle-item">
-                    <span class="detalle-label">Fecha</span>
-                    <span class="detalle-value">${formatFechaDisplay(c.fecha_cita)}</span>
-                </div>
-                <div class="detalle-item">
-                    <span class="detalle-label">Hora</span>
-                    <span class="detalle-value">${hora} (${c.duracion_aproximada ?? 60} min)</span>
-                </div>
-                <div class="detalle-item full">
-                    <span class="detalle-label">Especialista</span>
-                    <span class="detalle-value">${c.nombre_especialista ?? '-'}</span>
-                </div>
-                <div class="detalle-item">
-                    <span class="detalle-label">Motivo</span>
-                    <span class="detalle-value">${c.motivo_consulta ?? '-'}</span>
-                </div>
-                <div class="detalle-item">
-                    <span class="detalle-label">Tipo de Paciente</span>
-                    <span class="detalle-value">${c.tipoPaciente ?? '-'}</span>
-                </div>
-                <div class="detalle-item">
-                    <span class="detalle-label">Estatus</span>
-                    <span class="detalle-value">
-                        <span class="estatus-badge ${estatus}">${c.estatus}</span>
-                    </span>
-                </div>
-                <div class="detalle-item">
-                    <span class="detalle-label">Costo Estimado</span>
-                    <span class="detalle-value">
-                        ${c.costo_estimado ? '$' + parseFloat(c.costo_estimado).toFixed(2) : 'No especificado'}
-                    </span>
-                </div>
-            </div>`;
-
-        document.getElementById('btnEditarDesdeDetalle').onclick = () => abrirEditar(id);
-        abrirModal('modalDetalle');
-    } catch (e) {
-        showToast('Error al cargar el detalle', 'error');
-    }
-}
-
-function formatFechaDisplay(fecha) {
-    if (!fecha) return '-';
-    const [y, m, d] = fecha.split('-');
-    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    return `${d} ${meses[parseInt(m) - 1]} ${y}`;
-}
-
-// ==================== ELIMINAR CITA ====================
-
-let citaAEliminarId = null;
-
+ 
+// ─────────────────────────────────────────────
+//  ELIMINAR CITA
+// ─────────────────────────────────────────────
+ 
+let _idPendienteEliminar = null;
+ 
 function confirmarEliminar(id) {
-    citaAEliminarId = id;
+    _idPendienteEliminar = id;
     abrirModal('modalEliminar');
 }
-
+ 
 async function eliminarCita() {
-    if (!citaAEliminarId) return;
-
-    const btn = document.getElementById('btnConfirmarEliminar');
+    if (!_idPendienteEliminar) return;
+ 
+    const btn = $('btnConfirmarEliminar');
     btn.disabled = true;
     btn.innerHTML = '<i class="ri-loader-4-line spin"></i> Eliminando...';
-
+ 
     try {
-        const resp = await fetch(`${CitasApp.apiUrl}?action=destroy&id=${citaAEliminarId}`, {
-            method: 'POST'
-        });
-        const data = await resp.json();
-
+        const data = await apiFetch({ action: 'destroy', id: _idPendienteEliminar }, 'POST');
         if (data.success) {
+            toast('Cita eliminada correctamente', 'success');
             cerrarModal('modalEliminar');
-            showToast(data.message, 'success');
-            await cargarCitasDia(formatFecha(CitasApp.fechaSeleccionada));
-            await renderCalendario(CitasApp.mesActual, CitasApp.anioActual);
+            await refrescarVista();
         } else {
-            showToast(data.message, 'error');
+            toast(data.message, 'error');
         }
     } catch (e) {
-        showToast('Error al eliminar la cita', 'error');
+        toast(`Error: ${e.message}`, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="ri-delete-bin-line"></i> Eliminar';
-        citaAEliminarId = null;
+        _idPendienteEliminar = null;
     }
 }
-
-// ==================== MODALES ====================
-
+ 
+// ─────────────────────────────────────────────
+//  HELPERS DE MODAL
+// ─────────────────────────────────────────────
+ 
 function abrirModal(id) {
-    document.getElementById(id).classList.add('active');
+    const modal = $(id);
+    if (!modal) return;
+    modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
-
+ 
 function cerrarModal(id) {
-    document.getElementById(id).classList.remove('active');
-    // Restaurar scroll solo si no hay otros modales abiertos
-    const abiertos = document.querySelectorAll('.modal-overlay.active');
-    if (!abiertos.length) document.body.style.overflow = '';
+    const modal = $(id);
+    if (!modal) return;
+    modal.classList.remove('active');
+    // Solo restaurar scroll si no hay otro modal abierto
+    if (!document.querySelector('.modal-overlay.active')) {
+        document.body.style.overflow = '';
+    }
 }
-
-// ==================== EVENTOS ====================
-
-function inicializarEventos() {
-    // Nueva cita
-    document.getElementById('btnNuevaCita').addEventListener('click', abrirNuevaCita);
-
-    // Guardar
-    document.getElementById('btnGuardarCita').addEventListener('click', guardarCita);
-
-    // Cerrar modales
-    const cerrarPares = [
-        ['btnCerrarModal',    'modalCita'],
-        ['btnCancelarModal',  'modalCita'],
-        ['btnCerrarDetalle',  'modalDetalle'],
-        ['btnCerrarDetalle2', 'modalDetalle'],
-        ['btnCerrarEliminar', 'modalEliminar'],
-        ['btnCancelarEliminar','modalEliminar'],
-    ];
-    cerrarPares.forEach(([btnId, modalId]) => {
-        document.getElementById(btnId).addEventListener('click', () => cerrarModal(modalId));
-    });
-
-    // Confirmar eliminar
-    document.getElementById('btnConfirmarEliminar').addEventListener('click', eliminarCita);
-
-    // Click fuera del modal
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-        overlay.addEventListener('click', e => {
-            if (e.target === overlay) cerrarModal(overlay.id);
-        });
-    });
-
-    // ESC cierra modales
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.modal-overlay.active')
-                .forEach(m => cerrarModal(m.id));
-        }
-    });
-
-    // Navegación del calendario
-    document.getElementById('btnPrevMes').addEventListener('click', () => {
-        CitasApp.mesActual--;
-        if (CitasApp.mesActual < 1) { CitasApp.mesActual = 12; CitasApp.anioActual--; }
-        renderCalendario(CitasApp.mesActual, CitasApp.anioActual);
-    });
-
-    document.getElementById('btnNextMes').addEventListener('click', () => {
-        CitasApp.mesActual++;
-        if (CitasApp.mesActual > 12) { CitasApp.mesActual = 1; CitasApp.anioActual++; }
-        renderCalendario(CitasApp.mesActual, CitasApp.anioActual);
-    });
-
-    // Filtros de estatus
-    document.querySelectorAll('.filtro-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+ 
+// Cerrar modal al click en overlay (fuera del contenido)
+document.addEventListener('click', e => {
+    if (e.target.classList.contains('modal-overlay')) {
+        cerrarModal(e.target.id);
+    }
+});
+ 
+// ─────────────────────────────────────────────
+//  REFRESCAR VISTA
+// ─────────────────────────────────────────────
+ 
+async function refrescarVista() {
+    const mes  = estadoApp.mesActual.getMonth() + 1;
+    const anio = estadoApp.mesActual.getFullYear();
+    await cargarDiasConCitas(mes, anio);
+    renderCalendario();
+ 
+    if (estadoApp.fechaSeleccionada) {
+        await cargarCitasDelDia(formatDate(estadoApp.fechaSeleccionada));
+    }
+}
+ 
+// ─────────────────────────────────────────────
+//  FILTROS
+// ─────────────────────────────────────────────
+ 
+function initFiltros() {
+    $qa('.filtro-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            $qa('.filtro-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            aplicarFiltro(btn.dataset.estatus);
+            estadoApp.filtroEstatus = btn.dataset.estatus;
+            if (estadoApp.fechaSeleccionada) {
+                await cargarCitasDelDia(formatDate(estadoApp.fechaSeleccionada));
+            }
         });
     });
 }
-
-// ==================== TOAST ====================
-
-function showToast(message, type = 'info') {
-    const icons = {
-        success: 'ri-checkbox-circle-line',
-        error:   'ri-close-circle-line',
-        warning: 'ri-error-warning-line',
-        info:    'ri-information-line'
-    };
-
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `<i class="${icons[type] || icons.info}"></i><span>${message}</span>`;
-    document.getElementById('toastContainer').appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.animation = 'slideInRight 0.3s ease reverse';
-        setTimeout(() => toast.remove(), 300);
-    }, 3500);
+ 
+// ─────────────────────────────────────────────
+//  ESTILOS DINÁMICOS
+// ─────────────────────────────────────────────
+ 
+function injectStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        /* ---- Toast ---- */
+        #toastContainer {
+            position:fixed; bottom:24px; right:24px;
+            z-index:10000; display:flex; flex-direction:column-reverse;
+        }
+        @keyframes toastIn {
+            from { transform:translateX(110%); opacity:0; }
+            to   { transform:translateX(0);    opacity:1; }
+        }
+        @keyframes toastOut {
+            from { transform:translateX(0);    opacity:1; }
+            to   { transform:translateX(110%); opacity:0; }
+        }
+ 
+        /* ---- Spinner ---- */
+        .spin { animation: spinAnim 1s linear infinite; display:inline-block; }
+        @keyframes spinAnim { to { transform:rotate(360deg); } }
+ 
+        /* ---- Modal activo ---- */
+        .modal-overlay { display:none; }
+        .modal-overlay.active { display:flex; }
+ 
+        /* ---- Calendar days ---- */
+        .calendar-day { position:relative; }
+        .calendar-day.disponible  { background:#e8f5e9 !important; color:#2e7d32 !important; }
+        .calendar-day.poca        { background:#fff8e1 !important; color:#f57f17 !important; }
+        .calendar-day.ocupado     { background:#ffebee !important; color:#c62828 !important; }
+        .calendar-day.today       { font-weight:700; border:2px solid var(--primary, #20a89e); }
+        .calendar-day.selected    { background:var(--primary, #20a89e) !important; color:#fff !important; }
+        .day-dot {
+            position:absolute; bottom:3px; left:50%; transform:translateX(-50%);
+            width:5px; height:5px; border-radius:50%;
+            background:currentColor; opacity:.7;
+        }
+ 
+        /* ---- Cita Card ---- */
+        .cita-card {
+            display:grid; grid-template-columns:60px 1fr auto;
+            gap:12px; align-items:center;
+            background:#fff; border:1px solid #e9ecef;
+            border-radius:10px; padding:14px 16px; margin-bottom:10px;
+            transition:box-shadow .2s, transform .2s;
+        }
+        .cita-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.1); transform:translateY(-1px); }
+        .cita-hora { font-size:16px; font-weight:700; color:var(--primary, #20a89e); text-align:center; }
+        .cita-paciente   { font-weight:600; font-size:14px; margin-bottom:3px; }
+        .cita-especialista, .cita-motivo { font-size:13px; color:#6c757d; }
+        .cita-especialista i, .cita-motivo i { margin-right:4px; }
+        .cita-acciones { display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+        .cita-btns { display:flex; gap:6px; }
+ 
+        /* ---- Icon buttons ---- */
+        .btn-icon {
+            width:30px; height:30px; border-radius:6px; border:none;
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+            font-size:15px; transition:opacity .2s;
+        }
+        .btn-icon:hover { opacity:.8; }
+        .btn-icon-primary { background:#e3f2fd; color:#1565c0; }
+        .btn-icon-warning { background:#fff8e1; color:#e65100; }
+        .btn-icon-danger  { background:#ffebee; color:#c62828; }
+ 
+        /* ---- Empty state ---- */
+        .citas-empty {
+            text-align:center; padding:40px 20px; color:#adb5bd;
+        }
+        .citas-empty i { font-size:48px; display:block; margin-bottom:12px; }
+        .citas-empty p { font-size:15px; font-weight:600; margin:0 0 6px; color:#6c757d; }
+        .citas-empty small { font-size:13px; }
+ 
+        /* ---- Detalle ---- */
+        .detalle-grid { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+        .detalle-row  { display:flex; justify-content:space-between; align-items:center;
+                        padding:8px 12px; background:#f8f9fa; border-radius:6px; }
+        .detalle-label { font-size:13px; color:#6c757d; }
+        .detalle-label i { margin-right:6px; }
+        .detalle-value { font-size:13px; font-weight:600; color:#212529; }
+ 
+        /* ---- Cambiar estatus rápido ---- */
+        .detalle-cambiar-estatus { border-top:1px solid #e9ecef; padding-top:16px; }
+        .detalle-cambiar-estatus .form-label { font-size:13px; color:#6c757d; margin-bottom:10px; display:block; }
+        .estatus-btns { display:flex; gap:8px; flex-wrap:wrap; }
+        .btn-estatus {
+            padding:6px 14px; border-radius:6px; border:2px solid #dee2e6;
+            background:#fff; cursor:pointer; font-size:13px; font-weight:500;
+            transition:all .2s; color:#495057;
+        }
+        .btn-estatus:hover, .btn-estatus.active {
+            background:var(--primary, #20a89e); color:#fff; border-color:var(--primary, #20a89e);
+        }
+ 
+        /* ---- Badges ---- */
+        .badge { padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap; }
+        .badge-success   { background:#e8f5e9; color:#2e7d32; }
+        .badge-warning   { background:#fff8e1; color:#e65100; }
+        .badge-danger    { background:#ffebee; color:#c62828; }
+        .badge-info      { background:#e3f2fd; color:#1565c0; }
+        .badge-secondary { background:#f1f3f5; color:#495057; }
+ 
+        /* ---- Alert conflicto ---- */
+        .form-alert {
+            display:flex; align-items:center; gap:10px;
+            padding:12px 16px; background:#fff8e1; border:1px solid #ffe082;
+            border-radius:8px; color:#e65100; font-size:14px; margin-top:12px;
+        }
+        .form-alert i { font-size:18px; flex-shrink:0; }
+ 
+        /* ---- Confirm modal ---- */
+        .confirm-content { text-align:center; padding:10px; }
+        .confirm-icon { font-size:52px; color:#dc3545; margin-bottom:12px; }
+        .confirm-text { font-size:16px; font-weight:600; color:#212529; margin-bottom:6px; }
+        .confirm-subtext { font-size:14px; color:#6c757d; }
+    `;
+    document.head.appendChild(style);
+}
+ 
+// ─────────────────────────────────────────────
+//  INICIALIZACIÓN
+// ─────────────────────────────────────────────
+ 
+async function init() {
+    injectStyles();
+ 
+    // Cargar catálogos para los selects del modal
+    await cargarCatalogos();
+ 
+    // Cargar días con citas del mes actual y renderizar calendario
+    const hoy = new Date();
+    await cargarDiasConCitas(hoy.getMonth() + 1, hoy.getFullYear());
+    renderCalendario();
+ 
+    // Seleccionar hoy automáticamente
+    await seleccionarFecha(hoy);
+ 
+    // ── Navegación de mes
+    $('btnPrevMes')?.addEventListener('click', () => navegarMes(-1));
+    $('btnNextMes')?.addEventListener('click', () => navegarMes(1));
+ 
+    // ── Botón nueva cita
+    $('btnNuevaCita')?.addEventListener('click', abrirModalNueva);
+ 
+    // ── Filtros
+    initFiltros();
+ 
+    // ── Modal cita — cerrar
+    $('btnCerrarModal')?.addEventListener('click',   () => cerrarModal('modalCita'));
+    $('btnCancelarModal')?.addEventListener('click', () => cerrarModal('modalCita'));
+ 
+    // ── Modal cita — guardar
+    $('btnGuardarCita')?.addEventListener('click', guardarCita);
+ 
+    // ── Modal detalle — cerrar
+    $('btnCerrarDetalle')?.addEventListener('click',  () => cerrarModal('modalDetalle'));
+    $('btnCerrarDetalle2')?.addEventListener('click', () => cerrarModal('modalDetalle'));
+ 
+    // ── Modal eliminar — cerrar / confirmar
+    $('btnCerrarEliminar')?.addEventListener('click',   () => cerrarModal('modalEliminar'));
+    $('btnCancelarEliminar')?.addEventListener('click', () => cerrarModal('modalEliminar'));
+    $('btnConfirmarEliminar')?.addEventListener('click', eliminarCita);
+ 
+    console.log('✔ Módulo Citas inicializado');
+}
+ 
+// Arrancar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
 }
