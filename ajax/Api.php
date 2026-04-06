@@ -105,6 +105,12 @@ $modulos = [
         'campo_id' => 'id_especialista',
     ],
 
+    'citas' => [
+        'modelo' => 'Cita',
+        'archivo' => __DIR__ . '/../models/Cita.php',
+        'campo_id' => 'id_cita',
+    ],
+
 
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
