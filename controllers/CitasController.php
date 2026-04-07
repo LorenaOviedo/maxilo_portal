@@ -15,6 +15,7 @@ class CitasController {
         $this->citaModel = new Cita($this->db);
     }
  
+    /* ==================== ACCIONES ==================== */
     /** Listar citas con filtros opcionales */
     public function index() {
         $filtros = [];
@@ -124,7 +125,7 @@ class CitasController {
             $stmt = $this->db->query(
                 "SELECT numero_paciente,
                         TRIM(CONCAT(nombre, ' ', apellido_paterno, ' ', COALESCE(apellido_materno, ''))) AS nombre_completo
-                 FROM Paciente
+                 FROM paciente
                  WHERE id_estatus = 1
                  ORDER BY nombre ASC"
             );
@@ -141,7 +142,7 @@ class CitasController {
             $stmt = $this->db->query(
                 "SELECT id_especialista,
                         TRIM(CONCAT(nombre, ' ', apellido_paterno, ' ', COALESCE(apellido_materno, ''))) AS nombre_completo
-                 FROM Especialista
+                 FROM especialista
                  WHERE id_estatus = 1
                  ORDER BY nombre ASC"
             );
@@ -157,7 +158,7 @@ class CitasController {
         try {
             $stmt = $this->db->query(
                 "SELECT id_motivo_consulta, motivo_consulta
-                 FROM MotivoConsulta
+                 FROM motivoconsulta
                  ORDER BY motivo_consulta ASC"
             );
             $this->json(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
