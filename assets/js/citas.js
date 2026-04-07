@@ -352,10 +352,10 @@ function citaCard(c) {
                 <i class="ri-user-line"></i> ${nombre}
             </div>
             <div class="cita-especialista">
-                <i class="ri-stethoscope-line"></i> ${especialista}
+                <i class="fas fa-user-md"></i> ${especialista}
             </div>
             <div class="cita-motivo">
-                <i class="ri-heart-pulse-line"></i> ${motivo}
+                <i class="ri-tooth-line"></i> ${motivo}
             </div>
         </div>
         <div class="cita-acciones">
