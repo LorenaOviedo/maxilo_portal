@@ -7,7 +7,7 @@
 // ─────────────────────────────────────────────
 //  CONFIGURACIÓN
 // ─────────────────────────────────────────────
-const API = 'CitasController.php';   // Ruta relativa al controlador
+const API = '../controllers/CitasController.php';   // Ruta relativa al controlador
  
 // Mapeo de estatus de BD → id_estatus_cita
 // Ajusta los IDs según los valores reales en tu tabla EstadosCita
