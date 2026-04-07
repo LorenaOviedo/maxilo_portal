@@ -328,7 +328,7 @@ async function cargarCatalogos() {
         if (!resEsp.success)  console.error('Catálogo especialistas:', resEsp.message ?? resEsp);
         if (!resMot.success)  console.error('Catálogo motivos:', resMot.message ?? resMot);
  
-        poblarSelect('selectPaciente',     resPac.data ?? [], 'numero_paciente',    'nombre_completo');
+        initPacienteSearch(resPac.data ?? []);  // Búsqueda con autocompletado
         poblarSelect('selectEspecialista', resEsp.data ?? [], 'id_especialista',    'nombre_completo');
         poblarSelect('selectMotivo',       resMot.data ?? [], 'id_motivo_consulta', 'motivo_consulta');
  
@@ -340,6 +340,114 @@ async function cargarCatalogos() {
         console.error('Error cargando catálogos:', e);
         toast('Error al cargar catálogos', 'error');
     }
+}
+ 
+ 
+// ─────────────────────────────────────────────
+//  BÚSQUEDA DE PACIENTE (autocomplete)
+// ─────────────────────────────────────────────
+ 
+let _pacientes = [];          // cache del catálogo
+let _pacienteSeleccionado = null; // { numero_paciente, nombre_completo }
+ 
+/**
+ * Inicializa el componente de búsqueda de paciente.
+ * Transforma el <select id="selectPaciente"> en un input + dropdown.
+ */
+function initPacienteSearch(pacientes) {
+    _pacientes = pacientes;
+ 
+    const sel = document.getElementById('selectPaciente');
+    if (!sel) return;
+ 
+    // Crear wrapper y reemplazar el select
+    const wrapper = document.createElement('div');
+    wrapper.className = 'pac-search-wrapper';
+    wrapper.style.cssText = 'position:relative;';
+ 
+    wrapper.innerHTML = `
+        <input type="text" id="pacSearchInput" class="form-input pac-search-input"
+               placeholder="Buscar paciente..." autocomplete="off">
+        <input type="hidden" id="pacSearchValue" name="id_paciente">
+        <div id="pacDropdown" class="pac-dropdown" style="display:none;"></div>
+    `;
+ 
+    sel.replaceWith(wrapper);
+    bindPacienteSearch();
+}
+ 
+function bindPacienteSearch() {
+    const input    = document.getElementById('pacSearchInput');
+    const hidden   = document.getElementById('pacSearchValue');
+    const dropdown = document.getElementById('pacDropdown');
+    if (!input) return;
+ 
+    // Filtrar mientras escribe
+    input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        hidden.value = '';          // limpiar selección previa
+        _pacienteSeleccionado = null;
+ 
+        if (q.length < 1) { cerrarDropdown(); return; }
+ 
+        const resultados = _pacientes.filter(p =>
+            p.nombre_completo.toLowerCase().includes(q)
+        ).slice(0, 10);             // máximo 10 sugerencias
+ 
+        renderDropdown(resultados, input, hidden, dropdown);
+    });
+ 
+    // Cerrar al perder foco (con pequeño delay para capturar el click)
+    input.addEventListener('blur', () => setTimeout(cerrarDropdown, 200));
+ 
+    // Abrir al hacer foco si ya hay texto
+    input.addEventListener('focus', () => {
+        if (input.value.trim().length > 0 && !hidden.value) {
+            input.dispatchEvent(new Event('input'));
+        }
+    });
+}
+ 
+function renderDropdown(resultados, input, hidden, dropdown) {
+    if (!resultados.length) {
+        dropdown.innerHTML = '<div class="pac-drop-item pac-drop-empty">Sin resultados</div>';
+        dropdown.style.display = 'block';
+        return;
+    }
+ 
+    dropdown.innerHTML = resultados.map(p => `
+        <div class="pac-drop-item" data-id="${p.numero_paciente}" data-nombre="${p.nombre_completo}">
+            <i class="ri-user-line"></i> ${p.nombre_completo}
+        </div>
+    `).join('');
+ 
+    dropdown.querySelectorAll('.pac-drop-item[data-id]').forEach(item => {
+        item.addEventListener('mousedown', () => {   // mousedown antes de blur
+            hidden.value = item.dataset.id;
+            input.value  = item.dataset.nombre;
+            _pacienteSeleccionado = {
+                numero_paciente: item.dataset.id,
+                nombre_completo: item.dataset.nombre
+            };
+            cerrarDropdown();
+        });
+    });
+ 
+    dropdown.style.display = 'block';
+}
+ 
+function cerrarDropdown() {
+    const d = document.getElementById('pacDropdown');
+    if (d) d.style.display = 'none';
+}
+ 
+/** Precargar paciente en modo edición */
+function setPacienteSeleccionado(id, nombre) {
+    _pacienteSeleccionado = { numero_paciente: id, nombre_completo: nombre };
+    const input  = document.getElementById('pacSearchInput');
+    const hidden = document.getElementById('pacSearchValue');
+    if (input)  input.value  = nombre;
+    if (hidden) hidden.value = id;
 }
  
 function poblarSelect(selectId, items, valKey, labelKey) {
@@ -389,6 +497,14 @@ function abrirModalNueva() {
     if (estadoApp.fechaSeleccionada) {
         $('inputFecha').value = formatDate(estadoApp.fechaSeleccionada);
     }
+ 
+    // Limpiar buscador de paciente
+    const pacInput  = document.getElementById('pacSearchInput');
+    const pacHidden = document.getElementById('pacSearchValue');
+    if (pacInput)  pacInput.value  = '';
+    if (pacHidden) pacHidden.value = '';
+    _pacienteSeleccionado = null;
+ 
     abrirModal('modalCita');
 }
  
@@ -421,7 +537,9 @@ async function abrirModalEditar(id) {
         // Selects con FK — doble requestAnimationFrame para garantizar que
         // el modal esté visible Y los <option> del catálogo ya estén en el DOM
         requestAnimationFrame(() => requestAnimationFrame(() => {
-            setSelectValue('selectPaciente',     String(c.numero_paciente));
+            // Paciente → buscador, no select
+            setPacienteSeleccionado(String(c.numero_paciente), c.nombre_paciente ?? '');
+ 
             setSelectValue('selectEspecialista', String(c.id_especialista));
             setSelectValue('selectMotivo',       String(c.id_motivo_consulta));
             setSelectValue('selectTipoPaciente', c.paciente_primera_vez == 1 ? 'Primera vez' : 'Seguimiento');
@@ -444,7 +562,7 @@ async function guardarCita() {
     if (!form.reportValidity()) return;
  
     const payload = {
-        id_paciente:         $('selectPaciente').value,
+        id_paciente:         document.getElementById('pacSearchValue')?.value ?? '',
         tipoPaciente:        $('selectTipoPaciente').value,
         id_especialista:     $('selectEspecialista').value,
         id_motivo_consulta:  $('selectMotivo').value,
@@ -808,6 +926,25 @@ function injectStyles() {
         .confirm-icon    { font-size:52px;color:#dc3545;margin-bottom:12px; }
         .confirm-text    { font-size:16px;font-weight:600;color:#212529;margin-bottom:6px; }
         .confirm-subtext { font-size:14px;color:#6c757d; }
+ 
+        /* ---- Búsqueda de paciente ---- */
+        .pac-search-wrapper  { position:relative; }
+        .pac-search-input    { width:100%; }
+        .pac-dropdown {
+            position:absolute; top:calc(100% + 4px); left:0; right:0;
+            background:#fff; border:1px solid #dee2e6; border-radius:8px;
+            box-shadow:0 6px 20px rgba(0,0,0,.12);
+            max-height:240px; overflow-y:auto; z-index:9999;
+        }
+        .pac-drop-item {
+            padding:10px 14px; font-size:13px; cursor:pointer;
+            display:flex; align-items:center; gap:8px; color:#212529;
+            border-bottom:1px solid #f1f3f5; transition:background .15s;
+        }
+        .pac-drop-item:last-child  { border-bottom:none; }
+        .pac-drop-item:hover       { background:#f0faf9; color:var(--primary,#20a89e); }
+        .pac-drop-empty            { color:#adb5bd; cursor:default; font-style:italic; }
+        .pac-drop-item i           { flex-shrink:0; font-size:15px; opacity:.6; }
     `;
     document.head.appendChild(style);
 }
@@ -841,7 +978,7 @@ async function init() {
     $('btnCancelarEliminar')?.addEventListener('click',  () => cerrarModal('modalEliminar'));
     $('btnConfirmarEliminar')?.addEventListener('click', eliminarCita);
  
-    console.log('Módulo Citas inicializado');
+    console.log('✔ Módulo Citas inicializado');
 }
  
 if (document.readyState === 'loading') {
@@ -849,4 +986,3 @@ if (document.readyState === 'loading') {
 } else {
     init();
 }
- 
