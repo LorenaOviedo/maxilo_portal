@@ -18,11 +18,11 @@ class CitasController {
     /** Listar citas con filtros opcionales */
     public function index() {
         $filtros = [];
-        if (!empty($_GET['fecha']))           $filtros['fecha']           = $_GET['fecha'];
-        if (!empty($_GET['estatus']))         $filtros['estatus']         = $_GET['estatus'];
-        if (!empty($_GET['id_especialista'])) $filtros['id_especialista'] = $_GET['id_especialista'];
-        if (!empty($_GET['mes']))             $filtros['mes']             = $_GET['mes'];
-        if (!empty($_GET['anio']))            $filtros['anio']            = $_GET['anio'];
+        if (!empty($_GET['fecha']))          $filtros['fecha']          = $_GET['fecha'];
+        if (!empty($_GET['estatus']))        $filtros['estatus']        = $_GET['estatus'];
+        if (!empty($_GET['id_especialista']))$filtros['id_especialista']= $_GET['id_especialista'];
+        if (!empty($_GET['mes']))            $filtros['mes']            = $_GET['mes'];
+        if (!empty($_GET['anio']))           $filtros['anio']           = $_GET['anio'];
  
         $this->json(['success' => true, 'data' => $this->citaModel->getAll($filtros)]);
     }
@@ -30,9 +30,7 @@ class CitasController {
     /** Obtener una cita por ID */
     public function show($id) {
         $cita = $this->citaModel->getById($id);
-        if (!$cita) {
-            $this->json(['success' => false, 'message' => 'Cita no encontrada'], 404);
-        }
+        if (!$cita) $this->json(['success' => false, 'message' => 'Cita no encontrada'], 404);
         $this->json(['success' => true, 'data' => $cita]);
     }
  
@@ -45,23 +43,18 @@ class CitasController {
             $this->json(['success' => false, 'message' => implode(', ', $errores)]);
         }
  
-        // Verificar conflicto de horario
         if ($this->citaModel->existeConflicto(
-            (int) $data['id_especialista'],
+            $data['id_especialista'],
             $data['fecha_cita'],
             $data['hora_inicio'],
-            (int) ($data['duracion_aproximada'] ?? 60)
+            $data['duracion_aproximada'] ?? 60
         )) {
             $this->json(['success' => false, 'message' => 'El especialista ya tiene una cita en ese horario']);
         }
  
         $id = $this->citaModel->create($data);
         if ($id) {
-            $this->json([
-                'success' => true,
-                'message' => 'Cita creada exitosamente',
-                'data'    => $this->citaModel->getById($id)
-            ]);
+            $this->json(['success' => true, 'message' => 'Cita creada exitosamente', 'data' => $this->citaModel->getById($id)]);
         }
         $this->json(['success' => false, 'message' => 'Error al crear la cita']);
     }
@@ -73,19 +66,17 @@ class CitasController {
         }
  
         $data = $this->getPostData();
- 
         $errores = $this->validar($data);
         if (!empty($errores)) {
             $this->json(['success' => false, 'message' => implode(', ', $errores)]);
         }
  
-        // Verificar conflicto excluyendo la cita actual
         if (!empty($data['fecha_cita']) && !empty($data['hora_inicio'])) {
             if ($this->citaModel->existeConflicto(
-                (int) $data['id_especialista'],
+                $data['id_especialista'],
                 $data['fecha_cita'],
                 $data['hora_inicio'],
-                (int) ($data['duracion_aproximada'] ?? 60),
+                $data['duracion_aproximada'] ?? 60,
                 $id
             )) {
                 $this->json(['success' => false, 'message' => 'El especialista ya tiene una cita en ese horario']);
@@ -93,31 +84,17 @@ class CitasController {
         }
  
         if ($this->citaModel->update($id, $data)) {
-            $this->json([
-                'success' => true,
-                'message' => 'Cita actualizada exitosamente',
-                'data'    => $this->citaModel->getById($id)
-            ]);
+            $this->json(['success' => true, 'message' => 'Cita actualizada exitosamente', 'data' => $this->citaModel->getById($id)]);
         }
         $this->json(['success' => false, 'message' => 'Error al actualizar la cita']);
     }
  
-    /** Cambiar estatus
-     *  Acepta JSON body: { "estatus": "Confirmada" }
-     *  o parámetro GET:  ?estatus=Confirmada
-     */
+    /** Cambiar estatus */
     public function cambiarEstatus($id) {
-        // BUG CORREGIDO: leer body JSON o GET, no solo POST vacío
         $data = $this->getPostData();
+        if (empty($data['estatus'])) $this->json(['success' => false, 'message' => 'Estatus requerido']);
  
-        // Fallback a query string (por si viene como GET param)
-        $estatus = $data['estatus'] ?? $_GET['estatus'] ?? null;
- 
-        if (empty($estatus)) {
-            $this->json(['success' => false, 'message' => 'Estatus requerido']);
-        }
- 
-        if ($this->citaModel->cambiarEstatus($id, $estatus)) {
+        if ($this->citaModel->cambiarEstatus($id, $data['estatus'])) {
             $this->json(['success' => true, 'message' => 'Estatus actualizado']);
         }
         $this->json(['success' => false, 'message' => 'Error al actualizar el estatus']);
@@ -125,15 +102,9 @@ class CitasController {
  
     /** Eliminar cita */
     public function destroy($id) {
-        // BUG CORREGIDO: validar que $id sea un entero válido
-        if (!$id || $id <= 0) {
-            $this->json(['success' => false, 'message' => 'ID inválido'], 400);
-        }
- 
         if (!$this->citaModel->getById($id)) {
             $this->json(['success' => false, 'message' => 'Cita no encontrada'], 404);
         }
- 
         if ($this->citaModel->delete($id)) {
             $this->json(['success' => true, 'message' => 'Cita eliminada exitosamente']);
         }
@@ -142,8 +113,8 @@ class CitasController {
  
     /** Días con citas del mes (para el calendario) */
     public function diasConCitas() {
-        $mes  = (int) ($_GET['mes']  ?? date('n'));
-        $anio = (int) ($_GET['anio'] ?? date('Y'));
+        $mes  = $_GET['mes']  ?? date('n');
+        $anio = $_GET['anio'] ?? date('Y');
         $this->json(['success' => true, 'data' => $this->citaModel->getDiasConCitas($mes, $anio)]);
     }
  
@@ -154,41 +125,34 @@ class CitasController {
                 "SELECT numero_paciente,
                         TRIM(CONCAT(nombre, ' ', apellido_paterno, ' ', COALESCE(apellido_materno, ''))) AS nombre_completo
                  FROM Paciente
+                 WHERE id_estatus = 1
                  ORDER BY nombre ASC"
             );
             $this->json(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         } catch (PDOException $e) {
-            error_log('Error getPacientes: ' . $e->getMessage());
-            $this->json(['success' => false, 'message' => 'Error al obtener pacientes', 'data' => []]);
+            error_log("getPacientes error: " . $e->getMessage());
+            $this->json(['success' => false, 'message' => $e->getMessage(), 'data' => []]);
         }
     }
  
-    /**
-     * Especialistas para el select.
-     * BUG CORREGIDO: la tabla Especialista usa id_estatus (INT, FK a Estatus),
-     * no un VARCHAR 'activo'. Se filtra por id_estatus = 1 (activo).
-     */
+    /** Especialistas para el select */
     public function getEspecialistas() {
         try {
             $stmt = $this->db->query(
-                "SELECT e.id_especialista,
-                        TRIM(CONCAT(e.nombre, ' ', e.apellido_paterno)) AS nombre_completo
-                 FROM Especialista e
-                 WHERE e.id_estatus = 1
-                 ORDER BY e.nombre ASC"
+                "SELECT id_especialista,
+                        TRIM(CONCAT(nombre, ' ', apellido_paterno, ' ', COALESCE(apellido_materno, ''))) AS nombre_completo
+                 FROM Especialista
+                 WHERE id_estatus = 1
+                 ORDER BY nombre ASC"
             );
             $this->json(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         } catch (PDOException $e) {
-            error_log('Error getEspecialistas: ' . $e->getMessage());
-            $this->json(['success' => false, 'message' => 'Error al obtener especialistas', 'data' => []]);
+            error_log("getEspecialistas error: " . $e->getMessage());
+            $this->json(['success' => false, 'message' => $e->getMessage(), 'data' => []]);
         }
     }
  
-    /**
-     * Motivos de consulta para el select.
-     * BUG CORREGIDO: nombre real de tabla es MotivoConsulta (no motivoconsulta —
-     * MySQL en Linux es case-sensitive según configuración del servidor).
-     */
+    /** Motivos de consulta para el select */
     public function getMotivos() {
         try {
             $stmt = $this->db->query(
@@ -198,14 +162,14 @@ class CitasController {
             );
             $this->json(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         } catch (PDOException $e) {
-            error_log('Error getMotivos: ' . $e->getMessage());
-            $this->json(['success' => false, 'message' => 'Error al obtener motivos', 'data' => []]);
+            error_log("getMotivos error: " . $e->getMessage());
+            $this->json(['success' => false, 'message' => $e->getMessage(), 'data' => []]);
         }
     }
  
     // ==================== HELPERS PRIVADOS ====================
  
-    private function validar(array $data): array {
+    private function validar($data) {
         $errores = [];
         if (empty($data['id_paciente']))        $errores[] = 'El paciente es requerido';
         if (empty($data['id_especialista']))    $errores[] = 'El especialista es requerido';
@@ -216,59 +180,52 @@ class CitasController {
         return $errores;
     }
  
-    /**
-     * Leer datos del body.
-     * BUG CORREGIDO: soporta JSON (fetch con Content-Type: application/json),
-     * form-data clásico y query string para métodos GET/POST mixtos.
-     */
-    private function getPostData(): array {
+    private function getPostData() {
         $ct = $_SERVER['CONTENT_TYPE'] ?? '';
-        if (str_contains($ct, 'application/json')) {
-            $raw = file_get_contents('php://input');
-            return json_decode($raw, true) ?? [];
+        if (strpos($ct, 'application/json') !== false) {
+            return json_decode(file_get_contents('php://input'), true) ?? [];
         }
         return $_POST;
     }
  
-    private function json(array $data, int $status = 200): void {
+    private function json($data, $status = 200) {
         http_response_code($status);
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        header('Content-Type: application/json');
+        echo json_encode($data);
         exit;
     }
 }
  
 // ==================== ROUTER ====================
 if (basename(__FILE__) === basename($_SERVER['PHP_SELF'])) {
- 
     if (session_status() === PHP_SESSION_NONE) session_start();
  
-    // Autenticación
     if (!isset($_SESSION['usuario_id'])) {
         http_response_code(401);
-        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'No autorizado']);
         exit;
     }
  
     $ctrl   = new CitasController();
-    $action = trim($_GET['action'] ?? '');
-    $id     = isset($_GET['id']) ? (int) $_GET['id'] : null;
+    $action = $_GET['action'] ?? '';
+    $id     = isset($_GET['id']) ? (int)$_GET['id'] : null;
  
     switch ($action) {
-        case 'index':            $ctrl->index();              break;
-        case 'show':             $ctrl->show($id);            break;
-        case 'store':            $ctrl->store();              break;
-        case 'update':           $ctrl->update($id);          break;
-        case 'cambiar_estatus':  $ctrl->cambiarEstatus($id);  break;
-        case 'destroy':          $ctrl->destroy($id);         break;
-        case 'dias_con_citas':   $ctrl->diasConCitas();       break;
-        case 'get_pacientes':    $ctrl->getPacientes();       break;
-        case 'get_especialistas':$ctrl->getEspecialistas();   break;
-        case 'get_motivos':      $ctrl->getMotivos();         break;
+        case 'index':           $ctrl->index();             break;
+        case 'show':            $ctrl->show($id);           break;
+        case 'store':           $ctrl->store();             break;
+        case 'update':          $ctrl->update($id);         break;
+        case 'cambiar_estatus': $ctrl->cambiarEstatus($id); break;
+        case 'destroy':         $ctrl->destroy($id);        break;
+        case 'dias_con_citas':  $ctrl->diasConCitas();      break;
+        case 'get_pacientes':   $ctrl->getPacientes();      break;
+        case 'get_especialistas':$ctrl->getEspecialistas(); break;
+        case 'get_motivos':     $ctrl->getMotivos();        break;
         default:
             http_response_code(404);
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(['success' => false, 'message' => "Acción '{$action}' no encontrada"]);
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Acción no encontrada']);
     }
 }
+?>

@@ -323,9 +323,19 @@ async function cargarCatalogos() {
             apiFetch({ action: 'get_motivos' }),
         ]);
  
+        // Loguear si algún catálogo falla para facilitar diagnóstico
+        if (!resPac.success)  console.error('Catálogo pacientes:', resPac.message ?? resPac);
+        if (!resEsp.success)  console.error('Catálogo especialistas:', resEsp.message ?? resEsp);
+        if (!resMot.success)  console.error('Catálogo motivos:', resMot.message ?? resMot);
+ 
         poblarSelect('selectPaciente',     resPac.data ?? [], 'numero_paciente',    'nombre_completo');
         poblarSelect('selectEspecialista', resEsp.data ?? [], 'id_especialista',    'nombre_completo');
         poblarSelect('selectMotivo',       resMot.data ?? [], 'id_motivo_consulta', 'motivo_consulta');
+ 
+        const totalOpts = (resPac.data?.length ?? 0) + (resEsp.data?.length ?? 0) + (resMot.data?.length ?? 0);
+        console.log(`✔ Catálogos cargados: ${resPac.data?.length ?? 0} pacientes, ${resEsp.data?.length ?? 0} especialistas, ${resMot.data?.length ?? 0} motivos`);
+        if (totalOpts === 0) toast('No se cargaron datos en los catálogos — revisa la consola', 'warning');
+ 
     } catch (e) {
         console.error('Error cargando catálogos:', e);
         toast('Error al cargar catálogos', 'error');
@@ -408,15 +418,15 @@ async function abrirModalEditar(id) {
         $('selectDuracion').value = String(c.duracion_aproximada ?? 60);
         $('inputCosto').value     = c.costo_total ?? '';
  
-        // Selects con FK — esperar un frame para que el modal esté visible y los
-        // <option> cargados por cargarCatalogos sean seleccionables
-        requestAnimationFrame(() => {
+        // Selects con FK — doble requestAnimationFrame para garantizar que
+        // el modal esté visible Y los <option> del catálogo ya estén en el DOM
+        requestAnimationFrame(() => requestAnimationFrame(() => {
             setSelectValue('selectPaciente',     String(c.numero_paciente));
             setSelectValue('selectEspecialista', String(c.id_especialista));
             setSelectValue('selectMotivo',       String(c.id_motivo_consulta));
             setSelectValue('selectTipoPaciente', c.paciente_primera_vez == 1 ? 'Primera vez' : 'Seguimiento');
             setSelectValue('selectEstatus',      c.estatus_cita ?? 'Pendiente');
-        });
+        }));
  
     } catch (e) {
         toast(`Error al cargar la cita: ${e.message}`, 'error');
