@@ -12,10 +12,15 @@ const API = '../controllers/CitasController.php';   // Ruta relativa al controla
 // Mapeo de estatus de BD → id_estatus_cita
 // Ajusta los IDs según los valores reales en tu tabla EstadosCita
 const ESTATUS_MAP = {
-    'Pendiente':   1,
-    'Confirmada':  2,
-    'Cancelada':   3,
-    'Completada':  4,
+    'Pendiente':             1,
+    'Confirmada':            2,
+    'Reprogramada':          3,
+    'En curso':              4,
+    'No asistió':            5,
+    'Cancelada':             6,
+    'Atendida':              7,
+    'Pagada':                8,
+    'Registro diagnóstico':  9,
 };
  
 // ─────────────────────────────────────────────
@@ -122,8 +127,9 @@ function setLoading(contenedor, show) {
 /** Petición HTTP al controlador */
 async function apiFetch(params = {}, method = 'GET', body = null) {
     const url = new URL(API, window.location.href);
-    // Params de ruta siempre van en la URL (action, id)
-    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+    if (method === 'GET') {
+        Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+    }
  
     const opts = { method, headers: {} };
     if (body) {
@@ -313,6 +319,22 @@ function renderCitasLista(citas) {
     });
 }
  
+/** Clase CSS del badge según estatus real de la BD */
+function getBadgeClass(estatus) {
+    const map = {
+        'Pendiente':            'badge-warning',
+        'Confirmada':           'badge-success',
+        'Reprogramada':         'badge-info',
+        'En curso':             'badge-primary',
+        'No asistió':           'badge-secondary',
+        'Cancelada':            'badge-danger',
+        'Atendida':             'badge-success',
+        'Pagada':               'badge-pagada',
+        'Registro diagnóstico': 'badge-secondary',
+    };
+    return map[estatus] ?? 'badge-secondary';
+}
+ 
 function citaCard(c) {
     const estatus = c.estatus_cita ?? 'Pendiente';
     const hora    = formatTime(c.hora_inicio);
@@ -320,12 +342,7 @@ function citaCard(c) {
     const especialista = c.nombre_especialista ?? '—';
     const motivo  = c.motivo_consulta ?? '—';
  
-    const badgeClass = {
-        'Pendiente':  'badge-warning',
-        'Confirmada': 'badge-success',
-        'Cancelada':  'badge-danger',
-        'Completada': 'badge-info',
-    }[estatus] ?? 'badge-secondary';
+    const badgeClass = getBadgeClass(estatus);
  
     return `
     <div class="cita-card" data-id="${c.id_cita}" style="cursor:pointer;">
@@ -344,6 +361,10 @@ function citaCard(c) {
         <div class="cita-acciones">
             <span class="badge ${badgeClass}">${estatus}</span>
             <div class="cita-btns">
+                <button class="btn-icon btn-icon-primary" title="Ver detalle"
+                    data-action="ver" data-id="${c.id_cita}">
+                    <i class="ri-eye-line"></i>
+                </button>
                 <button class="btn-icon btn-icon-warning" title="Editar"
                     data-action="editar" data-id="${c.id_cita}">
                     <i class="ri-edit-line"></i>
@@ -378,32 +399,12 @@ async function cargarCatalogos() {
     }
 }
  
-function setSelectValue(selectId, value) {
-    const sel = $(selectId);
-    if (!sel) return;
-    // Buscar la option con ese value y marcarla como selected
-    const opt = Array.from(sel.options).find(o => o.value === value);
-    if (opt) {
-        sel.value = value;
-    } else {
-        console.warn(`setSelectValue: valor "${value}" no encontrado en #${selectId}`);
-    }
-}
- 
 function poblarSelect(selectId, items, valKey, labelKey) {
     const sel = $(selectId);
     if (!sel) return;
- 
-    // Guardar el texto del placeholder antes de limpiar
-    const placeholder = sel.options[0]?.textContent ?? 'Seleccionar...';
+    const primerOption = sel.options[0]; // "Seleccionar..."
     sel.innerHTML = '';
- 
-    // Reinsertar placeholder
-    const optDefault = document.createElement('option');
-    optDefault.value = '';
-    optDefault.textContent = placeholder;
-    sel.appendChild(optDefault);
- 
+    sel.appendChild(primerOption);
     items.forEach(item => {
         const opt = document.createElement('option');
         opt.value = item[valKey];
@@ -438,25 +439,26 @@ async function abrirModalEditar(id) {
     $('alertConflicto').style.display = 'none';
     $('groupEstatus').style.display = '';
  
-    // Cargar datos de la cita
     try {
         const data = await apiFetch({ action: 'show', id });
         if (!data.success) throw new Error(data.message);
  
         const c = data.data;
  
-        // Abrir modal primero para que los selects estén en el DOM activo
+        // 1. Abrir modal primero — necesario para que los <select> estén activos en el DOM
         abrirModal('modalCita');
  
-        // Asignar campos simples
-        $('citaId').value     = c.id_cita;
-        $('inputFecha').value = c.fecha_cita;
-        $('inputHora').value  = formatTime(c.hora_inicio);
+        // 2. Campos de texto/fecha — se asignan inmediatamente
+        $('citaId').value         = c.id_cita;
+        $('inputFecha').value     = c.fecha_cita;
+        $('inputHora').value      = formatTime(c.hora_inicio);
         $('selectDuracion').value = String(c.duracion_aproximada ?? 60);
-        $('inputCosto').value = c.costo_total ?? '';
+        $('inputCosto').value     = c.costo_total ?? '';
  
-        // Selects con FK: usar requestAnimationFrame para garantizar que
-        // los <option> cargados por cargarCatalogos ya estén presentes
+        // 3. Selects con FK — esperar un frame para que los <option> ya existan
+        //    (cargarCatalogos los carga async al inicio; si el modal estuvo cerrado
+        //     los options siguen en el DOM, pero .value no encuentra nada si se asigna
+        //     antes de que el navegador pinte el modal)
         requestAnimationFrame(() => {
             setSelectValue('selectPaciente',     String(c.numero_paciente));
             setSelectValue('selectEspecialista', String(c.id_especialista));
@@ -464,6 +466,7 @@ async function abrirModalEditar(id) {
             setSelectValue('selectTipoPaciente', c.paciente_primera_vez == 1 ? 'Primera vez' : 'Seguimiento');
             setSelectValue('selectEstatus',      c.estatus_cita ?? 'Pendiente');
         });
+ 
     } catch (e) {
         toast(`Error al cargar la cita: ${e.message}`, 'error');
     }
@@ -569,12 +572,7 @@ async function abrirDetalle(id) {
  
         const c = data.data;
         const estatus = c.estatus_cita ?? 'Pendiente';
-        const badgeClass = {
-            'Pendiente':  'badge-warning',
-            'Confirmada': 'badge-success',
-            'Cancelada':  'badge-danger',
-            'Completada': 'badge-info',
-        }[estatus] ?? 'badge-secondary';
+        const badgeClass = getBadgeClass(estatus);
  
         content.innerHTML = `
             <div class="detalle-grid">
@@ -620,11 +618,19 @@ async function abrirDetalle(id) {
                 <label class="form-label">Cambiar estatus rápido:</label>
                 <div class="estatus-btns">
                     <button class="btn-estatus ${estatus==='Confirmada'?'active':''}"
-                        data-estatus="Confirmada" data-id="${c.id_cita}">Confirmar</button>
+                        data-estatus="Confirmada" data-id="${c.id_cita}">Confirmada</button>
+                    <button class="btn-estatus ${estatus==='Reprogramada'?'active':''}"
+                        data-estatus="Reprogramada" data-id="${c.id_cita}">Reprogramada</button>
+                    <button class="btn-estatus ${estatus==='En curso'?'active':''}"
+                        data-estatus="En curso" data-id="${c.id_cita}">En curso</button>
+                    <button class="btn-estatus ${estatus==='No asistió'?'active':''}"
+                        data-estatus="No asistió" data-id="${c.id_cita}">No asistió</button>
                     <button class="btn-estatus ${estatus==='Cancelada'?'active':''}"
-                        data-estatus="Cancelada" data-id="${c.id_cita}">Cancelar</button>
-                    <button class="btn-estatus ${estatus==='Completada'?'active':''}"
-                        data-estatus="Completada" data-id="${c.id_cita}">Completar</button>
+                        data-estatus="Cancelada" data-id="${c.id_cita}">Cancelada</button>
+                    <button class="btn-estatus ${estatus==='Atendida'?'active':''}"
+                        data-estatus="Atendida" data-id="${c.id_cita}">Atendida</button>
+                    <button class="btn-estatus ${estatus==='Pagada'?'active':''}"
+                        data-estatus="Pagada" data-id="${c.id_cita}">Pagada</button>
                 </div>
             </div>
         `;
@@ -867,6 +873,8 @@ function injectStyles() {
         .badge-warning   { background:#fff8e1; color:#e65100; }
         .badge-danger    { background:#ffebee; color:#c62828; }
         .badge-info      { background:#e3f2fd; color:#1565c0; }
+        .badge-primary   { background:#e8eaf6; color:#283593; }
+        .badge-pagada    { background:#f3e5f5; color:#6a1b9a; }
         .badge-secondary { background:#f1f3f5; color:#495057; }
  
         /* ---- Alert conflicto ---- */

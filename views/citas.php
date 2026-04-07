@@ -200,8 +200,13 @@ include '../includes/sidebar.php';
                     <select class="form-select" id="selectEstatus" name="estatus">
                         <option value="Pendiente">Pendiente</option>
                         <option value="Confirmada">Confirmada</option>
+                        <option value="Reprogramada">Reprogramada</option>
+                        <option value="En curso">En curso</option>
+                        <option value="No asistió">No asistió</option>
                         <option value="Cancelada">Cancelada</option>
-                        <option value="Completada">Completada</option>
+                        <option value="Atendida">Atendida</option>
+                        <option value="Pagada">Pagada</option>
+                        <option value="Registro diagnóstico">Registro diagnóstico</option>
                     </select>
                 </div>
  
@@ -232,6 +237,7 @@ include '../includes/sidebar.php';
         </div>
         <div class="modal-body" id="detalleContent"></div>
         <div class="modal-footer">
+            <button class="btn-secondary" id="btnCerrarDetalle2">Cerrar</button>
             <button class="btn-warning" id="btnEditarDesdeDetalle">
                 <i class="ri-edit-line"></i> Editar
             </button>

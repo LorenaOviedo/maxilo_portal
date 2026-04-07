@@ -12,11 +12,17 @@ class Cita
  
     // Mapa texto -> id_estatus_cita (tabla EstadosCita)
     // Ajusta si tus IDs difieren
+    // IDs según tabla EstadosCita de la BD
     private const ESTATUS_IDS = [
-        'Pendiente'  => 1,
-        'Confirmada' => 2,
-        'Cancelada'  => 3,
-        'Completada' => 4,
+        'Pendiente'            => 1,
+        'Confirmada'           => 2,
+        'Reprogramada'         => 3,
+        'En curso'             => 4,
+        'No asistió'           => 5,
+        'Cancelada'            => 6,
+        'Atendida'             => 7,
+        'Pagada'               => 8,
+        'Registro diagnóstico' => 9,
     ];
  
     public function __construct(PDO $db)
@@ -81,11 +87,11 @@ class Cita
                     AS nombre_especialista,
                 mc.motivo_consulta,
                 ec.estatus_cita
-            FROM cita c
-            INNER JOIN paciente      p  ON p.numero_paciente   = c.numero_paciente
-            INNER JOIN especialista  e  ON e.id_especialista   = c.id_especialista
-            LEFT  JOIN motivoconsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
-            LEFT  JOIN estadoscita   ec ON ec.id_estatus_cita  = c.id_estatus_cita
+            FROM Cita c
+            INNER JOIN Paciente      p  ON p.numero_paciente   = c.numero_paciente
+            INNER JOIN Especialista  e  ON e.id_especialista   = c.id_especialista
+            LEFT  JOIN MotivoConsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
+            LEFT  JOIN EstadosCita   ec ON ec.id_estatus_cita  = c.id_estatus_cita
             WHERE " . implode(' AND ', $where) . "
             ORDER BY c.hora_inicio ASC
         ";
@@ -117,11 +123,11 @@ class Cita
                     AS nombre_especialista,
                 mc.motivo_consulta,
                 ec.estatus_cita
-            FROM cita c
-            INNER JOIN paciente      p  ON p.numero_paciente    = c.numero_paciente
-            INNER JOIN especialista  e  ON e.id_especialista    = c.id_especialista
-            LEFT  JOIN motivoconsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
-            LEFT  JOIN estadoscita   ec ON ec.id_estatus_cita   = c.id_estatus_cita
+            FROM Cita c
+            INNER JOIN Paciente      p  ON p.numero_paciente    = c.numero_paciente
+            INNER JOIN Especialista  e  ON e.id_especialista    = c.id_especialista
+            LEFT  JOIN MotivoConsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
+            LEFT  JOIN EstadosCita   ec ON ec.id_estatus_cita   = c.id_estatus_cita
             WHERE c.id_cita = :id
         ");
         $stmt->execute([':id' => $id]);
@@ -142,8 +148,8 @@ class Cita
                 COUNT(*)                               AS total,
                 SUM(ec.estatus_cita = 'Pendiente')     AS pendientes,
                 SUM(ec.estatus_cita = 'Confirmada')    AS confirmadas
-            FROM cita c
-            LEFT JOIN estadoscita ec ON ec.id_estatus_cita = c.id_estatus_cita
+            FROM Cita c
+            LEFT JOIN EstadosCita ec ON ec.id_estatus_cita = c.id_estatus_cita
             WHERE MONTH(c.fecha_cita) = :mes
               AND YEAR(c.fecha_cita)  = :anio
             GROUP BY c.fecha_cita
@@ -164,7 +170,7 @@ class Cita
         $primeraVez = ($data['tipoPaciente'] ?? '') === 'Primera vez' ? 1 : 0;
  
         $stmt = $this->db->prepare("
-            INSERT INTO cita
+            INSERT INTO Cita
                 (fecha_cita, hora_inicio, paciente_primera_vez,
                  duracion_aproximada, id_estatus_cita, costo_total,
                  id_motivo_consulta, id_especialista, numero_paciente)
@@ -230,7 +236,7 @@ class Cita
         }
  
         $stmt = $this->db->prepare(
-            "UPDATE cita SET " . implode(', ', $sets) . " WHERE id_cita = :id"
+            "UPDATE Cita SET " . implode(', ', $sets) . " WHERE id_cita = :id"
         );
         return $stmt->execute($params);
     }
@@ -242,7 +248,7 @@ class Cita
         if (!$idEstatus) return false;
  
         $stmt = $this->db->prepare(
-            "UPDATE cita SET id_estatus_cita = :id_estatus WHERE id_cita = :id"
+            "UPDATE Cita SET id_estatus_cita = :id_estatus WHERE id_cita = :id"
         );
         return $stmt->execute([':id_estatus' => $idEstatus, ':id' => $id]);
     }
@@ -250,7 +256,7 @@ class Cita
     /** Eliminar cita (CASCADE elimina TransaccionesDentales, Pagos relacionados) */
     public function delete(int $id): bool
     {
-        $stmt = $this->db->prepare("DELETE FROM cita WHERE id_cita = :id");
+        $stmt = $this->db->prepare("DELETE FROM Cita WHERE id_cita = :id");
         return $stmt->execute([':id' => $id]);
     }
  
@@ -271,11 +277,11 @@ class Cita
         ?int $excluirId = null
     ): bool {
         $sql = "
-            SELECT COUNT(*) FROM cita c
-            LEFT JOIN estadoscita ec ON ec.id_estatus_cita = c.id_estatus_cita
+            SELECT COUNT(*) FROM Cita c
+            LEFT JOIN EstadosCita ec ON ec.id_estatus_cita = c.id_estatus_cita
             WHERE c.id_especialista = :id_esp
               AND c.fecha_cita      = :fecha
-              AND ec.estatus_cita NOT IN ('Cancelada', 'Completada')
+              AND ec.estatus_cita NOT IN ('Cancelada', 'Atendida', 'Pagada', 'No asistió')
               AND (
                   /* Nueva cita empieza dentro de una existente */
                   :hora_inicio < ADDTIME(c.hora_inicio, SEC_TO_TIME(c.duracion_aproximada * 60))
@@ -317,11 +323,10 @@ class Cita
  
         // Fallback: buscar en la tabla
         $stmt = $this->db->prepare(
-            "SELECT id_estatus_cita FROM estadoscita WHERE estatus_cita = :texto LIMIT 1"
+            "SELECT id_estatus_cita FROM EstadosCita WHERE estatus_cita = :texto LIMIT 1"
         );
         $stmt->execute([':texto' => $texto]);
         $row = $stmt->fetchColumn();
         return $row ? (int) $row : null;
     }
 }
- 
