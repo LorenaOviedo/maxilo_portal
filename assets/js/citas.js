@@ -122,9 +122,8 @@ function setLoading(contenedor, show) {
 /** Petición HTTP al controlador */
 async function apiFetch(params = {}, method = 'GET', body = null) {
     const url = new URL(API, window.location.href);
-    if (method === 'GET') {
-        Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-    }
+    // Params siempre van en la URL (action, id son parámetros de ruta)
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
  
     const opts = { method, headers: {} };
     if (body) {
