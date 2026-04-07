@@ -147,7 +147,7 @@ include '../includes/sidebar.php';
                     </div>
                     <div class="form-group">
                         <label class="form-label">
-                            <i class="ri-heart-pulse-line"></i> Motivo de Consulta *
+                            <i class="ri-tooth-line"></i> Motivo de Consulta *
                         </label>
                         <select class="form-select" id="selectMotivo" name="id_motivo_consulta" required>
                             <option value="">Seleccionar motivo...</option>
