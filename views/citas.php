@@ -6,24 +6,24 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../config/auth.php';
-
+ 
 session_start();
-
+ 
 $auth = new AuthController();
 if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
-
+ 
 $page_title = 'Citas';
 $page_css = ['citas.css'];
-
+ 
 include '../includes/header.php';
 include '../includes/sidebar.php';
 ?>
-
+ 
         <!-- Contenido principal -->
         <main class="main-content">
-
+ 
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-header-left">
@@ -35,10 +35,10 @@ include '../includes/sidebar.php';
                     Nueva cita <i class="ri-add-line"></i>
                 </button>
             </div>
-
+ 
             <!-- Layout principal -->
             <div class="citas-layout">
-
+ 
                 <!-- ===== CALENDARIO ===== -->
                 <div class="calendar-card">
                     <div class="calendar-header">
@@ -50,7 +50,7 @@ include '../includes/sidebar.php';
                             <i class="ri-arrow-right-s-line"></i>
                         </button>
                     </div>
-
+ 
                     <div class="calendar-grid">
                         <div class="calendar-day-header">Dom</div>
                         <div class="calendar-day-header">Lun</div>
@@ -60,9 +60,9 @@ include '../includes/sidebar.php';
                         <div class="calendar-day-header">Vie</div>
                         <div class="calendar-day-header">Sáb</div>
                     </div>
-
+ 
                     <div class="calendar-body" id="calendarBody"></div>
-
+ 
                     <div class="calendar-legend">
                         <span class="legend-item">
                             <span class="legend-dot disponible"></span> Disponible
@@ -75,21 +75,21 @@ include '../includes/sidebar.php';
                         </span>
                     </div>
                 </div>
-
+ 
                 <!-- ===== PANEL DE CITAS DEL DÍA ===== -->
                 <div class="citas-panel">
                     <div class="citas-panel-header">
                         <h3 class="citas-panel-title">Citas del día</h3>
                         <span class="citas-panel-fecha" id="citasFechaSeleccionada"></span>
                     </div>
-
+ 
                     <div class="citas-filtros">
                         <button class="filtro-btn active" data-estatus="todas">Todas</button>
                         <button class="filtro-btn" data-estatus="Confirmada">Confirmadas</button>
                         <button class="filtro-btn" data-estatus="Pendiente">Pendientes</button>
                         <button class="filtro-btn" data-estatus="Cancelada">Canceladas</button>
                     </div>
-
+ 
                     <div class="citas-lista" id="citasLista">
                         <div class="citas-loading">
                             <i class="ri-loader-4-line spin"></i>
@@ -97,10 +97,10 @@ include '../includes/sidebar.php';
                         </div>
                     </div>
                 </div>
-
+ 
             </div><!-- /citas-layout -->
         </main>
-
+ 
 <!-- ==================== MODAL NUEVA/EDITAR CITA ==================== -->
 <div class="modal-overlay" id="modalCita">
     <div class="modal">
@@ -110,11 +110,11 @@ include '../includes/sidebar.php';
                 <i class="ri-close-line"></i>
             </button>
         </div>
-
+ 
         <div class="modal-body">
             <form id="formCita">
                 <input type="hidden" id="citaId" name="id_cita">
-
+ 
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">
@@ -135,7 +135,7 @@ include '../includes/sidebar.php';
                         </select>
                     </div>
                 </div>
-
+ 
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">
@@ -154,7 +154,7 @@ include '../includes/sidebar.php';
                         </select>
                     </div>
                 </div>
-
+ 
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">
@@ -170,7 +170,7 @@ include '../includes/sidebar.php';
                         <input type="time" class="form-input" id="inputHora" name="hora_inicio" required>
                     </div>
                 </div>
-
+ 
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">
@@ -191,7 +191,7 @@ include '../includes/sidebar.php';
                                placeholder="0.00" step="0.01" min="0">
                     </div>
                 </div>
-
+ 
                 <!-- Estatus: solo visible al editar -->
                 <div class="form-group" id="groupEstatus" style="display: none;">
                     <label class="form-label">
@@ -204,14 +204,14 @@ include '../includes/sidebar.php';
                         <option value="Completada">Completada</option>
                     </select>
                 </div>
-
+ 
                 <div class="form-alert" id="alertConflicto" style="display: none;">
                     <i class="ri-error-warning-line"></i>
                     <span id="alertMessage"></span>
                 </div>
             </form>
         </div>
-
+ 
         <div class="modal-footer">
             <button class="btn-secondary" id="btnCancelarModal">Cancelar</button>
             <button class="btn-primary" id="btnGuardarCita">
@@ -220,7 +220,7 @@ include '../includes/sidebar.php';
         </div>
     </div>
 </div>
-
+ 
 <!-- ==================== MODAL DETALLE ==================== -->
 <div class="modal-overlay" id="modalDetalle">
     <div class="modal modal-sm">
@@ -232,14 +232,13 @@ include '../includes/sidebar.php';
         </div>
         <div class="modal-body" id="detalleContent"></div>
         <div class="modal-footer">
-            <button class="btn-secondary" id="btnCerrarDetalle2">Cerrar</button>
             <button class="btn-warning" id="btnEditarDesdeDetalle">
                 <i class="ri-edit-line"></i> Editar
             </button>
         </div>
     </div>
 </div>
-
+ 
 <!-- ==================== MODAL CONFIRMAR ELIMINAR ==================== -->
 <div class="modal-overlay" id="modalEliminar">
     <div class="modal modal-xs">
@@ -266,17 +265,17 @@ include '../includes/sidebar.php';
         </div>
     </div>
 </div>
-
+ 
 <!-- Toast -->
 <div class="toast-container" id="toastContainer"></div>
-
+ 
 <!-- JS del módulo -->
 <script src="<?php echo asset('js/citas.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
-
+ 
     </div><!-- /dashboard-container (abierto por header.php) -->
 </body>
 </html>
-
+ 
 <?php
 //INCLUIR FOOTER
 include '../includes/footer.php';

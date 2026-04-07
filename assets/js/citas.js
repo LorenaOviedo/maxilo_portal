@@ -122,7 +122,7 @@ function setLoading(contenedor, show) {
 /** Petición HTTP al controlador */
 async function apiFetch(params = {}, method = 'GET', body = null) {
     const url = new URL(API, window.location.href);
-    // Params siempre van en la URL (action, id son parámetros de ruta)
+    // Params de ruta siempre van en la URL (action, id)
     Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
  
     const opts = { method, headers: {} };
@@ -344,10 +344,6 @@ function citaCard(c) {
         <div class="cita-acciones">
             <span class="badge ${badgeClass}">${estatus}</span>
             <div class="cita-btns">
-                <button class="btn-icon btn-icon-primary" title="Ver detalle"
-                    data-action="ver" data-id="${c.id_cita}">
-                    <i class="ri-eye-line"></i>
-                </button>
                 <button class="btn-icon btn-icon-warning" title="Editar"
                     data-action="editar" data-id="${c.id_cita}">
                     <i class="ri-edit-line"></i>
@@ -382,12 +378,32 @@ async function cargarCatalogos() {
     }
 }
  
+function setSelectValue(selectId, value) {
+    const sel = $(selectId);
+    if (!sel) return;
+    // Buscar la option con ese value y marcarla como selected
+    const opt = Array.from(sel.options).find(o => o.value === value);
+    if (opt) {
+        sel.value = value;
+    } else {
+        console.warn(`setSelectValue: valor "${value}" no encontrado en #${selectId}`);
+    }
+}
+ 
 function poblarSelect(selectId, items, valKey, labelKey) {
     const sel = $(selectId);
     if (!sel) return;
-    const primerOption = sel.options[0]; // "Seleccionar..."
+ 
+    // Guardar el texto del placeholder antes de limpiar
+    const placeholder = sel.options[0]?.textContent ?? 'Seleccionar...';
     sel.innerHTML = '';
-    sel.appendChild(primerOption);
+ 
+    // Reinsertar placeholder
+    const optDefault = document.createElement('option');
+    optDefault.value = '';
+    optDefault.textContent = placeholder;
+    sel.appendChild(optDefault);
+ 
     items.forEach(item => {
         const opt = document.createElement('option');
         opt.value = item[valKey];
@@ -428,18 +444,26 @@ async function abrirModalEditar(id) {
         if (!data.success) throw new Error(data.message);
  
         const c = data.data;
-        $('citaId').value        = c.id_cita;
-        $('selectPaciente').value    = c.numero_paciente;
-        $('selectTipoPaciente').value = c.paciente_primera_vez == 1 ? 'Primera vez' : 'Seguimiento';
-        $('selectEspecialista').value = c.id_especialista;
-        $('selectMotivo').value      = c.id_motivo_consulta;
-        $('inputFecha').value        = c.fecha_cita;
-        $('inputHora').value         = formatTime(c.hora_inicio);
-        $('selectDuracion').value    = c.duracion_aproximada ?? 60;
-        $('inputCosto').value        = c.costo_total ?? '';
-        $('selectEstatus').value     = c.estatus_cita ?? 'Pendiente';
  
+        // Abrir modal primero para que los selects estén en el DOM activo
         abrirModal('modalCita');
+ 
+        // Asignar campos simples
+        $('citaId').value     = c.id_cita;
+        $('inputFecha').value = c.fecha_cita;
+        $('inputHora').value  = formatTime(c.hora_inicio);
+        $('selectDuracion').value = String(c.duracion_aproximada ?? 60);
+        $('inputCosto').value = c.costo_total ?? '';
+ 
+        // Selects con FK: usar requestAnimationFrame para garantizar que
+        // los <option> cargados por cargarCatalogos ya estén presentes
+        requestAnimationFrame(() => {
+            setSelectValue('selectPaciente',     String(c.numero_paciente));
+            setSelectValue('selectEspecialista', String(c.id_especialista));
+            setSelectValue('selectMotivo',       String(c.id_motivo_consulta));
+            setSelectValue('selectTipoPaciente', c.paciente_primera_vez == 1 ? 'Primera vez' : 'Seguimiento');
+            setSelectValue('selectEstatus',      c.estatus_cita ?? 'Pendiente');
+        });
     } catch (e) {
         toast(`Error al cargar la cita: ${e.message}`, 'error');
     }
@@ -906,7 +930,7 @@ async function init() {
     $('btnCancelarEliminar')?.addEventListener('click', () => cerrarModal('modalEliminar'));
     $('btnConfirmarEliminar')?.addEventListener('click', eliminarCita);
  
-    console.log('✔ Módulo Citas inicializado');
+    console.log('Módulo Citas inicializado');
 }
  
 // Arrancar cuando el DOM esté listo
