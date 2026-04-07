@@ -177,7 +177,7 @@ class CitasController {
         try {
             $stmt = $this->db->query(
                 "SELECT id_motivo_consulta, motivo_consulta
-                 FROM MotivoConsulta
+                 FROM motivoconsulta
                  ORDER BY motivo_consulta ASC"
             );
             $this->json(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
