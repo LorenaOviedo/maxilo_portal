@@ -12,17 +12,11 @@ class Cita
  
     // Mapa texto -> id_estatus_cita (tabla EstadosCita)
     // Ajusta si tus IDs difieren
-    // IDs según tabla EstadosCita de la BD
     private const ESTATUS_IDS = [
-        'Pendiente'            => 1,
-        'Confirmada'           => 2,
-        'Reprogramada'         => 3,
-        'En curso'             => 4,
-        'No asistió'           => 5,
-        'Cancelada'            => 6,
-        'Atendida'             => 7,
-        'Pagada'               => 8,
-        'Registro diagnóstico' => 9,
+        'Pendiente'  => 1,
+        'Confirmada' => 2,
+        'Cancelada'  => 3,
+        'Completada' => 4,
     ];
  
     public function __construct(PDO $db)
@@ -149,7 +143,7 @@ class Cita
                 SUM(ec.estatus_cita = 'Pendiente')     AS pendientes,
                 SUM(ec.estatus_cita = 'Confirmada')    AS confirmadas
             FROM cita c
-            LEFT JOIN estadoscita ec ON ec.id_estatus_cita = c.id_estatus_cita
+            LEFT JOIN estadoscita   ec ON ec.id_estatus_cita = c.id_estatus_cita
             WHERE MONTH(c.fecha_cita) = :mes
               AND YEAR(c.fecha_cita)  = :anio
             GROUP BY c.fecha_cita
@@ -166,8 +160,10 @@ class Cita
     /** Crear nueva cita. Retorna el ID insertado o false */
     public function create(array $data): int|false
     {
-        $idEstatus = self::ESTATUS_IDS['Pendiente']; // nueva cita siempre Pendiente
+        $idEstatus  = self::ESTATUS_IDS['Pendiente'];
         $primeraVez = ($data['tipoPaciente'] ?? '') === 'Primera vez' ? 1 : 0;
+        $costo      = (isset($data['costo_estimado']) && $data['costo_estimado'] !== '' && $data['costo_estimado'] !== null)
+                        ? (float) $data['costo_estimado'] : null;
  
         $stmt = $this->db->prepare("
             INSERT INTO cita
@@ -180,20 +176,23 @@ class Cita
                  :id_motivo, :id_especialista, :numero_paciente)
         ");
  
-        $ok = $stmt->execute([
-            ':fecha_cita'       => $data['fecha_cita'],
-            ':hora_inicio'      => $data['hora_inicio'],
-            ':primera_vez'      => $primeraVez,
-            ':duracion'         => (int)   ($data['duracion_aproximada'] ?? 60),
-            ':id_estatus'       => $idEstatus,
-            ':costo'            => isset($data['costo_estimado']) && $data['costo_estimado'] !== ''
-                                        ? (float) $data['costo_estimado'] : null,
-            ':id_motivo'        => (int) $data['id_motivo_consulta'],
-            ':id_especialista'  => (int) $data['id_especialista'],
-            ':numero_paciente'  => (int) $data['id_paciente'],
-        ]);
+        $params = [
+            ':fecha_cita'      => $data['fecha_cita'],
+            ':hora_inicio'     => $data['hora_inicio'],
+            ':primera_vez'     => $primeraVez,
+            ':duracion'        => (int) ($data['duracion_aproximada'] ?? 60),
+            ':id_estatus'      => $idEstatus,
+            ':costo'           => $costo,
+            ':id_motivo'       => (int) $data['id_motivo_consulta'],
+            ':id_especialista' => (int) $data['id_especialista'],
+            ':numero_paciente' => (int) $data['id_paciente'],
+        ];
  
-        return $ok ? (int) $this->db->lastInsertId() : false;
+        if (!$stmt->execute($params)) {
+            error_log('Cita::create() falló: ' . implode(' | ', $stmt->errorInfo()));
+            return false;
+        }
+        return (int) $this->db->lastInsertId();
     }
  
     /** Actualizar cita existente */
@@ -238,7 +237,12 @@ class Cita
         $stmt = $this->db->prepare(
             "UPDATE cita SET " . implode(', ', $sets) . " WHERE id_cita = :id"
         );
-        return $stmt->execute($params);
+ 
+        if (!$stmt->execute($params)) {
+            error_log('Cita::update() falló: ' . implode(' | ', $stmt->errorInfo()));
+            return false;
+        }
+        return true;
     }
  
     /** Cambiar solo el estatus de una cita */
@@ -277,11 +281,11 @@ class Cita
         ?int $excluirId = null
     ): bool {
         $sql = "
-            SELECT COUNT(*) FROM Cita c
-            LEFT JOIN EstadosCita ec ON ec.id_estatus_cita = c.id_estatus_cita
+            SELECT COUNT(*) FROM cita c
+            LEFT JOIN estadoscita ec ON ec.id_estatus_cita = c.id_estatus_cita
             WHERE c.id_especialista = :id_esp
               AND c.fecha_cita      = :fecha
-              AND ec.estatus_cita NOT IN ('Cancelada', 'Atendida', 'Pagada', 'No asistió')
+              AND ec.estatus_cita NOT IN ('Cancelada', 'Completada')
               AND (
                   /* Nueva cita empieza dentro de una existente */
                   :hora_inicio < ADDTIME(c.hora_inicio, SEC_TO_TIME(c.duracion_aproximada * 60))
@@ -330,3 +334,4 @@ class Cita
         return $row ? (int) $row : null;
     }
 }
+ 

@@ -2,6 +2,7 @@
 /**
  * Controlador de Citas
  */
+
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/Cita.php';
@@ -15,7 +16,6 @@ class CitasController {
         $this->citaModel = new Cita($this->db);
     }
  
-    /* ==================== ACCIONES ==================== */
     /** Listar citas con filtros opcionales */
     public function index() {
         $filtros = [];
@@ -37,57 +37,67 @@ class CitasController {
  
     /** Crear nueva cita */
     public function store() {
-        $data = $this->getPostData();
+        try {
+            $data = $this->getPostData();
  
-        $errores = $this->validar($data);
-        if (!empty($errores)) {
-            $this->json(['success' => false, 'message' => implode(', ', $errores)]);
-        }
+            $errores = $this->validar($data);
+            if (!empty($errores)) {
+                $this->json(['success' => false, 'message' => implode(', ', $errores)]);
+            }
  
-        if ($this->citaModel->existeConflicto(
-            $data['id_especialista'],
-            $data['fecha_cita'],
-            $data['hora_inicio'],
-            $data['duracion_aproximada'] ?? 60
-        )) {
-            $this->json(['success' => false, 'message' => 'El especialista ya tiene una cita en ese horario']);
-        }
+            if ($this->citaModel->existeConflicto(
+                (int) $data['id_especialista'],
+                $data['fecha_cita'],
+                $data['hora_inicio'],
+                (int) ($data['duracion_aproximada'] ?? 60)
+            )) {
+                $this->json(['success' => false, 'message' => 'El especialista ya tiene una cita en ese horario']);
+            }
  
-        $id = $this->citaModel->create($data);
-        if ($id) {
-            $this->json(['success' => true, 'message' => 'Cita creada exitosamente', 'data' => $this->citaModel->getById($id)]);
+            $id = $this->citaModel->create($data);
+            if ($id) {
+                $this->json(['success' => true, 'message' => 'Cita creada exitosamente', 'data' => $this->citaModel->getById($id)]);
+            }
+            $this->json(['success' => false, 'message' => 'Error al crear la cita']);
+        } catch (Exception $e) {
+            error_log('store() error: ' . $e->getMessage());
+            $this->json(['success' => false, 'message' => 'Error interno: ' . $e->getMessage()]);
         }
-        $this->json(['success' => false, 'message' => 'Error al crear la cita']);
     }
  
     /** Actualizar cita */
     public function update($id) {
-        if (!$this->citaModel->getById($id)) {
-            $this->json(['success' => false, 'message' => 'Cita no encontrada'], 404);
-        }
- 
-        $data = $this->getPostData();
-        $errores = $this->validar($data);
-        if (!empty($errores)) {
-            $this->json(['success' => false, 'message' => implode(', ', $errores)]);
-        }
- 
-        if (!empty($data['fecha_cita']) && !empty($data['hora_inicio'])) {
-            if ($this->citaModel->existeConflicto(
-                $data['id_especialista'],
-                $data['fecha_cita'],
-                $data['hora_inicio'],
-                $data['duracion_aproximada'] ?? 60,
-                $id
-            )) {
-                $this->json(['success' => false, 'message' => 'El especialista ya tiene una cita en ese horario']);
+        try {
+            if (!$this->citaModel->getById($id)) {
+                $this->json(['success' => false, 'message' => 'Cita no encontrada'], 404);
             }
-        }
  
-        if ($this->citaModel->update($id, $data)) {
-            $this->json(['success' => true, 'message' => 'Cita actualizada exitosamente', 'data' => $this->citaModel->getById($id)]);
+            $data = $this->getPostData();
+            $errores = $this->validar($data);
+            if (!empty($errores)) {
+                $this->json(['success' => false, 'message' => implode(', ', $errores)]);
+            }
+ 
+            if (!empty($data['fecha_cita']) && !empty($data['hora_inicio'])) {
+                if ($this->citaModel->existeConflicto(
+                    (int) $data['id_especialista'],
+                    $data['fecha_cita'],
+                    $data['hora_inicio'],
+                    (int) ($data['duracion_aproximada'] ?? 60),
+                    $id
+                )) {
+                    $this->json(['success' => false, 'message' => 'El especialista ya tiene una cita en ese horario']);
+                }
+            }
+ 
+            if ($this->citaModel->update($id, $data)) {
+                $this->json(['success' => true, 'message' => 'Cita actualizada exitosamente', 'data' => $this->citaModel->getById($id)]);
+            }
+            $this->json(['success' => false, 'message' => 'Error al actualizar la cita']);
+        } catch (Exception $e) {
+            error_log('update() error: ' . $e->getMessage());
+            $this->json(['success' => false, 'message' => 'Error interno: ' . $e->getMessage()]);
         }
-        $this->json(['success' => false, 'message' => 'Error al actualizar la cita']);
     }
  
     /** Cambiar estatus */
@@ -124,15 +134,14 @@ class CitasController {
         try {
             $stmt = $this->db->query(
                 "SELECT numero_paciente,
-                        TRIM(CONCAT(nombre, ' ', apellido_paterno, ' ', COALESCE(apellido_materno, ''))) AS nombre_completo
+                        TRIM(CONCAT(nombre, ' ', apellido_paterno, ' ', COALESCE(apellido_materno,''))) AS nombre_completo
                  FROM paciente
-                 WHERE id_estatus = 1
                  ORDER BY nombre ASC"
             );
             $this->json(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         } catch (PDOException $e) {
-            error_log("getPacientes error: " . $e->getMessage());
-            $this->json(['success' => false, 'message' => $e->getMessage(), 'data' => []]);
+            error_log("Error al obtener pacientes: " . $e->getMessage());
+            $this->json(['success' => false, 'data' => []]);
         }
     }
  
@@ -141,15 +150,15 @@ class CitasController {
         try {
             $stmt = $this->db->query(
                 "SELECT id_especialista,
-                        TRIM(CONCAT(nombre, ' ', apellido_paterno, ' ', COALESCE(apellido_materno, ''))) AS nombre_completo
+                        CONCAT(nombre, ' ', apellido_paterno) AS nombre_completo
                  FROM especialista
-                 WHERE id_estatus = 1
+                 WHERE estatus = 'activo'
                  ORDER BY nombre ASC"
             );
             $this->json(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         } catch (PDOException $e) {
-            error_log("getEspecialistas error: " . $e->getMessage());
-            $this->json(['success' => false, 'message' => $e->getMessage(), 'data' => []]);
+            error_log("Error al obtener especialistas: " . $e->getMessage());
+            $this->json(['success' => false, 'data' => []]);
         }
     }
  
@@ -163,8 +172,8 @@ class CitasController {
             );
             $this->json(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         } catch (PDOException $e) {
-            error_log("getMotivos error: " . $e->getMessage());
-            $this->json(['success' => false, 'message' => $e->getMessage(), 'data' => []]);
+            error_log("Error al obtener motivos: " . $e->getMessage());
+            $this->json(['success' => false, 'data' => []]);
         }
     }
  
@@ -181,10 +190,16 @@ class CitasController {
         return $errores;
     }
  
-    private function getPostData() {
+    private function getPostData(): array {
         $ct = $_SERVER['CONTENT_TYPE'] ?? '';
-        if (strpos($ct, 'application/json') !== false) {
-            return json_decode(file_get_contents('php://input'), true) ?? [];
+        if (str_contains($ct, 'application/json')) {
+            $raw  = file_get_contents('php://input');
+            $data = json_decode($raw, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                error_log('getPostData JSON error: ' . json_last_error_msg() . ' | raw: ' . substr($raw, 0, 200));
+                return [];
+            }
+            return $data ?? [];
         }
         return $_POST;
     }
