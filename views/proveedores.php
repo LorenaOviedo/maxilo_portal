@@ -4,50 +4,45 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../config/auth.php';
-
+require_once __DIR__ . '/../models/Proveedor.php';
+ 
 session_start();
-
+ 
 $auth = new AuthController();
-
-// Verificar autenticación
 if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
-
-//CONFIGURACIÓN DE LA PAGINA
+ 
+// Configuración de la página
 $page_title = 'Proveedores';
-$page_css = ['catalogos-tabla.css', 'modal.css'];
-$page_js = ['catalogos-tabla.js', 'modal.js'];
-
-// Datos de ejemplo para proveedores
-$proveedores = [
-    [
-        'numero_proveedor' => 'PR-001',
-        'razon_social' => 'PRODUCTOS ODONTOLOGICOS LOPEZ MARTINEZ S.A. DE C.V.',
-        'rfc' => 'PDO0101019A1',
-        'tipo_persona' => 'MORAL',
-        'tipo_producto_servicio' => 'MEDICAMENTOS',
-        'domicilio_fiscal' => 'AV. DE LA PAZ 48...',
-        'correo_contacto' => 'JUAN.LO@PRODUCTOSODONTOLOGICOS.COM'
-    ],
-    [
-        'numero_proveedor' => 'PR-002',
-        'razon_social' => 'MATERIALES ODONTOLOGICOS GOMEZ S.A. DE C.V.',
-        'rfc' => 'IME0101019A1',
-        'tipo_persona' => 'MORAL',
-        'tipo_producto_servicio' => 'MATERIALES ODONTOLOGICOS',
-        'domicilio_fiscal' => 'AV. MEXICO 123...',
-        'correo_contacto' => 'MIGUEL.GOMEZ@MATERIALESODONTOLOGICOS.COM'
-    ],
-];
-
-//LLAMAR HEADER Y SIDEBAR
+$page_css   = ['catalogos-tabla.css', 'modal.css'];
+$page_js    = [];
+ 
+// Paginación y filtros
+$porPagina    = 10;
+$paginaActual = max(1, (int) ($_GET['pagina'] ?? 1));
+$buscar       = trim($_GET['buscar'] ?? '');
+ 
+// Datos desde BD
+$db    = getDB();
+$model = new Proveedor($db);
+ 
+$filtros = [];
+if ($buscar !== '') $filtros['buscar'] = $buscar;
+ 
+$total        = $model->contarTotal($filtros);
+$totalPaginas = max(1, (int) ceil($total / $porPagina));
+$paginaActual = min($paginaActual, $totalPaginas);
+$proveedores  = $model->getAll($filtros, $paginaActual, $porPagina);
+$catalogos    = $model->getCatalogos();
+ 
 include '../includes/header.php';
 include '../includes/sidebar.php';
 ?>
-
+ 
         <!-- Contenido principal -->
         <main class="main-content">
+ 
             <!-- Breadcrumb -->
             <nav class="breadcrumb">
                 <div class="breadcrumb-item">
@@ -58,45 +53,48 @@ include '../includes/sidebar.php';
                     <span class="breadcrumb-current">Proveedores</span>
                 </div>
             </nav>
-
+ 
             <!-- Header -->
             <div class="page-header">
                 <h1>Proveedores</h1>
                 <p class="page-description">Registro y control de proveedores</p>
             </div>
-
-            <!-- Busqueda y agregar -->
+ 
+            <!-- Búsqueda y agregar -->
             <div class="search-actions-bar">
                 <div class="search-box">
-                    <input 
-                        type="text" 
-                        class="search-input" 
-                        placeholder="Buscar por número de proveedor, RFC..."
+                    <input
+                        type="text"
+                        class="search-input"
+                        placeholder="Buscar por RFC, razón social..."
                         id="searchInput"
+                        value="<?php echo htmlspecialchars($buscar); ?>"
                     >
                 </div>
                 <button type="button" class="btn-search">
                     <i class="ri-search-line"></i>
                     Buscar
                 </button>
-                <button type="button" class="btn-add-new" onclick="window.location.href='<?php echo view_url('proveedor_form.php'); ?>'">
+                <button type="button" class="btn-add-new"
+                    onclick="proveedorController.abrir()">
                     <i class="ri-add-line"></i>
                     Agregar nuevo
                 </button>
             </div>
-
-            <!-- Contenedor de la tabla -->
+ 
+            <!-- Tabla -->
             <div class="table-container">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="col-id-proveedor">NÚMERO DE<br>PROVEEDOR</th>
-                            <th class="col-razon-social">RAZÓN SOCIAL</th>
-                            <th class="col-rfc">RFC</th>
-                            <th class="col-tipo-persona">TIPO<br>PERSONA</th>
-                            <th class="col-tipo-producto-servicio">TIPO<br>PRODUCTO/SERVICIO</th>
-                            <th class="col-domicilio-fiscal">DOMICILIO<br>FISCAL</th>
-                            <th class="col-correo-contacto">CORREO<br>CONTACTO</th>
+                            <th class="col-id"     data-sort="id_proveedor">NO.</th>
+                            <th class="col-rfc"    data-sort="rfc">RFC</th>
+                            <th class="col-name"   data-sort="razon_social">RAZÓN SOCIAL</th>
+                            <th                    data-sort="tipo_persona">TIPO<br>PERSONA</th>
+                            <th                    data-sort="tipo_producto_proveedor">TIPO<br>PRODUCTO/SERVICIO</th>
+                            <th class="col-tel">TELÉFONO</th>
+                            <th class="col-email">CORREO</th>
+                            <th class="col-status" data-sort="estatus">ESTATUS</th>
                             <th class="col-actions">ACCIONES</th>
                         </tr>
                     </thead>
@@ -114,44 +112,80 @@ include '../includes/sidebar.php';
                             </td>
                         </tr>
                         <?php else: ?>
-                            <?php foreach ($proveedores as $proveedor): ?>
+                            <?php foreach ($proveedores as $p): ?>
+                            <?php $activo = (int) $p['id_estatus'] === 1; ?>
                             <tr>
-                                <td class="col-id-proveedor"><?php echo htmlspecialchars($proveedor['numero_proveedor']); ?></td>
-                                <td class="col-razon-social"><?php echo htmlspecialchars($proveedor['razon_social']); ?></td>
-                                <td class="col-rfc"><?php echo htmlspecialchars($proveedor['rfc']); ?></td>
-                                <td class="col-tipo-persona"><?php echo htmlspecialchars($proveedor['tipo_persona']); ?></td>
-                                <td class="col-tipo-producto-servicio"><?php echo htmlspecialchars($proveedor['tipo_producto_servicio']); ?></td>
-                                <td class="col-domicilio-fiscal"><?php echo htmlspecialchars($proveedor['domicilio_fiscal']); ?></td>
-                                <td class="col-correo-contacto">
-                                    <span class="text-truncate" title="<?php echo htmlspecialchars($proveedor['correo_contacto']); ?>">
-                                        <?php echo htmlspecialchars($proveedor['correo_contacto']); ?>
+                                <td class="col-id text-center"
+                                    data-label="No."
+                                    data-col="id_proveedor">
+                                    <span style="font-weight:700;">
+                                        <?php echo $p['id_proveedor']; ?>
                                     </span>
                                 </td>
-                                <td class="col-actions">
+ 
+                                <td class="col-rfc"
+                                    data-label="RFC"
+                                    data-col="rfc">
+                                    <?php echo htmlspecialchars($p['rfc']); ?>
+                                </td>
+ 
+                                <td class="col-name"
+                                    data-label="Razón social"
+                                    data-col="razon_social">
+                                    <?php echo htmlspecialchars($p['razon_social']); ?>
+                                </td>
+ 
+                                <td data-label="Tipo persona">
+                                    <span class="badge badge-info" style="font-size:11px;">
+                                        <?php echo htmlspecialchars($p['tipo_persona']); ?>
+                                    </span>
+                                </td>
+ 
+                                <td data-label="Tipo producto/servicio">
+                                    <?php echo htmlspecialchars($p['tipo_producto_proveedor'] ?? '—'); ?>
+                                </td>
+ 
+                                <td class="col-tel" data-label="Teléfono">
+                                    <?php echo htmlspecialchars($p['telefono'] ?? '—'); ?>
+                                </td>
+ 
+                                <td class="col-email" data-label="Correo">
+                                    <span class="text-truncate"
+                                        title="<?php echo htmlspecialchars($p['email'] ?? ''); ?>">
+                                        <?php echo htmlspecialchars($p['email'] ?? '—'); ?>
+                                    </span>
+                                </td>
+ 
+                                <td class="col-status text-center" data-label="Estatus">
+                                    <span class="badge <?php echo $activo ? 'badge-active' : 'badge-inactive'; ?>">
+                                        <?php echo $activo ? 'ACTIVO' : 'INACTIVO'; ?>
+                                    </span>
+                                </td>
+ 
+                                <td class="col-actions" data-label="Acciones">
                                     <div class="action-buttons">
-                                        <button 
-                                            type="button" 
-                                            class="btn-action btn-view" 
+                                        <!-- Ver -->
+                                        <button type="button" class="btn-action btn-view"
                                             title="Ver proveedor"
-                                            onclick='verProveedor(<?php echo json_encode($proveedor); ?>)'    
-                                        >
+                                            onclick="proveedorController.abrir(<?php echo $p['id_proveedor']; ?>, true)">
                                             <i class="ri-eye-line"></i>
                                         </button>
-                                        <button 
-                                            type="button" 
-                                            class="btn-action btn-edit" 
+                                        <!-- Editar -->
+                                        <button type="button" class="btn-action btn-edit"
                                             title="Editar proveedor"
-                                            onclick="editarRegistro('<?php echo $proveedor['numero']; ?>', '<?php echo view_url('proveedor_form.php'); ?>')"
-                                        >
+                                            onclick="proveedorController.abrir(<?php echo $p['id_proveedor']; ?>, false)">
                                             <i class="ri-edit-box-line"></i>
                                         </button>
-                                        <button 
-                                            type="button" 
-                                            class="btn-action btn-delete" 
-                                            title="Eliminar proveedor"
-                                            onclick="eliminarRegistro('<?php echo $proveedor['numero']; ?>', null, '¿Eliminar el proveedor <?php echo htmlspecialchars($proveedor['nombre']); ?>?')"
-                                        >
-                                            <i class="ri-delete-bin-6-line"></i>
+                                        <!-- Activar / Desactivar -->
+                                        <button type="button"
+                                            class="btn-action <?php echo $activo ? 'btn-delete' : 'btn-activate'; ?>"
+                                            title="<?php echo $activo ? 'Desactivar' : 'Activar'; ?>"
+                                            onclick="proveedorController.cambiarEstatus(
+                                                <?php echo $p['id_proveedor']; ?>,
+                                                <?php echo $activo ? 2 : 1; ?>,
+                                                '<?php echo htmlspecialchars($p['razon_social'], ENT_QUOTES); ?>'
+                                            )">
+                                            <i class="ri-<?php echo $activo ? 'forbid' : 'check'; ?>-line"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -161,23 +195,48 @@ include '../includes/sidebar.php';
                     </tbody>
                 </table>
             </div>
-
-            <!-- Pagination-->
-            <?php if (!empty($proveedores)): ?>
+ 
+            <!-- Paginación -->
+            <?php if ($total > 0): ?>
+            <?php
+                $urlBase = view_url('proveedores.php') . '?buscar=' . urlencode($buscar) . '&pagina=';
+                $inicio  = (($paginaActual - 1) * $porPagina) + 1;
+                $fin     = min($paginaActual * $porPagina, $total);
+            ?>
             <div class="pagination">
-                <button class="pagination-btn" disabled>
+                <a href="<?php echo $urlBase . ($paginaActual - 1); ?>"
+                   class="pagination-btn <?php echo $paginaActual <= 1 ? 'disabled' : ''; ?>"
+                   <?php echo $paginaActual <= 1 ? 'onclick="return false;"' : ''; ?>>
                     <i class="ri-arrow-left-line"></i> Anterior
-                </button>
-                <span class="pagination-info">Página 1 de 1</span>
-                <button class="pagination-btn" disabled>
+                </a>
+                <span class="pagination-info">
+                    Mostrando <?php echo $inicio; ?>–<?php echo $fin; ?> de <?php echo $total; ?> proveedor(es)
+                    &nbsp;·&nbsp; Página <?php echo $paginaActual; ?> de <?php echo $totalPaginas; ?>
+                </span>
+                <a href="<?php echo $urlBase . ($paginaActual + 1); ?>"
+                   class="pagination-btn <?php echo $paginaActual >= $totalPaginas ? 'disabled' : ''; ?>"
+                   <?php echo $paginaActual >= $totalPaginas ? 'onclick="return false;"' : ''; ?>>
                     Siguiente <i class="ri-arrow-right-line"></i>
-                </button>
+                </a>
             </div>
             <?php endif; ?>
+ 
         </main>
-
+ 
 <?php
-//INCLUIR FOOTER (pendiente se carga mediante $page_js)
-include '../includes/modal_ver_paciente.php';
-include '../includes/footer.php';
+$catalogosJson = json_encode($catalogos);
 ?>
+ 
+<!-- Variables globales -->
+<script>
+var API_URL            = '<?php echo ajax_url('Api.php'); ?>';
+var CATALOGOS_PROV     = <?php echo $catalogosJson; ?>;
+</script>
+ 
+<!-- Modal proveedor -->
+<?php include '../includes/modal_proveedor.php'; ?>
+ 
+<!-- JS específico del módulo -->
+<script src="<?php echo asset('js/proveedores.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+ 
+<?php include '../includes/footer.php'; ?>

@@ -111,6 +111,12 @@ $modulos = [
         'campo_id' => 'id_cita',
     ],
 
+    'proveedores' => [
+        'modelo' => 'Proveedor',
+        'archivo' => __DIR__ . '/../models/Proveedor.php',
+        'campo_id' => 'id_proveedor',
+    ],
+
 
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
@@ -667,7 +673,58 @@ switch ($accion) {
         ]);
         break;
 
+    case 'get_proveedor':
+        $id = (int) ($_GET['id'] ?? 0);
+        if (!$id)
+            responder(false, 'ID invalido');
+        $result = $model->getById($id);
+        if (!$result)
+            responder(false, 'Proveedor no encontrado');
+        responder(true, 'OK', ['proveedor' => $result]);
+        break;
 
+    case 'crear_proveedor':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $data = sanitizarPost($_POST);
+        $error = $model->validar($data);
+        if ($error)
+            responder(false, $error);
+        if ($model->rfcExiste($data['rfc']))
+            responder(false, 'Ya existe un proveedor con ese RFC');
+        $id = $model->create($data);
+        if ($id)
+            responder(true, 'Proveedor creado correctamente', ['id' => $id]);
+        responder(false, 'Error al crear el proveedor');
+        break;
+
+    case 'actualizar_proveedor':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $id = (int) ($_POST['id_proveedor'] ?? 0);
+        if (!$id)
+            responder(false, 'ID invalido');
+        $data = sanitizarPost($_POST);
+        $error = $model->validar($data);
+        if ($error)
+            responder(false, $error);
+        if ($model->rfcExiste($data['rfc'], $id))
+            responder(false, 'Ya existe otro proveedor con ese RFC');
+        $ok = $model->update($id, $data);
+        responder($ok, $ok ? 'Proveedor actualizado correctamente' : 'Error al actualizar');
+        break;
+
+    case 'status_proveedor':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $id = (int) ($_POST['id_proveedor'] ?? 0);
+        $nuevoEstatus = (int) ($_POST['id_estatus'] ?? 0);
+        if (!$id || !in_array($nuevoEstatus, [1, 2]))
+            responder(false, 'Parametros invalidos');
+        $ok = $model->cambiarEstatus($id, $nuevoEstatus);
+        $texto = $nuevoEstatus === 1 ? 'activado' : 'desactivado';
+        responder($ok, $ok ? "Proveedor {$texto} correctamente" : 'Error al cambiar estatus');
+        break;
 
 
     // ── Acción no reconocida ──────────────────────────────────────
