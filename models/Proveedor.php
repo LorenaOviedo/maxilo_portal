@@ -153,7 +153,7 @@ class Proveedor
     public function getCatalogos(): array
     {
         return [
-            'tiposproductoproveedor' => $this->_query(
+            'tipoproductoproveedor' => $this->_query(
                 "SELECT id_tipo_producto_proveedor, tipo_producto_proveedor
                  FROM tipoproductoproveedor ORDER BY tipo_producto_proveedor"
             ),
