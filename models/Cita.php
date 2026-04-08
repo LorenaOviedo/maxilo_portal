@@ -10,13 +10,17 @@ class Cita
 {
     private PDO $db;
  
-    // Mapa texto -> id_estatus_cita (tabla EstadosCita)
-    // Ajusta si tus IDs difieren
+    // IDs reales según tabla EstadosCita en BD
     private const ESTATUS_IDS = [
-        'Pendiente'  => 1,
-        'Confirmada' => 2,
-        'Cancelada'  => 3,
-        'Completada' => 4,
+        'Pendiente'            => 1,
+        'Confirmada'           => 2,
+        'Reprogramada'         => 3,
+        'En curso'             => 4,
+        'No asistió'           => 5,
+        'Cancelada'            => 6,
+        'Atendida'             => 7,
+        'Pagada'               => 8,
+        'Registro diagnóstico' => 9,
     ];
  
     public function __construct(PDO $db)
@@ -81,11 +85,11 @@ class Cita
                     AS nombre_especialista,
                 mc.motivo_consulta,
                 ec.estatus_cita
-            FROM cita c
-            INNER JOIN paciente      p  ON p.numero_paciente   = c.numero_paciente
-            INNER JOIN especialista  e  ON e.id_especialista   = c.id_especialista
-            LEFT  JOIN motivoconsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
-            LEFT  JOIN estadoscita   ec ON ec.id_estatus_cita  = c.id_estatus_cita
+            FROM Cita c
+            INNER JOIN Paciente      p  ON p.numero_paciente   = c.numero_paciente
+            INNER JOIN Especialista  e  ON e.id_especialista   = c.id_especialista
+            LEFT  JOIN MotivoConsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
+            LEFT  JOIN EstadosCita   ec ON ec.id_estatus_cita  = c.id_estatus_cita
             WHERE " . implode(' AND ', $where) . "
             ORDER BY c.hora_inicio ASC
         ";
@@ -117,11 +121,11 @@ class Cita
                     AS nombre_especialista,
                 mc.motivo_consulta,
                 ec.estatus_cita
-            FROM cita c
-            INNER JOIN paciente      p  ON p.numero_paciente    = c.numero_paciente
-            INNER JOIN especialista  e  ON e.id_especialista    = c.id_especialista
-            LEFT  JOIN motivoconsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
-            LEFT  JOIN estadoscita   ec ON ec.id_estatus_cita   = c.id_estatus_cita
+            FROM Cita c
+            INNER JOIN Paciente      p  ON p.numero_paciente    = c.numero_paciente
+            INNER JOIN Especialista  e  ON e.id_especialista    = c.id_especialista
+            LEFT  JOIN MotivoConsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
+            LEFT  JOIN EstadosCita   ec ON ec.id_estatus_cita   = c.id_estatus_cita
             WHERE c.id_cita = :id
         ");
         $stmt->execute([':id' => $id]);
@@ -142,8 +146,8 @@ class Cita
                 COUNT(*)                               AS total,
                 SUM(ec.estatus_cita = 'Pendiente')     AS pendientes,
                 SUM(ec.estatus_cita = 'Confirmada')    AS confirmadas
-            FROM cita c
-            LEFT JOIN estadoscita   ec ON ec.id_estatus_cita = c.id_estatus_cita
+            FROM Cita c
+            LEFT JOIN EstadosCita ec ON ec.id_estatus_cita = c.id_estatus_cita
             WHERE MONTH(c.fecha_cita) = :mes
               AND YEAR(c.fecha_cita)  = :anio
             GROUP BY c.fecha_cita
@@ -160,13 +164,11 @@ class Cita
     /** Crear nueva cita. Retorna el ID insertado o false */
     public function create(array $data): int|false
     {
-        $idEstatus  = self::ESTATUS_IDS['Pendiente'];
+        $idEstatus = self::ESTATUS_IDS['Pendiente']; // nueva cita siempre Pendiente
         $primeraVez = ($data['tipoPaciente'] ?? '') === 'Primera vez' ? 1 : 0;
-        $costo      = (isset($data['costo_estimado']) && $data['costo_estimado'] !== '' && $data['costo_estimado'] !== null)
-                        ? (float) $data['costo_estimado'] : null;
  
         $stmt = $this->db->prepare("
-            INSERT INTO cita
+            INSERT INTO Cita
                 (fecha_cita, hora_inicio, paciente_primera_vez,
                  duracion_aproximada, id_estatus_cita, costo_total,
                  id_motivo_consulta, id_especialista, numero_paciente)
@@ -176,23 +178,20 @@ class Cita
                  :id_motivo, :id_especialista, :numero_paciente)
         ");
  
-        $params = [
-            ':fecha_cita'      => $data['fecha_cita'],
-            ':hora_inicio'     => $data['hora_inicio'],
-            ':primera_vez'     => $primeraVez,
-            ':duracion'        => (int) ($data['duracion_aproximada'] ?? 60),
-            ':id_estatus'      => $idEstatus,
-            ':costo'           => $costo,
-            ':id_motivo'       => (int) $data['id_motivo_consulta'],
-            ':id_especialista' => (int) $data['id_especialista'],
-            ':numero_paciente' => (int) $data['id_paciente'],
-        ];
+        $ok = $stmt->execute([
+            ':fecha_cita'       => $data['fecha_cita'],
+            ':hora_inicio'      => $data['hora_inicio'],
+            ':primera_vez'      => $primeraVez,
+            ':duracion'         => (int)   ($data['duracion_aproximada'] ?? 60),
+            ':id_estatus'       => $idEstatus,
+            ':costo'            => isset($data['costo_estimado']) && $data['costo_estimado'] !== ''
+                                        ? (float) $data['costo_estimado'] : null,
+            ':id_motivo'        => (int) $data['id_motivo_consulta'],
+            ':id_especialista'  => (int) $data['id_especialista'],
+            ':numero_paciente'  => (int) $data['id_paciente'],
+        ]);
  
-        if (!$stmt->execute($params)) {
-            error_log('Cita::create() falló: ' . implode(' | ', $stmt->errorInfo()));
-            return false;
-        }
-        return (int) $this->db->lastInsertId();
+        return $ok ? (int) $this->db->lastInsertId() : false;
     }
  
     /** Actualizar cita existente */
@@ -235,26 +234,28 @@ class Cita
         }
  
         $stmt = $this->db->prepare(
-            "UPDATE cita SET " . implode(', ', $sets) . " WHERE id_cita = :id"
+            "UPDATE Cita SET " . implode(', ', $sets) . " WHERE id_cita = :id"
         );
- 
-        if (!$stmt->execute($params)) {
-            error_log('Cita::update() falló: ' . implode(' | ', $stmt->errorInfo()));
-            return false;
-        }
-        return true;
+        return $stmt->execute($params);
     }
  
     /** Cambiar solo el estatus de una cita */
     public function cambiarEstatus(int $id, string $estatusTexto): bool
     {
         $idEstatus = $this->resolverIdEstatus($estatusTexto);
-        if (!$idEstatus) return false;
+        if (!$idEstatus) {
+            error_log("cambiarEstatus: no se pudo resolver estatus '{$estatusTexto}' para cita {$id}");
+            return false;
+        }
  
         $stmt = $this->db->prepare(
-            "UPDATE cita SET id_estatus_cita = :id_estatus WHERE id_cita = :id"
+            "UPDATE Cita SET id_estatus_cita = :id_estatus WHERE id_cita = :id"
         );
-        return $stmt->execute([':id_estatus' => $idEstatus, ':id' => $id]);
+        $ok = $stmt->execute([':id_estatus' => $idEstatus, ':id' => $id]);
+        if (!$ok) {
+            error_log("cambiarEstatus: UPDATE falló para cita {$id}: " . implode(' | ', $stmt->errorInfo()));
+        }
+        return $ok;
     }
  
     /** Eliminar cita (CASCADE elimina TransaccionesDentales, Pagos relacionados) */
@@ -281,11 +282,11 @@ class Cita
         ?int $excluirId = null
     ): bool {
         $sql = "
-            SELECT COUNT(*) FROM cita c
-            LEFT JOIN estadoscita ec ON ec.id_estatus_cita = c.id_estatus_cita
+            SELECT COUNT(*) FROM Cita c
+            LEFT JOIN EstadosCita ec ON ec.id_estatus_cita = c.id_estatus_cita
             WHERE c.id_especialista = :id_esp
               AND c.fecha_cita      = :fecha
-              AND ec.estatus_cita NOT IN ('Cancelada', 'Completada')
+              AND ec.estatus_cita NOT IN ('Cancelada', 'Atendida', 'Pagada', 'No asistió', 'Registro diagnóstico')
               AND (
                   /* Nueva cita empieza dentro de una existente */
                   :hora_inicio < ADDTIME(c.hora_inicio, SEC_TO_TIME(c.duracion_aproximada * 60))
@@ -321,17 +322,27 @@ class Cita
      */
     private function resolverIdEstatus(string $texto): ?int
     {
-        if (isset(self::ESTATUS_IDS[$texto])) {
-            return self::ESTATUS_IDS[$texto];
+        $textoLimpio = trim($texto);
+ 
+        // 1. Buscar en el mapa local primero (más rápido)
+        if (isset(self::ESTATUS_IDS[$textoLimpio])) {
+            return self::ESTATUS_IDS[$textoLimpio];
         }
  
-        // Fallback: buscar en la tabla
+        // 2. Fallback: buscar en BD con TRIM para evitar problemas de espacios
         $stmt = $this->db->prepare(
-            "SELECT id_estatus_cita FROM EstadosCita WHERE estatus_cita = :texto LIMIT 1"
+            "SELECT id_estatus_cita FROM EstadosCita
+             WHERE TRIM(estatus_cita) = TRIM(:texto)
+             LIMIT 1"
         );
-        $stmt->execute([':texto' => $texto]);
+        $stmt->execute([':texto' => $textoLimpio]);
         $row = $stmt->fetchColumn();
-        return $row ? (int) $row : null;
+ 
+        if (!$row) {
+            error_log("resolverIdEstatus: no se encontró estatus '{$textoLimpio}' en EstadosCita");
+            return null;
+        }
+ 
+        return (int) $row;
     }
 }
- 

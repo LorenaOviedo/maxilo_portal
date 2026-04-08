@@ -92,13 +92,25 @@ class CitasController {
  
     /** Cambiar estatus */
     public function cambiarEstatus($id) {
-        $data = $this->getPostData();
-        if (empty($data['estatus'])) $this->json(['success' => false, 'message' => 'Estatus requerido']);
+        try {
+            $data    = $this->getPostData();
+            $estatus = trim($data['estatus'] ?? $_GET['estatus'] ?? '');
  
-        if ($this->citaModel->cambiarEstatus($id, $data['estatus'])) {
-            $this->json(['success' => true, 'message' => 'Estatus actualizado']);
+            if (empty($estatus)) {
+                $this->json(['success' => false, 'message' => 'Estatus requerido']);
+            }
+            if (!$id || $id <= 0) {
+                $this->json(['success' => false, 'message' => 'ID de cita inválido']);
+            }
+ 
+            if ($this->citaModel->cambiarEstatus($id, $estatus)) {
+                $this->json(['success' => true, 'message' => "Estatus cambiado a: {$estatus}"]);
+            }
+            $this->json(['success' => false, 'message' => "No se pudo cambiar el estatus a '{$estatus}' — verifica que exista en la tabla EstadosCita"]);
+        } catch (Exception $e) {
+            error_log('cambiarEstatus controller error: ' . $e->getMessage());
+            $this->json(['success' => false, 'message' => 'Error interno: ' . $e->getMessage()]);
         }
-        $this->json(['success' => false, 'message' => 'Error al actualizar el estatus']);
     }
  
     /** Eliminar cita */
@@ -130,45 +142,25 @@ class CitasController {
             );
             $this->json(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         } catch (PDOException $e) {
-            error_log("getPacientes error: " . $e->getMessage());
-            $this->json(['success' => false, 'message' => $e->getMessage(), 'data' => []]);
+            error_log("Error al obtener pacientes: " . $e->getMessage());
+            $this->json(['success' => false, 'data' => []]);
         }
     }
  
     /** Especialistas para el select */
     public function getEspecialistas() {
         try {
-            // JOIN con Estatus para filtrar por texto — evita asumir un id_estatus fijo
             $stmt = $this->db->query(
-                "SELECT e.id_especialista,
-                        TRIM(CONCAT(e.nombre, ' ', e.apellido_paterno,
-                             IF(e.apellido_materno IS NOT NULL AND e.apellido_materno != '',
-                                CONCAT(' ', e.apellido_materno), ''))) AS nombre_completo
-                 FROM especialista e
-                 INNER JOIN estatus es ON es.id_estatus = e.id_estatus
-                 WHERE LOWER(es.estatus) IN ('activo', 'activa', 'active')
-                 ORDER BY e.nombre ASC"
+                "SELECT id_especialista,
+                        CONCAT(nombre, ' ', apellido_paterno) AS nombre_completo
+                 FROM especialista
+                 WHERE estatus = 'activo'
+                 ORDER BY nombre ASC"
             );
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
- 
-            // Si el filtro no devuelve nada, traer todos sin filtrar
-            // (útil si el valor del catálogo Estatus es diferente)
-            if (empty($data)) {
-                $stmt = $this->db->query(
-                    "SELECT e.id_especialista,
-                            TRIM(CONCAT(e.nombre, ' ', e.apellido_paterno,
-                                 IF(e.apellido_materno IS NOT NULL AND e.apellido_materno != '',
-                                    CONCAT(' ', e.apellido_materno), ''))) AS nombre_completo
-                     FROM especialista e
-                     ORDER BY e.nombre ASC"
-                );
-                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            }
- 
-            $this->json(['success' => true, 'data' => $data]);
+            $this->json(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         } catch (PDOException $e) {
-            error_log("getEspecialistas error: " . $e->getMessage());
-            $this->json(['success' => false, 'message' => $e->getMessage(), 'data' => []]);
+            error_log("Error al obtener especialistas: " . $e->getMessage());
+            $this->json(['success' => false, 'data' => []]);
         }
     }
  
@@ -182,8 +174,8 @@ class CitasController {
             );
             $this->json(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         } catch (PDOException $e) {
-            error_log("getMotivos error: " . $e->getMessage());
-            $this->json(['success' => false, 'message' => $e->getMessage(), 'data' => []]);
+            error_log("Error al obtener motivos: " . $e->getMessage());
+            $this->json(['success' => false, 'data' => []]);
         }
     }
  
