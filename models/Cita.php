@@ -234,7 +234,7 @@ class Cita
         }
  
         $stmt = $this->db->prepare(
-            "UPDATE Cita SET " . implode(', ', $sets) . " WHERE id_cita = :id"
+            "UPDATE cita SET " . implode(', ', $sets) . " WHERE id_cita = :id"
         );
         return $stmt->execute($params);
     }
@@ -249,7 +249,7 @@ class Cita
         }
  
         $stmt = $this->db->prepare(
-            "UPDATE Cita SET id_estatus_cita = :id_estatus WHERE id_cita = :id"
+            "UPDATE cita SET id_estatus_cita = :id_estatus WHERE id_cita = :id"
         );
         $ok = $stmt->execute([':id_estatus' => $idEstatus, ':id' => $id]);
         if (!$ok) {
