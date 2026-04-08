@@ -9,21 +9,21 @@
 class Proveedor
 {
     private PDO $db;
- 
+
     public function __construct(PDO $db)
     {
         $this->db = $db;
     }
- 
+
     // ─────────────────────────────────────────────────────────────────────────
     // LISTADO
     // ─────────────────────────────────────────────────────────────────────────
- 
+
     public function getAll(array $filtros = [], int $pagina = 1, int $porPagina = 10): array
     {
-        $where  = $this->_buildWhere($filtros);
+        $where = $this->_buildWhere($filtros);
         $offset = ($pagina - 1) * $porPagina;
- 
+
         $stmt = $this->db->prepare("
             SELECT
                 p.id_proveedor,
@@ -39,7 +39,7 @@ class Proveedor
                 -- Teléfono
                 (
                     SELECT c.valor FROM contactos c
-                    JOIN   TipoContacto tc ON tc.id_tipo_contacto = c.id_tipo_contacto
+                    JOIN   tipocontacto tc ON tc.id_tipo_contacto = c.id_tipo_contacto
                     WHERE  c.id_proveedor = p.id_proveedor
                       AND  (tc.tipo_contacto LIKE '%tel%' OR tc.tipo_contacto LIKE '%cel%')
                     LIMIT 1
@@ -71,39 +71,43 @@ class Proveedor
             ORDER BY p.razon_social ASC
             LIMIT :limit OFFSET :offset
         ");
- 
+
         foreach ($filtros as $k => $v) {
-            if ($k === 'buscar')     $stmt->bindValue(':buscar',     "%$v%");
-            if ($k === 'id_estatus') $stmt->bindValue(':id_estatus', (int) $v, PDO::PARAM_INT);
+            if ($k === 'buscar')
+                $stmt->bindValue(':buscar', "%$v%");
+            if ($k === 'id_estatus')
+                $stmt->bindValue(':id_estatus', (int) $v, PDO::PARAM_INT);
         }
-        $stmt->bindValue(':limit',  $porPagina, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset,    PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $porPagina, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
- 
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
- 
+
     public function contarTotal(array $filtros = []): int
     {
         $where = $this->_buildWhere($filtros);
-        $stmt  = $this->db->prepare("
+        $stmt = $this->db->prepare("
             SELECT COUNT(DISTINCT p.id_proveedor)
             FROM  proveedor p
             JOIN  estatus   s ON s.id_estatus = p.id_estatus
             $where
         ");
         foreach ($filtros as $k => $v) {
-            if ($k === 'buscar')     $stmt->bindValue(':buscar',     "%$v%");
-            if ($k === 'id_estatus') $stmt->bindValue(':id_estatus', (int) $v, PDO::PARAM_INT);
+            if ($k === 'buscar')
+                $stmt->bindValue(':buscar', "%$v%");
+            if ($k === 'id_estatus')
+                $stmt->bindValue(':id_estatus', (int) $v, PDO::PARAM_INT);
         }
         $stmt->execute();
         return (int) $stmt->fetchColumn();
     }
- 
+
     // ─────────────────────────────────────────────────────────────────────────
     // DETALLE (para modal)
     // ─────────────────────────────────────────────────────────────────────────
- 
+
     public function getById(int $id): ?array
     {
         $stmt = $this->db->prepare("
@@ -126,8 +130,9 @@ class Proveedor
         ");
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$row) return null;
- 
+        if (!$row)
+            return null;
+
         // Contactos
         $stmt2 = $this->db->prepare("
             SELECT c.valor, tc.tipo_contacto, c.id_tipo_contacto
@@ -137,46 +142,46 @@ class Proveedor
         ");
         $stmt2->execute([':id' => $id]);
         $row['contactos'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
- 
+
         return $row;
     }
- 
+
     // ─────────────────────────────────────────────────────────────────────────
     // CATÁLOGOS para el modal
     // ─────────────────────────────────────────────────────────────────────────
- 
+
     public function getCatalogos(): array
     {
         return [
-            'tiposProductoProveedor' => $this->_query(
+            'tiposproductoproveedor' => $this->_query(
                 "SELECT id_tipo_producto_proveedor, tipo_producto_proveedor
                  FROM tipoproductoproveedor ORDER BY tipo_producto_proveedor"
             ),
-            'tiposContacto' => $this->_query(
+            'tiposcontacto' => $this->_query(
                 "SELECT id_tipo_contacto, tipo_contacto FROM tipocontacto ORDER BY tipo_contacto"
             ),
-            'tiposPersona' => [
-                ['valor' => 'Moral',   'etiqueta' => 'Moral'],
-                ['valor' => 'Física',  'etiqueta' => 'Física'],
+            'tipospersona' => [
+                ['valor' => 'Moral', 'etiqueta' => 'Moral'],
+                ['valor' => 'Física', 'etiqueta' => 'Física'],
             ],
         ];
     }
- 
+
     // ─────────────────────────────────────────────────────────────────────────
     // CREAR
     // ─────────────────────────────────────────────────────────────────────────
- 
+
     public function create(array $data): int|false
     {
         try {
             $this->db->beginTransaction();
- 
+
             // 1. Dirección (si viene CP válido)
             $idDireccion = null;
             if (!empty($data['id_cp'])) {
                 $idDireccion = $this->_upsertDireccion($data);
             }
- 
+
             // 2. Proveedor
             $stmt = $this->db->prepare("
                 INSERT INTO proveedor
@@ -187,46 +192,46 @@ class Proveedor
                      :id_dir, :terminos_pago, :dias_credito, :limite_credito, :id_estatus)
             ");
             $stmt->execute([
-                ':rfc'          => strtoupper(trim($data['rfc'])),
+                ':rfc' => strtoupper(trim($data['rfc'])),
                 ':tipo_persona' => $data['tipo_persona'],
                 ':razon_social' => strtoupper(trim($data['razon_social'])),
                 ':id_tipo_prod' => $data['id_tipo_producto_proveedor'] ?: null,
-                ':id_dir'       => $idDireccion,
-                ':terminos_pago'=> $data['terminos_pago'] ?? null,
+                ':id_dir' => $idDireccion,
+                ':terminos_pago' => $data['terminos_pago'] ?? null,
                 ':dias_credito' => (int) ($data['dias_credito'] ?? 0),
-                ':limite_credito'=> (float) ($data['limite_credito'] ?? 0),
-                ':id_estatus'   => 1,
+                ':limite_credito' => (float) ($data['limite_credito'] ?? 0),
+                ':id_estatus' => 1,
             ]);
             $idProveedor = (int) $this->db->lastInsertId();
- 
+
             // 3. Contactos
             $this->_upsertContactos($idProveedor, $data);
- 
+
             $this->db->commit();
             return $idProveedor;
- 
+
         } catch (Exception $e) {
             $this->db->rollBack();
-            error_log('Proveedor::create() error: ' . $e->getMessage());
+            error_log('proveedor::create() error: ' . $e->getMessage());
             return false;
         }
     }
- 
+
     // ─────────────────────────────────────────────────────────────────────────
     // ACTUALIZAR
     // ─────────────────────────────────────────────────────────────────────────
- 
+
     public function update(int $id, array $data): bool
     {
         try {
             $this->db->beginTransaction();
- 
+
             // 1. Dirección
             $idDireccion = $data['id_direccion_actual'] ?? null;
             if (!empty($data['id_cp'])) {
                 $idDireccion = $this->_upsertDireccion($data, $idDireccion);
             }
- 
+
             // 2. Proveedor
             $stmt = $this->db->prepare("
                 UPDATE proveedor SET
@@ -241,34 +246,34 @@ class Proveedor
                 WHERE id_proveedor = :id
             ");
             $stmt->execute([
-                ':rfc'          => strtoupper(trim($data['rfc'])),
+                ':rfc' => strtoupper(trim($data['rfc'])),
                 ':tipo_persona' => $data['tipo_persona'],
                 ':razon_social' => strtoupper(trim($data['razon_social'])),
                 ':id_tipo_prod' => $data['id_tipo_producto_proveedor'] ?: null,
-                ':id_dir'       => $idDireccion,
-                ':terminos_pago'=> $data['terminos_pago'] ?? null,
+                ':id_dir' => $idDireccion,
+                ':terminos_pago' => $data['terminos_pago'] ?? null,
                 ':dias_credito' => (int) ($data['dias_credito'] ?? 0),
-                ':limite_credito'=> (float) ($data['limite_credito'] ?? 0),
-                ':id'           => $id,
+                ':limite_credito' => (float) ($data['limite_credito'] ?? 0),
+                ':id' => $id,
             ]);
- 
+
             // 3. Contactos (borrar y reinsertar)
             $this->_upsertContactos($id, $data);
- 
+
             $this->db->commit();
             return true;
- 
+
         } catch (Exception $e) {
             $this->db->rollBack();
-            error_log('Proveedor::update() error: ' . $e->getMessage());
+            error_log('proveedor::update() error: ' . $e->getMessage());
             return false;
         }
     }
- 
+
     // ─────────────────────────────────────────────────────────────────────────
     // CAMBIAR ESTATUS
     // ─────────────────────────────────────────────────────────────────────────
- 
+
     public function cambiarEstatus(int $id, int $idEstatus): bool
     {
         $stmt = $this->db->prepare(
@@ -276,11 +281,11 @@ class Proveedor
         );
         return $stmt->execute([':id_estatus' => $idEstatus, ':id' => $id]);
     }
- 
+
     // ─────────────────────────────────────────────────────────────────────────
     // VALIDAR (backend)
     // ─────────────────────────────────────────────────────────────────────────
- 
+
     public function validar(array $data): ?string
     {
         if (empty(trim($data['rfc'] ?? '')))
@@ -295,14 +300,14 @@ class Proveedor
             return 'El tipo de persona debe ser "Moral" o "Física"';
         return null;
     }
- 
+
     // ─────────────────────────────────────────────────────────────────────────
     // VERIFICAR RFC ÚNICO
     // ─────────────────────────────────────────────────────────────────────────
- 
+
     public function rfcExiste(string $rfc, ?int $excluirId = null): bool
     {
-        $sql    = "SELECT COUNT(*) FROM Proveedor WHERE rfc = :rfc";
+        $sql = "SELECT COUNT(*) FROM Proveedor WHERE rfc = :rfc";
         $params = [':rfc' => strtoupper(trim($rfc))];
         if ($excluirId) {
             $sql .= " AND id_proveedor != :id";
@@ -312,11 +317,11 @@ class Proveedor
         $stmt->execute($params);
         return (int) $stmt->fetchColumn() > 0;
     }
- 
+
     // ─────────────────────────────────────────────────────────────────────────
     // HELPERS PRIVADOS
     // ─────────────────────────────────────────────────────────────────────────
- 
+
     private function _buildWhere(array $filtros): string
     {
         $conds = [];
@@ -326,7 +331,7 @@ class Proveedor
             $conds[] = "p.id_estatus = :id_estatus";
         return $conds ? 'WHERE ' . implode(' AND ', $conds) : '';
     }
- 
+
     private function _upsertDireccion(array $data, ?int $idExistente = null): int
     {
         if ($idExistente) {
@@ -339,55 +344,55 @@ class Proveedor
                 WHERE id_direccion = :id
             ");
             $stmt->execute([
-                ':calle'   => $data['calle']           ?? '',
-                ':num_ext' => $data['numero_exterior']  ?? '',
-                ':num_int' => $data['numero_interior']  ?? null,
-                ':id_cp'   => (int) $data['id_cp'],
-                ':id'      => $idExistente,
+                ':calle' => $data['calle'] ?? '',
+                ':num_ext' => $data['numero_exterior'] ?? '',
+                ':num_int' => $data['numero_interior'] ?? null,
+                ':id_cp' => (int) $data['id_cp'],
+                ':id' => $idExistente,
             ]);
             return $idExistente;
         }
- 
+
         $stmt = $this->db->prepare("
             INSERT INTO direcciones (calle, numero_exterior, numero_interior, id_cp)
             VALUES (:calle, :num_ext, :num_int, :id_cp)
         ");
         $stmt->execute([
-            ':calle'   => $data['calle']           ?? '',
-            ':num_ext' => $data['numero_exterior']  ?? '',
-            ':num_int' => $data['numero_interior']  ?? null,
-            ':id_cp'   => (int) $data['id_cp'],
+            ':calle' => $data['calle'] ?? '',
+            ':num_ext' => $data['numero_exterior'] ?? '',
+            ':num_int' => $data['numero_interior'] ?? null,
+            ':id_cp' => (int) $data['id_cp'],
         ]);
         return (int) $this->db->lastInsertId();
     }
- 
+
     private function _upsertContactos(int $idProveedor, array $data): void
     {
         // Borrar contactos anteriores
         $this->db->prepare("DELETE FROM Contactos WHERE id_proveedor = :id")
-                 ->execute([':id' => $idProveedor]);
- 
+            ->execute([':id' => $idProveedor]);
+
         $insertar = $this->db->prepare("
             INSERT INTO contactos (id_tipo_contacto, id_proveedor, valor)
             VALUES (:tipo, :proveedor, :valor)
         ");
- 
+
         if (!empty($data['telefono']) && !empty($data['id_tipo_contacto_telefono'])) {
             $insertar->execute([
-                ':tipo'      => (int) $data['id_tipo_contacto_telefono'],
+                ':tipo' => (int) $data['id_tipo_contacto_telefono'],
                 ':proveedor' => $idProveedor,
-                ':valor'     => trim($data['telefono']),
+                ':valor' => trim($data['telefono']),
             ]);
         }
         if (!empty($data['email']) && !empty($data['id_tipo_contacto_email'])) {
             $insertar->execute([
-                ':tipo'      => (int) $data['id_tipo_contacto_email'],
+                ':tipo' => (int) $data['id_tipo_contacto_email'],
                 ':proveedor' => $idProveedor,
-                ':valor'     => strtolower(trim($data['email'])),
+                ':valor' => strtolower(trim($data['email'])),
             ]);
         }
     }
- 
+
     private function _query(string $sql): array
     {
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
