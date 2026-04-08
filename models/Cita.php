@@ -85,11 +85,11 @@ class Cita
                     AS nombre_especialista,
                 mc.motivo_consulta,
                 ec.estatus_cita
-            FROM Cita c
-            INNER JOIN Paciente      p  ON p.numero_paciente   = c.numero_paciente
-            INNER JOIN Especialista  e  ON e.id_especialista   = c.id_especialista
-            LEFT  JOIN MotivoConsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
-            LEFT  JOIN EstadosCita   ec ON ec.id_estatus_cita  = c.id_estatus_cita
+            FROM cita c
+            INNER JOIN paciente      p  ON p.numero_paciente   = c.numero_paciente
+            INNER JOIN especialista  e  ON e.id_especialista   = c.id_especialista
+            LEFT  JOIN motivoconsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
+            LEFT  JOIN estadoscita   ec ON ec.id_estatus_cita  = c.id_estatus_cita
             WHERE " . implode(' AND ', $where) . "
             ORDER BY c.hora_inicio ASC
         ";
@@ -121,11 +121,11 @@ class Cita
                     AS nombre_especialista,
                 mc.motivo_consulta,
                 ec.estatus_cita
-            FROM Cita c
-            INNER JOIN Paciente      p  ON p.numero_paciente    = c.numero_paciente
-            INNER JOIN Especialista  e  ON e.id_especialista    = c.id_especialista
-            LEFT  JOIN MotivoConsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
-            LEFT  JOIN EstadosCita   ec ON ec.id_estatus_cita   = c.id_estatus_cita
+            FROM cita c
+            INNER JOIN paciente      p  ON p.numero_paciente    = c.numero_paciente
+            INNER JOIN especialista  e  ON e.id_especialista    = c.id_especialista
+            LEFT  JOIN motivoconsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
+            LEFT  JOIN estadoscita   ec ON ec.id_estatus_cita   = c.id_estatus_cita
             WHERE c.id_cita = :id
         ");
         $stmt->execute([':id' => $id]);
@@ -146,8 +146,8 @@ class Cita
                 COUNT(*)                               AS total,
                 SUM(ec.estatus_cita = 'Pendiente')     AS pendientes,
                 SUM(ec.estatus_cita = 'Confirmada')    AS confirmadas
-            FROM Cita c
-            LEFT JOIN EstadosCita ec ON ec.id_estatus_cita = c.id_estatus_cita
+            FROM cita c
+            LEFT JOIN estadoscita ec ON ec.id_estatus_cita = c.id_estatus_cita
             WHERE MONTH(c.fecha_cita) = :mes
               AND YEAR(c.fecha_cita)  = :anio
             GROUP BY c.fecha_cita
