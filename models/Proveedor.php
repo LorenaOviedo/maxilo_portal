@@ -307,7 +307,7 @@ class Proveedor
 
     public function rfcExiste(string $rfc, ?int $excluirId = null): bool
     {
-        $sql = "SELECT COUNT(*) FROM Proveedor WHERE rfc = :rfc";
+        $sql = "SELECT COUNT(*) FROM proveedor WHERE rfc = :rfc";
         $params = [':rfc' => strtoupper(trim($rfc))];
         if ($excluirId) {
             $sql .= " AND id_proveedor != :id";
@@ -369,7 +369,7 @@ class Proveedor
     private function _upsertContactos(int $idProveedor, array $data): void
     {
         // Borrar contactos anteriores
-        $this->db->prepare("DELETE FROM Contactos WHERE id_proveedor = :id")
+        $this->db->prepare("DELETE FROM contactos WHERE id_proveedor = :id")
             ->execute([':id' => $idProveedor]);
 
         $insertar = $this->db->prepare("
