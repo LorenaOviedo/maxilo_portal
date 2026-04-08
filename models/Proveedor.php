@@ -153,14 +153,14 @@ class Proveedor
     public function getCatalogos(): array
     {
         return [
-            'tipoproductoproveedor' => $this->_query(
+            'tipoProductoProveedor' => $this->_query(
                 "SELECT id_tipo_producto_proveedor, tipo_producto_proveedor
                  FROM tipoproductoproveedor ORDER BY tipo_producto_proveedor"
             ),
-            'tiposcontacto' => $this->_query(
+            'tiposContacto' => $this->_query(
                 "SELECT id_tipo_contacto, tipo_contacto FROM tipocontacto ORDER BY tipo_contacto"
             ),
-            'tipospersona' => [
+            'tiposPersona' => [
                 ['valor' => 'Moral', 'etiqueta' => 'Moral'],
                 ['valor' => 'Física', 'etiqueta' => 'Física'],
             ],
