@@ -99,8 +99,8 @@ include '../includes/sidebar.php';
                             <th data-sort="razon_social">PROVEEDOR</th>
                             <th data-sort="tipo_compra">TIPO</th>
                             <th data-sort="fecha_emision">FECHA DE EMISIÓN</th>
-                            <th data-sort="fecha_entrega_estimada">ENTREGA ESTIMADA</th>
-                            <th class="text-right">TOTAL</th>
+                            <th data-sort="fecha_entrega_estimada">ENTREGAESTIMADA</th>
+                            <th class="text-left">TOTAL</th>
                             <th data-sort="estatus_orden_compra">ESTATUS</th>
                             <th class="col-actions">ACCIONES</th>
                         </tr>
@@ -143,7 +143,7 @@ include '../includes/sidebar.php';
                                         ? date('d/m/Y', strtotime($c['fecha_entrega_estimada'])) : '—'; ?>
                                 </td>
  
-                                <td class="text-right" data-label="Total">
+                                <td class="text-center" data-label="Total">
                                     <strong>
                                         <?php echo $c['moneda'] . ' $' . number_format($c['total'], 2); ?>
                                     </strong>
