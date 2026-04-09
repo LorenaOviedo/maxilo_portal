@@ -1269,11 +1269,32 @@
 #tablaDetalle td { font-size: 13px; padding: 10px 6px; vertical-align: middle; }
  
 /* Anchos de columna desktop */
-#tablaDetalle colgroup col:nth-child(1) { width: 42%; }
-#tablaDetalle colgroup col:nth-child(2) { width: 14%; }
-#tablaDetalle colgroup col:nth-child(3) { width: 18%; }
-#tablaDetalle colgroup col:nth-child(4) { width: 18%; }
-#tablaDetalle colgroup col:nth-child(5) { width: 8%;  }
+#tablaDetalle colgroup col:nth-child(1) { width: 38%; }
+#tablaDetalle colgroup col:nth-child(2) { width: 13%; }
+#tablaDetalle colgroup col:nth-child(3) { width: 17%; }
+#tablaDetalle colgroup col:nth-child(4) { width: 17%; }
+#tablaDetalle colgroup col:nth-child(5) { width: 44px; }
+ 
+#tablaDetalle td:last-child,
+#tablaDetalle th:last-child {
+    text-align: center;
+    padding: 0 8px;
+}
+#tablaDetalle .btn-accion.eliminar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: none;
+    background: #ffebee;
+    color: #c62828;
+    cursor: pointer;
+    font-size: 15px;
+    transition: opacity .2s;
+}
+#tablaDetalle .btn-accion.eliminar:hover { opacity: .75; }
  
 /* Fila agregar producto */
 .proc-add-row { flex-wrap: wrap; }
