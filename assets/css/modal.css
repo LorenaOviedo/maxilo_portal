@@ -1259,41 +1259,7 @@
 }
 .text-right { text-align: right !important; }
  
-/* Tabla detalle */
-#tablaDetalle {
-    width: 100%;
-    table-layout: auto;
-    border-collapse: collapse;
-}
-#tablaDetalle th {
-    font-size: 12px;
-    padding: 8px 8px;
-    white-space: nowrap;
-}
-#tablaDetalle td {
-    font-size: 13px;
-    padding: 10px 8px;
-    vertical-align: middle;
-}
-/* Producto — puede romper línea */
-#tablaDetalle td:nth-child(1) { width: 99%; }
-/* Numéricas — no rompen */
-#tablaDetalle td:nth-child(2),
-#tablaDetalle td:nth-child(3),
-#tablaDetalle td:nth-child(4),
-#tablaDetalle th:nth-child(2),
-#tablaDetalle th:nth-child(3),
-#tablaDetalle th:nth-child(4) {
-    white-space: nowrap;
-    text-align: right;
-}
-/* Botón */
-#tablaDetalle td:last-child,
-#tablaDetalle th:last-child {
-    white-space: nowrap;
-    text-align: center;
-    padding: 6px 8px;
-}
+/* Tabla detalle — sin tocar el layout que ya funciona */
 #tablaDetalle .btn-accion.eliminar {
     display: inline-flex;
     align-items: center;
