@@ -117,6 +117,12 @@ $modulos = [
         'campo_id' => 'id_proveedor',
     ],
 
+    'compras' => [
+        'modelo' => 'Compra',
+        'archivo' => __DIR__ . '/../models/OrdenCompra.php',
+        'campo_id' => 'id_compra',
+    ],
+
 
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
@@ -724,6 +730,62 @@ switch ($accion) {
         $ok = $model->cambiarEstatus($id, $nuevoEstatus);
         $texto = $nuevoEstatus === 1 ? 'activado' : 'desactivado';
         responder($ok, $ok ? "Proveedor {$texto} correctamente" : 'Error al cambiar estatus');
+        break;
+
+    case 'get_compra':
+        $id = (int) ($_GET['id'] ?? 0);
+        if (!$id)
+            responder(false, 'ID invalido');
+        $result = $model->getById($id);
+        if (!$result)
+            responder(false, 'Orden no encontrada');
+        responder(true, 'OK', ['compra' => $result]);
+        break;
+
+    case 'crear_compra':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $data = sanitizarPost($_POST);
+        $data['detalle'] = json_decode($_POST['detalle_json'] ?? '[]', true) ?? [];
+        $error = $model->validar($data);
+        if ($error)
+            responder(false, $error);
+        if ($model->folioExiste($data['folio_compra']))
+            responder(false, 'Ya existe una orden con ese folio');
+        $id = $model->create($data);
+        if ($id)
+            responder(true, 'Orden de compra creada correctamente', ['id' => $id]);
+        responder(false, 'Error al crear la orden de compra');
+        break;
+
+    case 'actualizar_compra':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $id = (int) ($_POST['id_compra'] ?? 0);
+        if (!$id)
+            responder(false, 'ID invalido');
+        $data = sanitizarPost($_POST);
+        $data['detalle'] = json_decode($_POST['detalle_json'] ?? '[]', true) ?? [];
+        $error = $model->validar($data);
+        if ($error)
+            responder(false, $error);
+        if ($model->folioExiste($data['folio_compra'], $id))
+            responder(false, 'Ya existe otra orden con ese folio');
+        $ok = $model->update($id, $data);
+        responder($ok, $ok ? 'Orden actualizada correctamente' : 'Error al actualizar');
+        break;
+
+    case 'cancelar_compra':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $id = (int) ($_POST['id_compra'] ?? 0);
+        if (!$id)
+            responder(false, 'ID invalido');
+        // Buscar id_estatus_orden_compra de Cancelada en BD
+        $stmt = $db->query("SELECT id_estatus_orden_compra FROM estadosordencompra WHERE LOWER(estatus_orden_compra) LIKE '%cancel%' LIMIT 1");
+        $idCancelada = (int) ($stmt->fetchColumn() ?: 4);
+        $ok = $model->cambiarEstatus($id, $idCancelada);
+        responder($ok, $ok ? 'Orden cancelada correctamente' : 'Error al cancelar');
         break;
 
 
