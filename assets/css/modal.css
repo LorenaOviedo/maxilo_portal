@@ -1259,43 +1259,61 @@
 }
 .text-right { text-align: right !important; }
  
-/* Tabla detalle — scroll horizontal en lugar de columnas fijas */
-.tabla-detalle-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin: 0 -4px;
-}
+/* Tabla detalle */
 #tablaDetalle {
     width: 100%;
-    min-width: 420px;   /* fuerza scroll antes de romperse */
-    table-layout: auto;
+    table-layout: fixed;
     border-collapse: collapse;
 }
-#tablaDetalle th,
-#tablaDetalle td {
-    white-space: nowrap;
-    padding: 8px 10px;
-    font-size: 13px;
-}
-#tablaDetalle td:first-child,
-#tablaDetalle th:first-child {
-    white-space: normal;   /* solo el nombre del producto puede romper línea */
-    min-width: 140px;
-}
-#tablaDetalle th:last-child,
-#tablaDetalle td:last-child {
-    width: 36px;
-    text-align: center;
-}
+#tablaDetalle th { font-size: 12px; padding: 8px 6px; }
+#tablaDetalle td { font-size: 13px; padding: 10px 6px; vertical-align: middle; }
+ 
+/* Anchos de columna desktop */
+#tablaDetalle colgroup col:nth-child(1) { width: 42%; }
+#tablaDetalle colgroup col:nth-child(2) { width: 14%; }
+#tablaDetalle colgroup col:nth-child(3) { width: 18%; }
+#tablaDetalle colgroup col:nth-child(4) { width: 18%; }
+#tablaDetalle colgroup col:nth-child(5) { width: 8%;  }
  
 /* Fila agregar producto */
-.proc-add-row {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
+.proc-add-row { flex-wrap: wrap; }
  
 /* Totales en móvil — apilados */
 @media (max-width: 540px) {
-    .modal-lg { width: 100vw; max-width: 100vw; border-radius: 12px 12px 0 0; }
+    .modal-lg { width: 100vw; max-width: 100vw; }
     .totales-resumen { flex: 1 1 100% !important; min-width: unset !important; }
+ 
+    /* Ocultar columna precio unit en móvil */
+    #tablaDetalle th:nth-child(3),
+    #tablaDetalle td:nth-child(3) { display: none; }
+ 
+    /* Tabla tipo tarjeta en móvil */
+    #tablaDetalle thead { display: none; }
+    #tablaDetalle tbody tr {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 8px 4px;
+        border-bottom: 1px solid #e9ecef;
+        gap: 4px;
+    }
+    #tablaDetalle tbody td {
+        border: none;
+        padding: 2px 4px;
+    }
+    /* Nombre ocupa toda la fila */
+    #tablaDetalle tbody td:nth-child(1) {
+        flex: 1 1 100%;
+        font-weight: 600;
+    }
+    /* Cantidad y subtotal en la misma fila con etiquetas */
+    #tablaDetalle tbody td:nth-child(2)::before { content: "Cant: "; color:#6c757d; font-size:11px; }
+    #tablaDetalle tbody td:nth-child(4)::before { content: "Total: "; color:#6c757d; font-size:11px; }
+    #tablaDetalle tbody td:nth-child(2) { flex: 1; }
+    #tablaDetalle tbody td:nth-child(4) { flex: 1; text-align: right; }
+    /* Botón eliminar alineado a la derecha */
+    #tablaDetalle tbody td:nth-child(5) {
+        flex: 0 0 auto;
+        padding-left: 8px;
+    }
 }
