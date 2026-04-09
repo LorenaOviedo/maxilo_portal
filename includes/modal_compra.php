@@ -30,10 +30,6 @@
             onclick="cambiarTab('modalCompra', 'tabOCDetalle')">
             Detalle de<br>Productos
         </button>
-        <button class="modal-tab" data-tab="tabOCTotales"
-            onclick="cambiarTab('modalCompra', 'tabOCTotales')">
-            Totales y<br>Observaciones
-        </button>
     </div>
  
     <!-- Body -->
@@ -169,51 +165,40 @@
  
                 <input type="hidden" id="ocDetalleJson" name="detalle_json" value="[]">
  
+                <!-- Totales -->
+                <div style="display:flex; gap:20px; margin-top:20px; flex-wrap:wrap; align-items:flex-start;">
+ 
+                    <!-- Observaciones -->
+                    <div style="flex:1; min-width:200px;">
+                        <div class="form-section-title">Observaciones</div>
+                        <textarea id="ocObservaciones" name="observaciones" class="form-input"
+                            rows="4" placeholder="Notas adicionales sobre la orden..."
+                            style="resize:vertical; width:100%;"></textarea>
+                    </div>
+ 
+                    <!-- Resumen -->
+                    <div class="totales-resumen" style="flex:0 0 260px;">
+                        <input type="hidden" id="ocTasaIva" name="tasa_iva" value="16">
+                        <div class="totales-row">
+                            <span>Subtotal:</span>
+                            <span id="resSubtotal">$0.00</span>
+                        </div>
+                        <div class="totales-row">
+                            <span>IVA (16%):</span>
+                            <span id="resIva">$0.00</span>
+                        </div>
+                        <div class="totales-row totales-total">
+                            <span>TOTAL:</span>
+                            <span id="resTotal">$0.00</span>
+                        </div>
+                    </div>
+ 
+                </div>
+ 
             </div>
         </div><!-- /#tabOCDetalle -->
  
-        <!-- ── Tab 3: Totales y Observaciones ─────────────────────────── -->
-        <div id="tabOCTotales" class="modal-tab-content">
-            <div class="modal-form">
  
-                <div class="form-section-title">IVA y totales</div>
- 
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Tasa IVA (%)</label>
-                        <select id="ocTasaIva" name="tasa_iva" class="form-select">
-                            <option value="0">0% — Exento</option>
-                            <option value="8">8%</option>
-                            <option value="16" selected>16%</option>
-                        </select>
-                    </div>
-                </div>
- 
-                <!-- Resumen de totales -->
-                <div class="totales-resumen" style="margin-top:20px;">
-                    <div class="totales-row">
-                        <span>Subtotal:</span>
-                        <span id="resSubtotal">$0.00</span>
-                    </div>
-                    <div class="totales-row">
-                        <span id="resIvaLabel">IVA (16%):</span>
-                        <span id="resIva">$0.00</span>
-                    </div>
-                    <div class="totales-row totales-total">
-                        <span>TOTAL:</span>
-                        <span id="resTotal">$0.00</span>
-                    </div>
-                </div>
- 
-                <div class="form-section-title" style="margin-top:20px;">Observaciones</div>
-                <div class="form-group">
-                    <textarea id="ocObservaciones" name="observaciones" class="form-input"
-                        rows="4" placeholder="Notas adicionales sobre la orden..."
-                        style="resize:vertical;"></textarea>
-                </div>
- 
-            </div>
-        </div><!-- /#tabOCTotales -->
  
     </div><!-- /.modal-body -->
  
@@ -230,31 +215,3 @@
  
 </div><!-- /#modalCompra -->
  
-<style>
-/* Totales */
-.totales-resumen {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 16px 20px;
-    max-width: 360px;
-    margin-left: auto;
-}
-.totales-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    font-size: 14px;
-    color: #495057;
-    border-bottom: 1px solid #e9ecef;
-}
-.totales-row:last-child { border-bottom: none; }
-.totales-total {
-    font-size: 16px;
-    font-weight: 700;
-    color: #212529;
-    padding-top: 10px;
-}
-/* Modal grande */
-.modal-lg { max-width: 860px; }
-.text-right { text-align: right !important; }
-</style>

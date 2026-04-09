@@ -1225,3 +1225,74 @@
     cursor: pointer;
     margin-top: 6px;
 }
+
+/* Estilos para compras y proveedores */
+/* Totales */
+.totales-resumen {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px 20px;
+    min-width: 220px;
+}
+.totales-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 6px 0;
+    font-size: 14px;
+    color: #495057;
+    border-bottom: 1px solid #e9ecef;
+    white-space: nowrap;
+}
+.totales-row:last-child { border-bottom: none; }
+.totales-total {
+    font-size: 16px;
+    font-weight: 700;
+    color: #212529;
+    padding-top: 10px;
+}
+ 
+/* Modal grande — responsive */
+.modal-lg {
+    max-width: 860px;
+    width: 95vw;
+}
+.text-right { text-align: right !important; }
+ 
+/* Tabla detalle responsive */
+#tablaDetalle {
+    width: 100%;
+    table-layout: fixed;
+}
+#tablaDetalle th,
+#tablaDetalle td {
+    word-break: break-word;
+}
+#tablaDetalle th:first-child,
+#tablaDetalle td:first-child {
+    width: 40%;
+}
+#tablaDetalle th:nth-child(2),
+#tablaDetalle td:nth-child(2),
+#tablaDetalle th:nth-child(3),
+#tablaDetalle td:nth-child(3),
+#tablaDetalle th:nth-child(4),
+#tablaDetalle td:nth-child(4) {
+    width: 18%;
+}
+#tablaDetalle th:last-child,
+#tablaDetalle td:last-child {
+    width: 6%;
+}
+ 
+/* Fila agregar producto responsive */
+.proc-add-row {
+    overflow-x: auto;
+}
+ 
+@media (max-width: 600px) {
+    .modal-lg { width: 100vw; border-radius: 0; }
+    #tablaDetalle th:nth-child(3) { display: none; }
+    #tablaDetalle td:nth-child(3) { display: none; }
+    .totales-resumen { flex: 1 1 100% !important; }
+}

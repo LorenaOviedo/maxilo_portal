@@ -192,7 +192,7 @@ const compraController = {
         formData.append('fecha_entrega',           this._getVal('ocFechaEntrega'));
         formData.append('id_moneda',               moneda);
         formData.append('id_estatus_orden_compra', this._getVal('ocEstatus') || '1');
-        formData.append('tasa_iva',                this._getVal('ocTasaIva') || '16');
+        formData.append('tasa_iva',                '16');
         formData.append('observaciones',           this._getVal('ocObservaciones'));
         formData.append('detalle_json',            JSON.stringify(this._detalle));
  
@@ -343,7 +343,7 @@ const compraController = {
     // ─────────────────────────────────────────────────────────────────────
  
     _calcularTotales() {
-        const tasa     = parseFloat(this._getVal('ocTasaIva') || '16') / 100;
+        const tasa     = 0.16;  // IVA fijo 16%
         const subtotal = this._detalle.reduce((s, d) => s + d.subtotal_linea, 0);
         const iva      = parseFloat((subtotal * tasa).toFixed(2));
         const total    = parseFloat((subtotal + iva).toFixed(2));
@@ -351,20 +351,16 @@ const compraController = {
     },
  
     _actualizarTotales() {
-        const tasa    = parseFloat(this._getVal('ocTasaIva') || '16');
         const totales = this._calcularTotales();
- 
         const fmt = n => '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
  
         const elSub   = document.getElementById('resSubtotal');
         const elIva   = document.getElementById('resIva');
         const elTotal = document.getElementById('resTotal');
-        const elLabel = document.getElementById('resIvaLabel');
  
         if (elSub)   elSub.textContent   = fmt(totales.subtotal);
         if (elIva)   elIva.textContent   = fmt(totales.iva);
         if (elTotal) elTotal.textContent = fmt(totales.total);
-        if (elLabel) elLabel.textContent = `IVA (${tasa}%):`;
     },
  
     // ─────────────────────────────────────────────────────────────────────
@@ -437,10 +433,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Folio a mayúsculas
     document.getElementById('ocFolio')
         ?.addEventListener('input', e => { e.target.value = e.target.value.toUpperCase(); });
- 
-    // Recalcular totales al cambiar IVA
-    document.getElementById('ocTasaIva')
-        ?.addEventListener('change', () => compraController._actualizarTotales());
  
     // Al seleccionar producto, pre-llenar precio del catálogo
     document.getElementById('ocSelectProducto')
