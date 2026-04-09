@@ -90,44 +90,50 @@ class OrdenCompra
  
     public function getById(int $id): ?array
     {
-        $stmt = $this->db->prepare("
-            SELECT
-                oc.*,
-                p.razon_social  AS proveedor,
-                p.id_proveedor,
-                tc.tipo_compra,
-                m.moneda,
-                e.estatus_orden_compra,
-                e.id_estatus_orden_compra
-            FROM  ordencompra        oc
-            JOIN  proveedor          p   ON p.id_proveedor            = oc.id_proveedor
-            JOIN  tiposcompra        tc  ON tc.id_tipo_compra         = oc.id_tipo_compra
-            JOIN  monedas            m   ON m.id_moneda               = oc.id_moneda
-            JOIN  estadosordencompra e   ON e.id_estatus_orden_compra = oc.id_estatus_orden_compra
-            WHERE oc.id_compra = :id
-        ");
-        $stmt->execute([':id' => $id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$row) return null;
+        try {
+            $stmt = $this->db->prepare("
+                SELECT
+                    oc.*,
+                    p.razon_social  AS proveedor,
+                    p.id_proveedor,
+                    tc.tipo_compra,
+                    m.moneda,
+                    e.estatus_orden_compra,
+                    e.id_estatus_orden_compra
+                FROM  ordencompra        oc
+                JOIN  proveedor          p   ON p.id_proveedor            = oc.id_proveedor
+                JOIN  tiposcompra        tc  ON tc.id_tipo_compra         = oc.id_tipo_compra
+                JOIN  monedas            m   ON m.id_moneda               = oc.id_moneda
+                JOIN  estadosordencompra e   ON e.id_estatus_orden_compra = oc.id_estatus_orden_compra
+                WHERE oc.id_compra = :id
+            ");
+            $stmt->execute([':id' => $id]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) return null;
  
-        // Detalle de productos
-        $stmt2 = $this->db->prepare("
-            SELECT
-                d.id_producto,
-                d.cantidad,
-                d.precio_unitario,
-                d.subtotal_linea,
-                pr.nombre_producto,
-                pr.codigo_producto,
-                pr.marca
-            FROM  detalleordencompra d
-            JOIN  producto           pr ON pr.id_producto = d.id_producto
-            WHERE d.id_compra = :id
-        ");
-        $stmt2->execute([':id' => $id]);
-        $row['detalle'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+            // Detalle de productos
+            $stmt2 = $this->db->prepare("
+                SELECT
+                    d.id_producto,
+                    d.cantidad,
+                    d.precio_unitario,
+                    d.subtotal_linea,
+                    pr.nombre_producto,
+                    pr.codigo_producto,
+                    pr.marca
+                FROM  detalleordencompra d
+                JOIN  producto           pr ON pr.id_producto = d.id_producto
+                WHERE d.id_compra = :id
+            ");
+            $stmt2->execute([':id' => $id]);
+            $row['detalle'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
  
-        return $row;
+            return $row;
+ 
+        } catch (PDOException $e) {
+            error_log('OrdenCompra::getById() error: ' . $e->getMessage());
+            return null;
+        }
     }
  
     // ─────────────────────────────────────────────────────────────────────────
@@ -163,7 +169,7 @@ class OrdenCompra
     // CREAR
     // ─────────────────────────────────────────────────────────────────────────
  
-    public function create(array $data): int|false
+    public function create(array $data)
     {
         try {
             $this->db->beginTransaction();
