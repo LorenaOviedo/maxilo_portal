@@ -152,6 +152,7 @@
                             <th class="text-center">CANTIDAD</th>
                             <th class="text-right">PRECIO UNIT.</th>
                             <th class="text-right">SUBTOTAL</th>
+                            <th style="width: 60px;"></th> </tr>
                             <th></th>
                         </tr>
                     </thead>
