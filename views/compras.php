@@ -98,8 +98,8 @@ include '../includes/sidebar.php';
                             <th data-sort="folio_compra">FOLIO</th>
                             <th data-sort="razon_social">PROVEEDOR</th>
                             <th data-sort="tipo_compra">TIPO</th>
-                            <th data-sort="fecha_emision">FECHA<br>EMISIÓN</th>
-                            <th data-sort="fecha_entrega_estimada">ENTREGA<br>ESTIMADA</th>
+                            <th data-sort="fecha_emision">FECHA DE EMISIÓN</th>
+                            <th data-sort="fecha_entrega_estimada">ENTREGA ESTIMADA</th>
                             <th class="text-right">TOTAL</th>
                             <th data-sort="estatus_orden_compra">ESTATUS</th>
                             <th class="col-actions">ACCIONES</th>
