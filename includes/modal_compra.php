@@ -24,11 +24,11 @@
     <div class="modal-tabs">
         <button class="modal-tab active" data-tab="tabOCDatos"
             onclick="cambiarTab('modalCompra', 'tabOCDatos')">
-            Datos de<br>la orden
+            Datos de la orden
         </button>
         <button class="modal-tab" data-tab="tabOCDetalle"
             onclick="cambiarTab('modalCompra', 'tabOCDetalle')">
-            Detalle de<br>la orden
+            Detalle de productos
         </button>
     </div>
  
