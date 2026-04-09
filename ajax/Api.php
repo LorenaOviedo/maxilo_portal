@@ -118,7 +118,7 @@ $modulos = [
     ],
 
     'compras' => [
-        'modelo' => 'Compra',
+        'modelo' => 'OrdenCompra',
         'archivo' => __DIR__ . '/../models/OrdenCompra.php',
         'campo_id' => 'id_compra',
     ],

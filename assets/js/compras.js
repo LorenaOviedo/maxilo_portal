@@ -83,7 +83,7 @@ const compraController = {
  
     async _cargarDatos(id) {
         try {
-            const r    = await fetch(`${API_URL}?modulo=compras&accion=get_compra&id=${id}`);
+            const r    = await fetch(`${API_URL}?modulo=compras&accion=get&id=${id}`);
             const data = await r.json();
             if (!data.success) return;
  
