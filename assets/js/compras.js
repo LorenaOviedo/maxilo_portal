@@ -33,28 +33,31 @@ const compraController = {
  
     async abrir(idCompra = null, soloLectura = false) {
         this._limpiarFormulario();
-        this.inicializar();
+        this.inicializar();          // poblar selects
         this._soloLectura = soloLectura;
- 
-        // Fecha de emisión por defecto = hoy
-        if (!idCompra) {
-            const hoy = new Date().toISOString().split('T')[0];
-            this._setVal('ocFechaEmision', hoy);
-        }
  
         if (idCompra) {
             this._modoEdicion = true;
             this._idActual    = idCompra;
-            await this._cargarDatos(idCompra);
         } else {
             this._modoEdicion = false;
             this._idActual    = null;
             document.getElementById('modalCompraFolio').textContent = '— Nueva —';
+            // Fecha de emisión por defecto = hoy (solo para nueva orden)
+            const hoy = new Date().toISOString().split('T')[0];
+            this._setVal('ocFechaEmision', hoy);
         }
  
         this._aplicarModoLectura(soloLectura);
+ 
+        // Abrir modal PRIMERO para que los selects estén activos en el DOM
         abrirModal('modalCompra');
         cambiarTab('modalCompra', 'tabOCDatos');
+ 
+        // Cargar datos DESPUÉS de abrir el modal
+        if (idCompra) {
+            await this._cargarDatos(idCompra);
+        }
     },
  
     // ─────────────────────────────────────────────────────────────────────
@@ -88,22 +91,25 @@ const compraController = {
  
             document.getElementById('modalCompraFolio').textContent = c.folio_compra ?? '';
  
-            // Tab 1 — Datos
-            this._setVal('ocId',              c.id_compra                ?? '');
-            this._setVal('ocFolio',           c.folio_compra             ?? '');
-            this._setVal('ocProveedor',       c.id_proveedor             ?? '');
-            this._setVal('ocTipoCompra',      c.id_tipo_compra           ?? '');
-            this._setVal('ocFechaEmision',    c.fecha_emision            ?? '');
-            this._setVal('ocFechaEntregaEst', c.fecha_entrega_estimada   ?? '');
-            this._setVal('ocFechaEntrega',    c.fecha_entrega            ?? '');
-            this._setVal('ocMoneda',          c.id_moneda                ?? '');
-            this._setVal('ocEstatus',         c.id_estatus_orden_compra  ?? '');
+            // Campos de texto/fecha — asignación inmediata
+            this._setVal('ocId',              c.id_compra              ?? '');
+            this._setVal('ocFolio',           c.folio_compra           ?? '');
+            this._setVal('ocFechaEmision',    c.fecha_emision          ?? '');
+            this._setVal('ocFechaEntregaEst', c.fecha_entrega_estimada ?? '');
+            this._setVal('ocFechaEntrega',    c.fecha_entrega          ?? '');
  
-            // Mostrar campo fecha entrega real si aplica
             if (c.fecha_entrega) {
                 const g = document.getElementById('groupFechaEntrega');
                 if (g) g.style.display = '';
             }
+ 
+            // Selects con FK — esperar al siguiente frame para que el DOM esté listo
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                this._setVal('ocProveedor',  String(c.id_proveedor            ?? ''));
+                this._setVal('ocTipoCompra', String(c.id_tipo_compra          ?? ''));
+                this._setVal('ocMoneda',     String(c.id_moneda               ?? ''));
+                this._setVal('ocEstatus',    String(c.id_estatus_orden_compra ?? ''));
+            }));
  
             // Tab 2 — Detalle
             this._detalle = (c.detalle ?? []).map(d => ({
