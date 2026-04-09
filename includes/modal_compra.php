@@ -103,10 +103,8 @@
  
                 <div class="form-section-title">Productos de la orden</div>
  
-                <!-- Toolbar + tabla con scroll horizontal -->
-                <div class="tabla-detalle-wrapper">
- 
-                <div class="tab-toolbar" style="margin-bottom:12px; min-width:420px;">
+                <!-- Toolbar -->
+                <div class="tab-toolbar" style="margin-bottom:12px;">
                     <button type="button" class="btn-modal-add" id="btnAgregarProducto"
                         onclick="compraController.mostrarFilaProducto()">
                         <i class="ri-add-line"></i> Agregar producto
@@ -147,6 +145,9 @@
  
                 <!-- Tabla de detalle -->
                 <table class="plan-table" id="tablaDetalle">
+                    <colgroup>
+                        <col><col><col><col><col>
+                    </colgroup>
                     <thead>
                         <tr>
                             <th>PRODUCTO</th>
@@ -164,8 +165,6 @@
                         </tr>
                     </tbody>
                 </table>
- 
-                </div><!-- /.tabla-detalle-wrapper -->
  
                 <input type="hidden" id="ocDetalleJson" name="detalle_json" value="[]">
  
@@ -218,4 +217,3 @@
     </div>
  
 </div><!-- /#modalCompra -->
- 
