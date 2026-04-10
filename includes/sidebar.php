@@ -67,7 +67,7 @@ function is_active($page)
             </a>
         </li>
 
-        <li class="menu-item <?php echo is_active('inventario'); ?>">
+        <li class="menu-item <?php echo is_active('catalogos_inventario'); ?>">
             <a href="<?php echo view_url('catalogos_inventario.php'); ?>">
                 <span class="menu-icon"><i class="ri-todo-line"></i></span>
                 <span class="menu-text">Inventario</span>
