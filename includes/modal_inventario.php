@@ -31,10 +31,7 @@
  
                 <div class="inv-detalle-row">
                     <span class="inv-detalle-label">Código</span>
-                    <span class="inv-detalle-value">
-                        <code id="invDetCodigo" style="background:#f1f3f5;
-                            padding:2px 8px;border-radius:4px;font-size:13px;">—</code>
-                    </span>
+                    <span class="inv-detalle-value" id="invDetCodigo">—</span>
                 </div>
  
                 <div class="inv-detalle-row">

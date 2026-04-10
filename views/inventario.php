@@ -64,7 +64,7 @@ include '../includes/sidebar.php';
             </nav>
  
             <div class="page-header">
-                <h1>Inventario</h1>
+                <h1>Inventario Actual</h1>
                 <p class="page-description">Estado actual del stock de productos</p>
             </div>
  
@@ -211,10 +211,7 @@ include '../includes/sidebar.php';
                             <tr <?php echo $caducado ? 'style="opacity:.7;"' : ''; ?>>
  
                                 <td data-label="Código">
-                                    <code style="font-size:12px;background:#f1f3f5;
-                                        padding:2px 6px;border-radius:4px;">
                                         <?php echo htmlspecialchars($i['codigo_producto']); ?>
-                                    </code>
                                 </td>
  
                                 <td data-label="Producto">
