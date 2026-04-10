@@ -125,14 +125,6 @@
  
                 <div class="form-row cols-2">
                     <div class="form-group">
-                        <label class="form-label">Stock actual</label>
-                        <input type="number" id="prodStock" name="stock"
-                            class="form-input" min="0" placeholder="0"
-                            autocomplete="off"
-                            title="El stock se actualiza mediante movimientos de inventario">
-                        <small class="form-hint">Al crear: stock inicial. Al editar: solo vía movimientos</small>
-                    </div>
-                    <div class="form-group">
                         <label class="form-label">Stock mínimo</label>
                         <input type="number" id="prodStockMin" name="stock_minimo"
                             class="form-input" min="0" placeholder="0" autocomplete="off">
