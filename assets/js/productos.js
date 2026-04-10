@@ -68,12 +68,7 @@ const productoController = {
         const btnGuardar = document.getElementById('btnGuardarProducto');
         if (btnGuardar) btnGuardar.style.display = soloLectura ? 'none' : '';
  
-        // En modo edición, el stock no se modifica directamente
-        const stockInput = document.getElementById('prodStock');
-        if (stockInput && !soloLectura && this._modoEdicion) {
-            stockInput.disabled = true;
-            stockInput.title    = 'El stock se actualiza mediante movimientos de inventario';
-        }
+ 
     },
  
     // ─────────────────────────────────────────────────────────────────────
@@ -105,7 +100,6 @@ const productoController = {
             }));
  
             // Tab 2 — Inventario
-            this._setVal('prodStock',    p.stock          ?? '0');
             this._setVal('prodStockMin', p.stock_minimo   ?? '0');
             this._setVal('prodLote',     p.lote           ?? '');
             this._setVal('prodFechaFab', p.fecha_fabricacion ?? '');
@@ -130,7 +124,6 @@ const productoController = {
         const tipo     = this._getVal('prodTipo');
         const precio   = this._getVal('prodPrecio');
         const stockMin = this._getVal('prodStockMin');
-        const stock    = this._getVal('prodStock');
         const fechaFab = this._getVal('prodFechaFab');
         const fechaCad = this._getVal('prodFechaCad');
  
@@ -172,12 +165,6 @@ const productoController = {
             this._focusTab('tabProdInventario', 'prodStockMin'); return;
         }
  
-        // Stock inicial (solo al crear)
-        if (!this._modoEdicion && stock && parseInt(stock) < 0) {
-            CatalogTable.showNotification('El stock inicial no puede ser negativo', 'error');
-            this._focusTab('tabProdInventario', 'prodStock'); return;
-        }
- 
         // Fechas de inventario
         if (fechaFab && fechaCad && fechaFab >= fechaCad) {
             CatalogTable.showNotification('La fecha de fabricación debe ser anterior a la de caducidad', 'error');
@@ -208,7 +195,7 @@ const productoController = {
         formData.append('descripcion',        this._getVal('prodDescripcion'));
  
         // Inventario
-        formData.append('stock',              stock    || '0');
+        formData.append('stock', '0');
         formData.append('stock_minimo',       stockMin || '0');
         formData.append('lote',               this._getVal('prodLote').toUpperCase());
         formData.append('fecha_fabricacion',  fechaFab);
@@ -289,7 +276,7 @@ const productoController = {
         [
             'prodId', 'prodCodigo', 'prodNombre', 'prodMarca',
             'prodRegistro', 'prodPrecio', 'prodDescripcion',
-            'prodStock', 'prodStockMin', 'prodLote',
+            'prodStockMin', 'prodLote',
             'prodFechaFab', 'prodFechaCad',
         ].forEach(id => this._setVal(id, ''));
  
