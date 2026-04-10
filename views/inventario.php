@@ -55,7 +55,7 @@ include '../includes/sidebar.php';
  
             <nav class="breadcrumb">
                 <div class="breadcrumb-item">
-                    <a href="<?php echo view_url('inventarios.php'); ?>">Inventario</a>
+                    <a href="<?php echo view_url('catalogos_inventario.php'); ?>">Inventario</a>
                 </div>
                 <span class="breadcrumb-separator">▶</span>
                 <div class="breadcrumb-item">
