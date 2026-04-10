@@ -28,7 +28,7 @@
         </button>
         <button class="modal-tab" data-tab="tabProdInventario"
             onclick="cambiarTab('modalProducto', 'tabProdInventario')">
-            Lote y Control de Stock
+            Datos del lote y Control de stock
         </button>
     </div>
  
@@ -136,7 +136,7 @@
  
                 <div class="form-row cols-1">
                     <div class="form-group">
-                        <label class="form-label">Número de lote</label>
+                        <label class="form-label">Número de lote<span class="required">*</span></label>
                         <input type="text" id="prodLote" name="lote"
                             class="form-input" maxlength="50"
                             placeholder="Ej: LOT-2024-001" autocomplete="off">
@@ -145,12 +145,12 @@
  
                 <div class="form-row cols-2">
                     <div class="form-group">
-                        <label class="form-label">Fecha de fabricación</label>
+                        <label class="form-label">Fecha de fabricación<span class="required">*</span></label>
                         <input type="date" id="prodFechaFab" name="fecha_fabricacion"
                             class="form-input" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Fecha de caducidad</label>
+                        <label class="form-label">Fecha de caducidad<span class="required">*</span></label>
                         <input type="date" id="prodFechaCad" name="fecha_caducidad"
                             class="form-input" autocomplete="off">
                     </div>
