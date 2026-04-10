@@ -24,11 +24,11 @@
     <div class="modal-tabs">
         <button class="modal-tab active" data-tab="tabProdDatos"
             onclick="cambiarTab('modalProducto', 'tabProdDatos')">
-            Datos del<br>Producto
+            Datos del Producto
         </button>
         <button class="modal-tab" data-tab="tabProdInventario"
             onclick="cambiarTab('modalProducto', 'tabProdInventario')">
-            Inventario
+            Lote y Control de Stock
         </button>
     </div>
  
