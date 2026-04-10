@@ -123,6 +123,12 @@ $modulos = [
         'campo_id' => 'id_compra',
     ],
 
+    'productos' => [
+        'modelo'   => 'Producto',
+        'archivo'  => __DIR__ . '/../models/Producto.php',
+        'campo_id' => 'id_producto',
+    ],
+
 
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
