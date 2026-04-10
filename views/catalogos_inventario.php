@@ -23,7 +23,7 @@ $inventarios = [
     [
         'titulo' => 'Productos',
         'descripcion' => 'Administre los productos del sistema.',
-        'url' => 'citas.php'
+        'url' => 'productos.php'
     ],
     [
         'titulo' => 'Movimientos de almacén',
