@@ -60,7 +60,7 @@
                 </div>
  
                 <div class="inv-detalle-row inv-detalle-full">
-                    <span class="inv-detalle-label">Descripción</span>
+                    <span class="inv-detalle-label">Descripción:</span>
                     <span class="inv-detalle-value" id="invDetDescripcion"
                         style="color:#6c757d;font-style:italic;">—</span>
                 </div>
@@ -78,7 +78,7 @@
                 </div>
  
                 <div class="inv-detalle-row">
-                    <span class="inv-detalle-label">Stock mínimo</span>
+                    <span class="inv-detalle-label">Stock mínimo: </span>
                     <span class="inv-detalle-value" id="invDetStockMin">—</span>
                 </div>
  
