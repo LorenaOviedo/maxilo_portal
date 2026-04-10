@@ -1,3 +1,5 @@
+Copiar
+
 <?php
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
@@ -42,7 +44,7 @@ include '../includes/sidebar.php';
  
             <nav class="breadcrumb">
                 <div class="breadcrumb-item">
-                    <a href="<?php echo view_url('catalogos_inventario.php'); ?>">Inventarios</a>
+                    <a href="<?php echo view_url('inventario.php'); ?>">Inventario</a>
                 </div>
                 <span class="breadcrumb-separator">▶</span>
                 <div class="breadcrumb-item">
@@ -86,8 +88,7 @@ include '../includes/sidebar.php';
                             <th data-sort="nombre_producto">NOMBRE</th>
                             <th data-sort="nombre_tipo_producto">TIPO</th>
                             <th data-sort="marca">MARCA</th>
-                            <th class="text-right" data-sort="precio_compra">PRECIO<br>COMPRA</th>
-                            <th class="text-center" data-sort="stock">STOCK</th>
+                            <th class="text-right" data-sort="precio_compra">PRECIO COMPRA</th>
                             <th class="text-center">CADUCIDAD</th>
                             <th class="col-actions">ACCIONES</th>
                         </tr>
@@ -95,7 +96,7 @@ include '../includes/sidebar.php';
                     <tbody>
                         <?php if (empty($productos)): ?>
                         <tr>
-                            <td colspan="8">
+                            <td colspan="7">
                                 <div class="empty-state">
                                     <div class="empty-state-icon">
                                         <i class="ri-medicine-bottle-line"></i>
@@ -108,17 +109,13 @@ include '../includes/sidebar.php';
                         <?php else: ?>
                             <?php foreach ($productos as $p): ?>
                             <?php
-                                $stockBajo  = (int)$p['stock'] <= (int)$p['stock_minimo'];
-                                $stockCero  = (int)$p['stock'] === 0;
-                                $hoy        = date('Y-m-d');
+                                $hoy = date('Y-m-d');
                                 $porCaducar = $p['fecha_caducidad'] && $p['fecha_caducidad'] <= date('Y-m-d', strtotime('+30 days'));
                                 $caducado   = $p['fecha_caducidad'] && $p['fecha_caducidad'] < $hoy;
                             ?>
                             <tr>
                                 <td data-label="Código" data-col="codigo_producto">
-                                    <code style="font-size:12px; background:#f1f3f5; padding:2px 6px; border-radius:4px;">
                                         <?php echo htmlspecialchars($p['codigo_producto']); ?>
-                                    </code>
                                 </td>
  
                                 <td data-label="Nombre" data-col="nombre_producto">
@@ -142,17 +139,6 @@ include '../includes/sidebar.php';
  
                                 <td class="text-right" data-label="Precio compra">
                                     $<?php echo number_format((float)$p['precio_compra'], 2); ?>
-                                </td>
- 
-                                <td class="text-center" data-label="Stock">
-                                    <?php if ($stockCero): ?>
-                                        <span class="badge badge-danger"><?php echo $p['stock']; ?></span>
-                                    <?php elseif ($stockBajo): ?>
-                                        <span class="badge badge-warning"><?php echo $p['stock']; ?></span>
-                                    <?php else: ?>
-                                        <span class="badge badge-success"><?php echo $p['stock']; ?></span>
-                                    <?php endif; ?>
-                                    <div style="font-size:11px; color:#adb5bd;">mín: <?php echo $p['stock_minimo']; ?></div>
                                 </td>
  
                                 <td class="text-center" data-label="Caducidad">
