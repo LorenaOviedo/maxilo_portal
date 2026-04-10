@@ -92,25 +92,13 @@ class CitasController {
  
     /** Cambiar estatus */
     public function cambiarEstatus($id) {
-        try {
-            $data    = $this->getPostData();
-            $estatus = trim($data['estatus'] ?? $_GET['estatus'] ?? '');
+        $data = $this->getPostData();
+        if (empty($data['estatus'])) $this->json(['success' => false, 'message' => 'Estatus requerido']);
  
-            if (empty($estatus)) {
-                $this->json(['success' => false, 'message' => 'Estatus requerido']);
-            }
-            if (!$id || $id <= 0) {
-                $this->json(['success' => false, 'message' => 'ID de cita inválido']);
-            }
- 
-            if ($this->citaModel->cambiarEstatus($id, $estatus)) {
-                $this->json(['success' => true, 'message' => "Estatus cambiado a: {$estatus}"]);
-            }
-            $this->json(['success' => false, 'message' => "No se pudo cambiar el estatus a '{$estatus}' — verifica que exista en la tabla EstadosCita"]);
-        } catch (Exception $e) {
-            error_log('cambiarEstatus controller error: ' . $e->getMessage());
-            $this->json(['success' => false, 'message' => 'Error interno: ' . $e->getMessage()]);
+        if ($this->citaModel->cambiarEstatus($id, $data['estatus'])) {
+            $this->json(['success' => true, 'message' => 'Estatus actualizado']);
         }
+        $this->json(['success' => false, 'message' => 'Error al actualizar el estatus']);
     }
  
     /** Eliminar cita */
@@ -150,17 +138,36 @@ class CitasController {
     /** Especialistas para el select */
     public function getEspecialistas() {
         try {
+            // JOIN con Estatus para filtrar activos sin asumir un id fijo
             $stmt = $this->db->query(
-                "SELECT id_especialista,
-                        CONCAT(nombre, ' ', apellido_paterno) AS nombre_completo
-                 FROM especialista
-                 WHERE estatus = 'activo'
-                 ORDER BY nombre ASC"
+                "SELECT e.id_especialista,
+                        TRIM(CONCAT(e.nombre, ' ', e.apellido_paterno,
+                             IF(e.apellido_materno IS NOT NULL AND e.apellido_materno != '',
+                                CONCAT(' ', e.apellido_materno), ''))) AS nombre_completo
+                 FROM especialista e
+                 INNER JOIN estatus es ON es.id_estatus = e.id_estatus
+                 WHERE LOWER(es.estatus) IN ('activo', 'activa', 'active')
+                 ORDER BY e.nombre ASC"
             );
-            $this->json(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+ 
+            // Fallback: si el valor en catálogo Estatus es diferente, traer todos
+            if (empty($data)) {
+                $stmt = $this->db->query(
+                    "SELECT id_especialista,
+                            TRIM(CONCAT(nombre, ' ', apellido_paterno,
+                                 IF(apellido_materno IS NOT NULL AND apellido_materno != '',
+                                    CONCAT(' ', apellido_materno), ''))) AS nombre_completo
+                     FROM especialista
+                     ORDER BY nombre ASC"
+                );
+                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+ 
+            $this->json(['success' => true, 'data' => $data]);
         } catch (PDOException $e) {
-            error_log("Error al obtener especialistas: " . $e->getMessage());
-            $this->json(['success' => false, 'data' => []]);
+            error_log("getEspecialistas error: " . $e->getMessage());
+            $this->json(['success' => false, 'message' => $e->getMessage(), 'data' => []]);
         }
     }
  
