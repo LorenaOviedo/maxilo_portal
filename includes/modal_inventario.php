@@ -30,32 +30,32 @@
             <div class="inv-detalle-grid">
  
                 <div class="inv-detalle-row">
-                    <span class="inv-detalle-label">Código</span>
+                    <span class="inv-detalle-label">Código: </span>
                     <span class="inv-detalle-value" id="invDetCodigo">—</span>
                 </div>
  
                 <div class="inv-detalle-row">
-                    <span class="inv-detalle-label">Nombre</span>
+                    <span class="inv-detalle-label">Nombre: </span>
                     <span class="inv-detalle-value" id="invDetNombre">—</span>
                 </div>
  
                 <div class="inv-detalle-row">
-                    <span class="inv-detalle-label">Tipo</span>
+                    <span class="inv-detalle-label">Tipo: </span>
                     <span class="inv-detalle-value" id="invDetTipo">—</span>
                 </div>
  
                 <div class="inv-detalle-row">
-                    <span class="inv-detalle-label">Marca</span>
+                    <span class="inv-detalle-label">Marca: </span>
                     <span class="inv-detalle-value" id="invDetMarca">—</span>
                 </div>
  
                 <div class="inv-detalle-row">
-                    <span class="inv-detalle-label">Precio compra</span>
+                    <span class="inv-detalle-label">Precio compra: </span>
                     <span class="inv-detalle-value" id="invDetPrecio">—</span>
                 </div>
  
                 <div class="inv-detalle-row">
-                    <span class="inv-detalle-label">Registro sanitario</span>
+                    <span class="inv-detalle-label">Registro sanitario: </span>
                     <span class="inv-detalle-value" id="invDetRegistro">—</span>
                 </div>
  
@@ -73,7 +73,7 @@
             <div class="inv-detalle-grid">
  
                 <div class="inv-detalle-row">
-                    <span class="inv-detalle-label">Stock actual</span>
+                    <span class="inv-detalle-label">Stock actual: </span>
                     <span class="inv-detalle-value" id="invDetStock">—</span>
                 </div>
  
@@ -83,17 +83,17 @@
                 </div>
  
                 <div class="inv-detalle-row">
-                    <span class="inv-detalle-label">Lote</span>
+                    <span class="inv-detalle-label">Lote: </span>
                     <span class="inv-detalle-value" id="invDetLote">—</span>
                 </div>
  
                 <div class="inv-detalle-row">
-                    <span class="inv-detalle-label">Fecha fabricación</span>
+                    <span class="inv-detalle-label">Fecha fabricación: </span>
                     <span class="inv-detalle-value" id="invDetFechaFab">—</span>
                 </div>
  
                 <div class="inv-detalle-row">
-                    <span class="inv-detalle-label">Fecha caducidad</span>
+                    <span class="inv-detalle-label">Fecha caducidad: </span>
                     <span class="inv-detalle-value" id="invDetFechaCad">—</span>
                 </div>
  
