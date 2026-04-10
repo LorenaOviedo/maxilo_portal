@@ -129,6 +129,12 @@ $modulos = [
         'campo_id' => 'id_producto',
     ],
 
+    'inventario' => [
+        'modelo'   => 'Inventario',
+        'archivo'  => __DIR__ . '/../models/Inventario.php',
+        'campo_id' => 'id_inventario',
+    ],
+
 
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
