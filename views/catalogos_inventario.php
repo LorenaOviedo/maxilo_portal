@@ -28,7 +28,7 @@ $inventarios = [
     [
         'titulo' => 'Movimientos de almacén',
         'descripcion' => 'Registre los movimientos de productos en el almacén.',
-        'url' => 'productos.php'
+        'url' => 'movimientos_almacen.php'
     ],
     [
         'titulo' => 'Inventarios',
@@ -57,7 +57,7 @@ include '../includes/sidebar.php';
                         <p class="catalog-card-description"><?php echo htmlspecialchars($inventario['descripcion']); ?></p>
                     </div>
                     <div class="catalog-card-footer">
-                        <a href="<?php echo view_url($catalogo['url']); ?>" class="btn-catalog">
+                        <a href="<?php echo view_url($inventario['url']); ?>" class="btn-catalog">
                             Gestionar
                         </a>
                     </div>
