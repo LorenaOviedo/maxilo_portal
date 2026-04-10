@@ -21,11 +21,6 @@ $page_css = ['catalogos.css'];
 //Definir catálogoss
 $inventarios = [
     [
-        'titulo' => 'Inventarios',
-        'descripcion' => 'Gestione el inventario de productos del sistema.',
-        'url' => 'inventario.php'
-    ],
-    [
         'titulo' => 'Productos',
         'descripcion' => 'Administre los productos del sistema.',
         'url' => 'productos.php'
@@ -34,6 +29,11 @@ $inventarios = [
         'titulo' => 'Movimientos de almacén',
         'descripcion' => 'Registre los movimientos de productos en el almacén.',
         'url' => 'movimientos_almacen.php'
+    ],
+    [
+        'titulo' => 'Inventarios',
+        'descripcion' => 'Gestione el inventario de productos del sistema.',
+        'url' => 'inventario.php'
     ],
 ];
 
