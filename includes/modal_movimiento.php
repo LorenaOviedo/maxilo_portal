@@ -4,7 +4,6 @@
  
 <div id="modalMovimiento" class="modal-container">
  
-    <!-- Header -->
     <div class="modal-header">
         <div class="modal-title-wrapper">
             <h2 class="modal-title">Nuevo Movimiento de Inventario</h2>
@@ -17,41 +16,57 @@
         </div>
     </div>
  
-    <!-- Body -->
     <div class="modal-body">
         <form class="modal-form" id="formMovimiento" autocomplete="off">
  
             <input type="hidden" id="movIdInventario" name="id_inventario">
  
-            <!-- ── Paso 1: Buscar producto ─────────────────────────── -->
+            <!-- ── Paso 1: Producto + Lote ─────────────────────────── -->
             <div class="form-section-title">
-                <i class="ri-search-line"></i> Buscar producto
+                <i class="ri-box-3-line"></i> Seleccionar producto y lote
             </div>
  
-            <div class="form-row cols-2">
+            <!-- Buscador de producto con autocompletado -->
+            <div class="form-row cols-1">
                 <div class="form-group">
                     <label class="form-label">
-                        Código de producto <span class="required">*</span>
+                        Producto <span class="required">*</span>
                     </label>
-                    <input type="text" id="movCodigo" class="form-input"
-                        placeholder="Ej: PROD-001"
-                        style="text-transform:uppercase;" autocomplete="off">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Lote<span class="required">*</span></label>
-                    <input type="text" id="movLote" class="form-input"
-                        placeholder="Ej: LOT-2024-001 (opcional)" autocomplete="off">
+                    <div style="position:relative;">
+                        <input type="text" id="movProdInput"
+                            class="form-input"
+                            placeholder="Escriba nombre o código del producto..."
+                            autocomplete="off">
+                        <input type="hidden" id="movProdValue">
+                        <div id="movProdDropdown" class="pac-dropdown" style="display:none;"></div>
+                    </div>
                 </div>
             </div>
  
-            <div style="margin-bottom:16px;">
-                <button type="button" class="btn-search" id="btnBuscarProducto"
-                    onclick="movimientoController.buscarProducto()">
-                    <i class="ri-search-line"></i> Buscar
+            <!-- Select de lote — aparece solo al seleccionar un producto -->
+            <div class="form-row cols-1" id="movGrupoLote" style="display:none;">
+                <div class="form-group">
+                    <label class="form-label">
+                        Lote <span class="required">*</span>
+                    </label>
+                    <select id="movLoteSelect" class="form-select">
+                        <option value="">Seleccionar lote...</option>
+                    </select>
+                    <small class="form-hint">
+                        Solo se muestran los lotes registrados para este producto
+                    </small>
+                </div>
+            </div>
+ 
+            <!-- Botón seleccionar -->
+            <div id="movGrupoBtn" style="display:none; margin-bottom:16px;">
+                <button type="button" class="btn-search" id="btnSeleccionar"
+                    onclick="movimientoController.seleccionar()">
+                    <i class="ri-check-line"></i> Seleccionar
                 </button>
             </div>
  
-            <!-- ── Resultado de búsqueda ───────────────────────────── -->
+            <!-- Tarjeta de confirmación de selección -->
             <div id="movResultado" style="display:none; margin-bottom:20px;">
                 <div style="background:#f0faf9; border:1px solid #b2dfdb;
                     border-radius:8px; padding:14px 16px;">
@@ -62,24 +77,22 @@
                                 id="movResNombre">—</div>
                             <div style="font-size:12px; color:#6c757d; margin-top:3px;"
                                 id="movResCodigo">—</div>
+                            <div style="font-size:12px; color:#6c757d; margin-top:2px;"
+                                id="movResLote">—</div>
                         </div>
                         <div style="text-align:right;">
                             <div style="font-size:12px; color:#6c757d;">Stock actual</div>
-                            <div style="font-size:22px; font-weight:700;"
+                            <div style="font-size:22px; font-weight:700; color:#20a89e;"
                                 id="movResStock">—</div>
                         </div>
                     </div>
-                    <div style="margin-top:8px; font-size:12px; color:#6c757d;"
-                        id="movResLote"></div>
-                </div>
-            </div>
- 
-            <!-- Mensaje si no se encuentra -->
-            <div id="movNoEncontrado" style="display:none; margin-bottom:16px;">
-                <div style="background:#fff8e1; border:1px solid #ffe082;
-                    border-radius:8px; padding:12px 16px; color:#e65100; font-size:14px;">
-                    <i class="ri-error-warning-line"></i>
-                    No se encontró ningún producto con ese código y lote.
+                    <div style="margin-top:10px;">
+                        <a href="#"
+                            onclick="movimientoController.resetSeleccion(); return false;"
+                            style="font-size:12px; color:#6c757d; text-decoration:none;">
+                            <i class="ri-refresh-line"></i> Cambiar producto / lote
+                        </a>
+                    </div>
                 </div>
             </div>
  
@@ -119,7 +132,7 @@
                     </div>
                 </div>
  
-                <!-- Preview del resultado -->
+                <!-- Preview stock resultante -->
                 <div id="movPreview" style="display:none; margin-top:8px;">
                     <div style="background:#f8f9fa; border-radius:8px;
                         padding:12px 16px; font-size:14px;">
@@ -133,14 +146,13 @@
         </form>
     </div><!-- /.modal-body -->
  
-    <!-- Footer -->
     <div class="modal-footer">
         <button type="button" class="btn-modal-cancel"
             onclick="cerrarModal('modalMovimiento')">
             Cancelar
         </button>
-        <button type="button" class="btn-modal-save" id="btnGuardarMovimiento"
-            style="display:none;">
+        <button type="button" class="btn-modal-save"
+            id="btnGuardarMovimiento" style="display:none;">
             <i class="ri-save-line"></i> Registrar movimiento
         </button>
     </div>
