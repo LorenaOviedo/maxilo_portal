@@ -141,6 +141,12 @@ $modulos = [
         'campo_id' => 'id_movimiento',
     ],
 
+    'pagos' => [
+        'modelo' => 'Pago',
+        'archivo' => __DIR__ . '/../models/Pago.php',
+        'campo_id' => 'id_pago',
+    ],
+
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
     //     'archivo'  => __DIR__ . '/../models/Especialidad.php',
@@ -470,66 +476,6 @@ switch ($accion) {
 
         $ok = $model->eliminarPlan($idPlan);
         responder($ok, $ok ? 'Plan eliminado correctamente' : 'Error al eliminar el plan');
-        break;
-
-
-    case 'delete':
-        if ($modulo !== 'productos')
-            break;  // solo para productos por ahora
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-            responder(false, 'Metodo no permitido');
-        $id = (int) ($_POST['id_producto'] ?? 0);
-        if (!$id)
-            responder(false, 'ID invalido');
-        $ok = $model->delete($id);
-        responder($ok, $ok ? 'Producto eliminado correctamente' : 'Error al eliminar. Verifique que el producto no tenga órdenes de compra asociadas');
-        break;
-
-
-    case 'buscar_inventario':
-        $codigo = strtoupper(trim($_GET['codigo'] ?? ''));
-        $lote = trim($_GET['lote'] ?? '');
-        if (empty($codigo))
-            responder(false, 'El codigo del producto es requerido');
-        if (empty($lote))
-            responder(false, 'El lote es requerido');
-        $inv = $model->buscarInventario($codigo, $lote);
-        if (!$inv)
-            responder(false, 'No se encontro ningun producto con ese codigo y lote', ['inventario' => null]);
-        responder(true, 'OK', ['inventario' => $inv]);
-        break;
-
-    // Devuelve los lotes disponibles en inventario para un producto dado
-    case 'get_lotes':
-        $idProducto = (int) ($_GET['id_producto'] ?? 0);
-        if (!$idProducto)
-            responder(false, 'ID de producto requerido');
-        $lotes = $model->getLotesPorProducto($idProducto);
-        responder(true, 'OK', ['lotes' => $lotes]);
-        break;
-
-    // Devuelve todos los productos que tienen entrada en inventario (para el select)
-    case 'get_productos_inventario':
-        $productos = $model->getProductosConInventario();
-        responder(true, 'OK', ['productos' => $productos]);
-        break;
-
-    case 'registrar_movimiento':
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-            responder(false, 'Metodo no permitido');
-        $data = sanitizarPost($_POST);
-        $error = $model->validar($data);
-        if ($error)
-            responder(false, $error);
-        $idUsuario = (int) ($_SESSION['usuario_id'] ?? $_POST['id_usuario'] ?? 0);
-        if (!$idUsuario)
-            responder(false, 'Usuario no identificado');
-        $resultado = $model->registrar($data, $idUsuario);
-        responder(
-            $resultado['success'],
-            $resultado['message'],
-            array_filter($resultado, fn($k) => $k !== 'success' && $k !== 'message', ARRAY_FILTER_USE_KEY)
-        );
         break;
 
 
@@ -863,6 +809,85 @@ switch ($accion) {
         $idCancelada = (int) ($stmt->fetchColumn() ?: 4);
         $ok = $model->cambiarEstatus($id, $idCancelada);
         responder($ok, $ok ? 'Orden cancelada correctamente' : 'Error al cancelar');
+        break;
+
+    case 'delete':
+        if ($modulo !== 'productos')
+            break;  // solo para productos por ahora
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $id = (int) ($_POST['id_producto'] ?? 0);
+        if (!$id)
+            responder(false, 'ID invalido');
+        $ok = $model->delete($id);
+        responder($ok, $ok ? 'Producto eliminado correctamente' : 'Error al eliminar. Verifique que el producto no tenga órdenes de compra asociadas');
+        break;
+
+
+    case 'buscar_inventario':
+        $codigo = strtoupper(trim($_GET['codigo'] ?? ''));
+        $lote = trim($_GET['lote'] ?? '');
+        if (empty($codigo))
+            responder(false, 'El codigo del producto es requerido');
+        if (empty($lote))
+            responder(false, 'El lote es requerido');
+        $inv = $model->buscarInventario($codigo, $lote);
+        if (!$inv)
+            responder(false, 'No se encontro ningun producto con ese codigo y lote', ['inventario' => null]);
+        responder(true, 'OK', ['inventario' => $inv]);
+        break;
+
+    // Devuelve los lotes disponibles en inventario para un producto dado
+    case 'get_lotes':
+        $idProducto = (int) ($_GET['id_producto'] ?? 0);
+        if (!$idProducto)
+            responder(false, 'ID de producto requerido');
+        $lotes = $model->getLotesPorProducto($idProducto);
+        responder(true, 'OK', ['lotes' => $lotes]);
+        break;
+
+    // Devuelve todos los productos que tienen entrada en inventario (para el select)
+    case 'get_productos_inventario':
+        $productos = $model->getProductosConInventario();
+        responder(true, 'OK', ['productos' => $productos]);
+        break;
+
+    case 'registrar_movimiento':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $data = sanitizarPost($_POST);
+        $error = $model->validar($data);
+        if ($error)
+            responder(false, $error);
+        $idUsuario = (int) ($_SESSION['usuario_id'] ?? $_POST['id_usuario'] ?? 0);
+        if (!$idUsuario)
+            responder(false, 'Usuario no identificado');
+        $resultado = $model->registrar($data, $idUsuario);
+        responder(
+            $resultado['success'],
+            $resultado['message'],
+            array_filter($resultado, fn($k) => $k !== 'success' && $k !== 'message', ARRAY_FILTER_USE_KEY)
+        );
+        break;
+
+    case 'crear_pago':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $data = sanitizarPost($_POST);
+        $error = $model->validar($data);
+        if ($error)
+            responder(false, $error);
+        if ($model->citaTienePago((int) $data['id_cita']))
+            responder(false, 'Esta cita ya tiene un pago registrado');
+        $id = $model->create($data);
+        if ($id) {
+            $pago = $model->getById($id);
+            responder(true, 'Pago registrado correctamente', [
+                'id' => $id,
+                'numero_recibo' => $pago['numero_recibo'] ?? '',
+            ]);
+        }
+        responder(false, 'Error al registrar el pago');
         break;
 
 
