@@ -42,7 +42,7 @@ include '../includes/sidebar.php';
  
             <nav class="breadcrumb">
                 <div class="breadcrumb-item">
-                    <a href="<?php echo view_url('inventario.php'); ?>">Inventario</a>
+                    <a href="<?php echo view_url('catalogos_inventario.php'); ?>">Inventarios</a>
                 </div>
                 <span class="breadcrumb-separator">▶</span>
                 <div class="breadcrumb-item">
