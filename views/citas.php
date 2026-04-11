@@ -117,8 +117,7 @@ include '../includes/sidebar.php';
  
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">
-                            <i class="ri-user-line"></i> Paciente<span class="required">*</span>
+                        <label class="form-label">Paciente<span class="required">*</span>
                         </label>
                         <select class="form-select" id="selectPaciente" name="id_paciente" required>
                             <option value="">Seleccionar paciente...</option>
