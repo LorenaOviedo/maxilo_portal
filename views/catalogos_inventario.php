@@ -28,7 +28,7 @@ $inventarios = [
     [
         'titulo' => 'Movimientos de almacén',
         'descripcion' => 'Registre los movimientos de productos en el almacén.',
-        'url' => 'movimientos_almacen.php'
+        'url' => 'movimientos.php'
     ],
     [
         'titulo' => 'Inventarios',
