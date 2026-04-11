@@ -20,9 +20,7 @@ body {
     min-height: 100vh;
 }
 
-/* ==========================================================================
-   NAVBAR & HEADER
-   ========================================================================== */
+
 .navbar {
     grid-area: navbar;
     background-color: #ffffff;
@@ -71,12 +69,6 @@ body {
     gap: 15px;
 }
 
-/* --- MODAL FLOTANTE (DROPDOWN) DEL USUARIO --- */
-.user-menu-container {
-    position: relative;
-    z-index: 1000;
-}
-
 .user-avatar {
     width: 45px;
     height: 45px;
@@ -96,71 +88,6 @@ body {
     transform: scale(1.05);
 }
 
-.user-dropdown {
-    position: absolute;
-    top: calc(100% + 15px);
-    right: 0;
-    width: 220px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    border: 1px solid #e8e8e8;
-    padding: 10px 0;
-    display: none; /* Se activa con JS (clase .show) */
-    animation: fadeIn 0.2s ease-out;
-}
-
-.user-dropdown.show {
-    display: block;
-}
-
-.dropdown-header {
-    padding: 10px 20px;
-    display: flex;
-    flex-direction: column;
-}
-
-.dropdown-header strong {
-    font-size: 14px;
-    color: #1a1a1a;
-    display: block;
-}
-
-.dropdown-header span {
-    font-size: 12px;
-    color: #6c757d;
-}
-
-.user-dropdown hr {
-    border: 0;
-    border-top: 1px solid #f0f0f0;
-    margin: 10px 0;
-}
-
-.dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 20px;
-    text-decoration: none;
-    color: #495057;
-    font-size: 14px;
-    transition: background 0.2s;
-}
-
-.dropdown-item:hover {
-    background-color: #f8f9fa;
-    color: #20a89e;
-}
-
-.dropdown-item.logout {
-    color: #dc3545;
-}
-
-.dropdown-item.logout:hover {
-    background-color: #fff5f5;
-}
-
 .user-info {
     display: flex;
     flex-direction: column;
@@ -178,9 +105,7 @@ body {
     color: #6c757d;
 }
 
-/* ==========================================================================
-   SIDEBAR
-   ========================================================================== */
+/*SIDEBAR*/
 .sidebar {
     grid-area: sidebar;
     background-color: #ffffff;
@@ -270,9 +195,7 @@ body {
     justify-content: center;
 }
 
-/* ==========================================================================
-   CONTENIDO PRINCIPAL & GRID
-   ========================================================================== */
+/*CONTENIDO PRINCIPAL*/
 .main-content {
     grid-area: main;
     padding: 35px 40px;
@@ -296,9 +219,10 @@ body {
     color: #6c757d;
 }
 
+/*TARJETAS DEL DASHBOARD*/
 .dashboard-cards {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr); /* ← fijo en 3 columnas en escritorio */
     gap: 25px;
     margin-bottom: 35px;
 }
@@ -312,7 +236,6 @@ body {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    animation: fadeIn 0.4s ease-out;
 }
 
 .card::before {
@@ -336,6 +259,13 @@ body {
     opacity: 1;
 }
 
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
 .card-icon {
     width: 55px;
     height: 55px;
@@ -348,6 +278,19 @@ body {
     color: #20a89e;
 }
 
+.card-content {
+    flex: 1;
+}
+
+.card-title {
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
 .card-number {
     font-size: 36px;
     font-weight: 700;
@@ -356,13 +299,327 @@ body {
     margin-bottom: 8px;
 }
 
-/* ==========================================================================
-   UTILIDADES & COMPONENTES VARIOS
-   ========================================================================== */
-.only-mobile {
-    display: none !important; /* Oculto en escritorio por defecto */
+.card-description {
+    font-size: 14px;
+    color: #6c757d;
+    line-height: 1.4;
 }
 
+.card-detail {
+    font-size: 13px;
+    color: #495057;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* Variantes de color para las tarjetas */
+.card.card-primary .card-icon {
+    background: linear-gradient(135deg, rgba(32, 168, 158, 0.15) 0%, rgba(23, 162, 184, 0.15) 100%);
+    color: #20a89e;
+}
+
+.card.card-primary .card-number {
+    color: #20a89e;
+}
+
+.card.card-success .card-icon {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.15) 0%, rgba(25, 135, 84, 0.15) 100%);
+    color: #28a745;
+}
+
+.card.card-success .card-number {
+    color: #28a745;
+}
+
+.card.card-warning .card-icon {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 152, 0, 0.15) 100%);
+    color: #ffc107;
+}
+
+.card.card-warning .card-number {
+    color: #ffc107;
+}
+
+.card.card-info .card-icon {
+    background: linear-gradient(135deg, rgba(23, 162, 184, 0.15) 0%, rgba(13, 110, 253, 0.15) 100%);
+    color: #17a2b8;
+}
+
+.card.card-info .card-number {
+    color: #17a2b8;
+}
+
+/*SECCIÓN INFO*/
+.info-section {
+    margin-top: 35px;
+}
+
+.info-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+}
+
+.info-card h2 {
+    font-size: 20px;
+    color: #1a1a1a;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+    font-weight: 700;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-item strong {
+    font-size: 12px;
+    color: #6c757d;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.info-item span {
+    font-size: 15px;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+/*AGENDA Y CALENDARIO*/
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 35px;
+}
+
+/* Grid de 3 columnas*/
+.dashboard-grid.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1200px) {
+    .dashboard-grid.grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid.grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-citas {
+        grid-template-columns: 1fr;
+    }
+}
+
+.agenda-card,
+.calendar-card,
+.stats-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+}
+
+.agenda-card h3,
+.calendar-card h3,
+.stats-card h3 {
+    font-size: 16px;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.agenda-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.agenda-item {
+    padding: 14px 16px;
+    border-radius: 8px;
+    background-color: #e8f6f5;
+    border-left: 3px solid #20a89e;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.agenda-item:hover {
+    transform: translateX(3px);
+    box-shadow: 0 2px 8px rgba(32, 168, 158, 0.15);
+}
+
+.agenda-item-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.agenda-item-time {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+
+/*CALENDARIO*/
+.calendar {
+    width: 100%;
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 12px;
+    color: #6c757d;
+    text-align: center;
+}
+
+.calendar-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #1a1a1a;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.calendar-day:hover {
+    background-color: #f0f0f0;
+}
+
+.calendar-day.prev-month {
+    color: #adb5bd;
+}
+
+.calendar-day.current-day {
+    background-color: #20a89e;
+    color: white;
+    font-weight: 600;
+}
+
+/*GRAFICAS*/
+.chart-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+}
+
+.chart-card h3 {
+    font-size: 15px;
+    color: #1a1a1a;
+    margin-bottom: 25px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.bar-chart {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 30px;
+    height: 200px;
+    padding: 20px 0;
+}
+
+.bar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    max-width: 100px;
+}
+
+.bar {
+    width: 100%;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s ease;
+}
+
+.bar:hover {
+    opacity: 0.8;
+}
+
+.bar-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+    order: -1;
+}
+
+.chart-legend {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+/* BOTÓN HAMBURGUESA */
+.hamburger,
+.sidebar-close {
+    display: none;
+}
+
+.hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background-color: #1a1a1a;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* OVERLAY */
 .sidebar-overlay {
     display: none;
     position: fixed;
@@ -379,14 +636,16 @@ body {
     opacity: 1;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+.mb-30 {
+    margin-bottom: 30px;
 }
 
-/* ==========================================================================
-   RESPONSIVE (TABLETS & MÓVIL)
-   ========================================================================== */
+.grid-citas {
+    grid-template-columns: 2fr 1fr 1fr;
+}
+  
+
+/*RESPONSIVE*/
 @media (max-width: 968px) {
     .dashboard-container {
         grid-template-areas: 
@@ -396,7 +655,7 @@ body {
         grid-template-rows: 80px 1fr;
     }
 
-    /* Mostrar botones de menú */
+    /* Mostrar hamburguesa */
     .hamburger {
         display: flex !important;
         flex-direction: column;
@@ -405,12 +664,16 @@ body {
         background: none;
         border: none;
         cursor: pointer;
+        -webkit-tap-highlight-color: transparent;  /* quita el flash azul en iOS */
+        touch-action: manipulation; 
         padding: 8px;
         border-radius: 6px;
+        flex-shrink: 0;
     }
 
     .hamburger:hover { background-color: #f0f0f0; }
 
+    /* Mostrar botón cerrar */
     .sidebar-close {
         display: flex !important;
         background: none;
@@ -420,9 +683,14 @@ body {
         cursor: pointer;
         padding: 10px 16px;
         align-self: flex-end;
+        transition: color 0.2s;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
     }
 
-    /* Sidebar como Drawer */
+    .sidebar-close:hover { color: #dc3545; }
+
+    /* Sidebar como drawer */
     .sidebar {
         position: fixed;
         top: 0;
@@ -442,25 +710,64 @@ body {
         box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
     }
 
-    /* Mostrar botón de cerrar sesión en el sidebar */
-    .only-mobile {
-        display: block !important;
-    }
-
-    /* Desactivar modal flotante en móvil para evitar duplicidad */
-    .user-menu-container {
-        pointer-events: none;
-    }
-    .user-dropdown {
-        display: none !important;
-    }
-
     .navbar-subtitle { display: none; }
-    .dashboard-cards { grid-template-columns: 1fr; }
+    .dashboard-grid  { grid-template-columns: 1fr; }
+
+    .dashboard-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 @media (max-width: 640px) {
-    .user-info, .navbar-title-wrapper { display: none; }
-    .main-content { padding: 20px 15px; }
-    .navbar { padding: 0 15px; }
+    .main-content        { padding: 20px 15px; }
+    .navbar              { padding: 0 15px; }
+    .user-info           { display: none; }
+    .navbar-title-wrapper{ display: none; }
+    .content-header h1   { font-size: 20px; }
+    .dashboard-cards     { grid-template-columns: repeat(3, 1fr); }
+    .card-number         { font-size: 28px; }
+    .info-card           { padding: 20px; }
+    .bar-chart           { height: 150px; gap: 20px; }
+    .chart-card h3       { font-size: 13px; }
+
+    .dashboard-cards .card:first-child { grid-column: unset; } /*La tarjeta principal ocupa todo el ancho */
 }
+
+/*UTILIDADES*/
+.text-center {
+    text-align: center;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.mt-3 {
+    margin-top: 1rem;
+}
+
+.mt-4 {
+    margin-top: 1.5rem;
+}
+
+/* Animación de carga */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card,
+.info-card {
+    animation: fadeIn 0.4s ease-out;
+}
+
