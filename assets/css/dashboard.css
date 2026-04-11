@@ -771,3 +771,75 @@ body {
     animation: fadeIn 0.4s ease-out;
 }
 
+/* Estilos para el Modal Flotante del Header */
+.user-menu-container {
+    position: relative;
+    z-index: 1000;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 15px);
+    right: 0;
+    width: 220px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 1px solid #e8e8e8;
+    padding: 10px 0;
+    display: none; /* Oculto por defecto */
+    animation: fadeIn 0.2s ease-out;
+}
+
+.user-dropdown.show {
+    display: block;
+}
+
+.dropdown-header {
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-header strong { font-size: 14px; color: #1a1a1a; }
+.dropdown-header span { font-size: 12px; color: #6c757d; }
+
+.user-dropdown hr {
+    border: 0;
+    border-top: 1px solid #f0f0f0;
+    margin: 10px 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #495057;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover { background-color: #f8f9fa; }
+.dropdown-item.logout { color: #dc3545; }
+
+/* Control de visibilidad */
+.only-mobile {
+    display: none !important; /* Oculto en escritorio */
+}
+
+/* RESPONSIVE */
+@media (max-width: 968px) {
+    .only-mobile {
+        display: block !important; /* Visible en el sidebar en móvil */
+    }
+    
+    /* Opcional: Desactivar el modal del header en móvil para no duplicar */
+    .user-menu-container {
+        pointer-events: none; 
+    }
+    .user-dropdown {
+        display: none !important;
+    }
+}
