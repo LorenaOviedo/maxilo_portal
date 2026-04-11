@@ -135,6 +135,11 @@ $modulos = [
         'campo_id' => 'id_inventario',
     ],
 
+    'movimientos' => [
+        'modelo'   => 'MovimientoInventario',
+        'archivo'  => __DIR__ . '/../models/MovimientoInventario.php',
+        'campo_id' => 'id_movimiento',
+    ],
 
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
