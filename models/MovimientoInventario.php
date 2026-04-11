@@ -96,9 +96,12 @@ class MovimientoInventario
     // Devuelve el registro de inventario para pre-llenar el modal
     // ─────────────────────────────────────────────────────────────────────────
  
-    public function buscarInventario(string $codigo, string $lote = ''): ?array
+    public function buscarInventario(string $codigo, string $lote): ?array
     {
-        $sql = "
+        // Código y lote son obligatorios para identificar unívocamente el inventario
+        if (empty(trim($codigo)) || empty(trim($lote))) return null;
+ 
+        $stmt = $this->db->prepare("
             SELECT
                 i.id_inventario,
                 i.codigo_producto,
@@ -112,18 +115,13 @@ class MovimientoInventario
             JOIN  producto     p  ON p.codigo_producto   = i.codigo_producto
             JOIN  tipoproducto tp ON tp.id_tipo_producto = p.id_tipo_producto
             WHERE i.codigo_producto = :codigo
-        ";
-        $params = [':codigo' => strtoupper(trim($codigo))];
- 
-        if (!empty($lote)) {
-            $sql .= " AND i.lote = :lote";
-            $params[':lote'] = trim($lote);
-        }
- 
-        $sql .= " LIMIT 1";
- 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
+              AND i.lote            = :lote
+            LIMIT 1
+        ");
+        $stmt->execute([
+            ':codigo' => strtoupper(trim($codigo)),
+            ':lote'   => trim($lote),
+        ]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ?: null;
     }

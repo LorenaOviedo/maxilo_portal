@@ -3,7 +3,7 @@
  * Controlador del módulo de movimientos de inventario.
  * Depende de: CatalogTable, API_URL, CATALOGOS_MOV, SESSION_USUARIO
  */
- 
+
 const movimientoController = {
  
     _stockActual: 0,   // stock del producto encontrado
@@ -36,6 +36,11 @@ const movimientoController = {
         if (!codigo) {
             CatalogTable.showNotification('Ingresa el código del producto', 'warning');
             document.getElementById('movCodigo')?.focus();
+            return;
+        }
+        if (!lote) {
+            CatalogTable.showNotification('El lote es obligatorio para identificar el inventario', 'warning');
+            document.getElementById('movLote')?.focus();
             return;
         }
  
