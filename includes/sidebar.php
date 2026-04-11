@@ -106,7 +106,7 @@ function is_active($page)
     </ul>
 
     <!-- boton de cierre de sesión -->
-    <div class="sidebar-footer">
+    <div class="sidebar-footer only-mobile">
         <a href="<?php echo url('index.php?logout=1'); ?>" class="sidebar-logout">
             <span class="menu-text">Cerrar sesión</span>
             <span class="logout-icon"><i class="ri-logout-box-r-line"></i></span>

@@ -76,8 +76,21 @@ foreach ($nombres as $nombre) {
                     <span class="user-name"><?php echo htmlspecialchars($nombreUsuario); ?></span>
                     <span class="user-role"><?php echo ucfirst(htmlspecialchars($rol)); ?></span>
                 </div>
-                <div class="user-avatar" title="<?php echo htmlspecialchars($nombreUsuario); ?>">
-                    <?php echo $iniciales; ?>
+                <div class="user-menu-container" id="userMenuContainer">
+                    <div class="user-avatar" id="userAvatarBtn">
+                        <?php echo $iniciales; ?>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <strong><?php echo htmlspecialchars($nombreUsuario); ?></strong>
+                            <span><?php echo htmlspecialchars($email); ?></span>
+                        </div>
+                        <hr>
+                        <a href="<?php echo url('index.php?logout=1'); ?>" class="dropdown-item logout">
+                            <i class="ri-logout-box-r-line"></i>
+                            Cerrar sesión
+                        </a>
+                    </div>
                 </div>
             </div>
         </nav>
