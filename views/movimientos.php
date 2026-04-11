@@ -150,7 +150,7 @@ include '../includes/sidebar.php';
                             <th data-sort="nombre_producto">PRODUCTO</th>
                             <th data-sort="lote">LOTE</th>
                             <th class="text-center" data-sort="cantidad">CANTIDAD</th>
-                            <th class="text-center" data-sort="stock_actual">STOCK<br>ACTUAL</th>
+                            <th class="text-center" data-sort="stock_actual">STOCK ACTUAL</th>
                             <th data-sort="usuario">USUARIO</th>
                         </tr>
                     </thead>
