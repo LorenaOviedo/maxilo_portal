@@ -181,10 +181,7 @@ include '../includes/sidebar.php';
                                 </td>
  
                                 <td data-label="Código">
-                                    <code style="font-size:12px;background:#f1f3f5;
-                                        padding:2px 6px;border-radius:4px;">
                                         <?php echo htmlspecialchars($m['codigo_producto']); ?>
-                                    </code>
                                 </td>
  
                                 <td data-label="Producto">
@@ -220,7 +217,6 @@ include '../includes/sidebar.php';
                                 </td>
  
                                 <td data-label="Usuario">
-                                    <i class="ri-user-line" style="color:#adb5bd;"></i>
                                     <?php echo htmlspecialchars($m['usuario']); ?>
                                 </td>
                             </tr>

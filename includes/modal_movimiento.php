@@ -38,7 +38,7 @@
                         style="text-transform:uppercase;" autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Lote</label>
+                    <label class="form-label">Lote<span class="required">*</span></label>
                     <input type="text" id="movLote" class="form-input"
                         placeholder="Ej: LOT-2024-001 (opcional)" autocomplete="off">
                 </div>
