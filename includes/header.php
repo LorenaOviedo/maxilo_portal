@@ -82,7 +82,6 @@ foreach ($nombres as $nombre) {
                     </div>
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">
-                            <strong><?php echo htmlspecialchars($nombreUsuario); ?></strong>
                             <span><?php echo htmlspecialchars($email); ?></span>
                         </div>
                         <hr>
