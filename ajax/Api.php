@@ -124,20 +124,20 @@ $modulos = [
     ],
 
     'productos' => [
-        'modelo'   => 'Producto',
-        'archivo'  => __DIR__ . '/../models/Producto.php',
+        'modelo' => 'Producto',
+        'archivo' => __DIR__ . '/../models/Producto.php',
         'campo_id' => 'id_producto',
     ],
 
     'inventario' => [
-        'modelo'   => 'Inventario',
-        'archivo'  => __DIR__ . '/../models/Inventario.php',
+        'modelo' => 'Inventario',
+        'archivo' => __DIR__ . '/../models/Inventario.php',
         'campo_id' => 'id_inventario',
     ],
 
     'movimientos' => [
-        'modelo'   => 'MovimientoInventario',
-        'archivo'  => __DIR__ . '/../models/MovimientoInventario.php',
+        'modelo' => 'MovimientoInventario',
+        'archivo' => __DIR__ . '/../models/MovimientoInventario.php',
         'campo_id' => 'id_movimiento',
     ],
 
@@ -470,6 +470,49 @@ switch ($accion) {
 
         $ok = $model->eliminarPlan($idPlan);
         responder($ok, $ok ? 'Plan eliminado correctamente' : 'Error al eliminar el plan');
+        break;
+
+
+    case 'delete':
+        if ($modulo !== 'productos')
+            break;  // solo para productos por ahora
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $id = (int) ($_POST['id_producto'] ?? 0);
+        if (!$id)
+            responder(false, 'ID invalido');
+        $ok = $model->delete($id);
+        responder($ok, $ok ? 'Producto eliminado correctamente' : 'Error al eliminar. Verifique que el producto no tenga órdenes de compra asociadas');
+        break;
+
+
+    case 'buscar_inventario':
+        $codigo = strtoupper(trim($_GET['codigo'] ?? ''));
+        $lote = trim($_GET['lote'] ?? '');
+        if (empty($codigo))
+            responder(false, 'Codigo requerido');
+        $inv = $model->buscarInventario($codigo, $lote);
+        if (!$inv)
+            responder(false, 'Producto no encontrado', ['inventario' => null]);
+        responder(true, 'OK', ['inventario' => $inv]);
+        break;
+
+    case 'registrar_movimiento':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $data = sanitizarPost($_POST);
+        $error = $model->validar($data);
+        if ($error)
+            responder(false, $error);
+        $idUsuario = (int) ($_SESSION['usuario_id'] ?? $_POST['id_usuario'] ?? 0);
+        if (!$idUsuario)
+            responder(false, 'Usuario no identificado');
+        $resultado = $model->registrar($data, $idUsuario);
+        responder(
+            $resultado['success'],
+            $resultado['message'],
+            array_filter($resultado, fn($k) => $k !== 'success' && $k !== 'message', ARRAY_FILTER_USE_KEY)
+        );
         break;
 
 
