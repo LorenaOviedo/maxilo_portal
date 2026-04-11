@@ -236,14 +236,17 @@ const movimientoController = {
     },
  
     _ocultarLote() {
-        document.getElementById('movGrupoLote').style.display = 'none';
-        document.getElementById('movGrupoBtn').style.display  = 'none';
-        const sel = document.getElementById('movLoteSelect');
+        const grupoLote = document.getElementById('movGrupoLote');
+        const grupoBtn  = document.getElementById('movGrupoBtn');
+        const sel       = document.getElementById('movLoteSelect');
+        if (grupoLote) grupoLote.style.display = 'none';
+        if (grupoBtn)  grupoBtn.style.display  = 'none';
         if (sel) sel.innerHTML = '<option value="">Seleccionar lote...</option>';
     },
  
     _ocultarResultado() {
-        document.getElementById('movResultado').style.display = 'none';
+        const el = document.getElementById('movResultado');
+        if (el) el.style.display = 'none';
     },
  
     // ─────────────────────────────────────────────────────────────────────
@@ -407,12 +410,15 @@ const movimientoController = {
         this._ocultarLote?.();
         this._ocultarResultado?.();
  
-        document.getElementById('movFormDatos').style.display         = 'none';
-        document.getElementById('movPreview').style.display           = 'none';
-        document.getElementById('btnGuardarMovimiento').style.display = 'none';
+        const formDatos  = document.getElementById('movFormDatos');
+        const preview    = document.getElementById('movPreview');
+        const btnGuardar = document.getElementById('btnGuardarMovimiento');
+        const hint       = document.getElementById('movCantidadHint');
  
-        if (document.getElementById('movCantidadHint'))
-            document.getElementById('movCantidadHint').textContent = '';
+        if (formDatos)  formDatos.style.display  = 'none';
+        if (preview)    preview.style.display     = 'none';
+        if (btnGuardar) btnGuardar.style.display  = 'none';
+        if (hint)       hint.textContent          = '';
  
         this._stockActual = 0;
     },
@@ -447,4 +453,3 @@ document.addEventListener('DOMContentLoaded', () => {
  
     CatalogTable.init();
 });
- 
