@@ -92,13 +92,53 @@ class MovimientoInventario
     }
  
     // ─────────────────────────────────────────────────────────────────────────
-    // BUSCAR INVENTARIO POR CÓDIGO + LOTE
-    // Devuelve el registro de inventario para pre-llenar el modal
+    // MÉTODOS PARA SELECTS DINÁMICOS
+    // ─────────────────────────────────────────────────────────────────────────
+ 
+    /** Todos los productos que tienen registro en inventario (para el buscador) */
+    public function getProductosConInventario(): array
+    {
+        return $this->_query("
+            SELECT
+                p.id_producto,
+                p.codigo_producto,
+                p.nombre_producto,
+                p.marca
+            FROM producto p
+            WHERE EXISTS (
+                SELECT 1 FROM inventario i WHERE i.codigo_producto = p.codigo_producto
+            )
+            ORDER BY p.nombre_producto ASC
+        ");
+    }
+ 
+    /** Lotes disponibles en inventario para un producto dado */
+    public function getLotesPorProducto(int $idProducto): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT
+                i.id_inventario,
+                i.lote,
+                i.stock,
+                i.stock_minimo,
+                i.fecha_caducidad
+            FROM inventario i
+            JOIN producto   p ON p.codigo_producto = i.codigo_producto
+            WHERE p.id_producto = :id
+              AND i.lote IS NOT NULL
+              AND i.lote != ''
+            ORDER BY i.lote ASC
+        ");
+        $stmt->execute([':id' => $idProducto]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+ 
+    // ─────────────────────────────────────────────────────────────────────────
+    // BUSCAR INVENTARIO POR CÓDIGO + LOTE (mantener para compatibilidad)
     // ─────────────────────────────────────────────────────────────────────────
  
     public function buscarInventario(string $codigo, string $lote): ?array
     {
-        // Código y lote son obligatorios para identificar unívocamente el inventario
         if (empty(trim($codigo)) || empty(trim($lote))) return null;
  
         $stmt = $this->db->prepare("
@@ -137,13 +177,12 @@ class MovimientoInventario
         $cantidad        = (int) $data['cantidad'];
         $fechaMovimiento = $data['fecha_movimiento'] ?? date('Y-m-d');
  
-        // Obtener stock actual
-        $stmt = $this->db->prepare(
-            "SELECT stock FROM inventario WHERE id_inventario = :id FOR UPDATE"
-        );
- 
         $this->db->beginTransaction();
         try {
+            // Obtener stock actual con bloqueo
+            $stmt = $this->db->prepare(
+                "SELECT stock FROM inventario WHERE id_inventario = :id FOR UPDATE"
+            );
             $stmt->execute([':id' => $idInventario]);
             $stockActual = (int) $stmt->fetchColumn();
  
@@ -158,39 +197,38 @@ class MovimientoInventario
                         $this->db->rollBack();
                         return [
                             'success' => false,
-                            'message' => "Stock insuficiente. Stock actual: {$stockActual}, cantidad solicitada: {$cantidad}",
+                            'message' => "Stock insuficiente. Disponible: {$stockActual}, solicitado: {$cantidad}",
                         ];
                     }
                     break;
                 case self::TIPO_AJUSTE:
-                    $nuevoStock = $cantidad; // reemplaza el stock
+                    $nuevoStock = $cantidad;
                     break;
                 default:
                     $this->db->rollBack();
                     return ['success' => false, 'message' => 'Tipo de movimiento no reconocido'];
             }
  
-            // 1. Actualizar stock en inventario
+            // Actualizar stock
             $this->db->prepare(
                 "UPDATE inventario SET stock = :stock WHERE id_inventario = :id"
             )->execute([':stock' => $nuevoStock, ':id' => $idInventario]);
  
-            // 2. Registrar movimiento
+            // Registrar movimiento
             $this->db->prepare("
                 INSERT INTO movimientoinventario
                     (id_tipo_movimiento, id_inventario, cantidad, id_usuario, fecha_movimiento)
                 VALUES
                     (:id_tipo, :id_inventario, :cantidad, :id_usuario, :fecha)
             ")->execute([
-                ':id_tipo'      => $idTipo,
-                ':id_inventario'=> $idInventario,
-                ':cantidad'     => $cantidad,
-                ':id_usuario'   => $idUsuario,
-                ':fecha'        => $fechaMovimiento,
+                ':id_tipo'       => $idTipo,
+                ':id_inventario' => $idInventario,
+                ':cantidad'      => $cantidad,
+                ':id_usuario'    => $idUsuario,
+                ':fecha'         => $fechaMovimiento,
             ]);
  
             $this->db->commit();
- 
             return [
                 'success'      => true,
                 'message'      => 'Movimiento registrado correctamente',
@@ -226,7 +264,7 @@ class MovimientoInventario
     public function validar(array $data): ?string
     {
         if (empty($data['id_inventario']))
-            return 'No se encontró el producto en inventario';
+            return 'No se identificó el inventario del producto';
         if (empty($data['id_tipo_movimiento']))
             return 'El tipo de movimiento es obligatorio';
         if (!isset($data['cantidad']) || $data['cantidad'] === '')

@@ -6,102 +6,244 @@
 
 const movimientoController = {
  
-    _stockActual: 0,   // stock del producto encontrado
+    _stockActual: 0,
+    _productos:   [],   // cache de productos con inventario
  
     // ─────────────────────────────────────────────────────────────────────
     // ABRIR MODAL
     // ─────────────────────────────────────────────────────────────────────
  
-    abrir() {
+    async abrir() {
         this._limpiar();
         this._poblarTipos();
+ 
+        // Cargar productos con inventario si aún no están en cache
+        await this._cargarProductos();
+ 
         abrirModal('modalMovimiento');
  
         // Fecha por defecto = hoy
         const hoy = new Date().toISOString().split('T')[0];
         this._setVal('movFecha', hoy);
  
-        // Foco en el código
-        setTimeout(() => document.getElementById('movCodigo')?.focus(), 150);
+        // Inicializar buscador de producto
+        this._bindProductoSearch();
+ 
+        setTimeout(() => document.getElementById('movProdInput')?.focus(), 150);
     },
  
     // ─────────────────────────────────────────────────────────────────────
-    // BUSCAR PRODUCTO POR CÓDIGO + LOTE
+    // CARGAR PRODUCTOS CON INVENTARIO
     // ─────────────────────────────────────────────────────────────────────
  
-    async buscarProducto() {
-        const codigo = this._getVal('movCodigo').toUpperCase();
-        const lote   = this._getVal('movLote');
- 
-        if (!codigo) {
-            CatalogTable.showNotification('Ingresa el código del producto', 'warning');
-            document.getElementById('movCodigo')?.focus();
-            return;
-        }
-        if (!lote) {
-            CatalogTable.showNotification('El lote es obligatorio para identificar el inventario', 'warning');
-            document.getElementById('movLote')?.focus();
-            return;
-        }
- 
-        // Ocultar resultados anteriores
-        this._ocultarResultado();
- 
+    async _cargarProductos() {
+        if (this._productos.length > 0) return; // ya en cache
         try {
-            const params = new URLSearchParams({
-                modulo: 'movimientos',
-                accion: 'buscar_inventario',
-                codigo,
-                lote,
+            const r    = await fetch(`${API_URL}?modulo=movimientos&accion=get_productos_inventario`);
+            const data = await r.json();
+            if (data.success) {
+                this._productos = data.productos ?? [];
+                console.log(`✔ Productos con inventario: ${this._productos.length}`);
+            }
+        } catch (err) {
+            console.error('movimientoController._cargarProductos:', err);
+        }
+    },
+ 
+    // ─────────────────────────────────────────────────────────────────────
+    // BUSCADOR DE PRODUCTO (autocompletado igual que pacientes en citas)
+    // ─────────────────────────────────────────────────────────────────────
+ 
+    _bindProductoSearch() {
+        const input    = document.getElementById('movProdInput');
+        const hidden   = document.getElementById('movProdValue');
+        const dropdown = document.getElementById('movProdDropdown');
+        if (!input) return;
+ 
+        input.addEventListener('input', () => {
+            const q = input.value.trim().toLowerCase();
+            hidden.value = '';
+            this._ocultarLote();
+            this._ocultarResultado();
+ 
+            if (q.length < 1) { this._cerrarDropdown(); return; }
+ 
+            const resultados = this._productos.filter(p =>
+                p.nombre_producto.toLowerCase().includes(q) ||
+                p.codigo_producto.toLowerCase().includes(q)
+            ).slice(0, 10);
+ 
+            this._renderDropdown(resultados, input, hidden, dropdown);
+        });
+ 
+        input.addEventListener('blur', () =>
+            setTimeout(() => this._cerrarDropdown(), 200)
+        );
+        input.addEventListener('focus', () => {
+            if (input.value.trim().length > 0 && !hidden.value) {
+                input.dispatchEvent(new Event('input'));
+            }
+        });
+    },
+ 
+    _renderDropdown(resultados, input, hidden, dropdown) {
+        if (!resultados.length) {
+            dropdown.innerHTML =
+                '<div class="pac-drop-item pac-drop-empty">Sin resultados</div>';
+            dropdown.style.display = 'block';
+            return;
+        }
+ 
+        dropdown.innerHTML = resultados.map(p => `
+            <div class="pac-drop-item"
+                data-id="${p.id_producto}"
+                data-nombre="${escHtml(p.nombre_producto)}"
+                data-codigo="${escHtml(p.codigo_producto)}">
+                <div style="font-weight:600;">${escHtml(p.nombre_producto)}</div>
+                <div style="font-size:11px;color:#6c757d;">
+                    [${escHtml(p.codigo_producto)}]
+                    ${p.marca ? ' · ' + escHtml(p.marca) : ''}
+                </div>
+            </div>`).join('');
+ 
+        dropdown.querySelectorAll('.pac-drop-item[data-id]').forEach(item => {
+            item.addEventListener('mousedown', async () => {
+                hidden.value  = item.dataset.id;
+                input.value   = item.dataset.nombre;
+                this._cerrarDropdown();
+                await this._cargarLotes(
+                    parseInt(item.dataset.id),
+                    item.dataset.nombre,
+                    item.dataset.codigo
+                );
             });
-            const r    = await fetch(`${API_URL}?${params}`);
+        });
+ 
+        dropdown.style.display = 'block';
+    },
+ 
+    _cerrarDropdown() {
+        const d = document.getElementById('movProdDropdown');
+        if (d) d.style.display = 'none';
+    },
+ 
+    // ─────────────────────────────────────────────────────────────────────
+    // CARGAR LOTES DEL PRODUCTO SELECCIONADO
+    // ─────────────────────────────────────────────────────────────────────
+ 
+    async _cargarLotes(idProducto, nombre, codigo) {
+        try {
+            const r    = await fetch(
+                `${API_URL}?modulo=movimientos&accion=get_lotes&id_producto=${idProducto}`
+            );
             const data = await r.json();
  
-            if (!data.success || !data.inventario) {
-                document.getElementById('movNoEncontrado').style.display = 'block';
-                document.getElementById('movFormDatos').style.display    = 'none';
-                document.getElementById('btnGuardarMovimiento').style.display = 'none';
+            if (!data.success || !data.lotes?.length) {
+                CatalogTable.showNotification(
+                    'Este producto no tiene lotes registrados en inventario', 'warning'
+                );
                 return;
             }
  
-            this._mostrarResultado(data.inventario);
+            // Poblar select de lotes
+            const sel = document.getElementById('movLoteSelect');
+            sel.innerHTML = '<option value="">Seleccionar lote...</option>';
+            data.lotes.forEach(l => {
+                const opt = document.createElement('option');
+                opt.value = JSON.stringify({
+                    id_inventario: l.id_inventario,
+                    lote:          l.lote,
+                    stock:         l.stock,
+                    stock_minimo:  l.stock_minimo,
+                    fecha_cad:     l.fecha_caducidad,
+                    nombre,
+                    codigo,
+                });
+                const cad = l.fecha_caducidad
+                    ? ` — Cad: ${this._formatFecha(l.fecha_caducidad)}` : '';
+                opt.textContent = `${l.lote} (Stock: ${l.stock}${cad})`;
+                sel.appendChild(opt);
+            });
+ 
+            // Mostrar select de lote y botón
+            document.getElementById('movGrupoLote').style.display = '';
+            document.getElementById('movGrupoBtn').style.display  = '';
  
         } catch (err) {
-            console.error('movimientoController.buscarProducto:', err);
-            CatalogTable.showNotification('Error de conexión', 'error');
+            console.error('movimientoController._cargarLotes:', err);
+            CatalogTable.showNotification('Error al cargar lotes', 'error');
         }
     },
  
-    _mostrarResultado(inv) {
-        this._stockActual = parseInt(inv.stock ?? 0);
-        this._setVal('movIdInventario', inv.id_inventario);
+    // ─────────────────────────────────────────────────────────────────────
+    // SELECCIONAR — confirmar producto + lote y mostrar tarjeta + formulario
+    // ─────────────────────────────────────────────────────────────────────
  
-        // Tarjeta de resultado
-        document.getElementById('movResNombre').textContent =
-            inv.nombre_producto + (inv.marca ? ` — ${inv.marca}` : '');
+    seleccionar() {
+        const sel = document.getElementById('movLoteSelect');
+        if (!sel?.value) {
+            CatalogTable.showNotification('Selecciona un lote', 'warning');
+            sel?.focus();
+            return;
+        }
+ 
+        const datos = JSON.parse(sel.value);
+        this._stockActual = parseInt(datos.stock ?? 0);
+        this._setVal('movIdInventario', datos.id_inventario);
+ 
+        // Mostrar tarjeta de confirmación
+        document.getElementById('movResNombre').textContent = datos.nombre;
         document.getElementById('movResCodigo').textContent =
-            `[${inv.codigo_producto}] ${inv.nombre_tipo_producto ?? ''}`;
+            `[${datos.codigo}]`;
         document.getElementById('movResLote').textContent =
-            inv.lote ? `Lote: ${inv.lote}` : 'Sin lote registrado';
+            `Lote: ${datos.lote}` +
+            (datos.fecha_cad ? ` · Cad: ${this._formatFecha(datos.fecha_cad)}` : '');
         document.getElementById('movResStock').textContent = this._stockActual;
  
-        document.getElementById('movResultado').style.display    = 'block';
-        document.getElementById('movNoEncontrado').style.display = 'none';
-        document.getElementById('movFormDatos').style.display    = 'block';
+        // Ocultar controles de selección, mostrar resultado y formulario
+        document.getElementById('movProdInput').disabled  = true;
+        document.getElementById('movGrupoLote').style.display = 'none';
+        document.getElementById('movGrupoBtn').style.display  = 'none';
+        document.getElementById('movResultado').style.display = 'block';
+        document.getElementById('movFormDatos').style.display = 'block';
         document.getElementById('btnGuardarMovimiento').style.display = '';
  
-        // Actualizar hint de cantidad según tipo seleccionado
         this._actualizarHint();
     },
  
-    _ocultarResultado() {
-        document.getElementById('movResultado').style.display    = 'none';
-        document.getElementById('movNoEncontrado').style.display = 'none';
-        document.getElementById('movFormDatos').style.display    = 'none';
-        document.getElementById('movPreview').style.display      = 'none';
-        document.getElementById('btnGuardarMovimiento').style.display = 'none';
+    // ─────────────────────────────────────────────────────────────────────
+    // RESETEAR SELECCIÓN (volver al paso 1)
+    // ─────────────────────────────────────────────────────────────────────
+ 
+    resetSeleccion() {
         this._setVal('movIdInventario', '');
+        this._setVal('movProdValue', '');
+        this._setVal('movTipo', '');
+        this._setVal('movCantidad', '');
         this._stockActual = 0;
+ 
+        const input = document.getElementById('movProdInput');
+        if (input) { input.value = ''; input.disabled = false; }
+ 
+        this._ocultarLote();
+        this._ocultarResultado();
+ 
+        document.getElementById('movFormDatos').style.display         = 'none';
+        document.getElementById('movPreview').style.display           = 'none';
+        document.getElementById('btnGuardarMovimiento').style.display = 'none';
+ 
+        setTimeout(() => input?.focus(), 100);
+    },
+ 
+    _ocultarLote() {
+        document.getElementById('movGrupoLote').style.display = 'none';
+        document.getElementById('movGrupoBtn').style.display  = 'none';
+        const sel = document.getElementById('movLoteSelect');
+        if (sel) sel.innerHTML = '<option value="">Seleccionar lote...</option>';
+    },
+ 
+    _ocultarResultado() {
+        document.getElementById('movResultado').style.display = 'none';
     },
  
     // ─────────────────────────────────────────────────────────────────────
@@ -115,34 +257,28 @@ const movimientoController = {
         const previewStock = document.getElementById('movPreviewStock');
  
         if (!tipo || cantidad <= 0 || !this._getVal('movIdInventario')) {
-            preview.style.display = 'none';
-            return;
+            preview.style.display = 'none'; return;
         }
  
-        let resultado;
-        let color = '#212529';
- 
-        if (tipo === 1) {          // Entrada
+        let resultado, color;
+        if (tipo === 1) {
             resultado = this._stockActual + cantidad;
             color     = '#2e7d32';
-        } else if (tipo === 2) {   // Salida
+        } else if (tipo === 2) {
             resultado = this._stockActual - cantidad;
             color     = resultado < 0 ? '#c62828' : '#e65100';
-        } else if (tipo === 3) {   // Ajuste
+        } else if (tipo === 3) {
             resultado = cantidad;
             color     = '#1565c0';
         } else {
-            preview.style.display = 'none';
-            return;
+            preview.style.display = 'none'; return;
         }
  
-        previewStock.textContent = resultado;
+        previewStock.textContent = tipo === 2 && resultado < 0
+            ? `${resultado} ⚠ Stock insuficiente`
+            : resultado;
         previewStock.style.color = color;
         preview.style.display    = 'block';
- 
-        if (tipo === 2 && resultado < 0) {
-            previewStock.textContent = `${resultado} ⚠ Stock insuficiente`;
-        }
     },
  
     _actualizarHint() {
@@ -152,14 +288,13 @@ const movimientoController = {
         if (!hint || !label) return;
  
         const textos = {
-            1: { label: 'Cantidad a ingresar',   hint: 'Unidades que entran al almacén' },
-            2: { label: 'Cantidad a retirar',     hint: `Máximo disponible: ${this._stockActual}` },
-            3: { label: 'Nuevo stock (ajuste)',   hint: 'El stock quedará exactamente en este valor' },
+            1: { label: 'Cantidad a ingresar',  hint: 'Unidades que entran al almacén' },
+            2: { label: 'Cantidad a retirar',    hint: `Máximo disponible: ${this._stockActual}` },
+            3: { label: 'Nuevo stock (ajuste)',  hint: 'El stock quedará exactamente en este valor' },
         };
         const cfg = textos[tipo] ?? { label: 'Cantidad', hint: '' };
-        label.innerHTML = `${cfg.label} <span class="required">*</span>`;
-        hint.textContent = cfg.hint;
- 
+        label.innerHTML   = `${cfg.label} <span class="required">*</span>`;
+        hint.textContent  = cfg.hint;
         this.actualizarPreview();
     },
  
@@ -173,9 +308,9 @@ const movimientoController = {
         const cantidad     = this._getVal('movCantidad');
         const fecha        = this._getVal('movFecha');
  
-        // Validaciones frontend
         if (!idInventario) {
-            CatalogTable.showNotification('Busca primero el producto', 'warning'); return;
+            CatalogTable.showNotification('Selecciona primero un producto y lote', 'warning');
+            return;
         }
         if (!tipo) {
             CatalogTable.showNotification('Selecciona el tipo de movimiento', 'error');
@@ -193,8 +328,6 @@ const movimientoController = {
             CatalogTable.showNotification('La fecha no puede ser futura', 'error');
             document.getElementById('movFecha')?.focus(); return;
         }
- 
-        // Advertencia preventiva de stock negativo
         if (parseInt(tipo) === 2 && parseInt(cantidad) > this._stockActual) {
             CatalogTable.showNotification(
                 `Stock insuficiente. Disponible: ${this._stockActual}`, 'error'
@@ -219,7 +352,7 @@ const movimientoController = {
  
             if (data.success) {
                 CatalogTable.showNotification(
-                    `Movimiento registrado. Stock anterior: ${data.stock_previo} → Nuevo: ${data.stock_nuevo}`,
+                    `Movimiento registrado. Stock: ${data.stock_previo} → ${data.stock_nuevo}`,
                     'success'
                 );
                 cerrarModal('modalMovimiento');
@@ -258,15 +391,42 @@ const movimientoController = {
         return document.getElementById(id)?.value?.trim() ?? '';
     },
  
+    _formatFecha(str) {
+        if (!str) return '';
+        const [y, m, d] = str.split('-');
+        return `${d}/${m}/${y}`;
+    },
+ 
     _limpiar() {
-        ['movIdInventario', 'movCodigo', 'movLote', 'movTipo',
-         'movCantidad', 'movFecha'].forEach(id => this._setVal(id, ''));
-        this._ocultarResultado();
-        this._stockActual = 0;
+        ['movIdInventario', 'movProdValue', 'movTipo', 'movCantidad', 'movFecha']
+            .forEach(id => this._setVal(id, ''));
+ 
+        const input = document.getElementById('movProdInput');
+        if (input) { input.value = ''; input.disabled = false; }
+ 
+        this._ocultarLote?.();
+        this._ocultarResultado?.();
+ 
+        document.getElementById('movFormDatos').style.display         = 'none';
+        document.getElementById('movPreview').style.display           = 'none';
+        document.getElementById('btnGuardarMovimiento').style.display = 'none';
+ 
         if (document.getElementById('movCantidadHint'))
             document.getElementById('movCantidadHint').textContent = '';
+ 
+        this._stockActual = 0;
     },
 };
+ 
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS GLOBALES
+// ─────────────────────────────────────────────────────────────────────────────
+ 
+function escHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str ?? '';
+    return div.innerHTML;
+}
  
 // ─────────────────────────────────────────────────────────────────────────────
 // EVENTOS
@@ -276,30 +436,6 @@ document.addEventListener('DOMContentLoaded', () => {
  
     document.getElementById('btnGuardarMovimiento')
         ?.addEventListener('click', () => movimientoController.guardar());
- 
-    // Buscar con Enter en el campo código
-    document.getElementById('movCodigo')
-        ?.addEventListener('keydown', e => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                movimientoController.buscarProducto();
-            }
-        });
- 
-    // Buscar con Enter en el campo lote
-    document.getElementById('movLote')
-        ?.addEventListener('keydown', e => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                movimientoController.buscarProducto();
-            }
-        });
- 
-    // Código a mayúsculas
-    document.getElementById('movCodigo')
-        ?.addEventListener('input', e => {
-            e.target.value = e.target.value.toUpperCase();
-        });
  
     // Actualizar hint y preview al cambiar tipo
     document.getElementById('movTipo')
@@ -311,3 +447,4 @@ document.addEventListener('DOMContentLoaded', () => {
  
     CatalogTable.init();
 });
+ 

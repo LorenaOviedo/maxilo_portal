@@ -490,11 +490,28 @@ switch ($accion) {
         $codigo = strtoupper(trim($_GET['codigo'] ?? ''));
         $lote = trim($_GET['lote'] ?? '');
         if (empty($codigo))
-            responder(false, 'Codigo requerido');
+            responder(false, 'El codigo del producto es requerido');
+        if (empty($lote))
+            responder(false, 'El lote es requerido');
         $inv = $model->buscarInventario($codigo, $lote);
         if (!$inv)
-            responder(false, 'Producto no encontrado', ['inventario' => null]);
+            responder(false, 'No se encontro ningun producto con ese codigo y lote', ['inventario' => null]);
         responder(true, 'OK', ['inventario' => $inv]);
+        break;
+
+    // Devuelve los lotes disponibles en inventario para un producto dado
+    case 'get_lotes':
+        $idProducto = (int) ($_GET['id_producto'] ?? 0);
+        if (!$idProducto)
+            responder(false, 'ID de producto requerido');
+        $lotes = $model->getLotesPorProducto($idProducto);
+        responder(true, 'OK', ['lotes' => $lotes]);
+        break;
+
+    // Devuelve todos los productos que tienen entrada en inventario (para el select)
+    case 'get_productos_inventario':
+        $productos = $model->getProductosConInventario();
+        responder(true, 'OK', ['productos' => $productos]);
         break;
 
     case 'registrar_movimiento':
