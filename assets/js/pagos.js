@@ -173,7 +173,7 @@ const pagoController = {
             align-items: center;
             gap: 16px;
             padding-bottom: 10px;
-            border-bottom: 3px solid #1a3a6e;
+            border-bottom: 3px solid #192D8C;
             margin-bottom: 8px;
         }
         .header-logo img {
@@ -182,16 +182,16 @@ const pagoController = {
         }
         .header-logo-placeholder {
             width: 72px; height: 72px;
-            border: 2px solid #1a3a6e;
+            border: 2px solid #192D8C;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            color: #1a3a6e; font-size: 10px; font-weight: 700;
+            color: #192D8C; font-size: 10px; font-weight: 700;
             text-align: center; line-height: 1.2;
         }
         .header-clinica { flex: 1; }
         .header-clinica-nombre {
             font-size: 22px; font-weight: 900;
-            color: #1a3a6e; letter-spacing: 1px;
+            color: #192D8C; letter-spacing: 1px;
             text-transform: uppercase;
         }
         .header-clinica-sub {
@@ -202,7 +202,7 @@ const pagoController = {
         .header-doctor {
             text-align: right;
             font-size: 15px; font-weight: 700;
-            color: #1a3a6e;
+            color: #192D8C;
         }
  
         /* ── Título recibo ── */
@@ -263,7 +263,7 @@ const pagoController = {
         }
         .sello-texto {
             display: inline-block;
-            color: #1a3a6e;
+            color: #192D8C;
             font-size: 20px; font-weight: 900;
             letter-spacing: 6px;
             padding: 8px 32px;
@@ -281,12 +281,12 @@ const pagoController = {
  
         /* ── Pie de página ── */
         .footer {
-            border-top: 3px solid #1a3a6e;
+            border-top: 3px solid #192D8C;
             margin-top: 10px;
             padding-top: 8px;
             text-align: center;
             font-size: 10px;
-            color: #1a3a6e;
+            color: #192D8C;
             line-height: 1.6;
         }
  
