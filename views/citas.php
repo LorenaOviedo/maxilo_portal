@@ -194,7 +194,7 @@ include '../includes/sidebar.php';
                 <!-- Estatus: solo visible al editar -->
                 <div class="form-group" id="groupEstatus" style="display: none;">
                     <label class="form-label">
-                        <i class="ri-checkbox-circle-line"></i> Estatus
+                        Estatus
                     </label>
                     <select class="form-select" id="selectEstatus" name="estatus">
                         <option value="Pendiente">Pendiente</option>
@@ -238,7 +238,7 @@ include '../includes/sidebar.php';
         <div class="modal-footer">
             <button class="btn-secondary" id="btnCerrarDetalle2">Cerrar</button>
             <button class="btn-warning" id="btnEditarDesdeDetalle">
-                <i class="ri-edit-line"></i> Editar
+                <i class="ri-edit-box-line"></i> Editar
             </button>
         </div>
     </div>
