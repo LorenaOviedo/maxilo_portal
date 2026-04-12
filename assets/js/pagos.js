@@ -279,7 +279,15 @@ const pagoController = {
         CatalogTable.showLoading(true);
         try {
             const r    = await fetch(API_URL, { method: 'POST', body: formData });
-            const data = await r.json();
+            const texto = await r.text();
+            console.log('Respuesta guardarFactura (status', r.status, '):', texto);
+            let data;
+            try { data = JSON.parse(texto); }
+            catch(e) {
+                CatalogTable.showLoading(false);
+                CatalogTable.showNotification('Error del servidor: respuesta no es JSON', 'error');
+                return;
+            }
             CatalogTable.showLoading(false);
  
             if (data.success) {
@@ -287,11 +295,12 @@ const pagoController = {
                 cerrarModal('modalFactura');
                 setTimeout(() => window.location.reload(), 900);
             } else {
-                CatalogTable.showNotification(data.message || 'Error', 'error');
+                CatalogTable.showNotification(data.message || 'Error desconocido', 'error');
             }
         } catch (err) {
             CatalogTable.showLoading(false);
-            CatalogTable.showNotification('Error de conexión', 'error');
+            console.error('guardarFactura error:', err);
+            CatalogTable.showNotification('Error de conexión: ' + err.message, 'error');
         }
     },
  
