@@ -1,200 +1,237 @@
 <!-- PLANTILLA DE RECIBO — IMPRESIÓN (oculta en pantalla) -->
 <div id="reciboImprimir" style="display:none;">
-    <div class="recibo-wrapper">
- 
-        <!-- Encabezado -->
-        <div class="recibo-header">
-            <div class="recibo-clinica">
-                <h1 class="recibo-clinica-nombre">Sistema Maxilofacial Texcoco</h1>
-                <p class="recibo-clinica-subtitulo">Comprobante de pago</p>
+    <div class="recibo-container">
+        
+        <header class="recibo-header">
+            <div class="brand-info">
+                <img src="img/logo_maxilo.png" alt="Logo Ortofacial" class="recibo-logo">
+                <div class="clinica-datos">
+                    <h1>ORTOFACIAL</h1>
+                    <p>ORTODONCIA, CIRUGÍA MAXILOFACIAL Y PATOLOGÍA ORAL</p>
+                </div>
             </div>
-            <div class="recibo-num">
-                <div class="recibo-num-label">RECIBO</div>
-                <div class="recibo-num-valor" id="printRecibo">—</div>
-                <div class="recibo-fecha" id="printFechaPago">—</div>
+            <div class="doctor-nombre">
+                Dr. Alfonso Ayala Gómez
             </div>
-        </div>
- 
-        <hr class="recibo-sep">
- 
-        <!-- Paciente -->
-        <div class="recibo-section">
-            <div class="recibo-section-title">DATOS DEL PACIENTE</div>
-            <div class="recibo-row">
-                <span class="recibo-lbl">Nombre:</span>
-                <span id="printPaciente">—</span>
+        </header>
+
+        <main class="recibo-body">
+            <h2 class="titulo-documento">RECIBO DE PAGO</h2>
+
+            <div class="folio-fecha">
+                <p><strong>Folio:</strong> <span id="printRecibo">REC-2026-000001</span></p>
+                <p><strong>Fecha de emisión:</strong> <span id="printFechaPago">11/04/2026</span></p>
             </div>
-        </div>
- 
-        <!-- Cita -->
-        <div class="recibo-section">
-            <div class="recibo-section-title">DATOS DE LA CITA</div>
-            <div class="recibo-row">
-                <span class="recibo-lbl">Especialista:</span>
-                <span id="printEspecialista">—</span>
+
+            <section class="recibo-seccion">
+                <h3>DATOS DEL PACIENTE</h3>
+                <div class="linea-datos">
+                    <span class="etiqueta">Nombre:</span>
+                    <span class="valor" id="printPaciente">ANA MARIA GARCIA LOPEZ</span>
+                </div>
+            </section>
+
+            <section class="recibo-seccion">
+                <h3>DATOS DE LA CITA</h3>
+                <div class="linea-datos">
+                    <span class="etiqueta">Atendió:</span>
+                    <span class="valor" id="printEspecialista">LAURA MORALES</span>
+                </div>
+                <div class="linea-datos">
+                    <span class="etiqueta">Fecha de cita:</span>
+                    <span class="valor" id="printFechaCita">23/03/2026 16:00</span>
+                </div>
+                <div class="linea-datos">
+                    <span class="etiqueta">Motivo:</span>
+                    <span class="valor" id="printMotivo">Dolor dental</span>
+                </div>
+            </section>
+
+            <section class="recibo-seccion">
+                <h3>DESGLOSE DEL PAGO</h3>
+                <div class="linea-datos">
+                    <span class="etiqueta">Método de pago:</span>
+                    <span class="valor" id="printMetodo">Efectivo</span>
+                </div>
+                <div class="linea-datos">
+                    <span class="etiqueta">Monto total:</span>
+                    <span class="valor" id="printTotal">$600.00</span>
+                </div>
+            </section>
+
+            <div class="total-final">
+                <span>TOTAL PAGADO:</span>
+                <span class="monto" id="printNeto">$600.00</span>
             </div>
-            <div class="recibo-row">
-                <span class="recibo-lbl">Fecha de cita:</span>
-                <span id="printFechaCita">—</span>
+
+            <div class="status-pagado">
+                <p class="txt-pagado" id="printEstatus">PAGADO</p>
             </div>
-            <div class="recibo-row">
-                <span class="recibo-lbl">Motivo:</span>
-                <span id="printMotivo">—</span>
+        </main>
+
+        <footer class="recibo-footer">
+            <p class="nota">Este comprobante es válido como recibo de pago.</p>
+            <p class="copyright">Sistema Maxilofacial Texcoco — 2026</p>
+            
+            <div class="footer-blue-bar">
+                <p>Retorno C No. 8 Fraccionamiento San Martín, Texcoco, Estado de México</p>
+                <p>Teléfonos: 55 1640-3007 55 1246 3777 59 5931 3070</p>
             </div>
-        </div>
- 
-        <!-- Pago -->
-        <div class="recibo-section">
-            <div class="recibo-section-title">DESGLOSE DEL PAGO</div>
-            <div class="recibo-row">
-                <span class="recibo-lbl">Método de pago:</span>
-                <span id="printMetodo">—</span>
-            </div>
-            <div class="recibo-row" id="printRowRef" style="display:none;">
-                <span class="recibo-lbl">Referencia:</span>
-                <span id="printRef">—</span>
-            </div>
-            <div class="recibo-row">
-                <span class="recibo-lbl">Monto total:</span>
-                <span id="printTotal">—</span>
-            </div>
-            <div class="recibo-row" id="printRowDesc" style="display:none;">
-                <span class="recibo-lbl">Descuento:</span>
-                <span id="printDesc" style="color:#28a745;">—</span>
-            </div>
-        </div>
- 
-        <hr class="recibo-sep">
- 
-        <!-- Total neto -->
-        <div class="recibo-total">
-            <span>TOTAL PAGADO</span>
-            <span id="printNeto" class="recibo-total-monto">—</span>
-        </div>
- 
-        <!-- Estatus -->
-        <div style="text-align:center; margin-top:16px;">
-            <span id="printEstatus" style="display:inline-block; padding:6px 24px;
-                border-radius:20px; font-weight:700; font-size:14px;
-                background:#e8f5e9; color:#2e7d32; letter-spacing:1px;">
-                PAGADO
-            </span>
-        </div>
- 
-        <!-- Observaciones -->
-        <div id="printRowObs" style="display:none; margin-top:16px;">
-            <div class="recibo-section-title">OBSERVACIONES</div>
-            <div id="printObs" style="font-size:12px; color:#495057;"></div>
-        </div>
- 
-        <!-- Pie -->
-        <div class="recibo-footer">
-            <p>Este comprobante es válido como recibo de pago.</p>
-            <p>Sistema Maxilofacial Texcoco — <?php echo date('Y'); ?></p>
-        </div>
- 
-    </div><!-- /.recibo-wrapper -->
-</div><!-- /#reciboImprimir -->
- 
+        </footer>
+
+    </div>
+</div>
+
 <style>
-/* ── Estilos de impresión ─────────────────────────────────────────────── */
-@media print {
-    /* Ocultar TODO excepto el recibo */
-    body > *:not(#reciboImprimir)    { display: none !important; }
-    #reciboImprimir                  { display: block !important; }
- 
-    body { margin: 0; padding: 0; background: #fff; }
- 
-    .recibo-wrapper {
-        width: 80mm;         /* ancho ticket térmico estándar */
-        margin: 0 auto;
-        font-family: 'Courier New', monospace;
-        font-size: 11px;
-        color: #000;
-        padding: 8mm 4mm;
-    }
+/* Estilos generales para el contenedor */
+.recibo-container {
+    width: 210mm; /* Ancho A4 */
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 20mm;
+    background-color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #1a1a1a;
+    display: flex;
+    flex-direction: column;
 }
- 
-/* ── Estilos del recibo (aplican en impresión) ──────────────────────── */
-.recibo-wrapper {
-    width: 80mm;
-    font-family: 'Courier New', monospace;
-    font-size: 11px;
-    color: #000;
-}
+
+/* Encabezado */
 .recibo-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 8px;
+    align-items: center;
+    border-bottom: none;
+    margin-bottom: 40px;
 }
-.recibo-clinica-nombre {
-    font-size: 13px;
-    font-weight: 700;
-    margin: 0 0 2px;
-    text-transform: uppercase;
+
+.brand-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
-.recibo-clinica-subtitulo {
-    font-size: 10px;
-    color: #555;
+
+.recibo-logo {
+    width: 80px;
+    height: auto;
+}
+
+.clinica-datos h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #2c3e50;
     margin: 0;
-}
-.recibo-num { text-align: right; }
-.recibo-num-label {
-    font-size: 9px;
-    color: #555;
-    text-transform: uppercase;
     letter-spacing: 1px;
 }
-.recibo-num-valor {
+
+.clinica-datos p {
+    font-size: 10px;
+    color: #34495e;
+    margin: 0;
+    font-weight: 600;
+}
+
+.doctor-nombre {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a3a8a; /* Azul oscuro como el de la imagen */
+}
+
+/* Título Documento */
+.titulo-documento {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+.folio-fecha {
+    text-align: right;
+    margin-bottom: 30px;
     font-size: 14px;
+}
+.folio-fecha p { margin: 2px 0; }
+
+/* Secciones */
+.recibo-seccion {
+    margin-bottom: 25px;
+}
+
+.recibo-seccion h3 {
+    font-size: 14px;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
     font-weight: 700;
+    color: #333;
 }
-.recibo-fecha { font-size: 10px; color: #555; }
- 
-.recibo-sep {
-    border: none;
-    border-top: 1px dashed #000;
-    margin: 8px 0;
-}
- 
-.recibo-section { margin-bottom: 8px; }
-.recibo-section-title {
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #555;
-    margin-bottom: 4px;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 2px;
-}
-.recibo-row {
+
+.linea-datos {
     display: flex;
     justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 2px;
-    font-size: 11px;
+    margin-bottom: 8px;
+    font-size: 14px;
 }
-.recibo-lbl { color: #555; flex-shrink: 0; }
- 
-.recibo-total {
+
+.valor {
+    text-align: right;
+    font-weight: 500;
+}
+
+/* Total */
+.total-final {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-weight: 700;
-    font-size: 13px;
-    margin-top: 8px;
+    border-top: 1px solid #000;
+    padding-top: 10px;
+    margin-top: 30px;
+    font-weight: 800;
+    font-size: 18px;
 }
-.recibo-total-monto { font-size: 16px; }
- 
-.recibo-footer {
-    margin-top: 16px;
+
+/* Sello Pagado */
+.status-pagado {
     text-align: center;
-    font-size: 9px;
-    color: #777;
-    border-top: 1px dashed #000;
-    padding-top: 6px;
+    margin-top: 60px;
 }
-.recibo-footer p { margin: 2px 0; }
+
+.txt-pagado {
+    font-size: 28px;
+    font-weight: 900;
+    color: #1a1a1a;
+    letter-spacing: 3px;
+}
+
+/* Footer */
+.recibo-footer {
+    margin-top: auto;
+    text-align: center;
+}
+
+.nota { font-size: 12px; margin-bottom: 5px; font-weight: 600; }
+.copyright { font-size: 11px; color: #666; margin-bottom: 20px; }
+
+.footer-blue-bar {
+    border-top: 2px solid #1a3a8a;
+    padding-top: 15px;
+    color: #1a3a8a;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Ajustes de Impresión */
+@media print {
+    body { background: none; }
+    .recibo-container { 
+        width: 100%; 
+        padding: 10mm; 
+        margin: 0;
+        box-shadow: none;
+    }
+    #reciboImprimir { display: block !important; }
+    /* Ocultar elementos de la interfaz */
+    nav, .sidebar, .btn, .no-print { display: none !important; }
+}
 </style>
