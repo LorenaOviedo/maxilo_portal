@@ -92,7 +92,8 @@ class AuthController
         $_SESSION['usuario'] = $userData['usuario'];
         $_SESSION['email'] = $userData['email'];
         $_SESSION['nombre_completo'] = $userData['nombre_completo'];
-        $_SESSION['rol'] = $userData['rol'];
+        $_SESSION['rol']    = $userData['rol'];
+        $_SESSION['id_rol'] = $userData['id_rol'] ?? null;
         $_SESSION['login_time'] = time();
         $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
         $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
@@ -214,13 +215,18 @@ class AuthController
  
     public function getPaginaInicio(): string
     {
+        $rol     = strtolower(trim($_SESSION['rol'] ?? ''));
         $modulos = $_SESSION['modulos_nombres'] ?? [];
-        $esAdmin = str_contains(strtolower($_SESSION['rol'] ?? ''), 'admin');
  
-        // Admin → dashboard
-        if ($esAdmin) return 'dashboard.php';
+        // Admin siempre al dashboard
+        if (str_contains($rol, 'admin')) return 'dashboard.php';
  
-        // Cualquier otro → inicio.php (bienvenida)
+        // Si tiene permiso explícito al dashboard
+        foreach ($modulos as $m) {
+            if (str_contains(strtolower($m), 'dashboard')) return 'dashboard.php';
+        }
+ 
+        // Cualquier otro rol → página de bienvenida
         return 'inicio.php';
     }
  
