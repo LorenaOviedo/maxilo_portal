@@ -141,13 +141,87 @@ const pagoController = {
             if (rowObs) rowObs.style.display = 'none';
         }
  
-        // Mostrar, esperar render del DOM y disparar impresión
-        const recibo = document.getElementById('reciboImprimir');
-        recibo.style.display = 'block';
-        setTimeout(() => {
-            window.print();
-            recibo.style.display = 'none';
-        }, 250);
+        // Abrir ventana nueva con solo el recibo para imprimir limpio
+        const recibo  = document.getElementById('reciboImprimir');
+        const estilos = Array.from(document.styleSheets)
+            .map(s => {
+                try { return Array.from(s.cssRules).map(r => r.cssText).join('\n'); }
+                catch(e) { return ''; }
+            }).join('\n');
+ 
+        const ventana = window.open('', '_blank', 'width=400,height=600');
+        ventana.document.write(`<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Recibo ${p.numero_recibo ?? ''}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #000;
+            background: #fff;
+            padding: 8mm 4mm;
+        }
+        .recibo-wrapper  { width: 100%; max-width: 80mm; margin: 0 auto; }
+        .recibo-header   { display: flex; justify-content: space-between;
+                           align-items: flex-start; margin-bottom: 8px; }
+        .recibo-clinica-nombre  { font-size: 13px; font-weight: 700;
+                                  text-transform: uppercase; margin: 0 0 2px; }
+        .recibo-clinica-subtitulo { font-size: 10px; color: #555; margin: 0; }
+        .recibo-num       { text-align: right; }
+        .recibo-num-label { font-size: 9px; color: #555;
+                            text-transform: uppercase; letter-spacing: 1px; }
+        .recibo-num-valor { font-size: 14px; font-weight: 700; }
+        .recibo-fecha     { font-size: 10px; color: #555; }
+        .recibo-sep       { border: none; border-top: 1px dashed #000; margin: 8px 0; }
+        .recibo-section   { margin-bottom: 8px; }
+        .recibo-section-title {
+            font-size: 9px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: #555; margin-bottom: 4px;
+            border-bottom: 1px solid #ccc; padding-bottom: 2px;
+        }
+        .recibo-row {
+            display: flex; justify-content: space-between;
+            gap: 8px; margin-bottom: 2px; font-size: 11px;
+        }
+        .recibo-lbl   { color: #555; flex-shrink: 0; }
+        .recibo-total {
+            display: flex; justify-content: space-between;
+            align-items: center; font-weight: 700;
+            font-size: 13px; margin-top: 8px;
+        }
+        .recibo-total-monto { font-size: 16px; }
+        .recibo-sello {
+            text-align: center; margin-top: 16px;
+        }
+        .recibo-sello span {
+            display: inline-block; padding: 6px 24px;
+            border-radius: 20px; font-weight: 700; font-size: 14px;
+            background: #e8f5e9; color: #2e7d32; letter-spacing: 1px;
+            border: 2px solid #2e7d32;
+        }
+        .recibo-footer {
+            margin-top: 16px; text-align: center; font-size: 9px;
+            color: #777; border-top: 1px dashed #000; padding-top: 6px;
+        }
+        .recibo-footer p { margin: 2px 0; }
+        @media print {
+            body { padding: 4mm 2mm; }
+        }
+    </style>
+</head>
+<body>
+    <div class="recibo-wrapper">
+        ${recibo.innerHTML}
+    </div>
+    <script>
+        window.onload = function() { window.print(); window.close(); };
+    <\/script>
+</body>
+</html>`);
+        ventana.document.close();
     },
  
     // ─────────────────────────────────────────────────────────────────────
