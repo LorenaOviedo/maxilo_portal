@@ -10,7 +10,7 @@ $auth = new AuthController();
 if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
-
+ 
 // Verificar permiso específico al módulo
 verificarPermiso('reportes');
  
@@ -46,6 +46,7 @@ include '../includes/sidebar.php';
                         <option value="citas">Citas</option>
                         <option value="pagos">Pagos</option>
                         <option value="inventario">Inventario</option>
+                        <option value="facturas">Facturas</option>
                     </select>
                     <i class="ri-arrow-down-s-line select-icon"></i>
                 </div>
