@@ -12,6 +12,18 @@ require_once __DIR__ . '/Env.php';
 // Cargar archivo .env
 Env::load(__DIR__ . '/../.env');
 
+function fechaEnEspanol() {
+    $dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+    $meses = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    
+    $nombreDia = $dias[date('w')];
+    $numeroDia = date('d');
+    $nombreMes = $meses[date('n')];
+    $anio = date('Y');
+    
+    return "$nombreDia, $numeroDia de $nombreMes de $anio";
+}
+
 //CONFIGURACIÓN DE ENTORNO
 //Variable de entorno APP_ENV del .env
 //Variable de servidor (configurada en hosting)
