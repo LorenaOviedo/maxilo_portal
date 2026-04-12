@@ -17,7 +17,7 @@ if (isset($_GET['logout']) && $_GET['logout'] == '1') {
 
 // Si ya está logueado, redirigir al dashboard
 if (isset($_SESSION['usuario_id'])) {
-    header('Location: views/' . $auth->getPaginaInicio());
+    header('Location: views/dashboard.php');
     exit;
 }
 
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $resultado = $auth->login($_POST['usuario'], $_POST['password']);
 
         if ($resultado['success']) {
-            header('Location: views/dashboard.php');
+            header('Location: views/' . $auth->getPaginaInicio());
             exit;
         } else {
             $error = $resultado['message'];
