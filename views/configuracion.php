@@ -227,9 +227,7 @@ include '../includes/sidebar.php';
                                     </div>
                                 </td>
                                 <td>
-                                    <code style="background:#f1f3f5;padding:2px 6px;border-radius:4px;font-size:12px;">
-                                        <?php echo htmlspecialchars($u['usuario']); ?>
-                                    </code>
+                                    <?php echo htmlspecialchars($u['usuario']); ?>
                                 </td>
                                 <td><?php echo htmlspecialchars($u['email']); ?></td>
                                 <td>
