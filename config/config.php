@@ -2,7 +2,6 @@
 /**
  * Configuración Principal del Sistema
  * 
- * Versión mejorada con soporte para variables de entorno (.env)
  */
 
 // SE CARGAN VARIABLES DE ENTORNO
