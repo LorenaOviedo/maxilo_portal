@@ -111,3 +111,48 @@
     </div>
  
 </div><!-- /#modalInventario -->
+
+<style>
+    .inv-detalle-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .inv-detalle-full {
+        grid-column: 1 / -1;
+    }
+
+    .inv-detalle-row {
+        display: flex;
+        flex-direction: column;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 10px 14px;
+        gap: 3px;
+    }
+
+    .inv-detalle-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #adb5bd;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .inv-detalle-value {
+        font-size: 14px;
+        font-weight: 500;
+        color: #212529;
+    }
+
+    @media (max-width: 480px) {
+        .inv-detalle-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .inv-detalle-full {
+            grid-column: 1;
+        }
+    }
+</style>
