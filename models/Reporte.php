@@ -23,13 +23,13 @@ class Reporte
  
     public function generar(string $tipo, string $desde, string $hasta): array
     {
-        return match($tipo) {
-            'pacientes'  => $this->_pacientes($desde, $hasta),
-            'citas'      => $this->_citas($desde, $hasta),
-            'pagos'      => $this->_pagos($desde, $hasta),
-            'inventario' => $this->_inventario($desde, $hasta),
-            default      => ['error' => 'Tipo de reporte no reconocido'],
-        };
+        switch ($tipo) {
+            case 'pacientes':  return $this->_pacientes($desde, $hasta);
+            case 'citas':      return $this->_citas($desde, $hasta);
+            case 'pagos':      return $this->_pagos($desde, $hasta);
+            case 'inventario': return $this->_inventario($desde, $hasta);
+            default:           return ['error' => 'Tipo de reporte no reconocido'];
+        }
     }
  
     // ─────────────────────────────────────────────────────────────────────────
@@ -238,20 +238,40 @@ class Reporte
  
     private function _inventario(string $desde, string $hasta): array
     {
+        // Movimientos del período en query separada
+        $movPeriodo = $this->_row("
+            SELECT COUNT(*) AS total
+            FROM movimientoinventario
+            WHERE fecha_movimiento BETWEEN :d AND :h
+        ", [':d' => $desde, ':h' => $hasta]);
+ 
         $resumen = $this->_row("
             SELECT
                 COUNT(*)                                        AS total_productos,
                 SUM(i.stock = 0)                                AS sin_stock,
                 SUM(i.stock > 0 AND i.stock <= i.stock_minimo)  AS stock_bajo,
                 SUM(i.fecha_caducidad < CURDATE()
-                    AND i.fecha_caducidad IS NOT NULL)          AS caducados,
-                (SELECT COUNT(*) FROM movimientoinventario m
-                 WHERE m.fecha_movimiento BETWEEN :d2 AND :h2)  AS movimientos_periodo
+                    AND i.fecha_caducidad IS NOT NULL)          AS caducados
             FROM inventario i
-        ", [':d2' => $desde, ':h2' => $hasta]);
+        ", []);
+        $resumen['movimientos_periodo'] = $movPeriodo['total'] ?? 0;
+ 
+        // Movimientos por producto en el período
+        $movsPorInv = [];
+        $stmtMovs = $this->db->prepare("
+            SELECT id_inventario, COUNT(*) AS total
+            FROM movimientoinventario
+            WHERE fecha_movimiento BETWEEN :d AND :h
+            GROUP BY id_inventario
+        ");
+        $stmtMovs->execute([':d' => $desde, ':h' => $hasta]);
+        foreach ($stmtMovs->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $movsPorInv[$row['id_inventario']] = $row['total'];
+        }
  
         $filas = $this->_query("
             SELECT
+                i.id_inventario,
                 i.codigo_producto,
                 p.nombre_producto,
                 tp.nombre_tipo_producto,
@@ -259,15 +279,12 @@ class Reporte
                 i.lote,
                 i.stock,
                 i.stock_minimo,
-                i.fecha_caducidad,
-                (SELECT COUNT(*) FROM movimientoinventario m
-                 WHERE m.id_inventario = i.id_inventario
-                   AND m.fecha_movimiento BETWEEN :d AND :h)    AS movimientos
+                i.fecha_caducidad
             FROM inventario   i
             JOIN producto     p  ON p.codigo_producto   = i.codigo_producto
             JOIN tipoproducto tp ON tp.id_tipo_producto = p.id_tipo_producto
             ORDER BY p.nombre_producto
-        ", [':d' => $desde, ':h' => $hasta]);
+        ", []);
  
         return [
             'tipo'    => 'inventario',
@@ -283,18 +300,20 @@ class Reporte
                 'Código', 'Producto', 'Tipo', 'Marca',
                 'Lote', 'Stock', 'Mínimo', 'F. Caducidad', 'Movimientos',
             ],
-            'filas' => array_map(fn($r) => [
-                $r['codigo_producto'],
-                $r['nombre_producto'],
-                $r['nombre_tipo_producto'],
-                $r['marca'] ?? '—',
-                $r['lote']  ?? '—',
-                $r['stock'],
-                $r['stock_minimo'],
-                $r['fecha_caducidad']
-                    ? date('d/m/Y', strtotime($r['fecha_caducidad'])) : '—',
-                $r['movimientos'],
-            ], $filas),
+            'filas' => array_map(function($r) use ($movsPorInv) {
+                return [
+                    $r['codigo_producto'],
+                    $r['nombre_producto'],
+                    $r['nombre_tipo_producto'],
+                    $r['marca'] ?? '—',
+                    $r['lote']  ?? '—',
+                    $r['stock'],
+                    $r['stock_minimo'],
+                    $r['fecha_caducidad']
+                        ? date('d/m/Y', strtotime($r['fecha_caducidad'])) : '—',
+                    $movsPorInv[$r['id_inventario']] ?? 0,
+                ];
+            }, $filas),
         ];
     }
  
