@@ -10,6 +10,9 @@ $auth = new AuthController();
 if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
+
+// Verificar permiso específico al módulo
+verificarPermiso('reportes');
  
 $page_title = 'Reportes';
 $page_css   = ['reportes.css'];

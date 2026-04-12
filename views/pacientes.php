@@ -11,6 +11,9 @@ $auth = new AuthController();
 if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
+
+// Verificar permiso específico al módulo
+verificarPermiso('pacientes');
  
 // Configuración de la página
 $page_title = 'Pacientes';

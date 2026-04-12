@@ -14,6 +14,9 @@ if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
 
+// Verificar permiso específico al módulo
+verificarPermiso('compras');
+
 //CONFIGURACIÓN DE LA PÁGINA
 $page_title = 'Compras y proveedores';
 $page_css = ['catalogos.css'];

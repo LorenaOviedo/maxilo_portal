@@ -13,6 +13,9 @@ $auth = new AuthController();
 if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
+
+// Verificar permiso específico al módulo
+verificarPermiso('citas');
  
 $page_title = 'Citas';
 $page_css = ['citas.css'];

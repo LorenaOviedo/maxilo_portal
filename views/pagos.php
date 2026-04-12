@@ -11,6 +11,9 @@ $auth = new AuthController();
 if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
+
+// Verificar permiso específico al módulo
+verificarPermiso('pagos');
  
 $page_title = 'Pagos';
 $page_css   = ['catalogos-tabla.css', 'modal.css'];

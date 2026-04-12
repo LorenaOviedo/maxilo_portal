@@ -14,6 +14,9 @@ if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
 
+// Verificar permiso específico al módulo
+verificarPermiso('dashboard');
+
 // Configuración de la página
 $page_title = 'Dashboard';
 

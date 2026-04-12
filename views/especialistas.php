@@ -12,6 +12,9 @@ if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
 
+// Verificar permiso específico al módulo
+verificarPermiso('especialistas');
+
 // Configuración de la página
 $page_title = 'Especialistas';
 $page_css   = ['catalogos-tabla.css', 'modal.css'];

@@ -14,6 +14,9 @@ if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
 
+// Verificar permiso específico al módulo
+verificarPermiso('catalogos');
+
 //CONFIGURACIÓN DE LA PÁGINA
 $page_title = 'Catálogos';
 $page_css = ['catalogos.css'];

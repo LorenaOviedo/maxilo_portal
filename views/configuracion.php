@@ -12,6 +12,9 @@ if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
  
+// Verificar permiso específico al módulo
+verificarPermiso('configuracion');
+ 
 $page_title = 'Configuración';
 $page_css   = ['catalogos-tabla.css', 'modal.css', 'configuracion.css'];
 $page_js    = [];
