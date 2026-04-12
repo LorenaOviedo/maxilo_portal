@@ -80,7 +80,7 @@ foreach ($nombres as $nombre) {
                     <div class="user-avatar" id="userAvatarBtn">
                         <?php echo $iniciales; ?>
                     </div>
-                    <div class="user-dropdown" id="userDropdown">
+                    <div class="user-dropdown" id="userDropdown" only-desktop>
                         <div class="dropdown-header">
                             <span><?php echo htmlspecialchars($email); ?></span>
                         </div>
