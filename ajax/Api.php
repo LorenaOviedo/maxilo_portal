@@ -147,6 +147,12 @@ $modulos = [
         'campo_id' => 'id_pago',
     ],
 
+    'reportes' => [
+        'modelo'   => 'Reporte',
+        'archivo'  => __DIR__ . '/../models/Reporte.php',
+        'campo_id' => null,
+    ],
+
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
     //     'archivo'  => __DIR__ . '/../models/Especialidad.php',

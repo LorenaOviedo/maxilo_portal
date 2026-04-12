@@ -26,11 +26,6 @@ $catalogos = [
         'url' => 'procedimientos.php'
     ],
     [
-        'titulo' => 'Permisos',
-        'descripcion' => 'Administre los permisos para cada usuario.',
-        'url' => 'permisos.php'
-    ],
-    [
         'titulo' => 'Motivos de consulta',
         'descripcion' => 'Catálogo para los motivos de consulta de un paciente.',
         'url' => 'motivos.php'
@@ -50,21 +45,6 @@ $catalogos = [
         'descripcion' => 'Administre las referencias del odontograma.',
         'url' => 'odontograma.php'
     ],
-    [
-        'titulo' => 'Países, estados y ciudades',
-        'descripcion' => 'Administre países, estados y ciudades.',
-        'url' => 'ubicaciones.php'
-    ],
-    [
-        'titulo' => 'Claves telefónicas',
-        'descripcion' => 'Catalógo de claves telefónicas.',
-        'url' => 'claves_telefonicas.php'
-    ],
-    [
-        'titulo' => 'CFDI',
-        'descripcion' => 'Catálogo de CFDI existentes para facturación.',
-        'url' => 'cfdi.php'
-    ]
 ];
 
 // LLAMAR  HEADER Y SIDEBAR

@@ -3,21 +3,35 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../config/auth.php';
-
+ 
+session_start();
+ 
+$auth = new AuthController();
+if (!$auth->verificarSesion()) {
+    redirect('index.php');
+}
+ 
 $page_title = 'Reportes';
 $page_css   = ['reportes.css'];
-$page_js    = ['reportes.js'];
-
+$page_js    = [];
+ 
 include '../includes/header.php';
 include '../includes/sidebar.php';
 ?>
-
+ 
 <main class="main-content">
-    <div class="content-header">
+ 
+    <nav class="breadcrumb">
+        <div class="breadcrumb-item">
+            <span class="breadcrumb-current">Reportes</span>
+        </div>
+    </nav>
+ 
+    <div class="page-header">
         <h1>Reportes</h1>
-        <p class="subtitle">Genera y exporta reportes del sistema</p>
+        <p class="page-description">Genera y exporta reportes del sistema</p>
     </div>
-
+ 
     <!-- Panel de filtros -->
     <div class="report-filters-card">
         <div class="filters-row">
@@ -33,7 +47,7 @@ include '../includes/sidebar.php';
                     <i class="ri-arrow-down-s-line select-icon"></i>
                 </div>
             </div>
-
+ 
             <div class="filter-group">
                 <label class="filter-label">Período</label>
                 <div class="select-wrapper">
@@ -46,7 +60,7 @@ include '../includes/sidebar.php';
                     <i class="ri-arrow-down-s-line select-icon"></i>
                 </div>
             </div>
-
+ 
             <div class="filter-group">
                 <label class="filter-label">Rango de fechas</label>
                 <div class="date-range">
@@ -60,7 +74,7 @@ include '../includes/sidebar.php';
                 </div>
             </div>
         </div>
-
+ 
         <div class="filters-actions">
             <button class="btn-generar" id="btnGenerar">
                 <i class="ri-bar-chart-line"></i>
@@ -76,7 +90,7 @@ include '../includes/sidebar.php';
             </button>
         </div>
     </div>
-
+ 
     <!-- Resultado del reporte -->
     <div id="reporteResultado" class="reporte-resultado" style="display:none;">
         <div class="resumen-card" id="resumenCard">
@@ -96,7 +110,7 @@ include '../includes/sidebar.php';
             </div>
         </div>
     </div>
-
+ 
     <!-- Estado vacío inicial -->
     <div id="estadoVacio" class="estado-vacio">
         <div class="estado-vacio-icon">
@@ -105,7 +119,13 @@ include '../includes/sidebar.php';
         <h3>Selecciona un reporte</h3>
         <p>Elige el tipo de reporte, el período y presiona <strong>Generar reporte</strong></p>
     </div>
-
+ 
 </main>
-
+ 
+<script>
+var API_URL = '<?php echo ajax_url('Api.php'); ?>';
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="<?php echo asset('js/reportes.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
+ 
 <?php include '../includes/footer.php'; ?>

@@ -1,0 +1,318 @@
+<?php
+/**
+ * Reporte.php — Modelo
+ *
+ * Genera datos para los 4 tipos de reporte:
+ *   - pacientes
+ *   - citas
+ *   - pagos
+ *   - inventario
+ */
+class Reporte
+{
+    private PDO $db;
+ 
+    public function __construct(PDO $db)
+    {
+        $this->db = $db;
+    }
+ 
+    // ─────────────────────────────────────────────────────────────────────────
+    // DISPATCHER
+    // ─────────────────────────────────────────────────────────────────────────
+ 
+    public function generar(string $tipo, string $desde, string $hasta): array
+    {
+        return match($tipo) {
+            'pacientes'  => $this->_pacientes($desde, $hasta),
+            'citas'      => $this->_citas($desde, $hasta),
+            'pagos'      => $this->_pagos($desde, $hasta),
+            'inventario' => $this->_inventario($desde, $hasta),
+            default      => ['error' => 'Tipo de reporte no reconocido'],
+        };
+    }
+ 
+    // ─────────────────────────────────────────────────────────────────────────
+    // REPORTE: PACIENTES
+    // ─────────────────────────────────────────────────────────────────────────
+ 
+    private function _pacientes(string $desde, string $hasta): array
+    {
+        // Resumen
+        $resumen = $this->_row("
+            SELECT
+                COUNT(*)                                                AS total,
+                SUM(fecha_registro BETWEEN :d1 AND :h1)                 AS nuevos_periodo,
+                SUM(sexo = 'M')                                         AS masculino,
+                SUM(sexo = 'F')                                         AS femenino,
+                SUM(EXISTS(
+                    SELECT 1 FROM cita c WHERE c.numero_paciente = p.numero_paciente
+                ))                                                      AS con_citas,
+                SUM(NOT EXISTS(
+                    SELECT 1 FROM cita c WHERE c.numero_paciente = p.numero_paciente
+                ))                                                      AS sin_citas
+            FROM paciente p
+        ", [':d1' => $desde, ':h1' => $hasta]);
+ 
+        // Detalle
+        $filas = $this->_query("
+            SELECT
+                p.numero_paciente,
+                TRIM(CONCAT(p.nombre,' ',p.apellido_paterno,' ',
+                    COALESCE(p.apellido_materno,'')))    AS nombre_completo,
+                p.fecha_nacimiento,
+                p.sexo,
+                p.fecha_registro,
+                COUNT(DISTINCT c.id_cita)               AS total_citas,
+                SUM(pg.id_pago IS NOT NULL)             AS total_pagos,
+                COALESCE(SUM(pg.monto_neto), 0)         AS monto_total
+            FROM paciente p
+            LEFT JOIN cita   c  ON c.numero_paciente = p.numero_paciente
+            LEFT JOIN pago   pg ON pg.id_cita        = c.id_cita
+            GROUP BY p.numero_paciente
+            ORDER BY p.apellido_paterno, p.nombre
+        ", []);
+ 
+        return [
+            'tipo'    => 'pacientes',
+            'titulo'  => 'Reporte de Pacientes',
+            'resumen' => [
+                ['label' => 'Total pacientes',     'valor' => $resumen['total']          ?? 0],
+                ['label' => 'Nuevos en período',   'valor' => $resumen['nuevos_periodo'] ?? 0],
+                ['label' => 'Masculino',            'valor' => $resumen['masculino']      ?? 0],
+                ['label' => 'Femenino',             'valor' => $resumen['femenino']       ?? 0],
+                ['label' => 'Con citas',            'valor' => $resumen['con_citas']      ?? 0],
+                ['label' => 'Sin citas',            'valor' => $resumen['sin_citas']      ?? 0],
+            ],
+            'columnas' => [
+                'No. Paciente', 'Nombre completo', 'F. Nacimiento',
+                'Sexo', 'F. Registro', 'Citas', 'Pagos', 'Monto pagado',
+            ],
+            'filas' => array_map(fn($r) => [
+                $r['numero_paciente'],
+                $r['nombre_completo'],
+                $r['fecha_nacimiento'] ? date('d/m/Y', strtotime($r['fecha_nacimiento'])) : '—',
+                $r['sexo'] === 'M' ? 'Masculino' : ($r['sexo'] === 'F' ? 'Femenino' : '—'),
+                $r['fecha_registro'] ? date('d/m/Y', strtotime($r['fecha_registro'])) : '—',
+                $r['total_citas'],
+                $r['total_pagos'],
+                '$' . number_format((float)$r['monto_total'], 2),
+            ], $filas),
+        ];
+    }
+ 
+    // ─────────────────────────────────────────────────────────────────────────
+    // REPORTE: CITAS
+    // ─────────────────────────────────────────────────────────────────────────
+ 
+    private function _citas(string $desde, string $hasta): array
+    {
+        $resumen = $this->_row("
+            SELECT
+                COUNT(*)                                    AS total,
+                SUM(ec.estatus_cita = 'Atendida'
+                    OR ec.estatus_cita = 'Pagada')          AS atendidas,
+                SUM(ec.estatus_cita = 'Cancelada')          AS canceladas,
+                SUM(ec.estatus_cita = 'No asistió')         AS no_asistio,
+                SUM(ec.estatus_cita = 'Pendiente')          AS pendientes,
+                COALESCE(SUM(c.costo_total), 0)             AS monto_total
+            FROM cita         c
+            JOIN estadoscita  ec ON ec.id_estatus_cita = c.id_estatus_cita
+            WHERE c.fecha_cita BETWEEN :d AND :h
+        ", [':d' => $desde, ':h' => $hasta]);
+ 
+        $filas = $this->_query("
+            SELECT
+                c.id_cita,
+                c.fecha_cita,
+                c.hora_inicio,
+                TRIM(CONCAT(p.nombre,' ',p.apellido_paterno,' ',
+                    COALESCE(p.apellido_materno,'')))        AS paciente,
+                TRIM(CONCAT(e.nombre,' ',e.apellido_paterno)) AS especialista,
+                mc.motivo_consulta,
+                ec.estatus_cita,
+                COALESCE(c.costo_total, 0)                  AS costo_total
+            FROM cita            c
+            JOIN paciente        p  ON p.numero_paciente  = c.numero_paciente
+            JOIN especialista    e  ON e.id_especialista  = c.id_especialista
+            JOIN estadoscita     ec ON ec.id_estatus_cita = c.id_estatus_cita
+            LEFT JOIN motivoconsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
+            WHERE c.fecha_cita BETWEEN :d AND :h
+            ORDER BY c.fecha_cita DESC, c.hora_inicio DESC
+        ", [':d' => $desde, ':h' => $hasta]);
+ 
+        return [
+            'tipo'    => 'citas',
+            'titulo'  => 'Reporte de Citas',
+            'resumen' => [
+                ['label' => 'Total citas',     'valor' => $resumen['total']       ?? 0],
+                ['label' => 'Atendidas',        'valor' => $resumen['atendidas']   ?? 0],
+                ['label' => 'Canceladas',       'valor' => $resumen['canceladas']  ?? 0],
+                ['label' => 'No asistió',       'valor' => $resumen['no_asistio']  ?? 0],
+                ['label' => 'Pendientes',       'valor' => $resumen['pendientes']  ?? 0],
+                ['label' => 'Monto generado',   'valor' => '$' . number_format((float)($resumen['monto_total'] ?? 0), 2)],
+            ],
+            'columnas' => [
+                'ID', 'Fecha', 'Hora', 'Paciente',
+                'Especialista', 'Motivo', 'Estatus', 'Costo',
+            ],
+            'filas' => array_map(fn($r) => [
+                $r['id_cita'],
+                date('d/m/Y', strtotime($r['fecha_cita'])),
+                substr($r['hora_inicio'], 0, 5),
+                $r['paciente'],
+                $r['especialista'],
+                $r['motivo_consulta'] ?? '—',
+                $r['estatus_cita'],
+                '$' . number_format((float)$r['costo_total'], 2),
+            ], $filas),
+        ];
+    }
+ 
+    // ─────────────────────────────────────────────────────────────────────────
+    // REPORTE: PAGOS
+    // ─────────────────────────────────────────────────────────────────────────
+ 
+    private function _pagos(string $desde, string $hasta): array
+    {
+        $resumen = $this->_row("
+            SELECT
+                COUNT(*)                        AS total_pagos,
+                SUM(pg.monto_neto)              AS total_recaudado,
+                SUM(pg.estatus = 'Pagado')      AS pagados,
+                SUM(pg.estatus = 'Pendiente')   AS pendientes,
+                AVG(pg.monto_neto)              AS promedio
+            FROM pago pg
+            WHERE pg.fecha_pago BETWEEN :d AND :h
+        ", [':d' => $desde, ':h' => $hasta]);
+ 
+        $filas = $this->_query("
+            SELECT
+                pg.numero_recibo,
+                pg.fecha_pago,
+                TRIM(CONCAT(p.nombre,' ',p.apellido_paterno,' ',
+                    COALESCE(p.apellido_materno,'')))    AS paciente,
+                mp.metodo_pago,
+                pg.referencia_pago,
+                pg.monto_total,
+                pg.monto_neto,
+                pg.estatus
+            FROM pago          pg
+            JOIN cita          c  ON c.id_cita          = pg.id_cita
+            JOIN paciente      p  ON p.numero_paciente  = c.numero_paciente
+            JOIN metodopago    mp ON mp.id_metodo_pago  = pg.id_metodo_pago
+            WHERE pg.fecha_pago BETWEEN :d AND :h
+            ORDER BY pg.fecha_pago DESC
+        ", [':d' => $desde, ':h' => $hasta]);
+ 
+        return [
+            'tipo'    => 'pagos',
+            'titulo'  => 'Reporte de Pagos',
+            'resumen' => [
+                ['label' => 'Total pagos',       'valor' => $resumen['total_pagos']      ?? 0],
+                ['label' => 'Pagados',            'valor' => $resumen['pagados']          ?? 0],
+                ['label' => 'Pendientes',         'valor' => $resumen['pendientes']       ?? 0],
+                ['label' => 'Total recaudado',    'valor' => '$' . number_format((float)($resumen['total_recaudado'] ?? 0), 2)],
+                ['label' => 'Promedio por pago',  'valor' => '$' . number_format((float)($resumen['promedio'] ?? 0), 2)],
+            ],
+            'columnas' => [
+                'Recibo', 'Fecha', 'Paciente', 'Método',
+                'Referencia', 'Monto total', 'Monto neto', 'Estatus',
+            ],
+            'filas' => array_map(fn($r) => [
+                $r['numero_recibo'],
+                date('d/m/Y', strtotime($r['fecha_pago'])),
+                $r['paciente'],
+                $r['metodo_pago'],
+                $r['referencia_pago'] ?? '—',
+                '$' . number_format((float)$r['monto_total'], 2),
+                '$' . number_format((float)$r['monto_neto'],  2),
+                $r['estatus'],
+            ], $filas),
+        ];
+    }
+ 
+    // ─────────────────────────────────────────────────────────────────────────
+    // REPORTE: INVENTARIO
+    // ─────────────────────────────────────────────────────────────────────────
+ 
+    private function _inventario(string $desde, string $hasta): array
+    {
+        $resumen = $this->_row("
+            SELECT
+                COUNT(*)                                        AS total_productos,
+                SUM(i.stock = 0)                                AS sin_stock,
+                SUM(i.stock > 0 AND i.stock <= i.stock_minimo)  AS stock_bajo,
+                SUM(i.fecha_caducidad < CURDATE()
+                    AND i.fecha_caducidad IS NOT NULL)          AS caducados,
+                (SELECT COUNT(*) FROM movimientoinventario m
+                 WHERE m.fecha_movimiento BETWEEN :d2 AND :h2)  AS movimientos_periodo
+            FROM inventario i
+        ", [':d2' => $desde, ':h2' => $hasta]);
+ 
+        $filas = $this->_query("
+            SELECT
+                i.codigo_producto,
+                p.nombre_producto,
+                tp.nombre_tipo_producto,
+                p.marca,
+                i.lote,
+                i.stock,
+                i.stock_minimo,
+                i.fecha_caducidad,
+                (SELECT COUNT(*) FROM movimientoinventario m
+                 WHERE m.id_inventario = i.id_inventario
+                   AND m.fecha_movimiento BETWEEN :d AND :h)    AS movimientos
+            FROM inventario   i
+            JOIN producto     p  ON p.codigo_producto   = i.codigo_producto
+            JOIN tipoproducto tp ON tp.id_tipo_producto = p.id_tipo_producto
+            ORDER BY p.nombre_producto
+        ", [':d' => $desde, ':h' => $hasta]);
+ 
+        return [
+            'tipo'    => 'inventario',
+            'titulo'  => 'Reporte de Inventario',
+            'resumen' => [
+                ['label' => 'Total productos',       'valor' => $resumen['total_productos']    ?? 0],
+                ['label' => 'Sin stock',              'valor' => $resumen['sin_stock']          ?? 0],
+                ['label' => 'Stock bajo mínimo',      'valor' => $resumen['stock_bajo']         ?? 0],
+                ['label' => 'Caducados',              'valor' => $resumen['caducados']          ?? 0],
+                ['label' => 'Movimientos en período', 'valor' => $resumen['movimientos_periodo'] ?? 0],
+            ],
+            'columnas' => [
+                'Código', 'Producto', 'Tipo', 'Marca',
+                'Lote', 'Stock', 'Mínimo', 'F. Caducidad', 'Movimientos',
+            ],
+            'filas' => array_map(fn($r) => [
+                $r['codigo_producto'],
+                $r['nombre_producto'],
+                $r['nombre_tipo_producto'],
+                $r['marca'] ?? '—',
+                $r['lote']  ?? '—',
+                $r['stock'],
+                $r['stock_minimo'],
+                $r['fecha_caducidad']
+                    ? date('d/m/Y', strtotime($r['fecha_caducidad'])) : '—',
+                $r['movimientos'],
+            ], $filas),
+        ];
+    }
+ 
+    // ─────────────────────────────────────────────────────────────────────────
+    // HELPERS
+    // ─────────────────────────────────────────────────────────────────────────
+ 
+    private function _query(string $sql, array $params): array
+    {
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+ 
+    private function _row(string $sql, array $params): array
+    {
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+    }
+}
