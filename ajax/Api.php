@@ -870,6 +870,51 @@ switch ($accion) {
         );
         break;
 
+    case 'get_solicitud_factura':
+        $idPago = (int) ($_GET['id_pago'] ?? 0);
+        if (!$idPago)
+            responder(false, 'ID de pago requerido');
+        $sf = $model->getSolicitudFactura($idPago);
+        responder(true, 'OK', ['solicitud' => $sf]);
+        break;
+
+    case 'crear_solicitud_factura':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $data = sanitizarPost($_POST);
+        if (empty($data['rfc']))
+            responder(false, 'El RFC es obligatorio');
+        if (empty($data['razon_social']))
+            responder(false, 'La razon social es obligatoria');
+        if (empty($data['id_pago']))
+            responder(false, 'ID de pago requerido');
+        if ($model->tieneSolicitudFactura((int) $data['id_pago']))
+            responder(false, 'Este pago ya tiene una solicitud de factura registrada');
+        $id = $model->crearSolicitudFactura($data);
+        if ($id)
+            responder(true, 'Solicitud registrada correctamente', ['id' => $id]);
+        responder(false, 'Error al registrar la solicitud');
+        break;
+
+    case 'completar_factura':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $idSolicitud = (int) ($_POST['id_solicitud_factura'] ?? 0);
+        $folioFiscal = trim($_POST['folio_fiscal'] ?? '');
+        $fechaTimb = trim($_POST['fecha_facturacion'] ?? '');
+        if (!$idSolicitud)
+            responder(false, 'ID de solicitud requerido');
+        if (!$folioFiscal)
+            responder(false, 'El folio fiscal es obligatorio');
+        if (!$fechaTimb)
+            responder(false, 'La fecha de timbrado es obligatoria');
+        $ok = $model->completarFactura($idSolicitud, [
+            'folio_fiscal' => $folioFiscal,
+            'fecha_facturacion' => $fechaTimb,
+        ]);
+        responder($ok, $ok ? 'Factura registrada correctamente' : 'Error al actualizar');
+        break;
+
     case 'crear_pago':
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
             responder(false, 'Metodo no permitido');

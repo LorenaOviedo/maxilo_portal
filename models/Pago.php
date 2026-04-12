@@ -325,8 +325,167 @@ class Pago
         return $conds ? 'WHERE ' . implode(' AND ', $conds) : '';
     }
  
+ 
+    // ─────────────────────────────────────────────────────────────────────────
+    // FACTURACIÓN
+    // ─────────────────────────────────────────────────────────────────────────
+ 
+    /** Datos de facturación guardados del paciente */
+    public function getDatosFacturacion(int $numeroPaciente): ?array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT * FROM datosfacturacion WHERE numero_paciente = :id LIMIT 1"
+        );
+        $stmt->execute([':id' => $numeroPaciente]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+ 
+    /** Verificar si el pago ya tiene solicitud de factura */
+    public function tieneSolicitudFactura(int $idPago): bool
+    {
+        $stmt = $this->db->prepare(
+            "SELECT COUNT(*) FROM solicitudfactura WHERE id_pago = :id"
+        );
+        $stmt->execute([':id' => $idPago]);
+        return (int)$stmt->fetchColumn() > 0;
+    }
+ 
+    /** Obtener solicitud de factura de un pago */
+    public function getSolicitudFactura(int $idPago): ?array
+    {
+        $stmt = $this->db->prepare("
+            SELECT sf.*, ef.estatus_factura, df.rfc, df.razon_social
+            FROM   solicitudfactura sf
+            JOIN   estadosfactura   ef ON ef.id_estatus_factura   = sf.id_estatus_factura
+            JOIN   datosfacturacion df ON df.id_datos_facturacion = sf.id_datos_facturacion
+            WHERE  sf.id_pago = :id
+            LIMIT 1
+        ");
+        $stmt->execute([':id' => $idPago]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+ 
+    /** Crear solicitud de factura (paso 1) */
+    public function crearSolicitudFactura(array $data): int|false
+    {
+        $this->db->beginTransaction();
+        try {
+            // 1. Guardar/actualizar datos de facturación del paciente
+            $numeroPaciente = (int)$data['numero_paciente'];
+            $existing = $this->getDatosFacturacion($numeroPaciente);
+ 
+            if ($existing) {
+                $this->db->prepare("
+                    UPDATE datosfacturacion SET
+                        rfc          = :rfc,
+                        razon_social = :razon_social
+                    WHERE id_datos_facturacion = :id
+                ")->execute([
+                    ':rfc'          => strtoupper(trim($data['rfc'])),
+                    ':razon_social' => strtoupper(trim($data['razon_social'])),
+                    ':id'           => $existing['id_datos_facturacion'],
+                ]);
+                $idDatos = $existing['id_datos_facturacion'];
+            } else {
+                $this->db->prepare("
+                    INSERT INTO datosfacturacion (rfc, razon_social, numero_paciente)
+                    VALUES (:rfc, :razon_social, :paciente)
+                ")->execute([
+                    ':rfc'          => strtoupper(trim($data['rfc'])),
+                    ':razon_social' => strtoupper(trim($data['razon_social'])),
+                    ':paciente'     => $numeroPaciente,
+                ]);
+                $idDatos = (int)$this->db->lastInsertId();
+            }
+ 
+            // 2. Buscar id_estatus "Pendiente" en estadosfactura
+            $stmt = $this->db->query(
+                "SELECT id_estatus_factura FROM estadosfactura
+                 WHERE LOWER(estatus_factura) LIKE '%pendiente%' LIMIT 1"
+            );
+            $idEstatus = (int)($stmt->fetchColumn() ?: 1);
+ 
+            // 3. Crear solicitud
+            $this->db->prepare("
+                INSERT INTO solicitudfactura
+                    (cfdi, id_estatus_factura, id_pago, id_datos_facturacion)
+                VALUES
+                    (:cfdi, :id_estatus, :id_pago, :id_datos)
+            ")->execute([
+                ':cfdi'      => strtoupper(trim($data['cfdi'] ?? 'G03')),
+                ':id_estatus'=> $idEstatus,
+                ':id_pago'   => (int)$data['id_pago'],
+                ':id_datos'  => $idDatos,
+            ]);
+            $idSolicitud = (int)$this->db->lastInsertId();
+ 
+            $this->db->commit();
+            return $idSolicitud;
+ 
+        } catch (\Throwable $e) {
+            $this->db->rollBack();
+            error_log('Pago::crearSolicitudFactura — ' . $e->getMessage());
+            return false;
+        }
+    }
+ 
+    /** Completar factura con datos del timbrado (paso 2) */
+    public function completarFactura(int $idSolicitud, array $data): bool
+    {
+        // Buscar estatus "Timbrada" o similar
+        $stmt = $this->db->query(
+            "SELECT id_estatus_factura FROM estadosfactura
+             WHERE LOWER(estatus_factura) LIKE '%timb%'
+                OR LOWER(estatus_factura) LIKE '%complet%'
+                OR LOWER(estatus_factura) LIKE '%emitid%'
+             LIMIT 1"
+        );
+        $idEstatus = (int)($stmt->fetchColumn() ?: 2);
+ 
+        $stmt = $this->db->prepare("
+            UPDATE solicitudfactura SET
+                folio_fiscal      = :folio_fiscal,
+                fecha_facturacion = :fecha_facturacion,
+                id_estatus_factura= :id_estatus
+            WHERE id_solicitud_factura = :id
+        ");
+        return $stmt->execute([
+            ':folio_fiscal'      => strtoupper(trim($data['folio_fiscal'])),
+            ':fecha_facturacion' => $data['fecha_facturacion'],
+            ':id_estatus'        => $idEstatus,
+            ':id'                => $idSolicitud,
+        ]);
+    }
+ 
+    /** Catálogos de CFDI y estatus factura */
+    public function getCatalogosFacturacion(): array
+    {
+        return [
+            'estadosFactura' => $this->_query(
+                "SELECT id_estatus_factura, estatus_factura FROM estadosfactura ORDER BY id_estatus_factura"
+            ),
+            'usosCFDI' => [
+                ['valor' => 'G01', 'etiqueta' => 'G01 — Adquisición de mercancias'],
+                ['valor' => 'G03', 'etiqueta' => 'G03 — Gastos en general'],
+                ['valor' => 'I08', 'etiqueta' => 'I08 — Gastos médicos por incapacidad o discapacidad'],
+                ['valor' => 'D01', 'etiqueta' => 'D01 — Honorarios médicos, dentales y gastos hospitalarios'],
+                ['valor' => 'D07', 'etiqueta' => 'D07 — Primas por seguros de gastos médicos'],
+                ['valor' => 'P01', 'etiqueta' => 'P01 — Por definir'],
+            ],
+        ];
+    }
+ 
+    /** Datos necesarios para imprimir el recibo */
+    public function getDatosRecibo(int $idPago): ?array
+    {
+        return $this->getById($idPago);
+    }
+ 
     private function _query(string $sql): array
     {
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 }
+ 

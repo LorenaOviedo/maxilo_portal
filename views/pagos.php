@@ -166,13 +166,14 @@ include '../includes/sidebar.php';
                             <th class="text-right" data-sort="monto_total">TOTAL</th>
                             <th class="text-right" data-sort="monto_neto">NETO</th>
                             <th class="text-center" data-sort="estatus">ESTATUS</th>
+                            <th class="text-center">FACTURA</th>
                             <th class="col-actions">ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($pagos)): ?>
                         <tr>
-                            <td colspan="9">
+                            <td colspan="10">
                                 <div class="empty-state">
                                     <div class="empty-state-icon">
                                         <i class="ri-secure-payment-line"></i>
@@ -239,6 +240,33 @@ include '../includes/sidebar.php';
                                     </span>
                                 </td>
  
+                                <td class="text-center" data-label="Factura">
+                                    <?php
+                                    $sf = $model->getSolicitudFactura((int)$p['id_pago']);
+                                    if ($sf):
+                                        $sfCls = strpos(strtolower($sf['estatus_factura']), 'timb') !== false
+                                              || strpos(strtolower($sf['estatus_factura']), 'complet') !== false
+                                              || strpos(strtolower($sf['estatus_factura']), 'emitid') !== false
+                                            ? 'badge-success' : 'badge-warning';
+                                    ?>
+                                        <span class="badge <?php echo $sfCls; ?>"
+                                            style="cursor:pointer;font-size:11px;"
+                                            title="Ver factura"
+                                            onclick="pagoController.verFactura(<?php echo $p['id_pago']; ?>)">
+                                            <?php echo htmlspecialchars($sf['estatus_factura']); ?>
+                                        </span>
+                                    <?php elseif ($p['estatus'] === 'Pagado'): ?>
+                                        <button type="button" class="btn-action btn-view"
+                                            title="Solicitar factura"
+                                            style="font-size:12px;"
+                                            onclick="pagoController.abrirFactura(<?php echo $p['id_pago']; ?>, <?php echo $p['id_cita']; ?>)">
+                                            <i class="ri-file-text-line"></i>
+                                        </button>
+                                    <?php else: ?>
+                                        <span style="color:#adb5bd;font-size:12px;">—</span>
+                                    <?php endif; ?>
+                                </td>
+ 
                                 <td class="col-actions" data-label="Acciones">
                                     <div class="action-buttons">
                                         <button type="button" class="btn-action btn-view"
@@ -295,6 +323,8 @@ var CATALOGOS_PAGO = <?php echo json_encode($catalogos); ?>;
 </script>
  
 <?php include '../includes/modal_pago.php'; ?>
+<?php include '../includes/modal_factura.php'; ?>
+<?php include '../includes/recibo_print.php'; ?>
 <script src="<?php echo asset('js/pagos.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
  
 <?php include '../includes/footer.php'; ?>
