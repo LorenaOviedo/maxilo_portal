@@ -6,9 +6,6 @@ error_reporting(E_ALL);
  *
  * Punto de entrada único para todas las operaciones AJAX del sistema.
  *
- * USO:
- *   GET  ajax/api.php?modulo=procedimientos&accion=get&id=5
- *   POST ajax/api.php  →  body: modulo=procedimientos&accion=create&
  */
 
 require_once __DIR__ . '/../config/config.php';

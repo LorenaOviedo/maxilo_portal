@@ -11,8 +11,12 @@ if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
 
-// Verificar permiso específico al módulo
-verificarPermiso('inicio');
+// Admin no debe ver inicio — va al dashboard
+$rolSesion = strtolower(trim($_SESSION['rol'] ?? ''));
+if (strpos($rolSesion, 'admin') !== false) {
+    redirect('dashboard.php');
+    exit;
+}
  
 $page_title = 'Bienvenido';
 $page_css   = ['inicio.css'];
