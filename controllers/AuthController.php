@@ -248,6 +248,13 @@ class AuthController
  
     public function verificarSesion()
     {
+        // Evitar que el navegador cachee páginas protegidas
+        // Así al dar "atrás" no se puede ver la página sin sesión activa
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Cache-Control: post-check=0, pre-check=0', false);
+        header('Pragma: no-cache');
+        header('Expires: Sat, 01 Jan 2000 00:00:00 GMT');
+ 
         if (!isset($_SESSION['usuario_id'])) {
             return false;
         }

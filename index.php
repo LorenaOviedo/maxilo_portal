@@ -1,11 +1,16 @@
 <?php
 ob_start(); // Capturar output para evitar "headers already sent"
+ 
+// No cache en el login tampoco
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: Sat, 01 Jan 2000 00:00:00 GMT');
+ 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/config/database.php';
-
 //session_start();
  
 // Procesar logout si se recibe el parámetro
@@ -124,4 +129,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
  
 </html>
- 
