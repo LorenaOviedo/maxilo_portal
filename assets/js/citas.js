@@ -292,19 +292,19 @@ function citaCard(c) {
         <div class="cita-hora">${formatTime(c.hora_inicio)}</div>
         <div class="cita-info">
             <div class="cita-paciente"><i class="ri-user-line"></i> ${c.nombre_paciente ?? '—'}</div>
-            <div class="cita-especialista"><i class="ri-stethoscope-line"></i> ${c.nombre_especialista ?? '—'}</div>
-            <div class="cita-motivo"><i class="ri-heart-pulse-line"></i> ${c.motivo_consulta ?? '—'}</div>
+            <div class="cita-especialista"><i class="ri-nurse-line"></i> ${c.nombre_especialista ?? '—'}</div>
+            <div class="cita-motivo"><i class="ri-tooth-line"></i> ${c.motivo_consulta ?? '—'}</div>
         </div>
         <div class="cita-acciones">
             <span class="badge ${badgeClass}">${estatus}</span>
             <div class="cita-btns">
                 <button class="btn-icon btn-icon-warning" title="Editar"
                     data-action="editar" data-id="${c.id_cita}">
-                    <i class="ri-edit-line"></i>
+                    <i class="ri-edit-box-line"></i>
                 </button>
                 <button class="btn-icon btn-icon-danger" title="Eliminar"
                     data-action="eliminar" data-id="${c.id_cita}">
-                    <i class="ri-delete-bin-line"></i>
+                    <i class="ri-delete-bin-6-line"></i>
                 </button>
             </div>
         </div>
@@ -397,7 +397,7 @@ function bindPacienteSearch() {
         renderDropdown(resultados, input, hidden, dropdown);
     });
  
-    // Cerrar al perder foco (con pequeño delay para capturar el click)
+    // Cerrar al perder foco (con delay para permitir click en dropdown)
     input.addEventListener('blur', () => setTimeout(cerrarDropdown, 200));
  
     // Abrir al hacer foco si ya hay texto
@@ -662,11 +662,11 @@ async function abrirDetalle(id) {
                     <span class="detalle-value">${c.paciente_primera_vez == 1 ? 'Primera vez' : 'Seguimiento'}</span>
                 </div>
                 <div class="detalle-row">
-                    <span class="detalle-label"><i class="ri-stethoscope-line"></i> Especialista</span>
+                    <span class="detalle-label"><i class="ri-nurse-line"></i> Especialista</span>
                     <span class="detalle-value">${c.nombre_especialista ?? '—'}</span>
                 </div>
                 <div class="detalle-row">
-                    <span class="detalle-label"><i class="ri-heart-pulse-line"></i> Motivo</span>
+                    <span class="detalle-label"><i class="ri-tooth-line"></i> Motivo</span>
                     <span class="detalle-value">${c.motivo_consulta ?? '—'}</span>
                 </div>
                 <div class="detalle-row">

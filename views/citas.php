@@ -210,7 +210,7 @@ include '../includes/sidebar.php';
                 </div>
  
                 <div class="form-alert" id="alertConflicto" style="display: none;">
-                    <i class="ri-error-warning-line"></i>
+                    <i class="ri-edit-box-line"></i>
                     <span id="alertMessage"></span>
                 </div>
             </form>
