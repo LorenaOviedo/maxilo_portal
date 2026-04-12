@@ -158,7 +158,7 @@ include '../includes/sidebar.php';
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th data-sort="numero_recibo">RECIBO</th>
+                            <th data-sort="numero_recibo">NO. RECIBO</th>
                             <th data-sort="fecha_pago">FECHA</th>
                             <th data-sort="nombre_paciente">PACIENTE</th>
                             <th data-sort="nombre_especialista">ESPECIALISTA</th>
@@ -187,10 +187,7 @@ include '../includes/sidebar.php';
                             <?php foreach ($pagos as $p): ?>
                             <tr>
                                 <td data-label="Recibo">
-                                    <code style="font-size:12px;background:#f1f3f5;
-                                        padding:2px 6px;border-radius:4px;">
-                                        <?php echo htmlspecialchars($p['numero_recibo']); ?>
-                                    </code>
+                                    <?php echo htmlspecialchars($p['numero_recibo']); ?>
                                 </td>
  
                                 <td class="text-center" data-label="Fecha">

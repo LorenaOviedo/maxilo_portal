@@ -112,6 +112,9 @@ const pagoController = {
     const fmt = (n) => "$" + this._fmtNum(n);
     const fmtF = (s) => this._fmtFecha(s);
 
+    const nombreLimpio = (p.nombre_paciente ?? 'Paciente').replace(/\s+/g, '_');
+    const nombreArchivo = `Recibo_${p.numero_recibo ?? '000'}_${nombreLimpio}`;
+
     const total = parseFloat(p.monto_total || 0);
     const neto = parseFloat(p.monto_neto || 0);
     const descuento = total - neto;
@@ -134,7 +137,7 @@ const pagoController = {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Recibo ${p.numero_recibo ?? ""} — ${p.nombre_paciente ?? ""}</title>
+    <title>${nombreArchivo}</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html {
