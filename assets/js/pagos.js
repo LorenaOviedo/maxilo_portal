@@ -116,7 +116,7 @@ const pagoController = {
         maximumFractionDigits: 2,
       });
 
-    // 1. Poblar los datos
+    // 1. Poblar los datos en el DOM oculto
     document.getElementById("printRecibo").textContent = p.numero_recibo ?? "—";
     document.getElementById("printFechaPago").textContent = p.fecha_pago
       ? this._fmtFecha(p.fecha_pago)
@@ -136,47 +136,56 @@ const pagoController = {
     document.getElementById("printTotal").textContent = fmt(p.monto_total);
     document.getElementById("printNeto").textContent = fmt(p.monto_neto);
 
-    // Lógica de Descuento
-    const total = parseFloat(p.monto_total ?? 0);
-    const neto = parseFloat(p.monto_neto ?? 0);
+    // Manejo de Descuento y Observaciones
     const rowDesc = document.getElementById("printRowDesc");
-    if (neto < total) {
-      const descElem = document.getElementById("printDesc");
-      if (descElem) descElem.textContent = "-" + fmt(total - neto);
-      if (rowDesc) rowDesc.style.display = "flex"; // Usar flex para mantener alineación
+    if (parseFloat(p.monto_neto) < parseFloat(p.monto_total)) {
+      document.getElementById("printDesc").textContent =
+        "-" + fmt(p.monto_total - p.monto_neto);
+      if (rowDesc) rowDesc.style.display = "flex";
     } else {
       if (rowDesc) rowDesc.style.display = "none";
     }
 
-    // 2. Obtener el contenido del recibo
+    // 2. Obtener el contenido HTML
     const contenidoRecibo = document.getElementById("reciboImprimir").innerHTML;
 
-    // 3. Abrir ventana tamaño A4 (aprox 800px de ancho)
-    const ventana = window.open("", "_blank", "width=900,height=800");
+    // 3. Abrir ventana e inyectar TODO (HTML + CSS)
+    const ventana = window.open("", "_blank", "width=900,height=900");
 
-    if (!ventana) {
-      CatalogTable.showNotification(
-        "No se pudo abrir la ventana de impresión",
-        "error",
-      );
-      return;
-    }
     ventana.document.write(`
         <!DOCTYPE html>
-        <html lang="es">
+        <html>
         <head>
             <meta charset="UTF-8">
-            <title>Recibo ${p.numero_recibo ?? ""}</title>
-            <link rel="stylesheet" href="css/dashboard.css">
+            <title>Imprimir Recibo</title>
             <style>
-                /* Estilos extra para asegurar que se vea como hoja membretada en la ventana nueva */
-                body { background: #fff; margin: 0; padding: 0; }
-                .recibo-container { 
-                    width: 100%; 
-                    box-shadow: none; 
-                    padding: 10mm;
-                }
+                /* ESTILOS INTEGRADOS PARA GARANTIZAR EL DISEÑO */
+                body { font-family: 'Helvetica', 'Arial', sans-serif; margin: 0; padding: 20px; color: #1a1a1a; }
+                .recibo-container { width: 100%; max-width: 800px; margin: 0 auto; }
+                
+                .recibo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+                .brand-info { display: flex; align-items: center; gap: 15px; }
+                .recibo-logo { width: 80px; height: auto; }
+                .clinica-datos h1 { font-size: 24px; color: #2c3e50; margin: 0; }
+                .clinica-datos p { font-size: 10px; color: #34495e; margin: 0; font-weight: bold; }
+                .doctor-nombre { font-size: 18px; font-weight: bold; color: #1a3a8a; }
+
+                .titulo-documento { text-align: center; font-size: 20px; margin: 20px 0; letter-spacing: 1px; }
+                .folio-fecha { text-align: right; margin-bottom: 20px; font-size: 13px; }
+                
+                .recibo-seccion { margin-bottom: 20px; }
+                .recibo-seccion h3 { font-size: 13px; border-bottom: 1px dashed #ccc; padding-bottom: 5px; margin-bottom: 10px; }
+                
+                .linea-datos { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
+                .total-final { display: flex; justify-content: space-between; border-top: 1px solid #000; padding-top: 10px; margin-top: 20px; font-weight: bold; font-size: 16px; }
+
+                .status-pagado { text-align: center; margin: 40px 0; font-size: 24px; font-weight: 900; letter-spacing: 2px; }
+                
+                .recibo-footer { margin-top: 50px; text-align: center; }
+                .footer-blue-bar { border-top: 2px solid #1a3a8a; padding-top: 10px; color: #1a3a8a; font-size: 11px; }
+                
                 @media print {
+                    @page { size: portrait; margin: 10mm; }
                     .no-print { display: none; }
                 }
             </style>
@@ -184,12 +193,12 @@ const pagoController = {
         <body>
             ${contenidoRecibo}
             <script>
-                // Esperar a que carguen los estilos y el logo antes de imprimir
                 window.onload = function() {
+                    // Damos un tiempo extra para que el logo cargue
                     setTimeout(() => {
                         window.print();
                         window.close();
-                    }, 500);
+                    }, 300);
                 };
             <\/script>
         </body>
@@ -197,7 +206,6 @@ const pagoController = {
     `);
     ventana.document.close();
   },
-
   // ─────────────────────────────────────────────────────────────────────
   // FACTURACIÓN — ABRIR MODAL
   // ─────────────────────────────────────────────────────────────────────
