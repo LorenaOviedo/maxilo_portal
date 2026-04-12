@@ -248,7 +248,7 @@ class Configuracion
     {
         return $this->_query(
             "SELECT id_modulo, modulo, descripcion_modulo
-             FROM modulos ORDER BY modulo"
+             FROM modulos WHERE modulo <> 'Inicio' ORDER BY modulo"
         );
     }
  

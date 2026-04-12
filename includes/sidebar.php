@@ -5,29 +5,41 @@ if (!defined('SITE_URL')) {
     require_once dirname(__DIR__) . '/config/config.php';
 }
 
-$rol = strtolower(trim($_SESSION['rol'] ?? ''));
-$esAdmin = (strpos($rol, 'admin') !== false);
-$modulosNombres = $_SESSION['modulos_nombres'] ?? [];
+// Cargar módulos directamente desde BD en cada request
+// para garantizar que los cambios de permisos se reflejen inmediatamente
+$esAdmin = false;
+$modulosNombres = [];
 
-// Si no hay módulos en sesión (usuario ya logueado antes del cambio),
-// recargar desde BD
-if (empty($modulosNombres) && isset($_SESSION['usuario_id'])) {
+if (isset($_SESSION['usuario_id'])) {
     try {
         $dbSidebar = getDB();
-        $idRol = $dbSidebar->prepare("SELECT id_rol FROM usuario WHERE id_usuario = :id");
-        $idRol->execute([':id' => (int) $_SESSION['usuario_id']]);
-        $rolId = (int) $idRol->fetchColumn();
 
-        if ($rolId) {
-            $stmt = $dbSidebar->prepare("
+        // Obtener id_rol y nombre del rol del usuario actual
+        $stmtRol = $dbSidebar->prepare("
+            SELECT u.id_rol, LOWER(r.nombre_rol) AS nombre_rol
+            FROM   usuario u
+            JOIN   rol     r ON r.id_rol = u.id_rol
+            WHERE  u.id_usuario = :id
+        ");
+        $stmtRol->execute([':id' => (int) $_SESSION['usuario_id']]);
+        $infoRol = $stmtRol->fetch(PDO::FETCH_ASSOC);
+
+        if ($infoRol) {
+            $rolDB = $infoRol['nombre_rol'] ?? '';
+            $esAdmin = (strpos($rolDB, 'admin') !== false);
+
+            // Cargar módulos permitidos del rol
+            $stmtMod = $dbSidebar->prepare("
                 SELECT LOWER(m.modulo) AS modulo
                 FROM   rolpermiso rp
                 JOIN   modulos    m ON m.id_modulo = rp.id_modulo
                 WHERE  rp.id_rol = :id_rol
             ");
-            $stmt->execute([':id_rol' => $rolId]);
-            $modulosNombres = array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'modulo');
-            $_SESSION['modulos_nombres'] = $modulosNombres;
+            $stmtMod->execute([':id_rol' => (int) $infoRol['id_rol']]);
+            $modulosNombres = array_column(
+                $stmtMod->fetchAll(PDO::FETCH_ASSOC),
+                'modulo'
+            );
         }
     } catch (Exception $e) {
         error_log('Sidebar: error cargando módulos — ' . $e->getMessage());
@@ -37,11 +49,8 @@ if (empty($modulosNombres) && isset($_SESSION['usuario_id'])) {
 // Helper — verificar si el módulo está permitido
 function tieneAcceso(string $modulo): bool
 {
-    global $modulosNombres, $esAdmin;
-    // Admin siempre tiene acceso a todo
-    if ($esAdmin)
-        return true;
-    // Verificar si el nombre del módulo está en los permitidos (comparación flexible)
+    global $modulosNombres;
+    // Todos los roles respetan rolpermiso — incluyendo admin
     foreach ($modulosNombres as $m) {
         if (
             strpos(strtolower($m), strtolower($modulo)) !== false ||
@@ -79,7 +88,6 @@ function is_active(string $page): string
                 </a>
             </li>
         <?php endif; ?>
-
 
         <?php if (tieneAcceso('dashboard')): ?>
             <li class="menu-item <?php echo is_active('dashboard'); ?>">

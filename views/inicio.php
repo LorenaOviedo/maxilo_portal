@@ -41,7 +41,7 @@ include '../includes/sidebar.php';
             <h1 class="inicio-saludo-texto">
                 <?php echo $saludo; ?>,
                 <span class="inicio-nombre">
-                    <?php echo htmlspecialchars(ucwords(strtolower($nombre))); ?>
+                    <?php echo htmlspecialchars(explode(' ', $nombreUsuario)[0]); ?>
                 </span>
             </h1>
             <p class="inicio-rol">
