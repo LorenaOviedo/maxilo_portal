@@ -125,7 +125,7 @@ include '../includes/sidebar.php';
                     </div>
                     <div class="form-group">
                         <label class="form-label">
-                            <i class="ri-file-list-line"></i> Tipo de Paciente *
+                            Tipo de Paciente<span class="required">*</span>
                         </label>
                         <select class="form-select" id="selectTipoPaciente" name="tipoPaciente" required>
                             <option value="">Seleccionar tipo...</option>
@@ -138,7 +138,7 @@ include '../includes/sidebar.php';
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">
-                            <i class="ri-stethoscope-line"></i> Especialista *
+                            Especialista<span class="required">*</span>
                         </label>
                         <select class="form-select" id="selectEspecialista" name="id_especialista" required>
                             <option value="">Seleccionar especialista...</option>
@@ -146,7 +146,7 @@ include '../includes/sidebar.php';
                     </div>
                     <div class="form-group">
                         <label class="form-label">
-                            <i class="ri-tooth-line"></i> Motivo de Consulta *
+                            Motivo de Consulta<span class="required">*</span>
                         </label>
                         <select class="form-select" id="selectMotivo" name="id_motivo_consulta" required>
                             <option value="">Seleccionar motivo...</option>
@@ -157,14 +157,14 @@ include '../includes/sidebar.php';
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">
-                            <i class="ri-calendar-line"></i> Fecha *
+                            Fecha<span class="required">*</span>
                         </label>
                         <input type="date" class="form-input" id="inputFecha" name="fecha_cita"
                                min="<?php echo date('Y-m-d'); ?>" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">
-                            <i class="ri-time-line"></i> Hora de Inicio *
+                            Hora de Inicio<span class="required">*</span>
                         </label>
                         <input type="time" class="form-input" id="inputHora" name="hora_inicio" required>
                     </div>
@@ -173,7 +173,7 @@ include '../includes/sidebar.php';
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">
-                            <i class="ri-timer-line"></i> Duración
+                            Duración
                         </label>
                         <select class="form-select" id="selectDuracion" name="duracion_aproximada">
                             <option value="30">30 minutos</option>
@@ -184,7 +184,7 @@ include '../includes/sidebar.php';
                     </div>
                     <div class="form-group">
                         <label class="form-label">
-                            <i class="ri-money-dollar-circle-line"></i> Costo Estimado
+                            Costo Estimado
                         </label>
                         <input type="number" class="form-input" id="inputCosto" name="costo_estimado"
                                placeholder="0.00" step="0.01" min="0">
