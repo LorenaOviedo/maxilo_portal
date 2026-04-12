@@ -17,7 +17,7 @@ if (isset($_GET['logout']) && $_GET['logout'] == '1') {
 
 // Si ya está logueado, redirigir al dashboard
 if (isset($_SESSION['usuario_id'])) {
-    header('Location: views/dashboard.php');
+    header('Location: views/' . $auth->getPaginaInicio());
     exit;
 }
 

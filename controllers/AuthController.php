@@ -212,6 +212,18 @@ class AuthController
         }
     }
  
+    public function getPaginaInicio(): string
+    {
+        $modulos = $_SESSION['modulos_nombres'] ?? [];
+        $esAdmin = str_contains(strtolower($_SESSION['rol'] ?? ''), 'admin');
+ 
+        // Admin → dashboard
+        if ($esAdmin) return 'dashboard.php';
+ 
+        // Cualquier otro → inicio.php (bienvenida)
+        return 'inicio.php';
+    }
+ 
     public function logout()
     {
         // Destruir sesión
