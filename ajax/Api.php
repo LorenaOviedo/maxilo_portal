@@ -957,9 +957,9 @@ switch ($accion) {
 
 
     case 'generar_reporte':
-        $tipo = sanitizarPost($_GET['tipo'] ?? '');
-        $desde = sanitizarPost($_GET['desde'] ?? date('Y-m-01'));
-        $hasta = sanitizarPost($_GET['hasta'] ?? date('Y-m-t'));
+        $tipo = sanitizarString($_GET['tipo'] ?? '');
+        $desde = sanitizarString($_GET['desde'] ?? date('Y-m-01'));
+        $hasta = sanitizarString($_GET['hasta'] ?? date('Y-m-t'));
         if (empty($tipo))
             responder(false, 'Tipo de reporte requerido');
         $resultado = $model->generar($tipo, $desde, $hasta);
@@ -1002,4 +1002,8 @@ function sanitizarPost(array $post): array
             : $value;
     }
     return $clean;
+}
+
+function sanitizarString(string $val): string {
+    return htmlspecialchars(strip_tags(trim($val)), ENT_QUOTES, 'UTF-8');
 }
