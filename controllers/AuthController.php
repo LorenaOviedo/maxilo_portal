@@ -219,11 +219,11 @@ class AuthController
         $modulos = $_SESSION['modulos_nombres'] ?? [];
  
         // Admin siempre al dashboard
-        if (str_contains($rol, 'admin')) return 'dashboard.php';
+        if ((strpos($rol, 'admin') !== false)) return 'dashboard.php';
  
         // Si tiene permiso explícito al dashboard
         foreach ($modulos as $m) {
-            if (str_contains(strtolower($m), 'dashboard')) return 'dashboard.php';
+            if ((strpos(strtolower($m), 'dashboard') !== false)) return 'dashboard.php';
         }
  
         // Cualquier otro rol → página de bienvenida

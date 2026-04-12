@@ -21,7 +21,7 @@ $model = new Configuracion($db);
  
 $idUsuario   = (int) $_SESSION['usuario_id'];
 $rolActual   = strtolower(trim($_SESSION['rol'] ?? ''));
-$esAdmin     = str_contains($rolActual, 'admin');
+$esAdmin     = (strpos($rolActual, 'admin') !== false);
  
 $perfil      = $model->getPerfil($idUsuario);
 $catalogos   = $model->getCatalogos();

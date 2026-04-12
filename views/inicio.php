@@ -20,11 +20,13 @@ $rol    = $_SESSION['rol'] ?? '';
  
 // Saludo según la hora
 $hora   = (int) date('H');
-$saludo = match(true) {
-    $hora >= 6  && $hora < 12 => 'Buenos días',
-    $hora >= 12 && $hora < 19 => 'Buenas tardes',
-    default                   => 'Buenas noches',
-};
+if ($hora >= 6 && $hora < 12) {
+    $saludo = 'Buenos días';
+} elseif ($hora >= 12 && $hora < 19) {
+    $saludo = 'Buenas tardes';
+} else {
+    $saludo = 'Buenas noches';
+}
  
 include '../includes/header.php';
 include '../includes/sidebar.php';
@@ -52,7 +54,7 @@ include '../includes/sidebar.php';
         <!-- Imagen de la clínica -->
         <div class="inicio-imagen-wrapper">
             <img
-                src="<?php echo asset('/assets/img/clinica.jpg'); ?>"
+                src="<?php echo asset('img/clinica.jpg'); ?>"
                 alt="Maxilofacial Texcoco"
                 class="inicio-imagen"
                 onerror="this.closest('.inicio-imagen-wrapper').classList.add('sin-imagen')"
