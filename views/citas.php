@@ -265,7 +265,7 @@ include '../includes/sidebar.php';
         <div class="modal-footer">
             <button class="btn-secondary" id="btnCancelarEliminar">Cancelar</button>
             <button class="btn-danger" id="btnConfirmarEliminar">
-                <i class="ri-delete-bin-line"></i> Eliminar
+                <i class="ri-delete-bin-6-line"></i> Eliminar
             </button>
         </div>
     </div>
