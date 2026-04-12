@@ -1,0 +1,209 @@
+/* ══════════════════════════════════════════════
+   configuracion.css
+   ══════════════════════════════════════════════ */
+ 
+/* ── Tabs ───────────────────────────────────── */
+.cfg-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 24px;
+    overflow-x: auto;
+}
+ 
+.cfg-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6c757d;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color .2s, border-color .2s;
+}
+.cfg-tab:hover { color: #20a89e; }
+.cfg-tab.active {
+    color: #20a89e;
+    border-bottom-color: #20a89e;
+}
+ 
+.cfg-tab-content { display: none; }
+.cfg-tab-content.active { display: block; }
+ 
+/* ── Tarjetas ───────────────────────────────── */
+.cfg-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 8px rgba(0,0,0,.07);
+}
+ 
+.cfg-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f3f5;
+}
+ 
+/* ── Perfil header ──────────────────────────── */
+.cfg-perfil-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+ 
+.cfg-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #20a89e;
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+ 
+.cfg-avatar-sm {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+}
+ 
+.cfg-perfil-nombre {
+    font-size: 18px;
+    font-weight: 700;
+    color: #212529;
+}
+ 
+.cfg-perfil-email {
+    font-size: 13px;
+    color: #6c757d;
+    margin-top: 3px;
+}
+ 
+/* ── Formulario ─────────────────────────────── */
+.cfg-form { margin-top: 4px; }
+ 
+.cfg-row {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.cfg-row.cols-2 { grid-template-columns: 1fr 1fr; }
+.cfg-row.cols-1 { grid-template-columns: 1fr; }
+ 
+.cfg-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+ 
+.btn-cfg-save {
+    padding: 10px 24px;
+    background: #20a89e;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+}
+.btn-cfg-save:hover { background: #178f86; }
+ 
+.btn-cfg-cancel {
+    padding: 10px 24px;
+    background: #f1f3f5;
+    color: #495057;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+}
+.btn-cfg-cancel:hover { background: #e2e6ea; }
+ 
+/* ── Tabla de permisos ──────────────────────── */
+.permisos-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+ 
+.permisos-table thead th {
+    background: #f8f9fa;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+}
+ 
+.permisos-table th.modulo-col { text-align: left; min-width: 200px; }
+ 
+.permisos-table tbody tr:hover { background: #f8f9ff; }
+ 
+.permisos-table tbody td {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f1f3f5;
+}
+ 
+.modulo-nombre {
+    font-weight: 600;
+    color: #212529;
+}
+ 
+/* ── Toggle switch de permisos ──────────────── */
+.cfg-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+    cursor: pointer;
+}
+ 
+.cfg-switch input { display: none; }
+ 
+.cfg-slider {
+    position: absolute;
+    inset: 0;
+    background: #dee2e6;
+    border-radius: 22px;
+    transition: background .2s;
+}
+.cfg-slider::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    left: 3px;
+    top: 3px;
+    transition: transform .2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.cfg-switch input:checked + .cfg-slider { background: #20a89e; }
+.cfg-switch input:checked + .cfg-slider::before { transform: translateX(18px); }
+ 
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 640px) {
+    .cfg-row.cols-2 { grid-template-columns: 1fr; }
+    .cfg-tabs { gap: 0; }
+    .cfg-tab  { padding: 10px 14px; font-size: 13px; }
+    .cfg-perfil-header { flex-direction: column; align-items: flex-start; }
+}

@@ -153,6 +153,12 @@ $modulos = [
         'campo_id' => null,
     ],
 
+    'configuracion' => [
+        'modelo' => 'Configuracion',
+        'archivo' => __DIR__ . '/../models/Configuracion.php',
+        'campo_id' => 'id_usuario',
+    ],
+
     // 'especialidades' => [
     //     'modelo'   => 'Especialidad',
     //     'archivo'  => __DIR__ . '/../models/Especialidad.php',
@@ -968,6 +974,124 @@ switch ($accion) {
         responder(true, 'OK', $resultado);
         break;
 
+
+    case 'get_usuario':
+        $id = (int) ($_GET['id'] ?? 0);
+        if (!$id)
+            responder(false, 'ID requerido');
+        $u = $model->getPerfil($id);
+        if (!$u)
+            responder(false, 'Usuario no encontrado');
+        responder(true, 'OK', ['usuario' => $u]);
+        break;
+
+    case 'actualizar_perfil':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $id = (int) ($_POST['id_usuario'] ?? 0);
+        $data = sanitizarPost($_POST);
+        if (!$id)
+            responder(false, 'ID requerido');
+        if (empty($data['nombre_usuario']))
+            responder(false, 'El nombre es obligatorio');
+        if (empty($data['email']))
+            responder(false, 'El email es obligatorio');
+        $ok = $model->actualizarPerfil($id, $data);
+        responder($ok, $ok ? 'Perfil actualizado' : 'El email ya está en uso por otro usuario');
+        break;
+
+    case 'cambiar_contrasena':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $id = (int) ($_POST['id_usuario'] ?? 0);
+        $actual = $_POST['actual'] ?? '';
+        $nueva = $_POST['nueva'] ?? '';
+        if (!$id)
+            responder(false, 'ID requerido');
+        $resultado = $model->cambiarContrasena($id, $actual, $nueva);
+        responder($resultado['success'], $resultado['message']);
+        break;
+
+    case 'crear_usuario':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $data = sanitizarPost($_POST);
+        $data['contrasena'] = $_POST['contrasena'] ?? '';
+        if (empty($data['nombre_usuario']))
+            responder(false, 'El nombre es obligatorio');
+        if (empty($data['usuario']))
+            responder(false, 'El usuario es obligatorio');
+        if (empty($data['email']))
+            responder(false, 'El email es obligatorio');
+        if (empty($data['id_rol']))
+            responder(false, 'El rol es obligatorio');
+        if (strlen($data['contrasena']) < 8)
+            responder(false, 'La contraseña debe tener al menos 8 caracteres');
+        $resultado = $model->crearUsuario($data);
+        responder($resultado['success'], $resultado['message']);
+        break;
+
+    case 'actualizar_usuario':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $id = (int) ($_POST['id_usuario'] ?? 0);
+        $data = sanitizarPost($_POST);
+        if (!$id)
+            responder(false, 'ID requerido');
+        $resultado = $model->actualizarUsuario($id, $data);
+        responder($resultado['success'], $resultado['message']);
+        break;
+
+    case 'toggle_estatus':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $id = (int) ($_POST['id_usuario'] ?? 0);
+        if (!$id)
+            responder(false, 'ID requerido');
+        $resultado = $model->toggleEstatus($id);
+        responder($resultado['success'], $resultado['message'], $resultado);
+        break;
+
+    case 'reset_contrasena':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $id = (int) ($_POST['id_usuario'] ?? 0);
+        $nueva = $_POST['nueva'] ?? '';
+        if (!$id)
+            responder(false, 'ID requerido');
+        $resultado = $model->resetContrasena($id, $nueva);
+        responder($resultado['success'], $resultado['message']);
+        break;
+
+    case 'agregar_permiso':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $idRol = (int) ($_POST['id_rol'] ?? 0);
+        $idModulo = (int) ($_POST['id_modulo'] ?? 0);
+        if (!$idRol || !$idModulo)
+            responder(false, 'Datos incompletos');
+        // Insertar si no existe
+        try {
+            $db->prepare("INSERT IGNORE INTO rolpermiso (id_rol, id_modulo) VALUES (:r, :m)")
+                ->execute([':r' => $idRol, ':m' => $idModulo]);
+            responder(true, 'Permiso agregado');
+        } catch (Exception $e) {
+            responder(false, 'Error al agregar permiso');
+        }
+        break;
+
+    case 'quitar_permiso':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $idRol = (int) ($_POST['id_rol'] ?? 0);
+        $idModulo = (int) ($_POST['id_modulo'] ?? 0);
+        if (!$idRol || !$idModulo)
+            responder(false, 'Datos incompletos');
+        $db->prepare("DELETE FROM rolpermiso WHERE id_rol = :r AND id_modulo = :m")
+            ->execute([':r' => $idRol, ':m' => $idModulo]);
+        responder(true, 'Permiso removido');
+        break;
+
     // ── Acción no reconocida ──────────────────────────────────────
     default:
         http_response_code(400);
@@ -1004,6 +1128,7 @@ function sanitizarPost(array $post): array
     return $clean;
 }
 
-function sanitizarString(string $val): string {
+function sanitizarString(string $val): string
+{
     return htmlspecialchars(strip_tags(trim($val)), ENT_QUOTES, 'UTF-8');
 }
