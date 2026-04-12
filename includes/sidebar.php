@@ -92,7 +92,7 @@ function is_active(string $page): string
         <?php if (tieneAcceso('dashboard')): ?>
             <li class="menu-item <?php echo is_active('dashboard'); ?>">
                 <a href="<?php echo view_url('dashboard.php'); ?>">
-                    <span class="menu-icon"><i class="ri-delete-bin-6-line"></i></span>
+                    <span class="menu-icon"><i class="ri-dashboard-line"></i></span>
                     <span class="menu-text">Dashboard</span>
                 </a>
             </li>
