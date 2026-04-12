@@ -148,8 +148,8 @@ $modulos = [
     ],
 
     'reportes' => [
-        'modelo'   => 'Reporte',
-        'archivo'  => __DIR__ . '/../models/Reporte.php',
+        'modelo' => 'Reporte',
+        'archivo' => __DIR__ . '/../models/Reporte.php',
         'campo_id' => null,
     ],
 
@@ -955,6 +955,18 @@ switch ($accion) {
         responder(false, 'Error al registrar el pago');
         break;
 
+
+    case 'generar_reporte':
+        $tipo = sanitizarPost($_GET['tipo'] ?? '');
+        $desde = sanitizarPost($_GET['desde'] ?? date('Y-m-01'));
+        $hasta = sanitizarPost($_GET['hasta'] ?? date('Y-m-t'));
+        if (empty($tipo))
+            responder(false, 'Tipo de reporte requerido');
+        $resultado = $model->generar($tipo, $desde, $hasta);
+        if (isset($resultado['error']))
+            responder(false, $resultado['error']);
+        responder(true, 'OK', $resultado);
+        break;
 
     // ── Acción no reconocida ──────────────────────────────────────
     default:
