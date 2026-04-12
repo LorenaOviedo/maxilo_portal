@@ -2,7 +2,7 @@
 class User {
     private $conn;
     private $table = 'usuario';
-
+ 
     //id_estatus de la tabla Estatus para usuarios activos, 0 para inactivos.
     private const ESTATUS_ACTIVO = 1;
     
@@ -20,6 +20,7 @@ class User {
                 u.contrasena        AS password,
                 u.nombre_usuario    AS nombre_completo,
                 r.nombre_rol        AS rol,
+                u.id_rol,
                 u.id_estatus
             FROM usuario u
             INNER JOIN rol r ON r.id_rol = u.id_rol
@@ -72,7 +73,7 @@ class User {
             return false;
         }
     }
-
+ 
     public function getAll($filtros = []) {
         $query = "
             SELECT
@@ -149,7 +150,7 @@ class User {
         }
     }
     
-
+ 
     //Actualizar usuario existente
     public function update($id, $data) {
         $fields = [];
@@ -205,7 +206,7 @@ class User {
         }
     }
     
-
+ 
     //Desactivar (eliminar) usaurio existente
     public function delete($id) {
         // solo desactivar
@@ -221,8 +222,8 @@ class User {
             return false;
         }
     }
-
-
+ 
+ 
     // Función para verificar si el usuario está activo
     public function isActivo(array $userData): bool {
         return isset($userData['id_estatus']) && (int)$userData['id_estatus'] === self::ESTATUS_ACTIVO;
@@ -254,7 +255,7 @@ class User {
         }
     }
     
-
+ 
     // Verificar si el nombre de usuario ya existe (para evitar duplicados) excluyendo el ID actual en caso de actualización
     public function usernameExists($usuario, $excludeId = null) {
         $query = "SELECT id_usuario FROM Usuario WHERE usuario = :usuario";
