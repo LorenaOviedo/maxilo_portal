@@ -125,7 +125,7 @@ const pagoController = {
         }
         .page {
             width: 210mm;
-            height: 297mm;
+            height: 270mm;
             margin: 0 auto;
             padding: 14mm 16mm 10mm;
             display: flex;
@@ -272,7 +272,7 @@ const pagoController = {
     <!-- Encabezado -->
     <div class="header">
         <div class="header-logo">
-            <div class="header-logo-placeholder"><img src="assets/img/logo_vector.jpg" alt="Maxilofacial_Logo" class="logo_maxilo"></div>
+            <div class="header-logo-placeholder"><img src="assets/img/logo_vector.jpg" alt="Maxilofacial_Logo"></div>
         </div>
         <div class="header-clinica">
             <div class="header-clinica-nombre">Maxilofacial Texcoco</div>
