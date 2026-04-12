@@ -125,9 +125,14 @@ const pagoController = {
         }
         .page {
             width: 210mm;
-            min-height: 297mm;
+            height: 297mm;
             margin: 0 auto;
             padding: 14mm 16mm 10mm;
+            display: flex;
+            flex-direction: column;
+        }
+        .contenido {
+            flex: 1;
             display: flex;
             flex-direction: column;
         }
@@ -228,7 +233,6 @@ const pagoController = {
         }
         .sello-texto {
             display: inline-block;
-            border: 3px solid #1a3a6e;
             color: #1a3a6e;
             font-size: 20px; font-weight: 900;
             letter-spacing: 6px;
@@ -268,14 +272,17 @@ const pagoController = {
     <!-- Encabezado -->
     <div class="header">
         <div class="header-logo">
-            <div class="header-logo-placeholder">LOGO<br>CLÍNICA</div>
+            <div class="header-logo-placeholder"><img src="assets/img/logo_vector.jpg" alt="Maxilofacial_Logo" class="logo_maxilo"></div>
         </div>
         <div class="header-clinica">
-            <div class="header-clinica-nombre">Sistema Maxilofacial Texcoco</div>
+            <div class="header-clinica-nombre">Maxilofacial Texcoco</div>
             <div class="header-clinica-sub">Ortodoncia · Cirugía Maxilofacial · Patología Oral</div>
         </div>
         <div class="header-doctor">Dr. Alfonso Ayala Gómez</div>
     </div>
+ 
+    <!-- Contenido flexible -->
+    <div class="contenido">
  
     <!-- Título -->
     <div class="titulo">Recibo de Pago</div>
@@ -352,6 +359,8 @@ const pagoController = {
         <p>Este comprobante es válido como recibo de pago.</p>
         <p>Sistema Maxilofacial Texcoco — ${new Date().getFullYear()}</p>
     </div>
+ 
+    </div><!-- /.contenido -->
  
     <!-- Pie -->
     <div class="footer">
