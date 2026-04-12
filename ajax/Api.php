@@ -915,6 +915,20 @@ switch ($accion) {
         responder($ok, $ok ? 'Factura registrada correctamente' : 'Error al actualizar');
         break;
 
+    case 'actualizar_pago':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'Metodo no permitido');
+        $id = (int) ($_POST['id_pago'] ?? 0);
+        if (!$id)
+            responder(false, 'ID de pago invalido');
+        $data = sanitizarPost($_POST);
+        $error = $model->validarUpdate($data);
+        if ($error)
+            responder(false, $error);
+        $ok = $model->update($id, $data);
+        responder($ok, $ok ? 'Pago actualizado correctamente' : 'Error al actualizar el pago');
+        break;
+
     case 'crear_pago':
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
             responder(false, 'Metodo no permitido');

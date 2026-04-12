@@ -274,6 +274,11 @@ include '../includes/sidebar.php';
                                             onclick="pagoController.ver(<?php echo $p['id_pago']; ?>)">
                                             <i class="ri-eye-line"></i>
                                         </button>
+                                        <button type="button" class="btn-action btn-edit"
+                                            title="Editar pago"
+                                            onclick="pagoController.editar(<?php echo $p['id_pago']; ?>)">
+                                            <i class="ri-edit-box-line"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>

@@ -10,7 +10,7 @@
  *   - Una cita solo puede tener un pago
  *   - El número de recibo se genera automáticamente: REC-YYYY-NNNNNN
  *   - Al registrar el pago, la cita cambia a estatus "Pagada"
- *   - estatus del pago: 'Pagado' | 'Pendiente'
+ *   - Estatus del pago: 'Pagado' y 'Pendiente'
  */
 class Pago
 {
@@ -237,6 +237,31 @@ class Pago
     }
  
     // ─────────────────────────────────────────────────────────────────────────
+    // ACTUALIZAR
+    // ─────────────────────────────────────────────────────────────────────────
+ 
+    public function update(int $id, array $data): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE pago SET
+                id_metodo_pago  = :id_metodo_pago,
+                referencia_pago = :referencia_pago,
+                monto_total     = :monto_total,
+                monto_neto      = :monto_neto,
+                observaciones   = :observaciones
+            WHERE id_pago = :id
+        ");
+        return $stmt->execute([
+            ':id_metodo_pago'  => (int) $data['id_metodo_pago'],
+            ':referencia_pago' => trim($data['referencia_pago'] ?? '') ?: null,
+            ':monto_total'     => (float) $data['monto_total'],
+            ':monto_neto'      => (float) $data['monto_neto'],
+            ':observaciones'   => trim($data['observaciones'] ?? '') ?: null,
+            ':id'              => $id,
+        ]);
+    }
+ 
+    // ─────────────────────────────────────────────────────────────────────────
     // VALIDAR
     // ─────────────────────────────────────────────────────────────────────────
  
@@ -257,6 +282,19 @@ class Pago
         if (!isset($data['monto_neto']) || $data['monto_neto'] === '')
             return 'El monto neto es obligatorio';
         if ((float)$data['monto_neto'] <= 0)
+            return 'El monto neto debe ser mayor a 0';
+        if ((float)$data['monto_neto'] > (float)$data['monto_total'])
+            return 'El monto neto no puede ser mayor al monto total';
+        return null;
+    }
+ 
+    public function validarUpdate(array $data): ?string
+    {
+        if (empty($data['id_metodo_pago']))
+            return 'El método de pago es obligatorio';
+        if (!isset($data['monto_total']) || (float)$data['monto_total'] <= 0)
+            return 'El monto total debe ser mayor a 0';
+        if (!isset($data['monto_neto']) || (float)$data['monto_neto'] <= 0)
             return 'El monto neto debe ser mayor a 0';
         if ((float)$data['monto_neto'] > (float)$data['monto_total'])
             return 'El monto neto no puede ser mayor al monto total';

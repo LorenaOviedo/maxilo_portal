@@ -112,9 +112,6 @@ const pagoController = {
     const fmt = (n) => "$" + this._fmtNum(n);
     const fmtF = (s) => this._fmtFecha(s);
 
-    const nombreLimpio = (p.nombre_paciente ?? "Paciente").replace(/\s+/g, "_");
-    const nombreArchivo = `Recibo_${p.numero_recibo ?? "000"}_${nombreLimpio}`;
-
     const total = parseFloat(p.monto_total || 0);
     const neto = parseFloat(p.monto_neto || 0);
     const descuento = total - neto;
@@ -131,22 +128,20 @@ const pagoController = {
                <p style="font-size:12px;color:#555;">${p.observaciones}</p></div>`
       : "";
 
+    const anio = new Date().getFullYear();
     const ventana = window.open("", "_blank", "width=900,height=700");
     ventana.document.write(`<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>${nombreArchivo}</title>
+    <title>Recibo ${p.numero_recibo ?? ""} — ${p.nombre_paciente ?? ""}</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         html {
-            /* Mejora el OCR */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
         }
-
         body {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 12px;
@@ -166,7 +161,6 @@ const pagoController = {
             display: flex;
             flex-direction: column;
         }
- 
         /* ── Encabezado ── */
         .header {
             display: flex;
@@ -204,8 +198,7 @@ const pagoController = {
             font-size: 15px; font-weight: 700;
             color: #192D8C;
         }
- 
-        /* ── Título recibo ── */
+        /* ── Título ── */
         .titulo {
             text-align: center;
             font-size: 16px; font-weight: 700;
@@ -213,8 +206,7 @@ const pagoController = {
             text-transform: uppercase;
             margin: 14px 0 10px;
         }
- 
-        /* ── Folio y fecha ── */
+        /* ── Folio ── */
         .folio-box {
             text-align: right;
             font-size: 11px;
@@ -223,7 +215,6 @@ const pagoController = {
             line-height: 1.6;
         }
         .folio-box strong { color: #1a1a1a; }
- 
         /* ── Secciones ── */
         .section { margin-bottom: 14px; }
         .section-title {
@@ -234,14 +225,10 @@ const pagoController = {
             padding-bottom: 3px;
             margin-bottom: 6px;
         }
-        table.datos {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        table.datos { width: 100%; border-collapse: collapse; }
         table.datos td { padding: 3px 0; font-size: 12px; }
         table.datos td.lbl { color: #555; width: 40%; }
         table.datos td.val { text-align: right; font-weight: 500; }
- 
         /* ── Total ── */
         .total-bar {
             border-top: 2px solid #1a1a1a;
@@ -255,12 +242,8 @@ const pagoController = {
             font-size: 15px;
         }
         .total-monto { font-size: 18px; }
- 
-        /* ── Sello PAGADO ── */
-        .sello {
-            text-align: center;
-            margin: 16px 0;
-        }
+        /* ── Sello ── */
+        .sello { text-align: center; margin: 16px 0; }
         .sello-texto {
             display: inline-block;
             color: #192D8C;
@@ -270,16 +253,14 @@ const pagoController = {
             border-radius: 4px;
             text-transform: uppercase;
         }
- 
-        /* ── Nota legal ── */
+        /* ── Nota ── */
         .nota {
             text-align: center;
             font-size: 10px; color: #777;
             margin-top: auto;
             padding-top: 10px;
         }
- 
-        /* ── Pie de página ── */
+        /* ── Pie ── */
         .footer {
             border-top: 3px solid #192D8C;
             margin-top: 10px;
@@ -289,7 +270,6 @@ const pagoController = {
             color: #192D8C;
             line-height: 1.6;
         }
- 
         @media print {
             body { margin: 0; }
             .page { padding: 10mm 14mm 8mm; min-height: unset; }
@@ -299,10 +279,10 @@ const pagoController = {
 <body>
 <div class="page">
  
-    <!-- Encabezado -->
     <div class="header">
         <div class="header-logo">
-            <div class="header-logo-placeholder"><img src="../assets/img/logo_vector.jpg" alt="Maxilofacial_Logo" onerror="this.style.display='none'"></div>
+            <img src="../assets/img/logo_vector.jpg" alt="Logo"
+                onerror="this.style.display='none'">
         </div>
         <div class="header-clinica">
             <div class="header-clinica-nombre">Maxilofacial Texcoco</div>
@@ -311,88 +291,77 @@ const pagoController = {
         <div class="header-doctor">Dr. Alfonso Ayala Gómez</div>
     </div>
  
-    <!-- Contenido flexible -->
     <div class="contenido">
  
-    <!-- Título -->
-    <div class="titulo">Recibo de Pago</div>
+        <div class="titulo">Recibo de Pago</div>
  
-    <!-- Folio y fecha -->
-    <div class="folio-box">
-        <strong>Folio:</strong> ${p.numero_recibo ?? "—"}<br>
-        <strong>Fecha de emisión:</strong> ${fmtF(p.fecha_pago)}
-    </div>
+        <div class="folio-box">
+            <strong>Folio:</strong> ${p.numero_recibo ?? "—"}<br>
+            <strong>Fecha de emisión:</strong> ${fmtF(p.fecha_pago)}
+        </div>
  
-    <!-- Datos del paciente -->
-    <div class="section">
-        <div class="section-title">Datos del Paciente</div>
-        <table class="datos">
-            <tr>
-                <td class="lbl">Nombre:</td>
-                <td class="val">${p.nombre_paciente ?? "—"}</td>
-            </tr>
-        </table>
-    </div>
+        <div class="section">
+            <div class="section-title">Datos del Paciente</div>
+            <table class="datos">
+                <tr>
+                    <td class="lbl">Nombre:</td>
+                    <td class="val">${p.nombre_paciente ?? "—"}</td>
+                </tr>
+            </table>
+        </div>
  
-    <!-- Datos de la cita -->
-    <div class="section">
-        <div class="section-title">Datos de la Cita</div>
-        <table class="datos">
-            <tr>
-                <td class="lbl">Atendió:</td>
-                <td class="val">${p.nombre_especialista ?? "—"}</td>
-            </tr>
-            <tr>
-                <td class="lbl">Fecha de cita:</td>
-                <td class="val">${fmtF(p.fecha_cita)} ${(p.hora_inicio ?? "").substring(0, 5)}</td>
-            </tr>
-            <tr>
-                <td class="lbl">Motivo:</td>
-                <td class="val">${p.motivo_consulta ?? "—"}</td>
-            </tr>
-        </table>
-    </div>
+        <div class="section">
+            <div class="section-title">Datos de la Cita</div>
+            <table class="datos">
+                <tr>
+                    <td class="lbl">Atendió:</td>
+                    <td class="val">${p.nombre_especialista ?? "—"}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Fecha de cita:</td>
+                    <td class="val">${fmtF(p.fecha_cita)} ${(p.hora_inicio ?? "").substring(0, 5)}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Motivo:</td>
+                    <td class="val">${p.motivo_consulta ?? "—"}</td>
+                </tr>
+            </table>
+        </div>
  
-    <!-- Desglose del pago -->
-    <div class="section">
-        <div class="section-title">Desglose del Pago</div>
-        <table class="datos">
-            <tr>
-                <td class="lbl">Método de pago:</td>
-                <td class="val">${p.metodo_pago ?? "—"}</td>
-            </tr>
-            ${refRow}
-            <tr>
-                <td class="lbl">Monto total:</td>
-                <td class="val">${fmt(p.monto_total)}</td>
-            </tr>
-            ${descRow}
-        </table>
-    </div>
+        <div class="section">
+            <div class="section-title">Desglose del Pago</div>
+            <table class="datos">
+                <tr>
+                    <td class="lbl">Método de pago:</td>
+                    <td class="val">${p.metodo_pago ?? "—"}</td>
+                </tr>
+                ${refRow}
+                <tr>
+                    <td class="lbl">Monto total:</td>
+                    <td class="val">${fmt(p.monto_total)}</td>
+                </tr>
+                ${descRow}
+            </table>
+        </div>
  
-    <!-- Total -->
-    <div class="total-bar">
-        <span>TOTAL PAGADO:</span>
-        <span class="total-monto">${fmt(p.monto_neto)}</span>
-    </div>
+        <div class="total-bar">
+            <span>TOTAL PAGADO:</span>
+            <span class="total-monto">${fmt(p.monto_neto)}</span>
+        </div>
  
-    <!-- Observaciones -->
-    ${obsRow}
+        ${obsRow}
  
-    <!-- Sello -->
-    <div class="sello">
-        <div class="sello-texto">${p.estatus ?? "Pagado"}</div>
-    </div>
+        <div class="sello">
+            <div class="sello-texto">${p.estatus ?? "Pagado"}</div>
+        </div>
  
-    <!-- Nota legal -->
-    <div class="nota">
-        <p>Este comprobante es válido como recibo de pago.</p>
-        <p>Sistema Maxilofacial Texcoco — ${new Date().getFullYear()}</p>
-    </div>
+        <div class="nota">
+            <p>Este comprobante es válido como recibo de pago.</p>
+            <p>Maxilofacial Texcoco &#x2014; ${anio}</p>
+        </div>
  
     </div><!-- /.contenido -->
  
-    <!-- Pie -->
     <div class="footer">
         Retorno C No. 8 Fraccionamiento San Martín, Texcoco, Estado de México<br>
         Teléfonos: 55 1640-3007 &nbsp;·&nbsp; 55 1246 3777 &nbsp;·&nbsp; 59 5931 3070
@@ -692,19 +661,6 @@ const pagoController = {
       return;
     }
 
-    // Referencia requerida según método
-    const metodo = (CATALOGOS_PAGO.metodosPago ?? []).find(
-      (m) => m.id_metodo_pago == idMetodo,
-    );
-    if (metodo?.requiere_referencia == 1 && !referencia) {
-      CatalogTable.showNotification(
-        "Este método de pago requiere un número de referencia",
-        "error",
-      );
-      document.getElementById("pagoReferencia")?.focus();
-      return;
-    }
-
     if (!montoTotal || parseFloat(montoTotal) <= 0) {
       CatalogTable.showNotification(
         "El monto total debe ser mayor a 0",
@@ -764,6 +720,177 @@ const pagoController = {
     } catch (err) {
       CatalogTable.showLoading(false);
       CatalogTable.showNotification("Error de conexión", "error");
+    }
+  },
+
+  // ─────────────────────────────────────────────────────────────────────
+  // EDITAR PAGO
+  // ─────────────────────────────────────────────────────────────────────
+
+  async editar(id) {
+    // Poblar select de métodos
+    const selMetodo = document.getElementById("editPagoMetodo");
+    if (selMetodo) {
+      selMetodo.innerHTML = '<option value="">Seleccionar...</option>';
+      (CATALOGOS_PAGO.metodosPago ?? []).forEach((m) => {
+        const opt = document.createElement("option");
+        opt.value = m.id_metodo_pago;
+        opt.textContent = m.metodo_pago;
+        selMetodo.appendChild(opt);
+      });
+    }
+
+    // Limpiar campos
+    [
+      "editPagoId",
+      "editPagoMetodo",
+      "editPagoReferencia",
+      "editPagoMontoTotal",
+      "editPagoMontoNeto",
+      "editPagoObservaciones",
+    ].forEach((i) => {
+      const el = document.getElementById(i);
+      if (el) el.value = "";
+    });
+    document.getElementById("editPagoDescuento").style.display = "none";
+
+    abrirModal("modalEditarPago");
+
+    try {
+      const r = await fetch(`${API_URL}?modulo=pagos&accion=get&id=${id}`);
+      const data = await r.json();
+      if (!data.success) return;
+
+      const p = data.pago;
+      document.getElementById("editPagoRecibo").textContent =
+        p.numero_recibo ?? "";
+      document.getElementById("editPagoPaciente").textContent =
+        p.nombre_paciente ?? "—";
+      document.getElementById("editPagoFechaCita").textContent = p.fecha_cita
+        ? this._fmtFecha(p.fecha_cita) +
+          " · " +
+          (p.hora_inicio ?? "").substring(0, 5)
+        : "—";
+
+      document.getElementById("editPagoId").value = p.id_pago ?? "";
+      document.getElementById("editPagoReferencia").value =
+        p.referencia_pago ?? "";
+      document.getElementById("editPagoMontoTotal").value = p.monto_total ?? "";
+      document.getElementById("editPagoMontoNeto").value = p.monto_neto ?? "";
+      document.getElementById("editPagoObservaciones").value =
+        p.observaciones ?? "";
+
+      // Select método — rAF para garantizar que el DOM está listo
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          document.getElementById("editPagoMetodo").value =
+            p.id_metodo_pago ?? "";
+        }),
+      );
+
+      // Mostrar descuento si aplica
+      this._onEditMontoChange();
+    } catch (err) {
+      console.error("pagoController.editar:", err);
+      CatalogTable.showNotification("Error al cargar el pago", "error");
+    }
+  },
+
+  async actualizarPago() {
+    const id = document.getElementById("editPagoId")?.value?.trim() ?? "";
+    const idMetodo =
+      document.getElementById("editPagoMetodo")?.value?.trim() ?? "";
+    const referencia =
+      document.getElementById("editPagoReferencia")?.value?.trim() ?? "";
+    const montoTotal =
+      document.getElementById("editPagoMontoTotal")?.value?.trim() ?? "";
+    const montoNeto =
+      document.getElementById("editPagoMontoNeto")?.value?.trim() ?? "";
+    const obs =
+      document.getElementById("editPagoObservaciones")?.value?.trim() ?? "";
+
+    if (!idMetodo) {
+      CatalogTable.showNotification("Selecciona el método de pago", "error");
+      document.getElementById("editPagoMetodo")?.focus();
+      return;
+    }
+    if (!montoTotal || parseFloat(montoTotal) <= 0) {
+      CatalogTable.showNotification(
+        "El monto total debe ser mayor a 0",
+        "error",
+      );
+      document.getElementById("editPagoMontoTotal")?.focus();
+      return;
+    }
+    if (!montoNeto || parseFloat(montoNeto) <= 0) {
+      CatalogTable.showNotification(
+        "El monto neto debe ser mayor a 0",
+        "error",
+      );
+      document.getElementById("editPagoMontoNeto")?.focus();
+      return;
+    }
+    if (parseFloat(montoNeto) > parseFloat(montoTotal)) {
+      CatalogTable.showNotification(
+        "El monto neto no puede ser mayor al total",
+        "error",
+      );
+      document.getElementById("editPagoMontoNeto")?.focus();
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("modulo", "pagos");
+    formData.append("accion", "actualizar_pago");
+    formData.append("id_pago", id);
+    formData.append("id_metodo_pago", idMetodo);
+    formData.append("referencia_pago", referencia);
+    formData.append("monto_total", montoTotal);
+    formData.append("monto_neto", montoNeto);
+    formData.append("observaciones", obs);
+
+    CatalogTable.showLoading(true);
+    try {
+      const r = await fetch(API_URL, { method: "POST", body: formData });
+      const data = await r.json();
+      CatalogTable.showLoading(false);
+
+      if (data.success) {
+        CatalogTable.showNotification(
+          "Pago actualizado correctamente",
+          "success",
+        );
+        cerrarModal("modalEditarPago");
+        setTimeout(() => window.location.reload(), 800);
+      } else {
+        CatalogTable.showNotification(
+          data.message || "Error al actualizar",
+          "error",
+        );
+      }
+    } catch (err) {
+      CatalogTable.showLoading(false);
+      CatalogTable.showNotification("Error de conexión", "error");
+    }
+  },
+
+  _onEditMontoChange() {
+    const total = parseFloat(
+      document.getElementById("editPagoMontoTotal")?.value || 0,
+    );
+    const neto = parseFloat(
+      document.getElementById("editPagoMontoNeto")?.value || 0,
+    );
+    const grp = document.getElementById("editPagoDescuento");
+    const monto = document.getElementById("editPagoDescuentoMonto");
+    const desc = total - neto;
+    if (grp && monto) {
+      if (desc > 0.001 && neto > 0) {
+        monto.textContent = "$" + this._fmtNum(desc);
+        grp.style.display = "block";
+      } else {
+        grp.style.display = "none";
+      }
     }
   },
 
@@ -982,6 +1109,18 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("pagoMontoNeto")
     ?.addEventListener("input", () => pagoController._onMontoChange());
+
+  document
+    .getElementById("btnActualizarPago")
+    ?.addEventListener("click", () => pagoController.actualizarPago());
+
+  document
+    .getElementById("editPagoMontoTotal")
+    ?.addEventListener("input", () => pagoController._onEditMontoChange());
+
+  document
+    .getElementById("editPagoMontoNeto")
+    ?.addEventListener("input", () => pagoController._onEditMontoChange());
 
   CatalogTable.init();
 });

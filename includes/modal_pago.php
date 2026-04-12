@@ -1,8 +1,5 @@
 <?php /* MODAL PAGOS — REGISTRAR Y VER DETALLE */ ?>
  
-<!-- ══════════════════════════════════════════════════════
-     MODAL REGISTRAR PAGO
-════════════════════════════════════════════════════════ -->
 <div id="modalPago-overlay" class="modal-overlay"></div>
  
 <div id="modalPago" class="modal-container">
@@ -253,3 +250,143 @@
     </div>
  
 </div><!-- /#modalDetallePago -->
+ 
+<style>
+/* Reutilizar estilos del inventario */
+.inv-detalle-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.inv-detalle-full { grid-column: 1 / -1; }
+.inv-detalle-row {
+    display: flex;
+    flex-direction: column;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 10px 14px;
+    gap: 3px;
+}
+.inv-detalle-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #adb5bd;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+.inv-detalle-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #212529;
+}
+@media (max-width: 480px) {
+    .inv-detalle-grid { grid-template-columns: 1fr; }
+    .inv-detalle-full { grid-column: 1; }
+}
+</style>
+ 
+ 
+<!-- ══════════════════════════════════════════════════════
+     MODAL EDITAR PAGO
+════════════════════════════════════════════════════════ -->
+<div id="modalEditarPago-overlay" class="modal-overlay"></div>
+ 
+<div id="modalEditarPago" class="modal-container">
+ 
+    <div class="modal-header">
+        <div class="modal-title-wrapper">
+            <h2 class="modal-title">
+                Editar Pago
+                <span class="highlight" id="editPagoRecibo"></span>
+            </h2>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-modal-close"
+                onclick="cerrarModal('modalEditarPago')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+ 
+    <div class="modal-body">
+        <form class="modal-form" id="formEditarPago" autocomplete="off">
+            <input type="hidden" id="editPagoId" name="id_pago">
+ 
+            <!-- Resumen no editable -->
+            <div id="editPagoInfo" style="background:#f8f9fa; border-radius:8px;
+                padding:12px 16px; margin-bottom:20px;">
+                <div style="font-size:11px;color:#6c757d;">Paciente</div>
+                <div style="font-weight:700;" id="editPagoPaciente">—</div>
+                <div style="font-size:12px;color:#6c757d;" id="editPagoFechaCita">—</div>
+            </div>
+ 
+            <div class="form-row cols-2">
+                <div class="form-group">
+                    <label class="form-label">
+                        Método de pago <span class="required">*</span>
+                    </label>
+                    <select id="editPagoMetodo" name="id_metodo_pago" class="form-select">
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Referencia / N° autorización</label>
+                    <input type="text" id="editPagoReferencia" name="referencia_pago"
+                        class="form-input" maxlength="100"
+                        placeholder="Ej: 123456789" autocomplete="off">
+                </div>
+            </div>
+ 
+            <div class="form-row cols-2">
+                <div class="form-group">
+                    <label class="form-label">
+                        Monto total ($) <span class="required">*</span>
+                    </label>
+                    <input type="number" id="editPagoMontoTotal" name="monto_total"
+                        class="form-input" min="0.01" step="0.01"
+                        placeholder="0.00" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        Monto neto ($) <span class="required">*</span>
+                    </label>
+                    <input type="number" id="editPagoMontoNeto" name="monto_neto"
+                        class="form-input" min="0.01" step="0.01"
+                        placeholder="0.00" autocomplete="off">
+                    <small class="form-hint">Después de descuentos</small>
+                </div>
+            </div>
+ 
+            <!-- Indicador de descuento -->
+            <div id="editPagoDescuento" style="display:none; margin-bottom:12px;">
+                <div style="background:#e8f5e9; border-radius:6px;
+                    padding:8px 14px; font-size:13px; color:#2e7d32;">
+                    <i class="ri-price-tag-3-line"></i>
+                    Descuento: <strong id="editPagoDescuentoMonto">$0.00</strong>
+                </div>
+            </div>
+ 
+            <div class="form-row cols-1">
+                <div class="form-group">
+                    <label class="form-label">Observaciones</label>
+                    <textarea id="editPagoObservaciones" name="observaciones"
+                        class="form-input" rows="2"
+                        placeholder="Notas adicionales..."
+                        style="resize:vertical;"></textarea>
+                </div>
+            </div>
+ 
+        </form>
+    </div>
+ 
+    <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel"
+            onclick="cerrarModal('modalEditarPago')">
+            Cancelar
+        </button>
+        <button type="button" class="btn-modal-save" id="btnActualizarPago">
+            <i class="ri-save-line"></i> Guardar cambios
+        </button>
+    </div>
+ 
+</div><!-- /#modalEditarPago -->
