@@ -27,7 +27,8 @@ const reporteController = {
         this._setLoading(true);
  
         try {
-            const params = new URLSearchParams({
+            console.log('Generando reporte:', { tipo, desde, hasta });
+        const params = new URLSearchParams({
                 modulo: 'reportes',
                 accion: 'generar_reporte',
                 tipo, desde, hasta,
@@ -159,7 +160,8 @@ const reporteController = {
         const hasta = this._fmtFecha(document.getElementById('fechaFin').value);
         const data  = this._datos;
         const anio  = new Date().getFullYear();
-        const hoy   = this._fmtFecha(new Date().toISOString().split('T')[0]);
+        const ahora = new Date();
+        const hoy   = this._fmtFecha(this._toISO(ahora));
  
         const filasHTML = data.filas.map(fila =>
             `<tr>${fila.map(cel => `<td>${cel ?? '&#x2014;'}</td>`).join('')}</tr>`
@@ -351,7 +353,11 @@ const reporteController = {
     // ─────────────────────────────────────────────────────────────────────
  
     _toISO(date) {
-        return date.toISOString().split('T')[0];
+        // Usar fecha local para evitar desfase de zona horaria
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
     },
  
     _fmtFecha(str) {
