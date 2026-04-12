@@ -114,6 +114,7 @@ class Pago
                 c.hora_inicio,
                 c.costo_total,
                 mc.motivo_consulta,
+                pac.numero_paciente,
                 TRIM(CONCAT(pac.nombre, ' ', pac.apellido_paterno, ' ',
                      COALESCE(pac.apellido_materno, ''))) AS nombre_paciente,
                 TRIM(CONCAT(e.nombre, ' ', e.apellido_paterno))  AS nombre_especialista
@@ -180,7 +181,7 @@ class Pago
     // CREAR PAGO
     // ─────────────────────────────────────────────────────────────────────────
  
-    public function create(array $data): int|false
+    public function create(array $data)
     {
         $this->db->beginTransaction();
         try {
@@ -368,7 +369,7 @@ class Pago
     }
  
     /** Crear solicitud de factura (paso 1) */
-    public function crearSolicitudFactura(array $data): int|false
+    public function crearSolicitudFactura(array $data)
     {
         $this->db->beginTransaction();
         try {
@@ -488,4 +489,3 @@ class Pago
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 }
- 

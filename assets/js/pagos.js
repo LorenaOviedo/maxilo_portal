@@ -85,7 +85,12 @@ const pagoController = {
     // ─────────────────────────────────────────────────────────────────────
  
     _imprimirActual() {
-        if (this._pagoActual) this.imprimirRecibo(this._pagoActual);
+        if (this._pagoActual) {
+            console.log('Imprimiendo pago:', this._pagoActual);
+            this.imprimirRecibo(this._pagoActual);
+        } else {
+            CatalogTable.showNotification('No hay datos del pago para imprimir', 'error');
+        }
     },
  
     imprimirRecibo(p) {
@@ -136,10 +141,13 @@ const pagoController = {
             if (rowObs) rowObs.style.display = 'none';
         }
  
-        // Mostrar y disparar impresión
-        document.getElementById('reciboImprimir').style.display = 'block';
-        window.print();
-        document.getElementById('reciboImprimir').style.display = 'none';
+        // Mostrar, esperar render del DOM y disparar impresión
+        const recibo = document.getElementById('reciboImprimir');
+        recibo.style.display = 'block';
+        setTimeout(() => {
+            window.print();
+            recibo.style.display = 'none';
+        }, 250);
     },
  
     // ─────────────────────────────────────────────────────────────────────
@@ -631,3 +639,4 @@ document.addEventListener('DOMContentLoaded', () => {
  
     CatalogTable.init();
 });
+ 
