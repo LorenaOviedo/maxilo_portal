@@ -272,7 +272,7 @@ const pagoController = {
     <!-- Encabezado -->
     <div class="header">
         <div class="header-logo">
-            <div class="header-logo-placeholder"><img src="assets/img/logo_vector.jpg" alt="Maxilofacial_Logo"></div>
+            <div class="header-logo-placeholder"><img src="../assets/img/logo_vector.jpg" alt="Maxilofacial_Logo"></div>
         </div>
         <div class="header-clinica">
             <div class="header-clinica-nombre">Maxilofacial Texcoco</div>
