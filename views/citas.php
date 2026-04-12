@@ -285,3 +285,10 @@ include '../includes/sidebar.php';
 //INCLUIR FOOTER
 include '../includes/footer.php';
 ?>
+
+<style>
+    .form-label .required {
+    color: #dc3545;
+    margin-left: 2px;
+}
+</style>
