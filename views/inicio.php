@@ -50,7 +50,7 @@ include '../includes/sidebar.php';
             <p class="inicio-rol">
                 <?php echo htmlspecialchars($rol); ?>
                 &nbsp;·&nbsp;
-                <?php echo date('l, d \d\e F \d\e Y'); ?>
+                <?php echo date('d \d\e F \d\e Y'); ?>
             </p>
         </div>
  
