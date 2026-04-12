@@ -48,8 +48,6 @@ include '../includes/sidebar.php';
                 </span>
             </h1>
             <p class="inicio-rol">
-                <?php echo htmlspecialchars($rol); ?>
-                &nbsp;·&nbsp;
                 <?php echo fechaEnEspanol(); ?>
             </p>
         </div>
