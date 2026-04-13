@@ -8,6 +8,12 @@
 //  CONFIGURACIÓN
 // ─────────────────────────────────────────────
 const API = '../controllers/CitasController.php';
+
+const escHtml = s => s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
  
 // IDs reales de la tabla EstadosCita en BD
 const ESTATUS_MAP = {
