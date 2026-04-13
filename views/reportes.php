@@ -3,6 +3,7 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/../models/Reporte.php';
  
 session_start();
  
@@ -17,6 +18,10 @@ verificarPermiso('reportes');
 $page_title = 'Reportes';
 $page_css   = ['reportes.css'];
 $page_js    = [];
+ 
+$db = getDB();
+$model = new Reporte($db);
+$catalogos = $model->getCatalogos();
  
 include '../includes/header.php';
 include '../includes/sidebar.php';
