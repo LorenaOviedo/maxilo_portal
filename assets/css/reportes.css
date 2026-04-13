@@ -3,7 +3,11 @@
    ══════════════════════════════════════════════ */
 
 /* ── Panel de filtros ────────────────────────── */
-/* ── Panel de filtros ────────────────────────── */
+.page-description {
+    font-size: 15px;
+    color: #6c757d;
+}
+
 .report-filters-card {
     background: #fff;
     border-radius: 12px;
