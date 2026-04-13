@@ -497,27 +497,35 @@ class Reporte
 
     public function getCatalogos(): array
     {
-        return [
-            'especialistas' => $this->_query(
-                "SELECT id_especialista, TRIM(CONCAT(nombre,' ',apellido_paterno)) AS nombre_completo
-                FROM especialista
-                ORDER BY nombre ASC"
-            ),
-            'metodosPago' => $this->_query(
-                "SELECT id_metodo_pago, metodo_pago FROM metodopago ORDER BY metodo_pago"
-            ),
-            'estatusCita' => $this->_query(
-                "SELECT id_estatus_cita, estatus_cita FROM estadoscita ORDER BY estatus_cita"
-            ),
-            'estatusFactura' => $this->_query(
-                "SELECT id_estatus_factura, estatus_factura FROM estadosfactura ORDER BY estatus_factura"
-            ),
-            'pacientes' => $this->_query(
-                "SELECT numero_paciente, TRIM(CONCAT(nombre,' ',apellido_paterno,' ', COALESCE(apellido_materno,''))) AS nombre_completo
-                FROM paciente
-                ORDER BY apellido_paterno, nombre ASC"
-            ),
+        $resultado = [];
+
+        $queries = [
+            'especialistas' => "SELECT id_especialista,
+                                TRIM(CONCAT(nombre,' ',apellido_paterno)) AS nombre_completo
+                                FROM especialista ORDER BY nombre ASC",
+            'metodosPago' => "SELECT id_metodo_pago, metodo_pago
+                                FROM metodopago ORDER BY metodo_pago",
+            'estatusCita' => "SELECT id_estatus_cita, estatus_cita
+                                FROM estadoscita ORDER BY estatus_cita",
+            'estatusFactura' => "SELECT id_estatus_factura, estatus_factura
+                                FROM estadosfactura ORDER BY estatus_factura",
+            'pacientes' => "SELECT numero_paciente,
+                                TRIM(CONCAT(nombre,' ',apellido_paterno,' ',
+                                    COALESCE(apellido_materno,''))) AS nombre_completo
+                                FROM paciente
+                                ORDER BY apellido_paterno, nombre ASC",
         ];
+
+        foreach ($queries as $clave => $sql) {
+            try {
+                $resultado[$clave] = $this->_query($sql);
+            } catch (PDOException $e) {
+                error_log("getCatalogos[$clave] error: " . $e->getMessage());
+                $resultado[$clave] = [];
+            }
+        }
+
+        return $resultado;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
