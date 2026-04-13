@@ -144,11 +144,11 @@ function is_active(string $page): string
             </li>
         <?php endif; ?>
 
-        <?php if (tieneAcceso('inventarios')): ?>
+        <?php if (tieneAcceso('inventario')): ?>
             <li class="menu-item <?php echo is_active('catalogos_inventario'); ?>">
                 <a href="<?php echo view_url('catalogos_inventario.php'); ?>">
                     <span class="menu-icon"><i class="ri-todo-line"></i></span>
-                    <span class="menu-text">Inventario</span>
+                    <span class="menu-text">Inventarios</span>
                 </a>
             </li>
         <?php endif; ?>
