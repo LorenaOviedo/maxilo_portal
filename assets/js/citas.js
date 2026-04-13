@@ -298,11 +298,11 @@ function citaCard(c) {
         <div class="cita-acciones">
             <span class="badge ${badgeClass}">${estatus}</span>
             <div class="cita-btns">
-                <button class="btn-icon btn-icon-warning" title="Editar"
+                <button class="btn-action btn-edit" title="Editar"
                     data-action="editar" data-id="${c.id_cita}">
                     <i class="ri-edit-box-line"></i>
                 </button>
-                <button class="btn-icon btn-icon-danger" title="Eliminar"
+                <button class="btn-action btn-delete" title="Eliminar"
                     data-action="eliminar" data-id="${c.id_cita}">
                     <i class="ri-delete-bin-6-line"></i>
                 </button>
@@ -417,7 +417,7 @@ function renderDropdown(resultados, input, hidden, dropdown) {
  
     dropdown.innerHTML = resultados.map(p => `
         <div class="pac-drop-item" data-id="${p.numero_paciente}" data-nombre="${p.nombre_completo}">
-            <i class="ri-user-line"></i> ${p.nombre_completo}
+            ${p.nombre_completo}
         </div>
     `).join('');
  
@@ -876,12 +876,14 @@ function injectStyles() {
         .cita-acciones       { display:flex;flex-direction:column;align-items:flex-end;gap:8px; }
         .cita-btns           { display:flex;gap:6px; }
  
-        .btn-icon          { width:30px;height:30px;border-radius:6px;border:none;cursor:pointer;
+        .btn-action       { width:30px;height:30px;border-radius:6px;border:none;cursor:pointer;
                              display:flex;align-items:center;justify-content:center;
-                             font-size:15px;transition:opacity .2s; }
-        .btn-icon:hover    { opacity:.8; }
-        .btn-icon-warning  { background:#fff8e1;color:#e65100; }
-        .btn-icon-danger   { background:#ffebee;color:#c62828; }
+                             font-size:15px;transition:all .2s; }
+        .btn-action:hover  { transform:scale(1.1); }
+        .btn-edit          { background:#e0f7fa;color:#20a89e; }
+        .btn-edit:hover    { background:#20a89e;color:#fff; }
+        .btn-delete        { background:#fee2e2;color:#dc2626; }
+        .btn-delete:hover  { background:#dc2626;color:#fff; }
  
         .citas-empty       { text-align:center;padding:40px 20px;color:#adb5bd; }
         .citas-empty i     { font-size:48px;display:block;margin-bottom:12px; }
@@ -972,7 +974,8 @@ async function init() {
     $('btnCancelarModal')?.addEventListener('click',  () => cerrarModal('modalCita'));
     $('btnGuardarCita')?.addEventListener('click',    guardarCita);
  
-    $('btnCerrarDetalle')?.addEventListener('click',  () => cerrarModal('modalDetalle'));
+    $('btnCerrarDetalle')?.addEventListener('click',   () => cerrarModal('modalDetalle'));
+    $('btnCerrarDetalle2')?.addEventListener('click',  () => cerrarModal('modalDetalle'));
  
     $('btnCerrarEliminar')?.addEventListener('click',    () => cerrarModal('modalEliminar'));
     $('btnCancelarEliminar')?.addEventListener('click',  () => cerrarModal('modalEliminar'));
