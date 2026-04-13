@@ -49,12 +49,6 @@ include '../includes/sidebar.php';
  
         <main class="main-content">
  
-            <nav class="breadcrumb">
-                <div class="breadcrumb-item">
-                    <span class="breadcrumb-current">Pagos</span>
-                </div>
-            </nav>
- 
             <div class="page-header">
                 <h1>Pagos</h1>
                 <p class="page-description">Registro y control de pagos de citas</p>

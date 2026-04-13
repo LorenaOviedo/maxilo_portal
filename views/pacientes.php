@@ -42,17 +42,6 @@ include '../includes/sidebar.php';
         <!-- Contenido principal -->
         <main class="main-content">
  
-            <!-- Breadcrumb -->
-            <nav class="breadcrumb">
-                <div class="breadcrumb-item">
-                    <a href="<?php echo view_url('pacientes.php'); ?>">Pacientes</a>
-                </div>
-                <span class="breadcrumb-separator">▶</span>
-                <div class="breadcrumb-item">
-                    <span class="breadcrumb-current">Pacientes</span>
-                </div>
-            </nav>
- 
             <!-- Header -->
             <div class="page-header">
                 <h1>Pacientes</h1>

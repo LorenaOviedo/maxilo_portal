@@ -45,17 +45,6 @@ include '../includes/sidebar.php';
         <!-- Contenido principal -->
         <main class="main-content">
 
-            <!-- Breadcrumb -->
-            <nav class="breadcrumb">
-                <div class="breadcrumb-item">
-                    <a href="<?php echo view_url('especialistas.php'); ?>">Especialistas</a>
-                </div>
-                <span class="breadcrumb-separator">▶</span>
-                <div class="breadcrumb-item">
-                    <span class="breadcrumb-current">Especialistas</span>
-                </div>
-            </nav>
-
             <!-- Header -->
             <div class="page-header">
                 <h1>Especialistas</h1>

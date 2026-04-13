@@ -37,14 +37,10 @@ include '../includes/sidebar.php';
  
 <main class="main-content">
  
-    <nav class="breadcrumb">
-        <div class="breadcrumb-item">
-            <span class="breadcrumb-current">Configuración</span>
-        </div>
-    </nav>
  
     <div class="page-header">
         <h1>Configuración</h1>
+        <p class="page-description">Gestiona las opciones de configuración del sistema</p>
     </div>
  
     <!-- ── Tabs ──────────────────────────────────────────────────── -->
