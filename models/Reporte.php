@@ -22,14 +22,14 @@ class Reporte
     // DISPATCHER
     // ─────────────────────────────────────────────────────────────────────────
  
-    public function generar(string $tipo, string $desde, string $hasta): array
+    public function generar(string $tipo, string $desde, string $hasta, array $extra = []): array
     {
         switch ($tipo) {
             case 'pacientes':  return $this->_pacientes($desde, $hasta);
-            case 'citas':      return $this->_citas($desde, $hasta);
-            case 'pagos':      return $this->_pagos($desde, $hasta);
+            case 'citas':      return $this->_citas($desde, $hasta, $extra);
+            case 'pagos':      return $this->_pagos($desde, $hasta, $extra);
             case 'inventario': return $this->_inventario($desde, $hasta);
-            case 'facturas':   return $this->_facturas($desde, $hasta);
+            case 'facturas':   return $this->_facturas($desde, $hasta, $extra);
             default:           return ['error' => 'Tipo de reporte no reconocido'];
         }
     }
@@ -107,8 +107,24 @@ class Reporte
     // REPORTE: CITAS
     // ─────────────────────────────────────────────────────────────────────────
  
-    private function _citas(string $desde, string $hasta): array
+    private function _citas(string $desde, string $hasta, array $extra = []): array
     {
+        $condExtra  = '';
+        $paramsBase = [':d' => $desde, ':h' => $hasta];
+ 
+        if (!empty($extra['numero_paciente'])) {
+            $condExtra .= ' AND c.numero_paciente = :num_pac';
+            $paramsBase[':num_pac'] = (int)$extra['numero_paciente'];
+        }
+        if (!empty($extra['id_especialista'])) {
+            $condExtra .= ' AND c.id_especialista = :id_esp';
+            $paramsBase[':id_esp'] = (int)$extra['id_especialista'];
+        }
+        if (!empty($extra['id_estatus_cita'])) {
+            $condExtra .= ' AND c.id_estatus_cita = :id_est';
+            $paramsBase[':id_est'] = (int)$extra['id_estatus_cita'];
+        }
+ 
         $resumen = $this->_row("
             SELECT
                 COUNT(*)                                    AS total,
@@ -121,7 +137,8 @@ class Reporte
             FROM cita         c
             JOIN estadoscita  ec ON ec.id_estatus_cita = c.id_estatus_cita
             WHERE c.fecha_cita BETWEEN :d AND :h
-        ", [':d' => $desde, ':h' => $hasta]);
+            $condExtra
+        ", $paramsBase);
  
         $filas = $this->_query("
             SELECT
@@ -140,8 +157,9 @@ class Reporte
             JOIN estadoscita     ec ON ec.id_estatus_cita = c.id_estatus_cita
             LEFT JOIN motivoconsulta mc ON mc.id_motivo_consulta = c.id_motivo_consulta
             WHERE c.fecha_cita BETWEEN :d AND :h
+            $condExtra
             ORDER BY c.fecha_cita DESC, c.hora_inicio DESC
-        ", [':d' => $desde, ':h' => $hasta]);
+        ", $paramsBase);
  
         return [
             'tipo'    => 'citas',
@@ -175,8 +193,20 @@ class Reporte
     // REPORTE: PAGOS
     // ─────────────────────────────────────────────────────────────────────────
  
-    private function _pagos(string $desde, string $hasta): array
+    private function _pagos(string $desde, string $hasta, array $extra = []): array
     {
+        $condExtra  = '';
+        $paramsBase = [':d' => $desde, ':h' => $hasta];
+ 
+        if (!empty($extra['id_metodo_pago'])) {
+            $condExtra .= ' AND pg.id_metodo_pago = :id_met';
+            $paramsBase[':id_met'] = (int)$extra['id_metodo_pago'];
+        }
+        if (!empty($extra['estatus'])) {
+            $condExtra .= ' AND pg.estatus = :estatus';
+            $paramsBase[':estatus'] = $extra['estatus'];
+        }
+ 
         $resumen = $this->_row("
             SELECT
                 COUNT(*)                        AS total_pagos,
@@ -186,7 +216,8 @@ class Reporte
                 AVG(pg.monto_neto)              AS promedio
             FROM pago pg
             WHERE pg.fecha_pago BETWEEN :d AND :h
-        ", [':d' => $desde, ':h' => $hasta]);
+            $condExtra
+        ", $paramsBase);
  
         $filas = $this->_query("
             SELECT
@@ -204,8 +235,9 @@ class Reporte
             JOIN paciente      p  ON p.numero_paciente  = c.numero_paciente
             JOIN metodopago    mp ON mp.id_metodo_pago  = pg.id_metodo_pago
             WHERE pg.fecha_pago BETWEEN :d AND :h
+            $condExtra
             ORDER BY pg.fecha_pago DESC
-        ", [':d' => $desde, ':h' => $hasta]);
+        ", $paramsBase);
  
         return [
             'tipo'    => 'pagos',
@@ -323,8 +355,10 @@ class Reporte
     // REPORTE: FACTURAS
     // ─────────────────────────────────────────────────────────────────────────
  
-    private function _facturas(string $desde, string $hasta): array
+    private function _facturas(string $desde, string $hasta, array $extra = []): array
     {
+        // Pendientes: TODAS sin importar fecha
+        // Timbradas: solo las del período seleccionado
         $resumen = $this->_row("
             SELECT
                 COUNT(*)                                                AS total,
@@ -337,8 +371,23 @@ class Reporte
             JOIN  estadosfactura    ef  ON ef.id_estatus_factura   = sf.id_estatus_factura
             JOIN  pago              pg  ON pg.id_pago              = sf.id_pago
             JOIN  datosfacturacion  df  ON df.id_datos_facturacion = sf.id_datos_facturacion
-            WHERE DATE(sf.fecha_solicitud) BETWEEN :d AND :h
+            WHERE (
+                ef.estatus_factura LIKE '%pendiente%'
+                OR DATE(sf.fecha_solicitud) BETWEEN :d AND :h
+            )
         ", [':d' => $desde, ':h' => $hasta]);
+ 
+        $condExtra  = '';
+        $paramsFact = [':d2' => $desde, ':h2' => $hasta];
+ 
+        if (!empty($extra['numero_paciente'])) {
+            $condExtra .= ' AND pac.numero_paciente = :num_pac';
+            $paramsFact[':num_pac'] = (int)$extra['numero_paciente'];
+        }
+        if (!empty($extra['id_estatus_factura'])) {
+            $condExtra .= ' AND sf.id_estatus_factura = :id_est';
+            $paramsFact[':id_est'] = (int)$extra['id_estatus_factura'];
+        }
  
         $filas = $this->_query("
             SELECT
@@ -361,9 +410,15 @@ class Reporte
             JOIN  pago              pg  ON pg.id_pago              = sf.id_pago
             JOIN  cita              c   ON c.id_cita               = pg.id_cita
             JOIN  paciente          pac ON pac.numero_paciente      = c.numero_paciente
-            WHERE DATE(sf.fecha_solicitud) BETWEEN :d AND :h
-            ORDER BY sf.fecha_solicitud DESC
-        ", [':d' => $desde, ':h' => $hasta]);
+            WHERE (
+                ef.estatus_factura LIKE '%pendiente%'
+                OR DATE(sf.fecha_solicitud) BETWEEN :d2 AND :h2
+            )
+            $condExtra
+            ORDER BY
+                ef.estatus_factura LIKE '%pendiente%' DESC,
+                sf.fecha_solicitud DESC
+        ", $paramsFact);
  
         return [
             'tipo'    => 'facturas',
@@ -393,6 +448,38 @@ class Reporte
                 $r['fecha_facturacion'] ? date('d/m/Y H:i', strtotime($r['fecha_facturacion'])) : '—',
                 $r['estatus_factura'],
             ], $filas),
+        ];
+    }
+ 
+    // ─────────────────────────────────────────────────────────────────────────
+    // CATÁLOGOS PARA FILTROS
+    // ─────────────────────────────────────────────────────────────────────────
+ 
+    public function getCatalogos(): array
+    {
+        return [
+            'especialistas' => $this->_query("
+                SELECT id_especialista,
+                       TRIM(CONCAT(nombre,' ',apellido_paterno)) AS nombre_completo
+                FROM especialista
+                ORDER BY nombre ASC
+            "),
+            'metodosPago' => $this->_query(
+                "SELECT id_metodo_pago, metodo_pago FROM metodopago ORDER BY metodo_pago"
+            ),
+            'estatusCita' => $this->_query(
+                "SELECT id_estatus_cita, estatus_cita FROM estadoscita ORDER BY estatus_cita"
+            ),
+            'estatusFactura' => $this->_query(
+                "SELECT id_estatus_factura, estatus_factura FROM estadosfactura ORDER BY estatus_factura"
+            ),
+            'pacientes' => $this->_query("
+                SELECT numero_paciente,
+                       TRIM(CONCAT(nombre,' ',apellido_paterno,' ',
+                           COALESCE(apellido_materno,''))) AS nombre_completo
+                FROM paciente
+                ORDER BY apellido_paterno, nombre ASC
+            "),
         ];
     }
  

@@ -960,12 +960,30 @@ switch ($accion) {
 
 
     case 'generar_reporte':
-        $tipo = sanitizarString($_GET['tipo'] ?? '');
-        $desde = sanitizarString($_GET['desde'] ?? date('Y-m-01'));
-        $hasta = sanitizarString($_GET['hasta'] ?? date('Y-m-t'));
+        $tipo = trim(strip_tags($_GET['tipo'] ?? ''));
+        $desde = trim(strip_tags($_GET['desde'] ?? date('Y-m-01')));
+        $hasta = trim(strip_tags($_GET['hasta'] ?? date('Y-m-t')));
         if (empty($tipo))
             responder(false, 'Tipo de reporte requerido');
-        $resultado = $model->generar($tipo, $desde, $hasta);
+        // Filtros extra según el tipo
+        $extra = [];
+        if (!empty($_GET['numero_paciente']))
+            $extra['numero_paciente'] = (int) $_GET['numero_paciente'];
+        if (!empty($_GET['id_especialista']))
+            $extra['id_especialista'] = (int) $_GET['id_especialista'];
+        if (!empty($_GET['id_estatus_cita']))
+            $extra['id_estatus_cita'] = (int) $_GET['id_estatus_cita'];
+        if (!empty($_GET['id_metodo_pago']))
+            $extra['id_metodo_pago'] = (int) $_GET['id_metodo_pago'];
+        if (!empty($_GET['estatus']))
+            $extra['estatus'] = trim($_GET['estatus']);
+        if (!empty($_GET['id_estatus_factura']))
+            $extra['id_estatus_factura'] = (int) $_GET['id_estatus_factura'];
+        // Catálogos
+        if ($tipo === 'catalogos') {
+            responder(true, 'OK', $model->getCatalogos());
+        }
+        $resultado = $model->generar($tipo, $desde, $hasta, $extra);
         if (isset($resultado['error']))
             responder(false, $resultado['error']);
         responder(true, 'OK', $resultado);

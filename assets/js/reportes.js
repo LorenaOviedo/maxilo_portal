@@ -27,11 +27,13 @@ const reporteController = {
         this._setLoading(true);
  
         try {
-            console.log('Generando reporte:', { tipo, desde, hasta });
+            const extra  = this._getExtraParams();
+        console.log('Generando reporte:', { tipo, desde, hasta, ...extra });
         const params = new URLSearchParams({
                 modulo: 'reportes',
                 accion: 'generar_reporte',
                 tipo, desde, hasta,
+                ...extra,
             });
             const r     = await fetch(`${API_URL}?${params}`);
             const texto = await r.text();
@@ -321,12 +323,11 @@ const reporteController = {
     // ─────────────────────────────────────────────────────────────────────
  
     _aplicarPeriodo(valor) {
-        const hoy    = new Date();
-        const y      = hoy.getFullYear();
-        const m      = hoy.getMonth();
- 
+        if (valor === 'personalizado') return; // no tocar las fechas
+        const hoy = new Date();
+        const y   = hoy.getFullYear();
+        const m   = hoy.getMonth();
         let desde, hasta;
- 
         switch (valor) {
             case 'este_mes':
                 desde = new Date(y, m, 1);
@@ -341,11 +342,157 @@ const reporteController = {
                 hasta = new Date(y, 11, 31);
                 break;
             default:
-                return; // personalizado — el usuario elige
+                return;
         }
- 
         document.getElementById('fechaInicio').value = this._toISO(desde);
         document.getElementById('fechaFin').value    = this._toISO(hasta);
+    },
+ 
+    // ─────────────────────────────────────────────────────────────────────
+    // FILTROS CONTEXTUALES
+    // ─────────────────────────────────────────────────────────────────────
+ 
+    _filtrosConfig: {
+        citas:    ['filtroPaciente', 'filtroEspecialista', 'filtroEstatusCita'],
+        pagos:    ['filtroMetodoPago', 'filtroEstatusPago'],
+        facturas: ['filtroPacienteFactura', 'filtroEstatusFactura'],
+    },
+ 
+    inicializarFiltros() {
+        if (!window.CATALOGOS_RPT) return;
+ 
+        // Especialistas
+        this._poblarSelect('rptEspecialista', CATALOGOS_RPT.especialistas,
+            'id_especialista', 'nombre_completo', 'Todos');
+ 
+        // Estatus cita
+        this._poblarSelect('rptEstatusCita', CATALOGOS_RPT.estatusCita,
+            'id_estatus_cita', 'estatus_cita', 'Todos');
+ 
+        // Métodos de pago
+        this._poblarSelect('rptMetodoPago', CATALOGOS_RPT.metodosPago,
+            'id_metodo_pago', 'metodo_pago', 'Todos');
+ 
+        // Estatus factura
+        this._poblarSelect('rptEstatusFactura', CATALOGOS_RPT.estatusFactura,
+            'id_estatus_factura', 'estatus_factura', 'Todos');
+ 
+        // Buscadores de paciente
+        this._bindPacienteSearch('rptPacienteInput',    'rptPacienteValue',    'rptPacienteDropdown');
+        this._bindPacienteSearch('rptPacienteFactInput','rptPacienteFactValue','rptPacienteFactDropdown');
+    },
+ 
+    _poblarSelect(id, items, valKey, labelKey, placeholder = 'Todos') {
+        const sel = document.getElementById(id);
+        if (!sel || !items) return;
+        sel.innerHTML = `<option value="">${placeholder}</option>`;
+        items.forEach(item => {
+            const opt       = document.createElement('option');
+            opt.value       = item[valKey];
+            opt.textContent = item[labelKey];
+            sel.appendChild(opt);
+        });
+    },
+ 
+    _bindPacienteSearch(inputId, hiddenId, dropdownId) {
+        const input    = document.getElementById(inputId);
+        const hidden   = document.getElementById(hiddenId);
+        const dropdown = document.getElementById(dropdownId);
+        if (!input || !hidden || !dropdown) return;
+ 
+        const pacientes = window.CATALOGOS_RPT?.pacientes ?? [];
+ 
+        input.addEventListener('input', () => {
+            const q = input.value.trim().toLowerCase();
+            hidden.value = '';
+            if (q.length < 1) { dropdown.style.display = 'none'; return; }
+ 
+            const resultados = pacientes.filter(p =>
+                p.nombre_completo.toLowerCase().includes(q)
+            ).slice(0, 8);
+ 
+            if (!resultados.length) {
+                dropdown.innerHTML = '<div class="pac-drop-item pac-drop-empty">Sin resultados</div>';
+                dropdown.style.display = 'block';
+                return;
+            }
+ 
+            dropdown.innerHTML = resultados.map(p => `
+                <div class="pac-drop-item" data-id="${p.numero_paciente}"
+                    data-nombre="${p.nombre_completo.replace(/"/g,'&quot;')}">
+                    ${p.nombre_completo}
+                </div>`).join('');
+ 
+            dropdown.querySelectorAll('.pac-drop-item[data-id]').forEach(item => {
+                item.addEventListener('mousedown', () => {
+                    input.value  = item.dataset.nombre;
+                    hidden.value = item.dataset.id;
+                    dropdown.style.display = 'none';
+                });
+            });
+            dropdown.style.display = 'block';
+        });
+ 
+        input.addEventListener('blur', () =>
+            setTimeout(() => { dropdown.style.display = 'none'; }, 200)
+        );
+    },
+ 
+    _mostrarFiltrosExtra(tipo) {
+        // Ocultar todos primero
+        const todos = ['filtroPaciente','filtroEspecialista','filtroEstatusCita',
+                       'filtroMetodoPago','filtroEstatusPago',
+                       'filtroPacienteFactura','filtroEstatusFactura'];
+        todos.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+ 
+        // Limpiar valores
+        ['rptPacienteInput','rptPacienteFactInput'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        ['rptPacienteValue','rptPacienteFactValue','rptEspecialista',
+         'rptEstatusCita','rptMetodoPago','rptEstatusPago','rptEstatusFactura']
+            .forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+ 
+        const filtros  = this._filtrosConfig[tipo] ?? [];
+        const extraDiv = document.getElementById('filtrosExtra');
+ 
+        if (filtros.length) {
+            filtros.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = '';
+            });
+            if (extraDiv) extraDiv.style.display = '';
+        } else {
+            if (extraDiv) extraDiv.style.display = 'none';
+        }
+    },
+ 
+    _getExtraParams() {
+        const params = {};
+        const pac    = document.getElementById('rptPacienteValue')?.value;
+        const pacF   = document.getElementById('rptPacienteFactValue')?.value;
+        const esp    = document.getElementById('rptEspecialista')?.value;
+        const estC   = document.getElementById('rptEstatusCita')?.value;
+        const met    = document.getElementById('rptMetodoPago')?.value;
+        const estP   = document.getElementById('rptEstatusPago')?.value;
+        const estF   = document.getElementById('rptEstatusFactura')?.value;
+ 
+        if (pac)  params.numero_paciente   = pac;
+        if (pacF) params.numero_paciente   = pacF;
+        if (esp)  params.id_especialista   = esp;
+        if (estC) params.id_estatus_cita   = estC;
+        if (met)  params.id_metodo_pago    = met;
+        if (estP) params.estatus           = estP;
+        if (estF) params.id_estatus_factura= estF;
+ 
+        return params;
     },
  
     // ─────────────────────────────────────────────────────────────────────
@@ -420,6 +567,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const sel = document.getElementById('periodo');
             if (sel) sel.value = 'personalizado';
         });
+ 
+    // Al cambiar tipo de reporte → mostrar filtros contextuales
+    document.getElementById('tipoReporte')
+        ?.addEventListener('change', e =>
+            reporteController._mostrarFiltrosExtra(e.target.value)
+        );
+ 
+    // Inicializar catálogos de filtros
+    reporteController.inicializarFiltros();
  
     // Aplicar período inicial
     reporteController._aplicarPeriodo(

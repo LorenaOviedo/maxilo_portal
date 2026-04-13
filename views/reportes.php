@@ -79,6 +79,92 @@ include '../includes/sidebar.php';
             </div>
         </div>
  
+        <!-- Filtros contextuales según tipo de reporte -->
+        <div id="filtrosExtra" style="display:none;">
+            <div class="filters-row" style="padding-top:12px;border-top:1px solid #f1f3f5;margin-top:4px;">
+ 
+                <!-- Citas: paciente -->
+                <div class="filter-group" id="filtroPaciente" style="display:none;">
+                    <label class="filter-label">Paciente</label>
+                    <div style="position:relative;">
+                        <input type="text" id="rptPacienteInput" class="filter-select"
+                            placeholder="Buscar paciente..." autocomplete="off">
+                        <input type="hidden" id="rptPacienteValue">
+                        <div id="rptPacienteDropdown" class="pac-dropdown" style="display:none;z-index:999;"></div>
+                    </div>
+                </div>
+ 
+                <!-- Citas: especialista -->
+                <div class="filter-group" id="filtroEspecialista" style="display:none;">
+                    <label class="filter-label">Especialista</label>
+                    <div class="select-wrapper">
+                        <select id="rptEspecialista" class="filter-select">
+                            <option value="">Todos</option>
+                        </select>
+                        <i class="ri-arrow-down-s-line select-icon"></i>
+                    </div>
+                </div>
+ 
+                <!-- Citas: estatus -->
+                <div class="filter-group" id="filtroEstatusCita" style="display:none;">
+                    <label class="filter-label">Estatus de cita</label>
+                    <div class="select-wrapper">
+                        <select id="rptEstatusCita" class="filter-select">
+                            <option value="">Todos</option>
+                        </select>
+                        <i class="ri-arrow-down-s-line select-icon"></i>
+                    </div>
+                </div>
+ 
+                <!-- Pagos: método -->
+                <div class="filter-group" id="filtroMetodoPago" style="display:none;">
+                    <label class="filter-label">Método de pago</label>
+                    <div class="select-wrapper">
+                        <select id="rptMetodoPago" class="filter-select">
+                            <option value="">Todos</option>
+                        </select>
+                        <i class="ri-arrow-down-s-line select-icon"></i>
+                    </div>
+                </div>
+ 
+                <!-- Pagos: estatus -->
+                <div class="filter-group" id="filtroEstatusPago" style="display:none;">
+                    <label class="filter-label">Estatus</label>
+                    <div class="select-wrapper">
+                        <select id="rptEstatusPago" class="filter-select">
+                            <option value="">Todos</option>
+                            <option value="Pagado">Pagado</option>
+                            <option value="Pendiente">Pendiente</option>
+                        </select>
+                        <i class="ri-arrow-down-s-line select-icon"></i>
+                    </div>
+                </div>
+ 
+                <!-- Facturas: paciente -->
+                <div class="filter-group" id="filtroPacienteFactura" style="display:none;">
+                    <label class="filter-label">Paciente</label>
+                    <div style="position:relative;">
+                        <input type="text" id="rptPacienteFactInput" class="filter-select"
+                            placeholder="Buscar paciente..." autocomplete="off">
+                        <input type="hidden" id="rptPacienteFactValue">
+                        <div id="rptPacienteFactDropdown" class="pac-dropdown" style="display:none;z-index:999;"></div>
+                    </div>
+                </div>
+ 
+                <!-- Facturas: estatus -->
+                <div class="filter-group" id="filtroEstatusFactura" style="display:none;">
+                    <label class="filter-label">Estatus de factura</label>
+                    <div class="select-wrapper">
+                        <select id="rptEstatusFactura" class="filter-select">
+                            <option value="">Todos</option>
+                        </select>
+                        <i class="ri-arrow-down-s-line select-icon"></i>
+                    </div>
+                </div>
+ 
+            </div>
+        </div><!-- /#filtrosExtra -->
+ 
         <div class="filters-actions">
             <button class="btn-generar" id="btnGenerar">
                 <i class="ri-bar-chart-line"></i>
@@ -127,7 +213,8 @@ include '../includes/sidebar.php';
 </main>
  
 <script>
-var API_URL = '<?php echo ajax_url('Api.php'); ?>';
+var API_URL         = '<?php echo ajax_url('Api.php'); ?>';
+var CATALOGOS_RPT   = <?php echo json_encode($catalogos); ?>;
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="<?php echo asset('js/reportes.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
