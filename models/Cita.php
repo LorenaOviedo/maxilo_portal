@@ -162,13 +162,14 @@ class Cita
     // ──────────────────────────────────────────────
  
     /** Crear nueva cita. Retorna el ID insertado o false */
-    public function create(array $data): int|false
+    public function create(array $data)
     {
         $idEstatus = self::ESTATUS_IDS['Pendiente']; // nueva cita siempre Pendiente
         $primeraVez = ($data['tipoPaciente'] ?? '') === 'Primera vez' ? 1 : 0;
  
         $stmt = $this->db->prepare("
             INSERT INTO cita
+                (fecha_cita, hora_inicio, paciente_primera_vez,
                  duracion_aproximada, id_estatus_cita, costo_total,
                  id_motivo_consulta, id_especialista, numero_paciente)
             VALUES
