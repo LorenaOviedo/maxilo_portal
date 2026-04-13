@@ -408,6 +408,19 @@ document.addEventListener('DOMContentLoaded', () => {
             reporteController._aplicarPeriodo(e.target.value)
         );
  
+    // Al cambiar fechas manualmente → poner selector en "personalizado"
+    document.getElementById('fechaInicio')
+        ?.addEventListener('change', () => {
+            const sel = document.getElementById('periodo');
+            if (sel) sel.value = 'personalizado';
+        });
+ 
+    document.getElementById('fechaFin')
+        ?.addEventListener('change', () => {
+            const sel = document.getElementById('periodo');
+            if (sel) sel.value = 'personalizado';
+        });
+ 
     // Aplicar período inicial
     reporteController._aplicarPeriodo(
         document.getElementById('periodo')?.value ?? 'este_mes'
