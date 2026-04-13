@@ -404,7 +404,7 @@ const reporteController = {
  
         input.addEventListener('input', () => {
             const q = input.value.trim().toLowerCase();
-            hidden.value = '';
+            hidden.value = ''; // sin selección = Todos
             if (q.length < 1) { dropdown.style.display = 'none'; return; }
  
             const resultados = pacientes.filter(p =>
@@ -417,7 +417,15 @@ const reporteController = {
                 return;
             }
  
-            dropdown.innerHTML = resultados.map(p => `
+            const todosItem = `<div class="pac-drop-item" data-id="" data-nombre=""
+                style="padding:10px 14px; font-size:13px; cursor:pointer;
+                       border-bottom:1px solid #f1f3f5; color:#6c757d; font-style:italic;"
+                onmouseover="this.style.background='#f0faf9'"
+                onmouseout="this.style.background=''">
+                Todos los pacientes
+            </div>`;
+ 
+            dropdown.innerHTML = todosItem + resultados.map(p => `
                 <div class="pac-drop-item" data-id="${p.numero_paciente}"
                     data-nombre="${p.nombre_completo.replace(/"/g,'&quot;')}"
                     style="padding:10px 14px; font-size:13px; cursor:pointer;
@@ -427,10 +435,11 @@ const reporteController = {
                     ${p.nombre_completo}
                 </div>`).join('');
  
-            dropdown.querySelectorAll('.pac-drop-item[data-id]').forEach(item => {
+            dropdown.querySelectorAll('.pac-drop-item').forEach(item => {
                 item.addEventListener('mousedown', () => {
-                    input.value  = item.dataset.nombre;
-                    hidden.value = item.dataset.id;
+                    input.value  = item.dataset.nombre || '';
+                    hidden.value = item.dataset.id     || '';
+                    if (!item.dataset.id) input.placeholder = 'Buscar paciente...';
                     dropdown.style.display = 'none';
                 });
             });
