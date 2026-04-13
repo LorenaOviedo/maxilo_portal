@@ -71,12 +71,11 @@ include '../includes/sidebar.php';
             </div>
  
             <div class="filter-group">
+                <label class="filter-label">Rango de fechas</label>
                 <div class="date-range">
-                    <label class="filter-label">Fecha inicio</label>
                     <div class="date-input-wrapper">
                         <input type="date" id="fechaInicio" class="filter-date" value="<?php echo date('Y-m-01'); ?>">
                     </div>
-                    <label class="filter-label">Fecha fin</label>
                     <div class="date-input-wrapper">
                         <input type="date" id="fechaFin" class="filter-date" value="<?php echo date('Y-m-t'); ?>">
                     </div>
