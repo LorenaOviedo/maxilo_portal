@@ -421,7 +421,7 @@
 }
 
 .cita-action-btn.view  { background: #e0f2fe; color: #0284c7; }
-.cita-action-btn.edit  { background: #fef3c7; color: #d97706; }
+.cita-action-btn.edit  { background: #fef3c7; color: #20a89e; }
 .cita-action-btn.delete{ background: #fee2e2; color: #dc2626; }
 
 .cita-action-btn:hover { transform: scale(1.15); }
