@@ -12,7 +12,7 @@ body {
 
 .dashboard-container {
     display: grid;
-    grid-template-areas: 
+    grid-template-areas:
         "navbar navbar"
         "sidebar main";
     grid-template-columns: 250px 1fr;
@@ -222,7 +222,8 @@ body {
 /*TARJETAS DEL DASHBOARD*/
 .dashboard-cards {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* ← fijo en 3 columnas en escritorio */
+    grid-template-columns: repeat(3, 1fr);
+    /* ← fijo en 3 columnas en escritorio */
     gap: 25px;
     margin-bottom: 35px;
 }
@@ -615,9 +616,18 @@ body {
     transform-origin: center;
 }
 
-.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.hamburger.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.hamburger.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
 
 /* OVERLAY */
 .sidebar-overlay {
@@ -643,12 +653,12 @@ body {
 .grid-citas {
     grid-template-columns: 2fr 1fr 1fr;
 }
-  
+
 
 /*RESPONSIVE*/
 @media (max-width: 968px) {
     .dashboard-container {
-        grid-template-areas: 
+        grid-template-areas:
             "navbar"
             "main";
         grid-template-columns: 1fr;
@@ -664,14 +674,17 @@ body {
         background: none;
         border: none;
         cursor: pointer;
-        -webkit-tap-highlight-color: transparent;  /* quita el flash azul en iOS */
-        touch-action: manipulation; 
+        -webkit-tap-highlight-color: transparent;
+        /* quita el flash azul en iOS */
+        touch-action: manipulation;
         padding: 8px;
         border-radius: 6px;
         flex-shrink: 0;
     }
 
-    .hamburger:hover { background-color: #f0f0f0; }
+    .hamburger:hover {
+        background-color: #f0f0f0;
+    }
 
     /* Mostrar botón cerrar */
     .sidebar-close {
@@ -688,7 +701,9 @@ body {
         touch-action: manipulation;
     }
 
-    .sidebar-close:hover { color: #dc3545; }
+    .sidebar-close:hover {
+        color: #dc3545;
+    }
 
     /* Sidebar como drawer */
     .sidebar {
@@ -710,8 +725,13 @@ body {
         box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
     }
 
-    .navbar-subtitle { display: none; }
-    .dashboard-grid  { grid-template-columns: 1fr; }
+    .navbar-subtitle {
+        display: none;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
 
     .dashboard-cards {
         grid-template-columns: repeat(3, 1fr);
@@ -719,18 +739,52 @@ body {
 }
 
 @media (max-width: 640px) {
-    .main-content        { padding: 20px 15px; }
-    .navbar              { padding: 0 15px; }
-    .user-info           { display: none; }
-    .navbar-title-wrapper{ display: none; }
-    .content-header h1   { font-size: 20px; }
-    .dashboard-cards     { grid-template-columns: repeat(3, 1fr); }
-    .card-number         { font-size: 28px; }
-    .info-card           { padding: 20px; }
-    .bar-chart           { height: 150px; gap: 20px; }
-    .chart-card h3       { font-size: 13px; }
+    .main-content {
+        padding: 20px 15px;
+    }
 
-    .dashboard-cards .card:first-child { grid-column: unset; } /*La tarjeta principal ocupa todo el ancho */
+    .navbar {
+        padding: 0 15px;
+    }
+
+    .user-info {
+        display: none;
+    }
+
+    .navbar-title-wrapper {
+        display: none;
+    }
+
+    .content-header h1 {
+        font-size: 20px;
+    }
+
+    .dashboard-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .card-number {
+        font-size: 28px;
+    }
+
+    .info-card {
+        padding: 20px;
+    }
+
+    .bar-chart {
+        height: 150px;
+        gap: 20px;
+    }
+
+    .chart-card h3 {
+        font-size: 13px;
+    }
+
+    .dashboard-cards .card:first-child {
+        grid-column: unset;
+    }
+
+    /*La tarjeta principal ocupa todo el ancho */
 }
 
 /*UTILIDADES*/
@@ -760,6 +814,7 @@ body {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -784,10 +839,11 @@ body {
     width: 220px;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     border: 1px solid #e8e8e8;
     padding: 10px 0;
-    display: none; /* Oculto por defecto */
+    display: none;
+    /* Oculto por defecto */
     animation: fadeIn 0.2s ease-out;
 }
 
@@ -801,8 +857,15 @@ body {
     flex-direction: column;
 }
 
-.dropdown-header strong { font-size: 14px; color: #1a1a1a; }
-.dropdown-header span { font-size: 12px; color: #6c757d; }
+.dropdown-header strong {
+    font-size: 14px;
+    color: #1a1a1a;
+}
+
+.dropdown-header span {
+    font-size: 12px;
+    color: #6c757d;
+}
 
 .user-dropdown hr {
     border: 0;
@@ -821,24 +884,32 @@ body {
     transition: background 0.2s;
 }
 
-.dropdown-item:hover { background-color: #f8f9fa; }
-.dropdown-item.logout { color: #dc3545; }
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item.logout {
+    color: #dc3545;
+}
 
 /* Control de visibilidad */
 .only-mobile {
-    display: none !important; /* Oculto en escritorio */
+    display: none !important;
+    /* Oculto en escritorio */
 }
 
 /* RESPONSIVE */
 @media (max-width: 968px) {
     .only-mobile {
-        display: block !important; /* Visible en el sidebar en móvil */
+        display: block !important;
+        /* Visible en el sidebar en móvil */
     }
-    
-    /* Opcional: Desactivar el modal del header en móvil para no duplicar */
+
+    /* Se quita el z-index alto para que el sidebar pase por encima */
     .user-menu-container {
-        pointer-events: none; 
+        z-index: 1 !important;
     }
+
     .user-dropdown {
         display: none !important;
     }
