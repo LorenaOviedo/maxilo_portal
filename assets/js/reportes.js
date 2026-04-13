@@ -437,9 +437,14 @@ const reporteController = {
  
             dropdown.querySelectorAll('.pac-drop-item').forEach(item => {
                 item.addEventListener('mousedown', () => {
-                    input.value  = item.dataset.nombre || '';
-                    hidden.value = item.dataset.id     || '';
-                    if (!item.dataset.id) input.placeholder = 'Buscar paciente...';
+                    if (!item.dataset.id) {
+                        // Seleccionó "Todos" — mostrar texto pero no filtrar
+                        input.value  = 'Todos los pacientes';
+                        hidden.value = '';
+                    } else {
+                        input.value  = item.dataset.nombre;
+                        hidden.value = item.dataset.id;
+                    }
                     dropdown.style.display = 'none';
                 });
             });
