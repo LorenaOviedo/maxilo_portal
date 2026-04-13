@@ -220,7 +220,7 @@ include '../includes/sidebar.php';
 
         <div class="modal-footer">
             <button class="btn-secondary" id="btnCancelarModal">Cancelar</button>
-            <button type="button" class="btn-primary" id="btnGuardarCita">
+            <button class="btn-primary" id="btnGuardarCita">
                 <i class="ri-save-line"></i> Guardar Cita
             </button>
         </div>

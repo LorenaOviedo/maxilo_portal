@@ -168,8 +168,7 @@ class Cita
         $primeraVez = ($data['tipoPaciente'] ?? '') === 'Primera vez' ? 1 : 0;
  
         $stmt = $this->db->prepare("
-            INSERT INTO Cita
-                (fecha_cita, hora_inicio, paciente_primera_vez,
+            INSERT INTO cita
                  duracion_aproximada, id_estatus_cita, costo_total,
                  id_motivo_consulta, id_especialista, numero_paciente)
             VALUES
@@ -282,8 +281,8 @@ class Cita
         ?int $excluirId = null
     ): bool {
         $sql = "
-            SELECT COUNT(*) FROM Cita c
-            LEFT JOIN EstadosCita ec ON ec.id_estatus_cita = c.id_estatus_cita
+            SELECT COUNT(*) FROM cita c
+            LEFT JOIN estadoscita ec ON ec.id_estatus_cita = c.id_estatus_cita
             WHERE c.id_especialista = :id_esp
               AND c.fecha_cita      = :fecha
               AND ec.estatus_cita NOT IN ('Cancelada', 'Atendida', 'Pagada', 'No asistió', 'Registro diagnóstico')
