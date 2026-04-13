@@ -2,12 +2,20 @@
    reportes.css — Módulo de Reportes
    ══════════════════════════════════════════════ */
 
-/* ── Panel de filtros ────────────────────────── */
+/* ── Estilos generales ────────────────────────── */
+   .page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 5px;
+}
+
 .page-description {
-    font-size: 15px;
+    font-size: 15p	x;
     color: #6c757d;
 }
 
+/* ── Panel de filtros ────────────────────────── */
 .report-filters-card {
     background: #fff;
     border-radius: 12px;
