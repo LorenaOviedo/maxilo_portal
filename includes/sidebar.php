@@ -72,6 +72,7 @@ function is_active(string $page): string
 }
 ?>
 
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
 <aside class="sidebar" id="sidebar">
     <!-- Botón cerrar - Móvil -->
     <button class="sidebar-close" id="sidebarClose" aria-label="Cerrar menú">
