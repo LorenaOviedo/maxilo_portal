@@ -296,10 +296,65 @@ const cfgController = {
 // EVENTOS
 // ─────────────────────────────────────────────────────────────────────────────
  
+/**
+ * Visor de contraseña — mostrar mientras se mantiene presionado el ojo
+ */
+function agregarVisorContrasena(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+ 
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'position:relative; display:block;';
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(input);
+ 
+    const btn = document.createElement('button');
+    btn.type     = 'button';
+    btn.tabIndex = -1;
+    btn.setAttribute('aria-label', 'Mostrar contraseña');
+    btn.innerHTML = '<i class="ri-eye-line"></i>';
+    btn.style.cssText = `
+        position:absolute; right:10px; top:50%; transform:translateY(-50%);
+        background:none; border:none; cursor:pointer; color:#adb5bd;
+        font-size:17px; line-height:1; padding:4px;
+        display:flex; align-items:center; user-select:none;
+        transition: color .2s;
+    `;
+    wrapper.appendChild(btn);
+    input.style.paddingRight = '38px';
+ 
+    const mostrar = (e) => {
+        e.preventDefault();
+        input.type    = 'text';
+        btn.style.color = '#20a89e';
+        btn.innerHTML   = '<i class="ri-eye-off-line"></i>';
+    };
+    const ocultar = () => {
+        input.type    = 'password';
+        btn.style.color = '#adb5bd';
+        btn.innerHTML   = '<i class="ri-eye-line"></i>';
+    };
+ 
+    btn.addEventListener('mousedown',  mostrar);
+    btn.addEventListener('mouseup',    ocultar);
+    btn.addEventListener('mouseleave', ocultar);
+    btn.addEventListener('touchstart', mostrar, { passive: false });
+    btn.addEventListener('touchend',   ocultar);
+}
+ 
 document.addEventListener('DOMContentLoaded', () => {
  
     document.getElementById('btnGuardarUsuario')
         ?.addEventListener('click', () => cfgController.guardarUsuario());
+ 
+    // Visor de contraseña en cambiar contraseña
+    agregarVisorContrasena('passActual');
+    agregarVisorContrasena('passNueva');
+    agregarVisorContrasena('passConfirmar');
+ 
+    // Visor en modal de nuevo usuario
+    agregarVisorContrasena('usrPass');
+    agregarVisorContrasena('usrPassConfirm');
  
     // Nombre a mayúsculas en tiempo real
     document.getElementById('usrNombre')
