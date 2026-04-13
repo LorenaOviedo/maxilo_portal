@@ -419,7 +419,11 @@ const reporteController = {
  
             dropdown.innerHTML = resultados.map(p => `
                 <div class="pac-drop-item" data-id="${p.numero_paciente}"
-                    data-nombre="${p.nombre_completo.replace(/"/g,'&quot;')}">
+                    data-nombre="${p.nombre_completo.replace(/"/g,'&quot;')}"
+                    style="padding:10px 14px; font-size:13px; cursor:pointer;
+                           border-bottom:1px solid #f1f3f5;"
+                    onmouseover="this.style.background='#f0faf9'"
+                    onmouseout="this.style.background=''">
                     ${p.nombre_completo}
                 </div>`).join('');
  

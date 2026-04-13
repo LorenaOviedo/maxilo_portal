@@ -91,11 +91,16 @@ include '../includes/sidebar.php';
                 <!-- Citas: paciente -->
                 <div class="filter-group" id="filtroPaciente" style="display:none;">
                     <label class="filter-label">Paciente</label>
-                    <div style="position:relative;">
+                    <div style="position:relative; display:block;">
                         <input type="text" id="rptPacienteInput" class="filter-select"
-                            placeholder="Buscar paciente..." autocomplete="off">
+                            placeholder="Buscar paciente..." autocomplete="off"
+                            style="width:100%;">
                         <input type="hidden" id="rptPacienteValue">
-                        <div id="rptPacienteDropdown" class="pac-dropdown" style="display:none;z-index:999;"></div>
+                        <div id="rptPacienteDropdown" class="pac-dropdown"
+                            style="display:none; position:absolute; top:100%; left:0; right:0;
+                                   background:#fff; border:1px solid #dee2e6; border-top:none;
+                                   border-radius:0 0 8px 8px; box-shadow:0 4px 12px rgba(0,0,0,.1);
+                                   max-height:220px; overflow-y:auto; z-index:1000;"></div>
                     </div>
                 </div>
  
@@ -148,11 +153,16 @@ include '../includes/sidebar.php';
                 <!-- Facturas: paciente -->
                 <div class="filter-group" id="filtroPacienteFactura" style="display:none;">
                     <label class="filter-label">Paciente</label>
-                    <div style="position:relative;">
+                    <div style="position:relative; display:block;">
                         <input type="text" id="rptPacienteFactInput" class="filter-select"
-                            placeholder="Buscar paciente..." autocomplete="off">
+                            placeholder="Buscar paciente..." autocomplete="off"
+                            style="width:100%;">
                         <input type="hidden" id="rptPacienteFactValue">
-                        <div id="rptPacienteFactDropdown" class="pac-dropdown" style="display:none;z-index:999;"></div>
+                        <div id="rptPacienteFactDropdown" class="pac-dropdown"
+                            style="display:none; position:absolute; top:100%; left:0; right:0;
+                                   background:#fff; border:1px solid #dee2e6; border-top:none;
+                                   border-radius:0 0 8px 8px; box-shadow:0 4px 12px rgba(0,0,0,.1);
+                                   max-height:220px; overflow-y:auto; z-index:1000;"></div>
                     </div>
                 </div>
  

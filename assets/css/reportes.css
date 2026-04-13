@@ -199,7 +199,7 @@
  
 .resumen-item {
     background: #f0f4ff;
-    border-left: 4px solid #20a89e;
+    border-left: 4px solid #192D8C;
     border-radius: 8px;
     padding: 12px 16px;
 }
@@ -207,7 +207,7 @@
 .resumen-valor {
     font-size: 22px;
     font-weight: 700;
-    color: #20a89e;
+    color: #192D8C;
     line-height: 1;
 }
  
@@ -260,7 +260,7 @@
 }
  
 .reporte-table thead th {
-    background: #20a89e;
+    background: #192D8C;
     color: #fff;
     padding: 10px 14px;
     text-align: left;
@@ -291,4 +291,45 @@
     .btn-generar,
     .btn-exportar     { width: 100%; justify-content: center; }
     .resumen-grid     { grid-template-columns: repeat(2, 1fr); }
+}
+ 
+/* ── Buscador de paciente en filtros ────────── */
+.filter-group .pac-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.10);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+ 
+.filter-group .pac-drop-item {
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #212529;
+    cursor: pointer;
+    transition: background .15s;
+}
+ 
+.filter-group .pac-drop-item:hover {
+    background: #f0faf9;
+    color: #20a89e;
+}
+ 
+.filter-group .pac-drop-empty {
+    color: #adb5bd;
+    cursor: default;
+    font-style: italic;
+}
+ 
+/* El wrapper del input necesita position relative */
+.filter-group > div[style*="position:relative"],
+.filter-group > div[style*="position: relative"] {
+    position: relative;
 }
