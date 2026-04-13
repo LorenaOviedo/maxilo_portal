@@ -6,9 +6,9 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../config/auth.php';
- 
+
 session_start();
- 
+
 $auth = new AuthController();
 if (!$auth->verificarSesion()) {
     redirect('index.php');
@@ -16,93 +16,93 @@ if (!$auth->verificarSesion()) {
 
 // Verificar permiso específico al módulo
 verificarPermiso('citas');
- 
+
 $page_title = 'Citas';
 $page_css = ['citas.css'];
- 
+
 include '../includes/header.php';
 include '../includes/sidebar.php';
 ?>
- 
-        <!-- Contenido principal -->
-        <main class="main-content">
- 
-            <!-- Page Header -->
-            <div class="page-header">
-                <div class="page-header-left">
-                    <h1 class="page-title">Citas</h1>
-                    <p class="page-subtitle">Gestione y administre citas de sus pacientes</p>
-                </div>
-                <button class="btn-nueva-cita" id="btnNuevaCita">
-                    Nueva cita <i class="ri-add-line"></i>
+
+<!-- Contenido principal -->
+<main class="main-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <h1 class="page-header">Citas</h1>
+            <p class="page-description">Gestione y administre citas de sus pacientes</p>
+        </div>
+        <button class="btn-nueva-cita" id="btnNuevaCita">
+            Nueva cita <i class="ri-add-line"></i>
+        </button>
+    </div>
+
+    <!-- Layout principal -->
+    <div class="citas-layout">
+
+        <!-- ===== CALENDARIO ===== -->
+        <div class="calendar-card">
+            <div class="calendar-header">
+                <button class="calendar-nav" id="btnPrevMes">
+                    <i class="ri-arrow-left-s-line"></i>
+                </button>
+                <h2 class="calendar-title" id="calendarTitle"></h2>
+                <button class="calendar-nav" id="btnNextMes">
+                    <i class="ri-arrow-right-s-line"></i>
                 </button>
             </div>
- 
-            <!-- Layout principal -->
-            <div class="citas-layout">
- 
-                <!-- ===== CALENDARIO ===== -->
-                <div class="calendar-card">
-                    <div class="calendar-header">
-                        <button class="calendar-nav" id="btnPrevMes">
-                            <i class="ri-arrow-left-s-line"></i>
-                        </button>
-                        <h2 class="calendar-title" id="calendarTitle"></h2>
-                        <button class="calendar-nav" id="btnNextMes">
-                            <i class="ri-arrow-right-s-line"></i>
-                        </button>
-                    </div>
- 
-                    <div class="calendar-grid">
-                        <div class="calendar-day-header">Dom</div>
-                        <div class="calendar-day-header">Lun</div>
-                        <div class="calendar-day-header">Mar</div>
-                        <div class="calendar-day-header">Mié</div>
-                        <div class="calendar-day-header">Jue</div>
-                        <div class="calendar-day-header">Vie</div>
-                        <div class="calendar-day-header">Sáb</div>
-                    </div>
- 
-                    <div class="calendar-body" id="calendarBody"></div>
- 
-                    <div class="calendar-legend">
-                        <span class="legend-item">
-                            <span class="legend-dot disponible"></span> Disponible
-                        </span>
-                        <span class="legend-item">
-                            <span class="legend-dot poca"></span> Poca disponibilidad
-                        </span>
-                        <span class="legend-item">
-                            <span class="legend-dot ocupado"></span> No disponible
-                        </span>
-                    </div>
+
+            <div class="calendar-grid">
+                <div class="calendar-day-header">Dom</div>
+                <div class="calendar-day-header">Lun</div>
+                <div class="calendar-day-header">Mar</div>
+                <div class="calendar-day-header">Mié</div>
+                <div class="calendar-day-header">Jue</div>
+                <div class="calendar-day-header">Vie</div>
+                <div class="calendar-day-header">Sáb</div>
+            </div>
+
+            <div class="calendar-body" id="calendarBody"></div>
+
+            <div class="calendar-legend">
+                <span class="legend-item">
+                    <span class="legend-dot disponible"></span> Disponible
+                </span>
+                <span class="legend-item">
+                    <span class="legend-dot poca"></span> Poca disponibilidad
+                </span>
+                <span class="legend-item">
+                    <span class="legend-dot ocupado"></span> No disponible
+                </span>
+            </div>
+        </div>
+
+        <!-- ===== PANEL DE CITAS DEL DÍA ===== -->
+        <div class="citas-panel">
+            <div class="citas-panel-header">
+                <h3 class="citas-panel-title">Citas del día</h3>
+                <span class="citas-panel-fecha" id="citasFechaSeleccionada"></span>
+            </div>
+
+            <div class="citas-filtros">
+                <button class="filtro-btn active" data-estatus="todas">Todas</button>
+                <button class="filtro-btn" data-estatus="Confirmada">Confirmadas</button>
+                <button class="filtro-btn" data-estatus="Pendiente">Pendientes</button>
+                <button class="filtro-btn" data-estatus="Cancelada">Canceladas</button>
+            </div>
+
+            <div class="citas-lista" id="citasLista">
+                <div class="citas-loading">
+                    <i class="ri-loader-4-line spin"></i>
+                    <span>Cargando citas...</span>
                 </div>
- 
-                <!-- ===== PANEL DE CITAS DEL DÍA ===== -->
-                <div class="citas-panel">
-                    <div class="citas-panel-header">
-                        <h3 class="citas-panel-title">Citas del día</h3>
-                        <span class="citas-panel-fecha" id="citasFechaSeleccionada"></span>
-                    </div>
- 
-                    <div class="citas-filtros">
-                        <button class="filtro-btn active" data-estatus="todas">Todas</button>
-                        <button class="filtro-btn" data-estatus="Confirmada">Confirmadas</button>
-                        <button class="filtro-btn" data-estatus="Pendiente">Pendientes</button>
-                        <button class="filtro-btn" data-estatus="Cancelada">Canceladas</button>
-                    </div>
- 
-                    <div class="citas-lista" id="citasLista">
-                        <div class="citas-loading">
-                            <i class="ri-loader-4-line spin"></i>
-                            <span>Cargando citas...</span>
-                        </div>
-                    </div>
-                </div>
- 
-            </div><!-- /citas-layout -->
-        </main>
- 
+            </div>
+        </div>
+
+    </div><!-- /citas-layout -->
+</main>
+
 <!-- ==================== MODAL NUEVA/EDITAR CITA ==================== -->
 <div class="modal-overlay" id="modalCita">
     <div class="modal">
@@ -112,11 +112,11 @@ include '../includes/sidebar.php';
                 <i class="ri-close-line"></i>
             </button>
         </div>
- 
+
         <div class="modal-body">
             <form id="formCita">
                 <input type="hidden" id="citaId" name="id_cita">
- 
+
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Paciente<span class="required">*</span>
@@ -136,7 +136,7 @@ include '../includes/sidebar.php';
                         </select>
                     </div>
                 </div>
- 
+
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">
@@ -155,14 +155,14 @@ include '../includes/sidebar.php';
                         </select>
                     </div>
                 </div>
- 
+
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">
                             Fecha<span class="required">*</span>
                         </label>
                         <input type="date" class="form-input" id="inputFecha" name="fecha_cita"
-                               min="<?php echo date('Y-m-d'); ?>" required>
+                            min="<?php echo date('Y-m-d'); ?>" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">
@@ -171,7 +171,7 @@ include '../includes/sidebar.php';
                         <input type="time" class="form-input" id="inputHora" name="hora_inicio" required>
                     </div>
                 </div>
- 
+
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">
@@ -188,11 +188,11 @@ include '../includes/sidebar.php';
                         <label class="form-label">
                             Costo Estimado
                         </label>
-                        <input type="number" class="form-input" id="inputCosto" name="costo_estimado"
-                               placeholder="0.00" step="0.01" min="0">
+                        <input type="number" class="form-input" id="inputCosto" name="costo_estimado" placeholder="0.00"
+                            step="0.01" min="0">
                     </div>
                 </div>
- 
+
                 <!-- Estatus: solo visible al editar -->
                 <div class="form-group" id="groupEstatus" style="display: none;">
                     <label class="form-label">
@@ -210,14 +210,14 @@ include '../includes/sidebar.php';
                         <option value="Registro diagnóstico">Registro diagnóstico</option>
                     </select>
                 </div>
- 
+
                 <div class="form-alert" id="alertConflicto" style="display: none;">
                     <i class="ri-edit-box-line"></i>
                     <span id="alertMessage"></span>
                 </div>
             </form>
         </div>
- 
+
         <div class="modal-footer">
             <button class="btn-secondary" id="btnCancelarModal">Cancelar</button>
             <button class="btn-primary" id="btnGuardarCita">
@@ -226,7 +226,7 @@ include '../includes/sidebar.php';
         </div>
     </div>
 </div>
- 
+
 <!-- ==================== MODAL DETALLE ==================== -->
 <div class="modal-overlay" id="modalDetalle">
     <div class="modal modal-sm">
@@ -245,7 +245,7 @@ include '../includes/sidebar.php';
         </div>
     </div>
 </div>
- 
+
 <!-- ==================== MODAL CONFIRMAR ELIMINAR ==================== -->
 <div class="modal-overlay" id="modalEliminar">
     <div class="modal modal-xs">
@@ -272,17 +272,18 @@ include '../includes/sidebar.php';
         </div>
     </div>
 </div>
- 
+
 <!-- Toast -->
 <div class="toast-container" id="toastContainer"></div>
- 
+
 <!-- JS del módulo -->
 <script src="<?php echo asset('js/citas.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
- 
-    </div><!-- /dashboard-container (abierto por header.php) -->
+
+</div><!-- /dashboard-container (abierto por header.php) -->
 </body>
+
 </html>
- 
+
 <?php
 //INCLUIR FOOTER
 include '../includes/footer.php';
@@ -290,7 +291,7 @@ include '../includes/footer.php';
 
 <style>
     .form-label .required {
-    color: #dc3545;
-    margin-left: 2px;
-}
+        color: #dc3545;
+        margin-left: 2px;
+    }
 </style>

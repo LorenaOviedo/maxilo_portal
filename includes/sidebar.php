@@ -144,7 +144,7 @@ function is_active(string $page): string
             </li>
         <?php endif; ?>
 
-        <?php if (tieneAcceso('inventario')): ?>
+        <?php if (tieneAcceso('inventarios')): ?>
             <li class="menu-item <?php echo is_active('catalogos_inventario'); ?>">
                 <a href="<?php echo view_url('catalogos_inventario.php'); ?>">
                     <span class="menu-icon"><i class="ri-todo-line"></i></span>
