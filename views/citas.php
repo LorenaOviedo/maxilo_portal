@@ -30,8 +30,8 @@ include '../includes/sidebar.php';
     <!-- Page Header -->
     <div class="page-header">
         <div class="page-header-left">
-            <h1 class="page-header">Citas</h1>
-            <p class="page-description">Gestione y administre citas de sus pacientes</p>
+            <h1 class="page-header-title">Citas</h1>
+            <p class="page-subtitle">Gestione y administre citas de sus pacientes</p>
         </div>
         <button class="btn-nueva-cita" id="btnNuevaCita">
             Nueva cita <i class="ri-add-line"></i>
