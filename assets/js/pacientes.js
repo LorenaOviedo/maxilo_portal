@@ -236,6 +236,8 @@ function irAPagina(pagina) {
 
 // ── Cargar datos del paciente ─────────────────────────────────────
 function cargarPaciente(id, callback) {
+  console.log("Datos paciente:", data.paciente);
+  console.log("Contacto emergencia:", data.paciente?.contacto_emergencia);
   fetch(`${API_URL}?modulo=pacientes&accion=get&id=${id}`)
     .then((r) => r.json())
     .then((data) => {
