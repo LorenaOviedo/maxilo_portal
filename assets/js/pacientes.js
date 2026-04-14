@@ -309,9 +309,8 @@ function mapearDatosPaciente(p) {
 // ── Llenar tab de contacto ───────────────────────────────────────
  
 function poblarContacto(mapped) {
-    console.log('poblarContacto:', mapped);
     const modal = document.getElementById('modalPaciente');
-    if (!modal) { console.error('Modal no encontrado'); return; }
+    if (!modal) return;
  
     const campos = {
         'email':                mapped.email               ?? '',
@@ -323,12 +322,11 @@ function poblarContacto(mapped) {
  
     Object.entries(campos).forEach(([name, val]) => {
         const el = modal.querySelector(`[name="${name}"]`);
-        if (el) {
-            el.value = val;
-            console.log(`Campo ${name} = "${val}" — encontrado:`, !!el);
-        } else {
-            console.warn(`Campo [name="${name}"] NO encontrado en el modal`);
-        }
+        if (!el) return;
+        const wasDisabled = el.disabled;
+        el.disabled = false;  // habilitar temporalmente para asignar valor
+        el.value    = val;
+        el.disabled = wasDisabled; // restaurar estado
     });
 }
  
@@ -373,7 +371,8 @@ function abrirModalVerPaciente(id) {
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
     poblarHistorial(mapped, true);
     poblarAnamnesis(mapped);
-    poblarContacto(mapped);    // ← llenar tab de contacto
+    // Poblar contacto después de que setReadOnly termine
+    setTimeout(() => poblarContacto(mapped), 50);
   });
 }
  
@@ -389,7 +388,8 @@ function abrirModalEditarPaciente(id) {
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
     poblarHistorial(mapped, false);
     poblarAnamnesis(mapped);
-    poblarContacto(mapped);    // ← llenar tab de contacto
+    // Poblar contacto después de que setReadOnly termine
+    setTimeout(() => poblarContacto(mapped), 50);
   });
 }
  
