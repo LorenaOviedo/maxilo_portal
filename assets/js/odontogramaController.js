@@ -120,7 +120,8 @@ const odontogramaController = {
     },
  
     _montarVue(numeroPaciente) {
-        if (this._appInstance) return;
+        // Siempre desmontar antes de montar — garantiza estado limpio por paciente
+        this._desmontar();
  
         const { createApp, ref, computed } = Vue;
         const self = this;
@@ -306,9 +307,12 @@ const odontogramaController = {
  
     _desmontar() {
         if (this._appInstance) {
-            this._appInstance.unmount();
+            try { this._appInstance.unmount(); } catch(e) {}
             this._appInstance = null;
         }
+        // Limpiar el contenedor para que Vue pueda montarse limpio
+        const app = document.getElementById('app-odontograma');
+        if (app) app.innerHTML = '';
     },
  
     async _cargarRegistros(registros, cargando, numeroPaciente) {
@@ -368,4 +372,3 @@ const odontogramaController = {
         } catch (err) { return null; }
     },
 };
- 
