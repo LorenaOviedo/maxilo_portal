@@ -69,6 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login - Sistema Maxilofacial Texcoco</title>
     <link rel="stylesheet" href="assets/css/login.css">
  
+    <!-- Iconos de Remixicon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
     <!-- Script de reCAPTCHA -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
