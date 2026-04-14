@@ -305,6 +305,24 @@ function mapearDatosPaciente(p) {
   };
 }
  
+// ── Llenar tab de contacto ───────────────────────────────────────
+ 
+function poblarContacto(mapped) {
+    const form = document.getElementById('formContacto');
+    if (!form) return;
+ 
+    const setVal = (name, val) => {
+        const el = form.querySelector(`[name="${name}"]`);
+        if (el) el.value = val ?? '';
+    };
+ 
+    setVal('email',               mapped.email);
+    setVal('telefono',            mapped.telefono);
+    setVal('contacto_emergencia', mapped.contacto_emergencia);
+    setVal('relacion',            mapped.relacion);
+    setVal('telefono_emergencia', mapped.telefono_emergencia);
+}
+ 
 // ── Modales ───────────────────────────────────────────────────────
  
 function resetearEstadoModalPaciente() {
@@ -344,8 +362,9 @@ function abrirModalVerPaciente(id) {
     document.querySelector('[name="pais"]').value = "MEXICO";
     iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
-    poblarHistorial(mapped, true);    // true = readonly
+    poblarHistorial(mapped, true);
     poblarAnamnesis(mapped);
+    poblarContacto(mapped);    // ← llenar tab de contacto
   });
 }
  
@@ -359,8 +378,9 @@ function abrirModalEditarPaciente(id) {
     document.querySelector('[name="pais"]').value = "MEXICO";
     iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
-    poblarHistorial(mapped, false);   // false = editable
+    poblarHistorial(mapped, false);
     poblarAnamnesis(mapped);
+    poblarContacto(mapped);    // ← llenar tab de contacto
   });
 }
  
