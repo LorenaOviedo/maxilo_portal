@@ -308,19 +308,27 @@ function mapearDatosPaciente(p) {
 // ── Llenar tab de contacto ───────────────────────────────────────
  
 function poblarContacto(mapped) {
-    const form = document.getElementById('formContacto');
-    if (!form) return;
+    console.log('poblarContacto:', mapped);
+    const modal = document.getElementById('modalPaciente');
+    if (!modal) { console.error('Modal no encontrado'); return; }
  
-    const setVal = (name, val) => {
-        const el = form.querySelector(`[name="${name}"]`);
-        if (el) el.value = val ?? '';
+    const campos = {
+        'email':                mapped.email               ?? '',
+        'telefono':             mapped.telefono            ?? '',
+        'contacto_emergencia':  mapped.contacto_emergencia ?? '',
+        'relacion':             mapped.relacion            ?? '',
+        'telefono_emergencia':  mapped.telefono_emergencia ?? '',
     };
  
-    setVal('email',               mapped.email);
-    setVal('telefono',            mapped.telefono);
-    setVal('contacto_emergencia', mapped.contacto_emergencia);
-    setVal('relacion',            mapped.relacion);
-    setVal('telefono_emergencia', mapped.telefono_emergencia);
+    Object.entries(campos).forEach(([name, val]) => {
+        const el = modal.querySelector(`[name="${name}"]`);
+        if (el) {
+            el.value = val;
+            console.log(`Campo ${name} = "${val}" — encontrado:`, !!el);
+        } else {
+            console.warn(`Campo [name="${name}"] NO encontrado en el modal`);
+        }
+    });
 }
  
 // ── Modales ───────────────────────────────────────────────────────
