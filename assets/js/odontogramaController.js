@@ -120,8 +120,10 @@ const odontogramaController = {
     },
  
     _montarVue(numeroPaciente) {
-        // Siempre desmontar antes de montar — garantiza estado limpio por paciente
-        this._desmontar();
+        if (this._appInstance) {
+            try { this._appInstance.unmount(); } catch(e) {}
+            this._appInstance = null;
+        }
  
         const { createApp, ref, computed } = Vue;
         const self = this;
@@ -300,7 +302,15 @@ const odontogramaController = {
                     toggleEditarEstatus, guardarEstatus,
                 };
             },
-        }).mount('#app-odontograma');
+        });
+ 
+        // Crear div hijo limpio como target para evitar conflictos de Vue
+        const appEl = document.getElementById('app-odontograma');
+        if (!appEl) { console.error('No se encontró #app-odontograma'); return; }
+        appEl.innerHTML = '';
+        const target = document.createElement('div');
+        appEl.appendChild(target);
+        this._appInstance.mount(target);
     },
  
     _nextTick(fn) { setTimeout(fn, 0); },
@@ -310,9 +320,6 @@ const odontogramaController = {
             try { this._appInstance.unmount(); } catch(e) {}
             this._appInstance = null;
         }
-        // Limpiar el contenedor para que Vue pueda montarse limpio
-        const app = document.getElementById('app-odontograma');
-        if (app) app.innerHTML = '';
     },
  
     async _cargarRegistros(registros, cargando, numeroPaciente) {
