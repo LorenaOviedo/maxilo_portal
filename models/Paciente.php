@@ -482,6 +482,11 @@ class Paciente
             // 6. Crear o actualizar anamnesis
             $this->sincronizarAnamnesis($id, $data);
 
+            // 7. Actualizar o crear contacto de emergencia
+            if (!empty($data['contacto_nombre'])) {
+                $this->sincronizarContactoEmergencia($id, $data);
+            }
+
             $this->conn->commit();
             return true;
 
@@ -610,6 +615,40 @@ class Paciente
             return;
         }
         $stmt->execute();
+    }
+
+    private function sincronizarContactoEmergencia($numeroPaciente, $data)
+    {
+        // Verificar si ya existe un contacto de emergencia para este paciente
+        $stmt = $this->conn->prepare("
+            SELECT pce.id_contacto_emergencia
+            FROM pacientecontactosemergencia pce
+            WHERE pce.numero_paciente = :id
+            LIMIT 1
+        ");
+        $stmt->execute([':id' => $numeroPaciente]);
+        $idContacto = $stmt->fetchColumn();
+
+        if ($idContacto) {
+            // Actualizar el existente
+            $stmt = $this->conn->prepare("
+                UPDATE contactosemergencia SET
+                    nombres_contacto_emergencia  = :nombres,
+                    apellido_contacto_emergencia = :apellido,
+                    telefono_contacto_emergencia = :telefono,
+                    id_tipo_parentesco           = :parentesco
+                WHERE id_contacto_emergencia = :id
+            ");
+            $stmt->bindValue(':nombres', $this->normalizar($data['contacto_nombre']));
+            $stmt->bindValue(':apellido', $this->normalizar($data['contacto_apellido'] ?? ''));
+            $stmt->bindValue(':telefono', trim($data['telefono_emergencia'] ?? ''));
+            $stmt->bindValue(':parentesco', (int) ($data['id_tipo_parentesco'] ?? 1), PDO::PARAM_INT);
+            $stmt->bindValue(':id', $idContacto, PDO::PARAM_INT);
+            $stmt->execute();
+        } else {
+            // Crear nuevo
+            $this->guardarContactoEmergencia($numeroPaciente, $data);
+        }
     }
 
     private function guardarContactoEmergencia($numeroPaciente, $data)
@@ -1102,7 +1141,7 @@ class Paciente
     private function bindAnamnesisValues($stmt, $numeroPaciente, $data)
     {
         $stmt->bindValue(':paciente', (int) $numeroPaciente, PDO::PARAM_INT);
-         $stmt->bindValue(':enf_cronicas', trim($data['enfermedades_cronicas'] ?? ''));
+        $stmt->bindValue(':enf_cronicas', trim($data['enfermedades_cronicas'] ?? ''));
         $stmt->bindValue(':alergia_latex', (int) ($data['alergia_latex'] ?? 0), PDO::PARAM_INT);
         $stmt->bindValue(':ant_familiares', trim($data['antecedentes_familiares'] ?? ''));
         $stmt->bindValue(':num_comidas', !empty($data['numero_comidas'])

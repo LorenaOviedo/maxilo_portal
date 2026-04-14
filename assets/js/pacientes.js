@@ -11,23 +11,23 @@
  */
 
 const MODAL_PAC_ID = "modalPaciente";
-const POR_PAGINA   = 10;
+const POR_PAGINA = 10;
 
 let busquedaActual = "";
-let paginaActual   = 1;
-let busquedaTimer  = null;
+let paginaActual = 1;
+let busquedaTimer = null;
 
 // ── Inicialización ────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", function () {
   // Neutralizar búsqueda local de CatalogTable —
   // pacientes.js usa búsqueda AJAX propia
-  CatalogTable.initSearch  = function () {};
+  CatalogTable.initSearch = function () {};
   CatalogTable.filterTable = function () {};
   CatalogTable.clearSearch = function () {
     const input = document.getElementById("searchInput");
     if (input) input.value = "";
     busquedaActual = "";
-    paginaActual   = 1;
+    paginaActual = 1;
     buscarPacientes();
   };
 
@@ -37,11 +37,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // ── Código postal ─────────────────────────────────────────────────
 function iniciarEventosCP() {
-  const inputCP      = document.getElementById("inputCP");
-  const btnBuscarCP  = document.getElementById("btnBuscarCP");
+  const inputCP = document.getElementById("inputCP");
+  const btnBuscarCP = document.getElementById("btnBuscarCP");
   const inputColonia = document.getElementById("inputColonia");
-  const listaColonias= document.getElementById("listaColonias");
-  const inputEstado  = document.getElementById("inputEstado");
+  const listaColonias = document.getElementById("listaColonias");
+  const inputEstado = document.getElementById("inputEstado");
   const inputMunicipio = document.getElementById("inputMunicipio");
 
   if (!inputCP) return;
@@ -58,9 +58,9 @@ function iniciarEventosCP() {
       CatalogTable.showNotification("Ingresa un CP de 5 dígitos", "warning");
       return;
     }
-    inputColonia.value   = "";
+    inputColonia.value = "";
     listaColonias.innerHTML = "";
-    inputEstado.value    = "";
+    inputEstado.value = "";
     inputMunicipio.value = "";
 
     fetch(`${API_URL}?accion=buscar_cp&cp=${encodeURIComponent(cp)}`)
@@ -70,7 +70,7 @@ function iniciarEventosCP() {
           CatalogTable.showNotification("Código postal no encontrado", "error");
           return;
         }
-        inputEstado.value    = normalizar(data.estado);
+        inputEstado.value = normalizar(data.estado);
         inputMunicipio.value = normalizar(data.municipio);
         listaColonias.innerHTML = data.colonias
           .map((c) => `<option value="${normalizar(c.colonia)}">`)
@@ -84,10 +84,10 @@ function iniciarEventosCP() {
   nuevoInputCP.addEventListener("input", () => {
     const len = nuevoInputCP.value.trim().length;
     if (len < 5) {
-      listaColonias.innerHTML  = "";
-      inputColonia.value       = "";
-      inputEstado.value        = "";
-      inputMunicipio.value     = "";
+      listaColonias.innerHTML = "";
+      inputColonia.value = "";
+      inputEstado.value = "";
+      inputMunicipio.value = "";
     }
     if (len === 5) buscarCP();
   });
@@ -96,14 +96,14 @@ function iniciarEventosCP() {
 // ── Búsqueda AJAX con debounce ────────────────────────────────────
 function iniciarBusqueda() {
   const searchInput = document.getElementById("searchInput");
-  const btnSearch   = document.querySelector(".btn-search");
+  const btnSearch = document.querySelector(".btn-search");
 
   if (searchInput) {
     searchInput.addEventListener("input", () => {
       clearTimeout(busquedaTimer);
       busquedaTimer = setTimeout(() => {
         busquedaActual = searchInput.value.trim();
-        paginaActual   = 1;
+        paginaActual = 1;
         buscarPacientes();
       }, 400);
     });
@@ -112,7 +112,7 @@ function iniciarBusqueda() {
   if (btnSearch) {
     btnSearch.addEventListener("click", () => {
       busquedaActual = searchInput?.value.trim() ?? "";
-      paginaActual   = 1;
+      paginaActual = 1;
       buscarPacientes();
     });
   }
@@ -159,23 +159,25 @@ function actualizarTabla(pacientes) {
     return;
   }
 
-  tbody.innerHTML = pacientes.map((p) => {
-    const activo      = parseInt(p.id_estatus) === 1;
-    const ultimaVisita = p.ultima_visita
-      ? new Date(p.ultima_visita).toLocaleDateString("es-MX") : "—";
-    const nombre      = normalizar(p.nombre_completo || "").replace(/'/g, "\\'");
-    const badgeEstatus = activo
-      ? `<span class="badge badge-active">${p.estatus.toUpperCase()}</span>`
-      : `<span class="badge badge-inactive">${p.estatus.toUpperCase()}</span>`;
-    const btnEstatus = activo
-      ? `<button type="button" class="btn-action btn-delete" title="Desactivar"
+  tbody.innerHTML = pacientes
+    .map((p) => {
+      const activo = parseInt(p.id_estatus) === 1;
+      const ultimaVisita = p.ultima_visita
+        ? new Date(p.ultima_visita).toLocaleDateString("es-MX")
+        : "—";
+      const nombre = normalizar(p.nombre_completo || "").replace(/'/g, "\\'");
+      const badgeEstatus = activo
+        ? `<span class="badge badge-active">${p.estatus.toUpperCase()}</span>`
+        : `<span class="badge badge-inactive">${p.estatus.toUpperCase()}</span>`;
+      const btnEstatus = activo
+        ? `<button type="button" class="btn-action btn-delete" title="Desactivar"
              onclick="cambiarEstatusPaciente(${p.numero_paciente}, 2, '${nombre}')">
              <i class="ri-forbid-line"></i></button>`
-      : `<button type="button" class="btn-action btn-activate" title="Activar"
+        : `<button type="button" class="btn-action btn-activate" title="Activar"
              onclick="cambiarEstatusPaciente(${p.numero_paciente}, 1, '${nombre}')">
              <i class="ri-checkbox-circle-line"></i></button>`;
 
-    return `
+      return `
       <tr>
         <td class="col-id"    data-label="No. Paciente"   data-col="numero">
           <span style="font-weight:700;">${p.numero_paciente}</span>
@@ -201,7 +203,8 @@ function actualizarTabla(pacientes) {
           </div>
         </td>
       </tr>`;
-  }).join("");
+    })
+    .join("");
 }
 
 function actualizarPaginacion(p) {
@@ -226,7 +229,9 @@ function actualizarPaginacion(p) {
 function irAPagina(pagina) {
   paginaActual = pagina;
   buscarPacientes();
-  document.querySelector(".table-container")?.scrollIntoView({ behavior: "smooth" });
+  document
+    .querySelector(".table-container")
+    ?.scrollIntoView({ behavior: "smooth" });
 }
 
 // ── Cargar datos del paciente ─────────────────────────────────────
@@ -240,64 +245,73 @@ function cargarPaciente(id, callback) {
       }
       callback(data.paciente);
     })
-    .catch(() => CatalogTable.showNotification("Error al obtener los datos", "error"));
+    .catch(() =>
+      CatalogTable.showNotification("Error al obtener los datos", "error"),
+    );
 }
 
 function mapearDatosPaciente(p) {
-  const telefono = (p.contactos || [])
-    .find((c) => [1,2,3,4,5].includes(parseInt(c.id_tipo_contacto)))?.valor || "";
-  const email = (p.contactos || [])
-    .find((c) => parseInt(c.id_tipo_contacto) === 6)?.valor || "";
-  const ce   = p.contacto_emergencia || {};
-  const hist = p.historial           || {};
-  const anam = p.anamnesis           || {};
+  const telefono =
+    (p.contactos || []).find((c) =>
+      [1, 2, 3, 4, 5].includes(parseInt(c.id_tipo_contacto)),
+    )?.valor || "";
+  const email =
+    (p.contactos || []).find((c) => parseInt(c.id_tipo_contacto) === 6)
+      ?.valor || "";
+  const ce = p.contacto_emergencia || {};
+  const hist = p.historial || {};
+  const anam = p.anamnesis || {};
 
   return {
     // Tab 1: Información personal
     id_paciente_expediente: p.id_paciente_expediente || "",
-    nombre:           normalizar(p.nombre),
+    nombre: normalizar(p.nombre),
     apellido_paterno: normalizar(p.apellido_paterno),
     apellido_materno: normalizar(p.apellido_materno),
     fecha_nacimiento: p.fecha_nacimiento,
-    sexo:             p.sexo,
-    id_ocupacion:     p.id_ocupacion || "",
-    calle:            normalizar(p.calle || ""),
-    numero_exterior:  p.numero_exterior || "",
-    numero_interior:  p.numero_interior || "",
-    codigo_postal:    p.codigo_postal   || "",
-    estado:    "",   // se autocompleta por CP
+    sexo: p.sexo,
+    id_ocupacion: p.id_ocupacion || "",
+    calle: normalizar(p.calle || ""),
+    numero_exterior: p.numero_exterior || "",
+    numero_interior: p.numero_interior || "",
+    codigo_postal: p.codigo_postal || "",
+    estado: "", // se autocompleta por CP
     municipio: "",
-    pais:      "MEXICO",
+    pais: "MEXICO",
 
     // Tab 2: Contacto
-    email:                email,
-    telefono:             telefono,
-    contacto_emergencia:  ce.nombres_contacto_emergencia
-      ? (ce.nombres_contacto_emergencia + " " + (ce.apellido_contacto_emergencia || "")).trim()
+    email: email,
+    telefono: telefono,
+    contacto_emergencia: ce.nombres_contacto_emergencia
+      ? (
+          ce.nombres_contacto_emergencia +
+          " " +
+          (ce.apellido_contacto_emergencia || "")
+        ).trim()
       : "",
-    relacion:             ce.parentesco || "",
-    telefono_emergencia:  ce.telefono_contacto_emergencia || "",
+    relacion: ce.parentesco || "",
+    telefono_emergencia: ce.telefono_contacto_emergencia || "",
 
     // Tab 3: Historial
-    id_tipo_sangre:  hist.id_tipo_sangre  ?? "",
-    _antecedentes:   hist.antecedentes_ids ?? [],
-    notas_historial: hist.notas           || "",
+    id_tipo_sangre: hist.id_tipo_sangre ?? "",
+    _antecedentes: hist.antecedentes_ids ?? [],
+    notas_historial: hist.notas || "",
 
     // Tab 4: Anamnesis
-    anam_enfermedades_cronicas:   anam.enfermedades_cronicas   ?? "",
+    anam_enfermedades_cronicas: anam.enfermedades_cronicas ?? "",
     anam_antecedentes_familiares: anam.antecedentes_familiares ?? "",
-    anam_alergia_latex:           anam.alergia_latex           ?? false,
-    anam_salud_general:           anam.salud_general           ?? "",
-    anam_actividad_fisica:        anam.actividad_fisica        ?? "",
-    anam_numero_comidas:          anam.numero_comidas          ?? "",
-    anam_consumo_agua:            anam.consumo_agua            ?? "",
-    anam_toma_alcohol:            anam.toma_alcohol            ?? false,
-    anam_fuma:                    anam.fuma                    ?? false,
-    anam_veces_cepillado:         anam.veces_cepillado         ?? 0,
-    anam_sensibilidad_dental:     anam.sensibilidad_dental     ?? false,
-    anam_bruxismo:                anam.bruxismo                ?? false,
-    anam_ulceras_frecuentes:      anam.ulceras_frecuentes      ?? false,
-    anam_historial_extracciones:  anam.historial_extracciones  ?? "",
+    anam_alergia_latex: anam.alergia_latex ?? false,
+    anam_salud_general: anam.salud_general ?? "",
+    anam_actividad_fisica: anam.actividad_fisica ?? "",
+    anam_numero_comidas: anam.numero_comidas ?? "",
+    anam_consumo_agua: anam.consumo_agua ?? "",
+    anam_toma_alcohol: anam.toma_alcohol ?? false,
+    anam_fuma: anam.fuma ?? false,
+    anam_veces_cepillado: anam.veces_cepillado ?? 0,
+    anam_sensibilidad_dental: anam.sensibilidad_dental ?? false,
+    anam_bruxismo: anam.bruxismo ?? false,
+    anam_ulceras_frecuentes: anam.ulceras_frecuentes ?? false,
+    anam_historial_extracciones: anam.historial_extracciones ?? "",
   };
 }
 
@@ -323,10 +337,12 @@ function abrirModalNuevoPaciente() {
   const inputId = document.querySelector('#formPaciente [name="id"]');
   if (inputId) {
     inputId.disabled = true;
-    inputId.value    = "...";
+    inputId.value = "...";
     fetch(`${API_URL}?modulo=pacientes&accion=next_id`)
       .then((r) => r.json())
-      .then((data) => { if (data.success && inputId) inputId.value = data.next_id; });
+      .then((data) => {
+        if (data.success && inputId) inputId.value = data.next_id;
+      });
   }
 }
 
@@ -335,12 +351,14 @@ function abrirModalVerPaciente(id) {
     const mapped = mapearDatosPaciente(p);
     verEnModal(MODAL_PAC_ID, mapped);
     resetearEstadoModalPaciente();
-    document.getElementById("modalPacienteNumero").textContent      = p.id_paciente_expediente;
-    document.getElementById("formPaciente").dataset.numeroPaciente  = p.numero_paciente;
+    document.getElementById("modalPacienteNumero").textContent =
+      p.id_paciente_expediente;
+    document.getElementById("formPaciente").dataset.numeroPaciente =
+      p.numero_paciente;
     document.querySelector('[name="pais"]').value = "MEXICO";
     iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
-    poblarHistorial(mapped, true);    // true = readonly
+    poblarHistorial(mapped, true); // true = readonly
     poblarAnamnesis(mapped);
   });
 }
@@ -350,22 +368,25 @@ function abrirModalEditarPaciente(id) {
     const mapped = mapearDatosPaciente(p);
     editarEnModal(MODAL_PAC_ID, mapped);
     resetearEstadoModalPaciente();
-    document.getElementById("modalPacienteNumero").textContent      = p.id_paciente_expediente;
-    document.getElementById("formPaciente").dataset.numeroPaciente  = p.numero_paciente;
+    document.getElementById("modalPacienteNumero").textContent =
+      p.id_paciente_expediente;
+    document.getElementById("formPaciente").dataset.numeroPaciente =
+      p.numero_paciente;
     document.querySelector('[name="pais"]').value = "MEXICO";
     iniciarEventosCP();
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
-    poblarHistorial(mapped, false);   // false = editable
+    poblarHistorial(mapped, false); // false = editable
     poblarAnamnesis(mapped);
   });
 }
 
 // ── Guardar paciente ──────────────────────────────────────────────
-document.getElementById("btnGuardarPaciente")
+document
+  .getElementById("btnGuardarPaciente")
   ?.addEventListener("click", async function () {
     const formPaciente = document.getElementById("formPaciente");
     const formContacto = document.getElementById("formContacto");
-    const formData     = new FormData(formPaciente);
+    const formData = new FormData(formPaciente);
     const numeroPaciente = formPaciente.dataset.numeroPaciente || "";
 
     // Campos del tab Contacto
@@ -379,45 +400,98 @@ document.getElementById("btnGuardarPaciente")
     formData.append("accion", numeroPaciente ? "update" : "create");
     if (numeroPaciente) formData.append("numero_paciente", numeroPaciente);
 
-    const nombre = formData.get("nombre")?.trim()           || "";
-    const apPat  = formData.get("apellido_paterno")?.trim() || "";
-    const apMat  = formData.get("apellido_materno")?.trim() || "";
+    const nombre = formData.get("nombre")?.trim() || "";
+    const apPat = formData.get("apellido_paterno")?.trim() || "";
+    const apMat = formData.get("apellido_materno")?.trim() || "";
 
     // ── Validaciones ──────────────────────────────────────────────
     const reglas = [
-      { name: "id_paciente_expediente", label: "No. Expediente",     requerido: false,
-        regex: /^\d+$/, msgRegex: "El No. Expediente solo debe contener números" },
-      { name: "nombre",           label: "Nombre(s)",         requerido: true,
-        regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/, msgRegex: "El Nombre solo debe contener letras" },
-      { name: "apellido_paterno", label: "Apellido paterno",  requerido: true,
-        regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/, msgRegex: "El Apellido paterno solo debe contener letras" },
-      { name: "apellido_materno", label: "Apellido materno",  requerido: false,
-        regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/, msgRegex: "El Apellido materno solo debe contener letras" },
-      { name: "fecha_nacimiento", label: "Fecha de nacimiento", requerido: true,
+      {
+        name: "id_paciente_expediente",
+        label: "No. Expediente",
+        requerido: false,
+        regex: /^\d+$/,
+        msgRegex: "El No. Expediente solo debe contener números",
+      },
+      {
+        name: "nombre",
+        label: "Nombre(s)",
+        requerido: true,
+        regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/,
+        msgRegex: "El Nombre solo debe contener letras",
+      },
+      {
+        name: "apellido_paterno",
+        label: "Apellido paterno",
+        requerido: true,
+        regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/,
+        msgRegex: "El Apellido paterno solo debe contener letras",
+      },
+      {
+        name: "apellido_materno",
+        label: "Apellido materno",
+        requerido: false,
+        regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/,
+        msgRegex: "El Apellido materno solo debe contener letras",
+      },
+      {
+        name: "fecha_nacimiento",
+        label: "Fecha de nacimiento",
+        requerido: true,
         validar: (valor) => {
-          const fecha  = new Date(valor);
-          const hoy    = new Date();
-          const minima = new Date(); minima.setFullYear(hoy.getFullYear() - 120);
-          if (fecha >= hoy)    return "La fecha de nacimiento no puede ser futura";
-          if (fecha < minima)  return "La fecha de nacimiento no es válida";
+          const fecha = new Date(valor);
+          const hoy = new Date();
+          const minima = new Date();
+          minima.setFullYear(hoy.getFullYear() - 120);
+          if (fecha >= hoy) return "La fecha de nacimiento no puede ser futura";
+          if (fecha < minima) return "La fecha de nacimiento no es válida";
           return null;
-        }},
-      { name: "codigo_postal",   label: "Código postal",      requerido: false,
-        regex: /^\d{5}$/, msgRegex: "El Código postal debe tener exactamente 5 dígitos" },
-      { name: "email",           label: "Correo electrónico", requerido: false,
-        regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, msgRegex: "El formato del correo no es válido" },
-      { name: "telefono",        label: "Teléfono",           requerido: false,
-        regex: /^\d{10}$/, msgRegex: "El Teléfono debe tener exactamente 10 dígitos" },
-      { name: "telefono_emergencia", label: "Teléfono de emergencia", requerido: false,
-        regex: /^\d{10}$/, msgRegex: "El Teléfono de emergencia debe tener exactamente 10 dígitos" },
-      { name: "contacto_emergencia", label: "Nombre del contacto de emergencia", requerido: false,
-        regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/, msgRegex: "El nombre del contacto solo debe contener letras" },
+        },
+      },
+      {
+        name: "codigo_postal",
+        label: "Código postal",
+        requerido: false,
+        regex: /^\d{5}$/,
+        msgRegex: "El Código postal debe tener exactamente 5 dígitos",
+      },
+      {
+        name: "email",
+        label: "Correo electrónico",
+        requerido: false,
+        regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        msgRegex: "El formato del correo no es válido",
+      },
+      {
+        name: "telefono",
+        label: "Teléfono",
+        requerido: false,
+        regex: /^\d{10}$/,
+        msgRegex: "El Teléfono debe tener exactamente 10 dígitos",
+      },
+      {
+        name: "telefono_emergencia",
+        label: "Teléfono de emergencia",
+        requerido: false,
+        regex: /^\d{10}$/,
+        msgRegex: "El Teléfono de emergencia debe tener exactamente 10 dígitos",
+      },
+      {
+        name: "contacto_emergencia",
+        label: "Nombre del contacto de emergencia",
+        requerido: false,
+        regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/,
+        msgRegex: "El nombre del contacto solo debe contener letras",
+      },
     ];
 
     for (const regla of reglas) {
       const valor = formData.get(regla.name)?.trim() || "";
       if (regla.requerido && !valor) {
-        CatalogTable.showNotification(`El campo "${regla.label}" es obligatorio`, "error");
+        CatalogTable.showNotification(
+          `El campo "${regla.label}" es obligatorio`,
+          "error",
+        );
         document.querySelector(`[name="${regla.name}"]`)?.focus();
         return;
       }
@@ -442,17 +516,18 @@ document.getElementById("btnGuardarPaciente")
     // Verificar duplicados
     if (nombre && apPat) {
       try {
-        const res  = await fetch(
+        const res = await fetch(
           `${API_URL}?modulo=pacientes&accion=check_duplicado` +
-          `&nombre=${encodeURIComponent(nombre)}` +
-          `&apellido_paterno=${encodeURIComponent(apPat)}` +
-          `&apellido_materno=${encodeURIComponent(apMat)}` +
-          `&excluir=${numeroPaciente}`
+            `&nombre=${encodeURIComponent(nombre)}` +
+            `&apellido_paterno=${encodeURIComponent(apPat)}` +
+            `&apellido_materno=${encodeURIComponent(apMat)}` +
+            `&excluir=${numeroPaciente}`,
         );
         const data = await res.json();
         if (data.duplicado) {
           CatalogTable.showNotification(
-            `Ya existe un paciente con el nombre "${nombre} ${apPat} ${apMat}"`, "error"
+            `Ya existe un paciente con el nombre "${nombre} ${apPat} ${apMat}"`,
+            "error",
           );
           return;
         }
@@ -460,6 +535,17 @@ document.getElementById("btnGuardarPaciente")
         CatalogTable.showNotification("Error al validar duplicados", "error");
         return;
       }
+    }
+
+    // Separar contacto_emergencia (nombre completo) en contacto_nombre y contacto_apellido
+    const contactoCompleto = formData.get("contacto_emergencia")?.trim() || "";
+    if (contactoCompleto) {
+      const partes = contactoCompleto.split(" ");
+      const contactoNombre = partes.slice(0, -1).join(" ") || partes[0]; // todo menos último
+      const contactoApellido =
+        partes.length > 1 ? partes[partes.length - 1] : "";
+      formData.append("contacto_nombre", contactoNombre);
+      formData.append("contacto_apellido", contactoApellido);
     }
 
     CatalogTable.showLoading(true);
@@ -475,7 +561,10 @@ document.getElementById("btnGuardarPaciente")
           cerrarModal(MODAL_PAC_ID);
           buscarPacientes();
         } else {
-          CatalogTable.showNotification(data.message || "Error al guardar", "error");
+          CatalogTable.showNotification(
+            data.message || "Error al guardar",
+            "error",
+          );
         }
       })
       .catch(() => {
@@ -497,7 +586,7 @@ function cargarCatalogosHistorial() {
         selectSangre.innerHTML = '<option value="">Seleccionar</option>';
         data.tipos_sangre.forEach((ts) => {
           const opt = document.createElement("option");
-          opt.value       = ts.id_tipo_sangre;
+          opt.value = ts.id_tipo_sangre;
           opt.textContent = ts.tipo_sangre;
           selectSangre.appendChild(opt);
         });
@@ -551,27 +640,45 @@ function recolectarHistorial(formData) {
 
 // ── Tab Anamnesis ─────────────────────────────────────────────────
 function poblarAnamnesis(datos) {
-  ["antecedentes_familiares","salud_general",
-   "actividad_fisica","consumo_agua","historial_extracciones"].forEach((campo) => {
+  [
+    "antecedentes_familiares",
+    "salud_general",
+    "actividad_fisica",
+    "consumo_agua",
+    "historial_extracciones",
+  ].forEach((campo) => {
     const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
     if (el) el.value = datos[`anam_${campo}`] ?? "";
   });
 
-  const numComidas = document.querySelector('#tabAnamnesis [name="numero_comidas"]');
+  const numComidas = document.querySelector(
+    '#tabAnamnesis [name="numero_comidas"]',
+  );
   if (numComidas) numComidas.value = datos.anam_numero_comidas ?? "";
 
-  const vecesCep = document.querySelector('#tabAnamnesis [name="veces_cepillado"]');
+  const vecesCep = document.querySelector(
+    '#tabAnamnesis [name="veces_cepillado"]',
+  );
   if (vecesCep) vecesCep.value = datos.anam_veces_cepillado ?? 0;
 
-  ["alergia_latex","toma_alcohol","fuma","sensibilidad_dental",
-   "bruxismo","ulceras_frecuentes"].forEach((campo) => {
+  [
+    "alergia_latex",
+    "toma_alcohol",
+    "fuma",
+    "sensibilidad_dental",
+    "bruxismo",
+    "ulceras_frecuentes",
+  ].forEach((campo) => {
     const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
     if (el) el.checked = !!datos[`anam_${campo}`];
   });
 }
 
 function limpiarAnamnesis() {
-  document.querySelectorAll("#tabAnamnesis input, #tabAnamnesis select, #tabAnamnesis textarea")
+  document
+    .querySelectorAll(
+      "#tabAnamnesis input, #tabAnamnesis select, #tabAnamnesis textarea",
+    )
     .forEach((el) => {
       if (el.type === "checkbox") el.checked = false;
       else el.value = "";
@@ -579,76 +686,142 @@ function limpiarAnamnesis() {
 }
 
 function recolectarAnamnesis(formData) {
-  ["enfermedades_cronicas","antecedentes_familiares","salud_general","actividad_fisica",
-   "consumo_agua","historial_extracciones","numero_comidas","veces_cepillado"].forEach((campo) => {
+  [
+    "enfermedades_cronicas",
+    "antecedentes_familiares",
+    "salud_general",
+    "actividad_fisica",
+    "consumo_agua",
+    "historial_extracciones",
+    "numero_comidas",
+    "veces_cepillado",
+  ].forEach((campo) => {
     const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
     if (el && !formData.has(campo)) formData.append(campo, el.value ?? "");
   });
 
-  ["alergia_latex","toma_alcohol","fuma","sensibilidad_dental","bruxismo","ulceras_frecuentes"]
-    .forEach((campo) => {
-      const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
-      if (!formData.has(campo)) formData.append(campo, el && el.checked ? "1" : "0");
-    });
+  [
+    "alergia_latex",
+    "toma_alcohol",
+    "fuma",
+    "sensibilidad_dental",
+    "bruxismo",
+    "ulceras_frecuentes",
+  ].forEach((campo) => {
+    const el = document.querySelector(`#tabAnamnesis [name="${campo}"]`);
+    if (!formData.has(campo))
+      formData.append(campo, el && el.checked ? "1" : "0");
+  });
 }
 
 function validarAnamnesis() {
   const reglas = [
-    { name: "enfermedades_cronicas",   label: "Enfermedades crónicas",    requerido: false,
+    {
+      name: "enfermedades_cronicas",
+      label: "Enfermedades crónicas",
+      requerido: false,
       regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s,.()\-\/]+$/u,
-      msgRegex: 'El campo "Enfermedades crónicas" contiene caracteres no permitidos' },
-    { name: "antecedentes_familiares", label: "Antecedentes familiares",  requerido: false,
+      msgRegex:
+        'El campo "Enfermedades crónicas" contiene caracteres no permitidos',
+    },
+    {
+      name: "antecedentes_familiares",
+      label: "Antecedentes familiares",
+      requerido: false,
       regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s,.()\-\/]+$/u,
-      msgRegex: 'El campo "Antecedentes familiares" contiene caracteres no permitidos' },
-    { name: "salud_general",  label: "Salud general",  requerido: false,
-      validar: (v) => ["","mala","buena","muy_buena","excelente"].includes(v)
-        ? null : 'Selecciona una opción válida para "Salud general"' },
-    { name: "actividad_fisica", label: "Actividad física", requerido: false,
-      validar: (v) => ["","sedentario","ligero","activo","muy_activo"].includes(v)
-        ? null : 'Selecciona una opción válida para "Actividad física"' },
-    { name: "consumo_agua", label: "Consumo de agua", requerido: false,
-      validar: (v) => ["","muy_poca","poca","regular","mucha"].includes(v)
-        ? null : 'Selecciona una opción válida para "Consumo de agua"' },
-    { name: "numero_comidas", label: "Número de comidas al día", requerido: false,
+      msgRegex:
+        'El campo "Antecedentes familiares" contiene caracteres no permitidos',
+    },
+    {
+      name: "salud_general",
+      label: "Salud general",
+      requerido: false,
+      validar: (v) =>
+        ["", "mala", "buena", "muy_buena", "excelente"].includes(v)
+          ? null
+          : 'Selecciona una opción válida para "Salud general"',
+    },
+    {
+      name: "actividad_fisica",
+      label: "Actividad física",
+      requerido: false,
+      validar: (v) =>
+        ["", "sedentario", "ligero", "activo", "muy_activo"].includes(v)
+          ? null
+          : 'Selecciona una opción válida para "Actividad física"',
+    },
+    {
+      name: "consumo_agua",
+      label: "Consumo de agua",
+      requerido: false,
+      validar: (v) =>
+        ["", "muy_poca", "poca", "regular", "mucha"].includes(v)
+          ? null
+          : 'Selecciona una opción válida para "Consumo de agua"',
+    },
+    {
+      name: "numero_comidas",
+      label: "Número de comidas al día",
+      requerido: false,
       validar: (v) => {
         if (!v) return null;
         const n = parseInt(v, 10);
-        if (isNaN(n) || !Number.isInteger(n)) return 'El campo "Número de comidas" debe ser un número entero';
-        if (n < 1 || n > 10) return 'El campo "Número de comidas" debe estar entre 1 y 10';
+        if (isNaN(n) || !Number.isInteger(n))
+          return 'El campo "Número de comidas" debe ser un número entero';
+        if (n < 1 || n > 10)
+          return 'El campo "Número de comidas" debe estar entre 1 y 10';
         return null;
-      }},
-    { name: "veces_cepillado", label: "Veces que se cepilla al día", requerido: false,
+      },
+    },
+    {
+      name: "veces_cepillado",
+      label: "Veces que se cepilla al día",
+      requerido: false,
       validar: (v) => {
         if (!v && v !== "0") return null;
         const n = parseInt(v, 10);
-        if (isNaN(n) || !Number.isInteger(n)) return 'El campo "Veces que se cepilla" debe ser un número entero';
-        if (n < 0 || n > 10) return 'El campo "Veces que se cepilla" debe estar entre 0 y 10';
+        if (isNaN(n) || !Number.isInteger(n))
+          return 'El campo "Veces que se cepilla" debe ser un número entero';
+        if (n < 0 || n > 10)
+          return 'El campo "Veces que se cepilla" debe estar entre 0 y 10';
         return null;
-      }},
-    { name: "historial_extracciones", label: "Historial de extracciones", requerido: false,
+      },
+    },
+    {
+      name: "historial_extracciones",
+      label: "Historial de extracciones",
+      requerido: false,
       regex: /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s,.()\-\/]+$/u,
-      msgRegex: 'El campo "Historial de extracciones" contiene caracteres no permitidos' },
+      msgRegex:
+        'El campo "Historial de extracciones" contiene caracteres no permitidos',
+    },
   ];
 
   for (const regla of reglas) {
-    const el    = document.querySelector(`#tabAnamnesis [name="${regla.name}"]`);
+    const el = document.querySelector(`#tabAnamnesis [name="${regla.name}"]`);
     const valor = el ? el.value.trim() : "";
 
     if (regla.requerido && !valor) {
-      CatalogTable.showNotification(`El campo "${regla.label}" es obligatorio`, "error");
-      el?.focus(); cambiarTab("modalPaciente", "tabAnamnesis");
+      CatalogTable.showNotification(
+        `El campo "${regla.label}" es obligatorio`,
+        "error",
+      );
+      el?.focus();
+      cambiarTab("modalPaciente", "tabAnamnesis");
       return false;
     }
     if (valor && regla.regex && !regla.regex.test(valor)) {
       CatalogTable.showNotification(regla.msgRegex, "error");
-      el?.focus(); cambiarTab("modalPaciente", "tabAnamnesis");
+      el?.focus();
+      cambiarTab("modalPaciente", "tabAnamnesis");
       return false;
     }
     if (regla.validar) {
       const error = regla.validar(valor);
       if (error) {
         CatalogTable.showNotification(error, "error");
-        el?.focus(); cambiarTab("modalPaciente", "tabAnamnesis");
+        el?.focus();
+        cambiarTab("modalPaciente", "tabAnamnesis");
         return false;
       }
     }
@@ -662,10 +835,10 @@ function cambiarEstatusPaciente(id, nuevoEstatus, nombre) {
   if (!confirm(`¿Deseas ${accion} al paciente "${nombre}"?`)) return;
 
   const formData = new FormData();
-  formData.append("modulo",          "pacientes");
-  formData.append("accion",          "status");
+  formData.append("modulo", "pacientes");
+  formData.append("accion", "status");
   formData.append("numero_paciente", id);
-  formData.append("id_estatus",      nuevoEstatus);
+  formData.append("id_estatus", nuevoEstatus);
 
   CatalogTable.showLoading(true);
 
@@ -677,7 +850,10 @@ function cambiarEstatusPaciente(id, nuevoEstatus, nombre) {
         CatalogTable.showNotification(data.message, "success");
         buscarPacientes();
       } else {
-        CatalogTable.showNotification(data.message || "Error al cambiar estatus", "error");
+        CatalogTable.showNotification(
+          data.message || "Error al cambiar estatus",
+          "error",
+        );
       }
     })
     .catch(() => {
@@ -694,11 +870,15 @@ function cargarCPyPreseleccionar(codigoPostal, coloniaActual) {
     .then((r) => r.json())
     .then((data) => {
       if (!data.success) return;
-      document.getElementById("inputEstado").value    = normalizar(data.estado);
-      document.getElementById("inputMunicipio").value = normalizar(data.municipio);
+      document.getElementById("inputEstado").value = normalizar(data.estado);
+      document.getElementById("inputMunicipio").value = normalizar(
+        data.municipio,
+      );
       document.getElementById("listaColonias").innerHTML = data.colonias
         .map((c) => `<option value="${normalizar(c.colonia)}">`)
         .join("");
-      document.getElementById("inputColonia").value = normalizar(coloniaActual || "");
+      document.getElementById("inputColonia").value = normalizar(
+        coloniaActual || "",
+      );
     });
 }
