@@ -575,14 +575,14 @@ class Reporte
     // HELPERS
     // ─────────────────────────────────────────────────────────────────────────
 
-    private function _query(string $sql, array $params): array
+    private function _query(string $sql, array $params = []): array
     {
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    private function _row(string $sql, array $params): array
+    private function _row(string $sql, array $params = []): array
     {
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
