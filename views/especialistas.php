@@ -172,7 +172,7 @@ include '../includes/sidebar.php';
                                                 <?php echo $activo ? 2 : 1; ?>,
                                                 '<?php echo htmlspecialchars($e['nombre_completo']); ?>'
                                             )">
-                                            <i class="ri-delete-bin-6-line"></i>
+                                            <i class="ri-<?php echo $activo ? 'forbid' : 'check'; ?>-line"></i>
                                         </button>
                                     </div>
                                 </td>

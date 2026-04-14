@@ -87,11 +87,11 @@ include '../includes/sidebar.php';
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="col-id"     data-sort="id_proveedor">NO.</th>
-                            <th class="col-rfc"    data-sort="rfc">RFC</th>
-                            <th class="col-name"   data-sort="razon_social">RAZÓN SOCIAL</th>
-                            <th                    data-sort="tipo_persona">TIPO<br>PERSONA</th>
-                            <th                    data-sort="tipo_producto_proveedor">TIPO<br>PRODUCTO/SERVICIO</th>
+                            <th class="col-id" data-sort="id_proveedor">NO.</th>
+                            <th class="col-rfc" data-sort="rfc">RFC</th>
+                            <th class="col-name" data-sort="razon_social">RAZÓN SOCIAL</th>
+                            <th data-sort="tipo_persona">TIPO<br>PERSONA</th>
+                            <th data-sort="tipo_producto_proveedor">TIPO<br>PRODUCTO/SERVICIO</th>
                             <th class="col-tel">TELÉFONO</th>
                             <th class="col-email">CORREO</th>
                             <th class="col-status" data-sort="estatus">ESTATUS</th>
