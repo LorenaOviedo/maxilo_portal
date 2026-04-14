@@ -14,6 +14,8 @@ if (!$auth->verificarSesion()) {
  
 // Verificar permiso específico al módulo
 verificarPermiso('reportes');
+
+$catalogos = $model->getCatalogos();
  
 $page_title = 'Reportes';
 $page_css   = ['reportes.css'];
