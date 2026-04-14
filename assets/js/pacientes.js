@@ -371,8 +371,8 @@ function abrirModalVerPaciente(id) {
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
     poblarHistorial(mapped, true);
     poblarAnamnesis(mapped);
-    // Poblar contacto después de que setReadOnly termine
-    setTimeout(() => poblarContacto(mapped), 50);
+    // Poblar contacto después de que el modal termine de renderizar
+    setTimeout(() => poblarContacto(mapped), 300);
   });
 }
  
@@ -388,8 +388,8 @@ function abrirModalEditarPaciente(id) {
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
     poblarHistorial(mapped, false);
     poblarAnamnesis(mapped);
-    // Poblar contacto después de que setReadOnly termine
-    setTimeout(() => poblarContacto(mapped), 50);
+    // Poblar contacto después de que el modal termine de renderizar
+    setTimeout(() => poblarContacto(mapped), 300);
   });
 }
  
