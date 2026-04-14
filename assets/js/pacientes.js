@@ -253,6 +253,7 @@ function mapearDatosPaciente(p) {
   const email = (p.contactos || [])
     .find((c) => parseInt(c.id_tipo_contacto) === 6)?.valor || "";
   const ce   = p.contacto_emergencia || {};
+  console.log('mapearDatosPaciente ce:', ce);
   const hist = p.historial           || {};
   const anam = p.anamnesis           || {};
  
