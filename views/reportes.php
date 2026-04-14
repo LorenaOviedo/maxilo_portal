@@ -19,15 +19,17 @@ $page_title = 'Reportes';
 $page_css   = ['reportes.css'];
 $page_js    = [];
  
-$db = getDB();
-$model = new Reporte($db);
-$catalogos = $model->getCatalogos();
- 
 include '../includes/header.php';
 include '../includes/sidebar.php';
 ?>
  
 <main class="main-content">
+ 
+    <nav class="breadcrumb">
+        <div class="breadcrumb-item">
+            <span class="breadcrumb-current">Reportes</span>
+        </div>
+    </nav>
  
     <div class="page-header">
         <h1>Reportes</h1>
@@ -70,6 +72,7 @@ include '../includes/sidebar.php';
                     <div class="date-input-wrapper">
                         <input type="date" id="fechaInicio" class="filter-date" value="<?php echo date('Y-m-01'); ?>">
                     </div>
+                    <span class="date-separator">—</span>
                     <div class="date-input-wrapper">
                         <input type="date" id="fechaFin" class="filter-date" value="<?php echo date('Y-m-t'); ?>">
                     </div>
@@ -77,7 +80,7 @@ include '../includes/sidebar.php';
             </div>
         </div>
  
-        <!-- Filtros según tipo de reporte -->
+        <!-- Filtros contextuales según tipo de reporte -->
         <div id="filtrosExtra" style="display:none;">
             <div class="filters-row" style="padding-top:12px;border-top:1px solid #f1f3f5;margin-top:4px;">
  
@@ -156,6 +159,17 @@ include '../includes/sidebar.php';
                                    background:#fff; border:1px solid #dee2e6; border-top:none;
                                    border-radius:0 0 8px 8px; box-shadow:0 4px 12px rgba(0,0,0,.1);
                                    max-height:220px; overflow-y:auto; z-index:1000;"></div>
+                    </div>
+                </div>
+ 
+                <!-- Inventario: tipo movimiento -->
+                <div class="filter-group" id="filtroTipoMovimiento" style="display:none;">
+                    <label class="filter-label">Tipo de movimiento</label>
+                    <div class="select-wrapper">
+                        <select id="rptTipoMovimiento" class="filter-select">
+                            <option value="">Todos</option>
+                        </select>
+                        <i class="ri-arrow-down-s-line select-icon"></i>
                     </div>
                 </div>
  

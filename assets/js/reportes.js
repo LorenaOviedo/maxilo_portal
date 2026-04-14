@@ -353,9 +353,10 @@ const reporteController = {
     // ─────────────────────────────────────────────────────────────────────
  
     _filtrosConfig: {
-        citas:    ['filtroPaciente', 'filtroEspecialista', 'filtroEstatusCita'],
-        pagos:    ['filtroMetodoPago', 'filtroEstatusPago'],
-        facturas: ['filtroPacienteFactura', 'filtroEstatusFactura'],
+        citas:      ['filtroPaciente', 'filtroEspecialista', 'filtroEstatusCita'],
+        pagos:      ['filtroMetodoPago', 'filtroEstatusPago'],
+        facturas:   ['filtroPacienteFactura', 'filtroEstatusFactura'],
+        inventario: ['filtroTipoMovimiento'],
     },
  
     inicializarFiltros() {
@@ -376,6 +377,10 @@ const reporteController = {
         // Estatus factura
         this._poblarSelect('rptEstatusFactura', CATALOGOS_RPT.estatusFactura,
             'id_estatus_factura', 'estatus_factura', 'Todos');
+ 
+        // Tipos de movimiento
+        this._poblarSelect('rptTipoMovimiento', CATALOGOS_RPT.tiposMovimiento,
+            'id_tipo_movimiento', 'tipo_movimiento', 'Todos');
  
         // Buscadores de paciente
         this._bindPacienteSearch('rptPacienteInput',    'rptPacienteValue',    'rptPacienteDropdown');
@@ -460,7 +465,8 @@ const reporteController = {
         // Ocultar todos primero
         const todos = ['filtroPaciente','filtroEspecialista','filtroEstatusCita',
                        'filtroMetodoPago','filtroEstatusPago',
-                       'filtroPacienteFactura','filtroEstatusFactura'];
+                       'filtroPacienteFactura','filtroEstatusFactura',
+                       'filtroTipoMovimiento'];
         todos.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.style.display = 'none';
@@ -472,7 +478,8 @@ const reporteController = {
             if (el) el.value = '';
         });
         ['rptPacienteValue','rptPacienteFactValue','rptEspecialista',
-         'rptEstatusCita','rptMetodoPago','rptEstatusPago','rptEstatusFactura']
+         'rptEstatusCita','rptMetodoPago','rptEstatusPago',
+         'rptEstatusFactura','rptTipoMovimiento']
             .forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = '';
@@ -509,6 +516,9 @@ const reporteController = {
         if (met)  params.id_metodo_pago    = met;
         if (estP) params.estatus           = estP;
         if (estF) params.id_estatus_factura= estF;
+ 
+        const tipoMov = document.getElementById('rptTipoMovimiento')?.value;
+        if (tipoMov) params.id_tipo_movimiento = tipoMov;
  
         return params;
     },

@@ -979,6 +979,8 @@ switch ($accion) {
             $extra['estatus'] = trim($_GET['estatus']);
         if (!empty($_GET['id_estatus_factura']))
             $extra['id_estatus_factura'] = (int) $_GET['id_estatus_factura'];
+        if (!empty($_GET['id_tipo_movimiento']))
+            $extra['id_tipo_movimiento'] = (int) $_GET['id_tipo_movimiento'];
         // Catálogos
         if ($tipo === 'catalogos') {
             responder(true, 'OK', $model->getCatalogos());
