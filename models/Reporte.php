@@ -452,6 +452,126 @@ class Reporte
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    // REPORTE: FACTURAS
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private function _facturas(string $desde, string $hasta, array $extra = []): array
+    {
+        $condExtra = '';
+        $paramsFact = [':d' => $desde, ':h' => $hasta];
+
+        if (!empty($extra['numero_paciente'])) {
+            $condExtra .= ' AND pac.numero_paciente = :num_pac';
+            $paramsFact[':num_pac'] = (int) $extra['numero_paciente'];
+        }
+        if (!empty($extra['id_estatus_factura'])) {
+            $condExtra .= ' AND sf.id_estatus_factura = :id_est';
+            $paramsFact[':id_est'] = (int) $extra['id_estatus_factura'];
+        }
+
+        // Resumen — pendientes siempre + timbradas del período
+        $resumen = $this->_row("
+            SELECT
+                COUNT(*)                                                AS total,
+                SUM(ef.estatus_factura LIKE '%timb%'
+                    OR ef.estatus_factura LIKE '%complet%'
+                    OR ef.estatus_factura LIKE '%emitid%')              AS timbradas,
+                SUM(ef.estatus_factura LIKE '%pendiente%')              AS pendientes,
+                COALESCE(SUM(pg.monto_neto), 0)                        AS monto_total
+            FROM  solicitudfactura  sf
+            JOIN  estadosfactura    ef  ON ef.id_estatus_factura   = sf.id_estatus_factura
+            JOIN  pago              pg  ON pg.id_pago              = sf.id_pago
+            JOIN  datosfacturacion  df  ON df.id_datos_facturacion = sf.id_datos_facturacion
+            JOIN  cita              c   ON c.id_cita               = pg.id_cita
+            JOIN  paciente          pac ON pac.numero_paciente      = c.numero_paciente
+            WHERE (
+                ef.estatus_factura LIKE '%pendiente%'
+                OR DATE(sf.fecha_solicitud) BETWEEN :d AND :h
+            )
+            $condExtra
+        ", $paramsFact);
+
+        // Detalle
+        $paramsFact2 = [':d2' => $desde, ':h2' => $hasta];
+        if (!empty($extra['numero_paciente'])) {
+            $paramsFact2[':num_pac'] = (int) $extra['numero_paciente'];
+        }
+        if (!empty($extra['id_estatus_factura'])) {
+            $paramsFact2[':id_est'] = (int) $extra['id_estatus_factura'];
+        }
+
+        $filas = $this->_query("
+            SELECT
+                sf.id_solicitud_factura,
+                DATE(sf.fecha_solicitud)        AS fecha_solicitud,
+                sf.cfdi,
+                sf.folio_fiscal,
+                sf.fecha_facturacion,
+                ef.estatus_factura,
+                df.rfc,
+                df.razon_social,
+                pg.numero_recibo,
+                pg.monto_neto,
+                pg.fecha_pago,
+                TRIM(CONCAT(pac.nombre,' ',pac.apellido_paterno,' ',
+                    COALESCE(pac.apellido_materno,'')))                 AS paciente
+            FROM  solicitudfactura  sf
+            JOIN  estadosfactura    ef  ON ef.id_estatus_factura   = sf.id_estatus_factura
+            JOIN  datosfacturacion  df  ON df.id_datos_facturacion = sf.id_datos_facturacion
+            JOIN  pago              pg  ON pg.id_pago              = sf.id_pago
+            JOIN  cita              c   ON c.id_cita               = pg.id_cita
+            JOIN  paciente          pac ON pac.numero_paciente      = c.numero_paciente
+            WHERE (
+                ef.estatus_factura LIKE '%pendiente%'
+                OR DATE(sf.fecha_solicitud) BETWEEN :d2 AND :h2
+            )
+            $condExtra
+            ORDER BY
+                ef.estatus_factura LIKE '%pendiente%' DESC,
+                sf.fecha_solicitud DESC
+        ", $paramsFact2);
+
+        return [
+            'tipo' => 'facturas',
+            'titulo' => 'Reporte de Facturas',
+            'resumen' => [
+                ['label' => 'Total solicitudes', 'valor' => $resumen['total'] ?? 0],
+                ['label' => 'Timbradas', 'valor' => $resumen['timbradas'] ?? 0],
+                ['label' => 'Pendientes', 'valor' => $resumen['pendientes'] ?? 0],
+                ['label' => 'Monto total', 'valor' => '$' . number_format((float) ($resumen['monto_total'] ?? 0), 2)],
+            ],
+            'columnas' => [
+                'Folio solicitud',
+                'Fecha solicitud',
+                'Paciente',
+                'RFC',
+                'Razón social',
+                'CFDI',
+                'Recibo',
+                'Monto',
+                'Fecha pago',
+                'Folio fiscal',
+                'Fecha timbrado',
+                'Estatus',
+            ],
+            'filas' => array_map(fn($r) => [
+                $r['id_solicitud_factura'],
+                $r['fecha_solicitud'] ? date('d/m/Y', strtotime($r['fecha_solicitud'])) : '—',
+                $r['paciente'],
+                $r['rfc'],
+                $r['razon_social'],
+                $r['cfdi'] ?? '—',
+                $r['numero_recibo'],
+                '$' . number_format((float) $r['monto_neto'], 2),
+                $r['fecha_pago'] ? date('d/m/Y', strtotime($r['fecha_pago'])) : '—',
+                $r['folio_fiscal'] ?? '—',
+                $r['fecha_facturacion'] ? date('d/m/Y H:i', strtotime($r['fecha_facturacion'])) : '—',
+                $r['estatus_factura'],
+            ], $filas),
+        ];
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // HELPERS
     // ─────────────────────────────────────────────────────────────────────────
 
