@@ -731,7 +731,7 @@ $modal_id = 'modalPaciente';
                                             <!-- Procedimiento -->
                                             <div class="registro-procedimiento" v-if="reg.nombre_procedimiento &&
                                                       reg.nombre_procedimiento !== 'Sin procedimiento asignado'">
-                                                <i class="fa fa-plus-square"
+                                                <i class="fas fa-stethoscope"
                                                     style="font-size:9px; margin-right:3px;"></i>
                                                 {{ reg.nombre_procedimiento }}
                                             </div>
