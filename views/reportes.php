@@ -15,6 +15,8 @@ if (!$auth->verificarSesion()) {
 // Verificar permiso específico al módulo
 verificarPermiso('reportes');
 
+$db = getDB();
+$model = new Reporte($db);
 $catalogos = $model->getCatalogos();
  
 $page_title = 'Reportes';
