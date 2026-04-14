@@ -132,6 +132,13 @@ const odontogramaController = {
         // de pacienteId que puede cambiar entre pacientes
         const pacienteId = numeroPaciente;
  
+        // Guardar template HTML antes de que Vue lo consuma
+        const appEl0 = document.getElementById('app-odontograma');
+        if (appEl0 && !appEl0.dataset.templateGuardado) {
+            appEl0.dataset.templateGuardado = 'true';
+            appEl0._templateOriginal = appEl0.innerHTML;
+        }
+ 
         this._appInstance = createApp({
             setup() {
  
@@ -304,13 +311,14 @@ const odontogramaController = {
             },
         });
  
-        // Crear div hijo limpio como target para evitar conflictos de Vue
+        // Restaurar template original y montar Vue en #app-odontograma
         const appEl = document.getElementById('app-odontograma');
         if (!appEl) { console.error('No se encontró #app-odontograma'); return; }
-        appEl.innerHTML = '';
-        const target = document.createElement('div');
-        appEl.appendChild(target);
-        this._appInstance.mount(target);
+        // Restaurar HTML original para que Vue tenga el template
+        if (appEl._templateOriginal) {
+            appEl.innerHTML = appEl._templateOriginal;
+        }
+        this._appInstance.mount(appEl);
     },
  
     _nextTick(fn) { setTimeout(fn, 0); },
