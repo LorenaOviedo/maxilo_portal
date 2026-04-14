@@ -362,6 +362,7 @@ function abrirModalNuevoPaciente() {
 function abrirModalVerPaciente(id) {
   cargarPaciente(id, (p) => {
     const mapped = mapearDatosPaciente(p);
+    window._pacienteMapped = mapped; // guardar para poblarContacto
     verEnModal(MODAL_PAC_ID, mapped);
     resetearEstadoModalPaciente();
     document.getElementById("modalPacienteNumero").textContent      = p.id_paciente_expediente;
@@ -371,14 +372,14 @@ function abrirModalVerPaciente(id) {
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
     poblarHistorial(mapped, true);
     poblarAnamnesis(mapped);
-    // Poblar contacto después de que el modal termine de renderizar
-    setTimeout(() => poblarContacto(mapped), 300);
+    // poblarContacto se llama desde cambiarTab al ir al tab de contacto
   });
 }
  
 function abrirModalEditarPaciente(id) {
   cargarPaciente(id, (p) => {
     const mapped = mapearDatosPaciente(p);
+    window._pacienteMapped = mapped; // guardar para poblarContacto
     editarEnModal(MODAL_PAC_ID, mapped);
     resetearEstadoModalPaciente();
     document.getElementById("modalPacienteNumero").textContent      = p.id_paciente_expediente;
@@ -388,8 +389,7 @@ function abrirModalEditarPaciente(id) {
     cargarCPyPreseleccionar(p.codigo_postal, p.colonia);
     poblarHistorial(mapped, false);
     poblarAnamnesis(mapped);
-    // Poblar contacto después de que el modal termine de renderizar
-    setTimeout(() => poblarContacto(mapped), 300);
+    // poblarContacto se llama desde cambiarTab al ir al tab de contacto
   });
 }
  
