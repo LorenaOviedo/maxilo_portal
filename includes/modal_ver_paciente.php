@@ -208,8 +208,14 @@ $modal_id = 'modalPaciente';
                     </div>
                     <div class="form-group">
                         <label class="form-label">Relación / Parentesco</label>
-                        <input type="text" name="relacion" class="form-input"
-                            placeholder="Ej: Madre, Hermano, Esposo/a...">
+                        <select name="id_tipo_parentesco" class="form-select">
+                            <option value="">Seleccionar parentesco...</option>
+                            <?php foreach (json_decode($catalogosJson, true)['parentescos'] as $par): ?>
+                                <option value="<?php echo $par['id_tipo_parentesco']; ?>">
+                                    <?php echo htmlspecialchars($par['parentesco']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </div>
  
@@ -731,7 +737,7 @@ $modal_id = 'modalPaciente';
                                             <!-- Procedimiento -->
                                             <div class="registro-procedimiento" v-if="reg.nombre_procedimiento &&
                                                       reg.nombre_procedimiento !== 'Sin procedimiento asignado'">
-                                                <i class="fa fa-plus-square" aria-hidden="true"
+                                                <i class="fas fa-stethoscope"
                                                     style="font-size:9px; margin-right:3px;"></i>
                                                 {{ reg.nombre_procedimiento }}
                                             </div>
@@ -858,11 +864,6 @@ $modal_id = 'modalPaciente';
         // ── cambiarTab ────────────────────────────────────────────────────
         window.cambiarTab = function (modalId, tabId) {
             if (typeof _cambiarTabOrig === 'function') _cambiarTabOrig(modalId, tabId);
- 
-            if (tabId === 'tabContacto') {
-                // Poblar al cambiar tab — el modal ya está listo en este punto
-                if (window._pacienteMapped) poblarContacto(window._pacienteMapped);
-            }
  
             if (tabId === 'tabOdontograma') {
                 const num = document.getElementById('formPaciente')?.dataset?.numeroPaciente;

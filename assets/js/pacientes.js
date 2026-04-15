@@ -280,7 +280,7 @@ function mapearDatosPaciente(p) {
     contacto_emergencia:  ce.nombres_contacto_emergencia
       ? (ce.nombres_contacto_emergencia + " " + (ce.apellido_contacto_emergencia || "")).trim()
       : "",
-    relacion:             ce.parentesco || "",
+    id_tipo_parentesco:   ce.id_tipo_parentesco || "",
     telefono_emergencia:  ce.telefono_contacto_emergencia || "",
  
     // Tab 3: Historial
@@ -316,7 +316,7 @@ function poblarContacto(mapped) {
         'email':                mapped.email               ?? '',
         'telefono':             mapped.telefono            ?? '',
         'contacto_emergencia':  mapped.contacto_emergencia ?? '',
-        'relacion':             mapped.relacion            ?? '',
+        'id_tipo_parentesco':   mapped.id_tipo_parentesco  ?? '',
         'telefono_emergencia':  mapped.telefono_emergencia ?? '',
     };
  
