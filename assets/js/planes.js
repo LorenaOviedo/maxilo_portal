@@ -104,15 +104,14 @@ const planesController = {
                                 onchange="planesController.actualizarEstatus(this)">
                             ${this._optionsEstatus(plan.id_estatus_tratamiento)}
                         </select>
-                        <button class="btn-eliminar-plan" title="Eliminar plan"
+                        <button class="btn-action btn-delete" title="Eliminar plan"
                                 onclick="planesController.eliminarPlan(${plan.id_plan_tratamiento})">
                             <i class="ri-delete-bin-6-line"></i>
                         </button>`
                             : ""
                         }
-                        <button class="btn-imprimir-plan" title="Imprimir plan"
-                                onclick="event.stopPropagation(); planesController.imprimirPlan(${plan.id_plan_tratamiento})"
-                                style="background:none;border:1px solid #dee2e6;border-radius:6px;padding:4px 8px;cursor:pointer;color:#6c757d;font-size:13px;display:inline-flex;align-items:center;gap:4px;">
+                        <button class="btn-action btn-view" title="Imprimir plan"
+                                onclick="event.stopPropagation(); planesController.imprimirPlan(${plan.id_plan_tratamiento})">
                             <i class="ri-printer-line"></i>
                         </button>
                         <i class="ri-arrow-down-s-line plan-accordion-icon"
@@ -231,6 +230,14 @@ const planesController = {
     const plan = (this._planesData || []).find(p => p.id_plan_tratamiento == idPlan);
     if (!plan) return;
  
+    // Obtener nombre del paciente desde los inputs del modal
+    const form   = document.getElementById('formPaciente');
+    const nombre = [
+        form?.querySelector('[name="nombre"]')?.value          || '',
+        form?.querySelector('[name="apellido_paterno"]')?.value || '',
+        form?.querySelector('[name="apellido_materno"]')?.value || '',
+    ].filter(Boolean).join(' ').toUpperCase();
+ 
     const fmt  = n => '$' + parseFloat(n || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 });
     const anio = new Date().getFullYear();
  
@@ -284,6 +291,7 @@ const planesController = {
         'Dr. Alfonso Ayala G&oacute;mez</div></div>' +
         '<div class="titulo">Plan de Tratamiento #' + plan.numero_plan + '</div>' +
         '<div class="info-grid">' +
+        '<div class="info-item"><span class="info-label">Paciente</span><span class="info-value">' + escHtml(nombre || 'No especificado') + '</span></div>' +
         '<div class="info-item"><span class="info-label">Especialista</span><span class="info-value">' + escHtml(plan.especialista) + '</span></div>' +
         '<div class="info-item"><span class="info-label">Fecha de creaci&oacute;n</span><span class="info-value">' + formatFecha(plan.fecha_creacion) + '</span></div>' +
         '<div class="info-item"><span class="info-label">Estatus</span><span class="info-value">' + plan.estatus_tratamiento + '</span></div>' +
