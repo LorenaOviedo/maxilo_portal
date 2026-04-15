@@ -270,6 +270,7 @@ class Paciente
                 ce.nombres_contacto_emergencia,
                 ce.apellido_contacto_emergencia,
                 ce.telefono_contacto_emergencia,
+                COALESCE(ce.id_tipo_parentesco, pce.id_tipo_parentesco) AS id_tipo_parentesco,
                 tp.parentesco
             FROM pacientecontactosemergencia pce
             INNER JOIN contactosemergencia ce ON ce.id_contacto_emergencia = pce.id_contacto_emergencia
