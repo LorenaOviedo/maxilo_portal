@@ -93,19 +93,22 @@ const odontogramaModel = {
   construirArcada(numeros, arcada) {
     return numeros.map(numero => ({
       numero,
-      nombre: this.getNombrePieza(numero),
+      nombre:      this.getNombrePieza(numero),
       arcada,
-      icono:  this._iconoPorNumero(numero),
+      icono:       this._iconoPorNumero(numero),
+      iconoActivo: this._iconoPorNumero(numero, true),
     }));
   },
  
-  _iconoPorNumero(numero) {
+  _iconoPorNumero(numero, activo = false) {
     const base = (typeof ASSETS_URL !== 'undefined') ? ASSETS_URL : '';
-    if ([18,28,38,48].includes(numero))                   return `${base}3molar.png`;
-    if ([16,17,26,27,36,37,46,47].includes(numero))       return `${base}molar.png`;
-    if ([14,15,24,25,34,35,44,45].includes(numero))       return `${base}premolar.png`;
-    if ([13,23,33,43].includes(numero))                   return `${base}canino.png`;
-    return `${base}incisivo.png`;
+    // Las imágenes claras tienen sufijo _clear (ej: molar_clear.png)
+    const suf  = activo ? '_clear' : '';
+    if ([18,28,38,48].includes(numero))                   return `${base}3molar${suf}.png`;
+    if ([16,17,26,27,36,37,46,47].includes(numero))       return `${base}molar${suf}.png`;
+    if ([14,15,24,25,34,35,44,45].includes(numero))       return `${base}premolar${suf}.png`;
+    if ([13,23,33,43].includes(numero))                   return `${base}canino${suf}.png`;
+    return `${base}incisivo${suf}.png`;
   },
  
   // ─────────────────────────────────────────────────────────────────────────

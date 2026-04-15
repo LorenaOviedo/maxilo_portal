@@ -120,10 +120,7 @@ const odontogramaController = {
     },
  
     _montarVue(numeroPaciente) {
-        if (this._appInstance) {
-            try { this._appInstance.unmount(); } catch(e) {}
-            this._appInstance = null;
-        }
+        if (this._appInstance) return;
  
         const { createApp, ref, computed } = Vue;
         const self = this;
@@ -131,13 +128,6 @@ const odontogramaController = {
         // Capturar en variable local para que el closure no dependa
         // de pacienteId que puede cambiar entre pacientes
         const pacienteId = numeroPaciente;
- 
-        // Guardar template HTML antes de que Vue lo consuma
-        const appEl0 = document.getElementById('app-odontograma');
-        if (appEl0 && !appEl0.dataset.templateGuardado) {
-            appEl0.dataset.templateGuardado = 'true';
-            appEl0._templateOriginal = appEl0.innerHTML;
-        }
  
         this._appInstance = createApp({
             setup() {
@@ -309,23 +299,14 @@ const odontogramaController = {
                     toggleEditarEstatus, guardarEstatus,
                 };
             },
-        });
- 
-        // Restaurar template original y montar Vue en #app-odontograma
-        const appEl = document.getElementById('app-odontograma');
-        if (!appEl) { console.error('No se encontró #app-odontograma'); return; }
-        // Restaurar HTML original para que Vue tenga el template
-        if (appEl._templateOriginal) {
-            appEl.innerHTML = appEl._templateOriginal;
-        }
-        this._appInstance.mount(appEl);
+        }).mount('#app-odontograma');
     },
  
-    _nextTick(fn) { setTimeout(fn, 0); },
+    _nextTick(fn) { setTimeout(fn, 50); },
  
     _desmontar() {
         if (this._appInstance) {
-            try { this._appInstance.unmount(); } catch(e) {}
+            this._appInstance.unmount();
             this._appInstance = null;
         }
     },
