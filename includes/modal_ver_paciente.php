@@ -6,10 +6,10 @@ $modal_id = 'modalPaciente';
 <script>
     const ASSETS_URL = '<?php echo asset('img/odontograma/'); ?>';
 </script>
- 
+
 <!-- Overlay -->
 <div id="<?php echo $modal_id; ?>-overlay" class="modal-overlay"></div>
- 
+
 <!-- Contenedor del modal-->
 <div id="<?php echo $modal_id; ?>" class="modal-container">
     <!-- Header -->
@@ -29,7 +29,7 @@ $modal_id = 'modalPaciente';
             </button>
         </div>
     </div>
- 
+
     <!-- Tabs -->
     <div class="modal-tabs">
         <button class="modal-tab active" data-tab="tabInfoPersonal"
@@ -60,7 +60,7 @@ $modal_id = 'modalPaciente';
             Archivos médicos
         </button>
     </div>
- 
+
     <!-- Body -->
     <div class="modal-body">
         <!-- Tab 1: información personal -->
@@ -83,8 +83,8 @@ $modal_id = 'modalPaciente';
                             pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$" title="Solo letras y espacios">
                     </div>
                 </div>
- 
- 
+
+
                 <!-- F2 apellido materno, fecha de nacimiento -->
                 <div class="form-row cols-2">
                     <div class="form-group">
@@ -97,7 +97,7 @@ $modal_id = 'modalPaciente';
                         <input type="date" name="fecha_nacimiento" class="form-input">
                     </div>
                 </div>
- 
+
                 <!-- F3 Sexo, calle y número -->
                 <div class="form-row cols-2">
                     <div class="form-group">
@@ -120,7 +120,7 @@ $modal_id = 'modalPaciente';
                         </select>
                     </div>
                 </div>
- 
+
                 <!-- F4: Calle (fila propia) -->
                 <div class="form-row cols-3">
                     <div class="form-group">
@@ -136,7 +136,7 @@ $modal_id = 'modalPaciente';
                         <input type="text" name="numero_interior" class="form-input">
                     </div>
                 </div>
- 
+
                 <!-- F5 codigo postal, colonia -->
                 <div class="form-row cols-2">
                     <div class="form-group">
@@ -153,7 +153,7 @@ $modal_id = 'modalPaciente';
                         <datalist id="listaColonias"></datalist>
                     </div>
                 </div>
- 
+
                 <!-- F6 estado, municipio, país -->
                 <div class="form-row cols-3">
                     <div class="form-group">
@@ -171,17 +171,17 @@ $modal_id = 'modalPaciente';
                 </div>
             </form>
         </div>
- 
+
         <!-- Tab 2 Contacto -->
         <div id="tabContacto" class="modal-tab-content">
             <form class="modal-form" id="formContacto">
- 
+
                 <!-- Sección: Datos de contacto del paciente -->
                 <div class="form-section-title">
                     Datos de contacto del paciente<br>
- 
+
                 </div>
- 
+
                 <!-- F1: Email, teléfono -->
                 <div class="form-row cols-2">
                     <div class="form-group">
@@ -193,13 +193,13 @@ $modal_id = 'modalPaciente';
                         <input type="tel" name="telefono" class="form-input" maxlength="10" placeholder="10 dígitos">
                     </div>
                 </div>
- 
+
                 <!-- Sección: Contacto de emergencia -->
                 <div class="form-section-title" style="margin-top: 20px;">
                     Contacto de emergencia<br>
- 
+
                 </div>
- 
+
                 <!-- F2: Nombre del contacto, parentesco -->
                 <div class="form-row cols-2">
                     <div class="form-group">
@@ -218,7 +218,7 @@ $modal_id = 'modalPaciente';
                         </select>
                     </div>
                 </div>
- 
+
                 <!-- F3: Teléfono de emergencia -->
                 <div class="form-row cols-2">
                     <div class="form-group">
@@ -229,11 +229,11 @@ $modal_id = 'modalPaciente';
                 </div>
             </form>
         </div>
- 
+
         <!-- Tab 3 historial clínico -->
         <div id="tabHistorial" class="modal-tab-content">
             <div class="modal-form">
- 
+
                 <!-- Tipo de sangre -->
                 <div class="form-row cols-2">
                     <div class="form-group">
@@ -248,7 +248,7 @@ $modal_id = 'modalPaciente';
                         </select>
                     </div>
                 </div>
- 
+
                 <!-- Antecedentes médicos: chips agrupados por tipo -->
                 <div class="form-row cols-1">
                     <div class="form-group">
@@ -264,7 +264,7 @@ $modal_id = 'modalPaciente';
                         <div id="app-antecedentes"></div>
                     </div>
                 </div>
- 
+
                 <!-- Notas del historial -->
                 <div class="form-row cols-1">
                     <div class="form-group">
@@ -274,17 +274,17 @@ $modal_id = 'modalPaciente';
                 </textarea>
                     </div>
                 </div>
- 
+
             </div>
         </div><!-- /#tabHistorial -->
- 
+
         <!-- Tab Anamnesis -->
         <div id="tabAnamnesis" class="modal-tab-content">
             <div class="modal-form">
- 
+
                 <!-- ── Sección 1: Antecedentes generales ──────────────── -->
                 <div class="form-section-title">Antecedentes generales</div>
- 
+
                 <div class="form-row cols-1">
                     <div class="form-group">
                         <label class="form-label">Antecedentes familiares</label>
@@ -292,7 +292,7 @@ $modal_id = 'modalPaciente';
                             placeholder="Ej: Padre con diabetes, madre con hipertensión..."></textarea>
                     </div>
                 </div>
- 
+
                 <div class="form-row cols-1">
                     <div class="form-group form-group--checkbox">
                         <label class="form-checkbox-label">
@@ -301,10 +301,10 @@ $modal_id = 'modalPaciente';
                         </label>
                     </div>
                 </div>
- 
+
                 <!-- ── Sección 2: Estilo de vida ──────────────────────── -->
                 <div class="form-section-title" style="margin-top: 20px;">Estilo de vida</div>
- 
+
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Salud general</label>
@@ -327,7 +327,7 @@ $modal_id = 'modalPaciente';
                         </select>
                     </div>
                 </div>
- 
+
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Número de comidas al día</label>
@@ -345,7 +345,7 @@ $modal_id = 'modalPaciente';
                         </select>
                     </div>
                 </div>
- 
+
                 <div class="form-row cols-2">
                     <div class="form-group form-group--checkbox">
                         <label class="form-checkbox-label">
@@ -360,10 +360,10 @@ $modal_id = 'modalPaciente';
                         </label>
                     </div>
                 </div>
- 
+
                 <!-- ── Sección 3: Salud bucodental ────────────────────── -->
                 <div class="form-section-title" style="margin-top: 20px;">Salud bucodental</div>
- 
+
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label class="form-label">Veces que se cepilla al día</label>
@@ -371,7 +371,7 @@ $modal_id = 'modalPaciente';
                             placeholder="Ej: 2">
                     </div>
                 </div>
- 
+
                 <div class="form-row cols-2">
                     <div class="form-group form-group--checkbox">
                         <label class="form-checkbox-label">
@@ -386,7 +386,7 @@ $modal_id = 'modalPaciente';
                         </label>
                     </div>
                 </div>
- 
+
                 <div class="form-row cols-1">
                     <div class="form-group form-group--checkbox">
                         <label class="form-checkbox-label">
@@ -395,7 +395,7 @@ $modal_id = 'modalPaciente';
                         </label>
                     </div>
                 </div>
- 
+
                 <div class="form-row cols-1">
                     <div class="form-group">
                         <label class="form-label">Historial de extracciones</label>
@@ -403,26 +403,26 @@ $modal_id = 'modalPaciente';
                             placeholder="Describe extracciones dentales previas..."></textarea>
                     </div>
                 </div>
- 
+
             </div>
         </div><!-- /#tabAnamnesis -->
- 
+
         <!-- Tab 4 planes de tratamiento -->
         <div id="tabPlanes" class="modal-tab-content">
             <div class="modal-form">
- 
+
                 <!-- Toolbar -->
                 <div class="tab-toolbar">
                     <button type="button" class="btn-modal-add" id="btnNuevoPlan">
                         <i class="ri-add-line"></i> Nuevo plan
                     </button>
                 </div>
- 
+
                 <!-- Formulario nuevo plan (oculto por defecto) -->
                 <div id="formNuevoPlanContainer" style="display:none;">
                     <div class="plan-form-card">
                         <h4 class="plan-form-titulo">Nuevo plan de tratamiento</h4>
- 
+
                         <div class="form-row cols-2">
                             <div class="form-group">
                                 <label class="form-label">Fecha de creación <span class="required">*</span></label>
@@ -435,7 +435,7 @@ $modal_id = 'modalPaciente';
                                 </select>
                             </div>
                         </div>
- 
+
                         <div class="form-row cols-2">
                             <div class="form-group">
                                 <label class="form-label">Estatus</label>
@@ -444,7 +444,7 @@ $modal_id = 'modalPaciente';
                                 </select>
                             </div>
                         </div>
- 
+
                         <div class="form-row cols-1">
                             <div class="form-group">
                                 <label class="form-label">Notas del plan</label>
@@ -452,7 +452,7 @@ $modal_id = 'modalPaciente';
                                     placeholder="Observaciones, descripción del tratamiento..."></textarea>
                             </div>
                         </div>
- 
+
                         <!-- Procedimientos del plan -->
                         <div class="plan-procedimientos-section">
                             <div
@@ -462,7 +462,7 @@ $modal_id = 'modalPaciente';
                                     <i class="ri-add-line"></i> Agregar procedimiento
                                 </button>
                             </div>
- 
+
                             <!-- Fila para agregar procedimiento -->
                             <div id="rowAgregarProc" class="proc-add-row" style="display:none;">
                                 <select id="procSelect" class="form-select proc-select">
@@ -479,7 +479,7 @@ $modal_id = 'modalPaciente';
                                     <i class="ri-close-line"></i>
                                 </button>
                             </div>
- 
+
                             <!-- Lista de procedimientos agregados -->
                             <table class="plan-table" id="tablaProcsPlan">
                                 <thead>
@@ -511,7 +511,7 @@ $modal_id = 'modalPaciente';
                                 </tfoot>
                             </table>
                         </div>
- 
+
                         <!-- Botones del formulario -->
                         <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:16px;">
                             <button type="button" class="btn-modal-cancel" id="btnCancelarPlan">Cancelar</button>
@@ -521,7 +521,7 @@ $modal_id = 'modalPaciente';
                         </div>
                     </div>
                 </div>
- 
+
                 <!-- Lista de planes existentes -->
                 <div id="listaPlanesContainer">
                     <div id="planesLoading" style="text-align:center; padding:30px; color:#adb5bd; display:none;">
@@ -535,11 +535,11 @@ $modal_id = 'modalPaciente';
                 </div>
             </div>
         </div><!-- /#tabPlanes -->
- 
+
         <!-- Tab 5 odontograma -->
         <div id="tabOdontograma" class="modal-tab-content">
             <div id="app-odontograma">
- 
+
                 <!-- Toolbar especialista -->
                 <div class="odonto-toolbar">
                     <div class="odonto-toolbar-grupo">
@@ -551,21 +551,21 @@ $modal_id = 'modalPaciente';
                         </select>
                     </div>
                 </div>
- 
+
                 <!-- Cargando -->
                 <div v-if="cargando" class="odonto-cargando">
                     <i class="fas fa-circle-notch fa-spin"></i>
                     Cargando odontograma...
                 </div>
- 
+
                 <div v-else class="odonto-wrapper">
- 
+
                     <!-- PANEL IZQUIERDO: Arcadas -->
                     <div class="arcadas-panel">
                         <p class="arcadas-panel-sub">
                             Haz clic en una pieza dental para ver su historial o registrar un avance.
                         </p>
- 
+
                         <div class="arcada-section">
                             <p class="arcada-label">Arcada superior</p>
                             <div class="arcada-row arcada-superior">
@@ -576,8 +576,7 @@ $modal_id = 'modalPaciente';
                                         { activo: dienteActivo?.numero === pieza.numero }
                                     ]">
                                         <img :src="dienteActivo?.numero === pieza.numero ? pieza.iconoActivo : pieza.icono"
-                                            :alt="pieza.nombre"
-                                            style="width:18px; height:18px; object-fit:contain;">
+                                            :alt="pieza.nombre" style="width:18px; height:18px; object-fit:contain;">
                                         <span v-if="registros[pieza.numero]?.length" class="diente-badge">
                                             {{ registros[pieza.numero].length }}
                                         </span>
@@ -586,9 +585,9 @@ $modal_id = 'modalPaciente';
                                 </div>
                             </div>
                         </div>
- 
+
                         <div class="arcada-divider">Maxilar · Mandíbula</div>
- 
+
                         <div class="arcada-section">
                             <p class="arcada-label">Arcada inferior</p>
                             <div class="arcada-row arcada-inferior">
@@ -599,8 +598,7 @@ $modal_id = 'modalPaciente';
                                         { activo: dienteActivo?.numero === pieza.numero }
                                     ]">
                                         <img :src="dienteActivo?.numero === pieza.numero ? pieza.iconoActivo : pieza.icono"
-                                            :alt="pieza.nombre"
-                                            style="width:18px; height:18px; object-fit:contain;">
+                                            :alt="pieza.nombre" style="width:18px; height:18px; object-fit:contain;">
                                         <span v-if="registros[pieza.numero]?.length" class="diente-badge">
                                             {{ registros[pieza.numero].length }}
                                         </span>
@@ -609,7 +607,7 @@ $modal_id = 'modalPaciente';
                                 </div>
                             </div>
                         </div>
- 
+
                         <div class="leyenda">
                             <div class="leyenda-item">
                                 <div class="leyenda-dot sano"></div>Sin registro
@@ -625,20 +623,20 @@ $modal_id = 'modalPaciente';
                             </div>
                         </div>
                     </div><!-- /.arcadas-panel -->
- 
+
                     <!-- PANEL DERECHO -->
                     <div class="odonto-form-panel">
- 
+
                         <transition name="slide-fade">
                             <div v-if="!dienteActivo" class="odonto-panel-empty">
                                 <div class="odonto-panel-empty-icon"><i class="ri-tooth-line"></i></div>
                                 <p>Selecciona una pieza dental para ver su historial o registrar un nuevo avance</p>
                             </div>
                         </transition>
- 
+
                         <transition name="slide-fade">
                             <div v-if="dienteActivo" class="odonto-panel-active">
- 
+
                                 <!-- Header -->
                                 <div class="odonto-panel-header">
                                     <div class="odonto-panel-header-icon">
@@ -650,33 +648,33 @@ $modal_id = 'modalPaciente';
                                         <p>{{ dienteActivo.nombre }} · {{ dienteActivo.arcada }}</p>
                                     </div>
                                 </div>
- 
+
                                 <!-- Cuerpo -->
                                 <div class="odonto-panel-body">
- 
+
                                     <!-- ── Registros existentes ── -->
                                     <div v-if="registrosDiente.length" class="registros-previos">
                                         <p class="registros-titulo">
                                             Registros ({{ registrosDiente.length }})
                                         </p>
- 
+
                                         <div v-for="(reg, idx) in registrosDiente" :key="reg.id_odontograma ?? idx"
                                             class="registro-item" :class="{ 'registro-pendiente': reg._pendiente }">
- 
+
                                             <!-- Fila superior: anomalía + estatus + acciones -->
                                             <div class="registro-item-top">
                                                 <span class="registro-anomalia">
                                                     {{ reg.nombre_anomalia }}
                                                 </span>
                                                 <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;">
- 
+
                                                     <!-- Badge de estatus (cuando no está editando) -->
                                                     <span v-if="!estaEditando(reg.id_odontograma)"
                                                         class="registro-estatus"
                                                         :class="(reg.estatus_hallazgo ?? '').toLowerCase().replace(/\s+/g,'-')">
                                                         {{ reg.estatus_hallazgo }}
                                                     </span>
- 
+
                                                     <!-- Select inline de edición de estatus -->
                                                     <template
                                                         v-if="!reg._pendiente && estaEditando(reg.id_odontograma)">
@@ -699,7 +697,7 @@ $modal_id = 'modalPaciente';
                                                             <i class="ri-close-line" style="font-size:12px;"></i>
                                                         </button>
                                                     </template>
- 
+
                                                     <!-- Botón editar estatus (lápiz) -->
                                                     <button v-if="!reg._pendiente && !estaEditando(reg.id_odontograma)"
                                                         class="btn-eliminar-registro" style="color:#20a89e;"
@@ -707,27 +705,27 @@ $modal_id = 'modalPaciente';
                                                         title="Editar estatus">
                                                         <i class="fas fa-pen" style="font-size:10px;"></i>
                                                     </button>
- 
+
                                                     <!-- Botón eliminar -->
                                                     <button v-if="!reg._pendiente && !estaEditando(reg.id_odontograma)"
                                                         class="btn-eliminar-registro" @click="eliminarRegistro(idx)"
                                                         title="Eliminar registro">
                                                         <i class="fas fa-times"></i>
                                                     </button>
- 
+
                                                     <!-- Spinner pendiente -->
                                                     <i v-if="reg._pendiente" class="fas fa-circle-notch fa-spin"
                                                         style="font-size:11px; color:#adb5bd;"></i>
                                                 </div>
                                             </div>
- 
+
                                             <!-- Cara(s) -->
                                             <div class="registro-cara" v-if="reg.cara">
                                                 <i class="fas fa-map-marker-alt"
                                                     style="font-size:9px; margin-right:3px;"></i>
                                                 Cara(s): {{ reg.cara }}
                                             </div>
- 
+
                                             <!-- Procedimiento -->
                                             <div class="registro-procedimiento" v-if="reg.nombre_procedimiento &&
                                                       reg.nombre_procedimiento !== 'Sin procedimiento asignado'">
@@ -735,7 +733,7 @@ $modal_id = 'modalPaciente';
                                                     style="font-size:9px; margin-right:3px;"></i>
                                                 {{ reg.nombre_procedimiento }}
                                             </div>
- 
+
                                             <!-- Especialista y fecha -->
                                             <div class="registro-meta" v-if="reg.nombre_especialista">
                                                 <i class="fas fa-user-md" style="font-size:9px; margin-right:3px;"></i>
@@ -744,44 +742,44 @@ $modal_id = 'modalPaciente';
                                                     · {{ reg.fecha_cita }}
                                                 </span>
                                             </div>
- 
+
                                         </div><!-- /.registro-item -->
                                     </div><!-- /.registros-previos -->
- 
+
                                     <!-- ── Nuevo registro ── -->
                                     <p class="nuevo-registro-titulo">
                                         <i class="fas fa-plus" style="font-size:9px;"></i>
                                         Nuevo registro
                                     </p>
- 
+
                                     <div class="campo-grupo">
                                         <label class="campo-label">Anomalía / Diagnóstico *</label>
                                         <select id="odontAnomalia" class="campo-select">
                                             <option value="">Seleccionar...</option>
                                         </select>
                                     </div>
- 
+
                                     <div class="campo-grupo">
                                         <label class="campo-label">Cara(s) afectada(s) *</label>
                                         <div id="odontCarasGrid" class="caras-grid"></div>
                                     </div>
- 
+
                                     <div class="campo-grupo">
                                         <label class="campo-label">Procedimiento *</label>
                                         <select id="odontProc" class="campo-select">
                                             <option value="">Seleccionar...</option>
                                         </select>
                                     </div>
- 
+
                                     <div class="campo-grupo">
                                         <label class="campo-label">Estatus *</label>
                                         <select id="odontEstatus" class="campo-select">
                                             <option value="">Seleccionar...</option>
                                         </select>
                                     </div>
- 
+
                                 </div><!-- /.odonto-panel-body -->
- 
+
                                 <div class="odonto-panel-footer">
                                     <button class="btn-odonto-cancelar" @click="cancelar">
                                         Cancelar
@@ -791,14 +789,14 @@ $modal_id = 'modalPaciente';
                                         Guardar
                                     </button>
                                 </div>
- 
+
                             </div><!-- /.odonto-panel-active -->
                         </transition>
- 
+
                     </div><!-- /.odonto-form-panel -->
- 
+
                 </div><!-- /.odonto-wrapper -->
- 
+
                 <!-- Notificación flotante -->
                 <transition name="notif">
                     <div v-if="notif.visible" class="odonto-notif" :class="`odonto-notif--${notif.tipo}`">
@@ -810,10 +808,10 @@ $modal_id = 'modalPaciente';
                         {{ notif.texto }}
                     </div>
                 </transition>
- 
+
             </div><!-- /#app-odontograma -->
         </div><!-- /#tabOdontograma -->
- 
+
         <!-- Tab 6 archivos medicos -->
         <div id="tabArchivos" class="modal-tab-content">
             <div class="modal-form">
@@ -835,7 +833,7 @@ $modal_id = 'modalPaciente';
             </div>
         </div>
     </div>
- 
+
     <!-- Footer -->
     <div class="modal-footer">
         <button type="button" class="btn-modal-cancel" onclick="cerrarModal('<?php echo $modal_id; ?>')">
@@ -846,36 +844,36 @@ $modal_id = 'modalPaciente';
         </button>
     </div>
 </div>
- 
- 
+
+
 <!-- JavaScript del modal, lógica se pasa a pacientes.js -->
 <script>
     window.addEventListener('load', function () {
- 
+
         const _cambiarTabOrig = window.cambiarTab;
         const _cerrarModalOrig = window.cerrarModal;
- 
+
         // ── cambiarTab ────────────────────────────────────────────────────
         window.cambiarTab = function (modalId, tabId) {
             if (typeof _cambiarTabOrig === 'function') _cambiarTabOrig(modalId, tabId);
- 
+
             if (tabId === 'tabOdontograma') {
                 const num = document.getElementById('formPaciente')?.dataset?.numeroPaciente;
                 if (num) odontogramaController.cargar(num);
             }
- 
+
             if (tabId === 'tabPlanes') {
                 const num = document.getElementById('formPaciente')?.dataset?.numeroPaciente;
                 if (num) planesController.cargar(num);
             }
         };
- 
+
         // ── cerrarModal ───────────────────────────────────────────────────
         // Solo limpiar odontograma, no interferir con el cierre normal
         window.cerrarModal = function (modalId) {
             try { odontogramaController.limpiar(); } catch (e) { }
             if (typeof _cerrarModalOrig === 'function') _cerrarModalOrig(modalId);
         };
- 
+
     });
 </script>

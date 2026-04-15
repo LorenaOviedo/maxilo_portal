@@ -120,7 +120,11 @@ const odontogramaController = {
     },
  
     _montarVue(numeroPaciente) {
-        if (this._appInstance) return;
+        // Siempre desmontar la instancia anterior antes de montar
+        if (this._appInstance) {
+            try { this._appInstance.unmount(); } catch(e) {}
+            this._appInstance = null;
+        }
  
         const { createApp, ref, computed } = Vue;
         const self = this;
@@ -299,7 +303,15 @@ const odontogramaController = {
                     toggleEditarEstatus, guardarEstatus,
                 };
             },
-        }).mount('#app-odontograma');
+        });
+ 
+        // Montar en elemento hijo limpio para evitar conflicto de Vue
+        const appEl = document.getElementById('app-odontograma');
+        if (appEl._templateOriginal === undefined) {
+            appEl._templateOriginal = appEl.innerHTML;
+        }
+        appEl.innerHTML = appEl._templateOriginal;
+        this._appInstance.mount(appEl);
     },
  
     _nextTick(fn) { setTimeout(fn, 50); },
