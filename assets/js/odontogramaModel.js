@@ -102,8 +102,8 @@ const odontogramaModel = {
  
   _iconoPorNumero(numero, activo = false) {
     const base = (typeof ASSETS_URL !== 'undefined') ? ASSETS_URL : '';
-    // Las imágenes claras tienen sufijo _blanco (ej: molar_blanco.png)
-    const suf  = activo ? '_blanco' : '';
+    // Las imágenes claras tienen sufijo _clear (ej: molar_clear.png)
+    const suf  = activo ? '_clear' : '';
     if ([18,28,38,48].includes(numero))                   return `${base}3molar${suf}.png`;
     if ([16,17,26,27,36,37,46,47].includes(numero))       return `${base}molar${suf}.png`;
     if ([14,15,24,25,34,35,44,45].includes(numero))       return `${base}premolar${suf}.png`;
