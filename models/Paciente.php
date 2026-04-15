@@ -273,7 +273,7 @@ class Paciente
                 tp.parentesco
             FROM pacientecontactosemergencia pce
             INNER JOIN contactosemergencia ce ON ce.id_contacto_emergencia = pce.id_contacto_emergencia
-            INNER JOIN tipoparentescos     tp ON tp.id_tipo_parentesco     = pce.id_tipo_parentesco
+            INNER JOIN tipoparentescos     tp ON tp.id_tipo_parentesco     = COALESCE(ce.id_tipo_parentesco, pce.id_tipo_parentesco)
             WHERE pce.numero_paciente = :id
             LIMIT 1
         ";
@@ -381,8 +381,9 @@ class Paciente
             }
 
             // 4. Contacto de emergencia
-            if (!empty($data['contacto_nombre'])) {
-                $this->guardarContactoEmergencia($numeroPaciente, $data);
+            $contactoEmergencia = $this->normalizarPayloadContactoEmergencia($data);
+            if (!empty($contactoEmergencia['contacto_nombre'])) {
+                $this->guardarContactoEmergencia($numeroPaciente, $contactoEmergencia);
             }
 
             // 5. Historial médico inicial
@@ -483,8 +484,9 @@ class Paciente
             $this->sincronizarAnamnesis($id, $data);
 
             // 7. Actualizar o crear contacto de emergencia
-            if (!empty($data['contacto_nombre'])) {
-                $this->sincronizarContactoEmergencia($id, $data);
+            $contactoEmergencia = $this->normalizarPayloadContactoEmergencia($data);
+            if (!empty($contactoEmergencia['contacto_nombre'])) {
+                $this->sincronizarContactoEmergencia($id, $contactoEmergencia);
             }
 
             $this->conn->commit();
@@ -619,6 +621,8 @@ class Paciente
 
     private function sincronizarContactoEmergencia($numeroPaciente, $data)
     {
+        $data = $this->normalizarPayloadContactoEmergencia($data);
+
         // Verificar si ya existe un contacto de emergencia para este paciente
         $stmt = $this->conn->prepare("
             SELECT pce.id_contacto_emergencia
@@ -645,6 +649,17 @@ class Paciente
             $stmt->bindValue(':parentesco', (int) ($data['id_tipo_parentesco'] ?? 1), PDO::PARAM_INT);
             $stmt->bindValue(':id', $idContacto, PDO::PARAM_INT);
             $stmt->execute();
+
+            $stmt = $this->conn->prepare("
+                UPDATE pacientecontactosemergencia
+                SET id_tipo_parentesco = :parentesco
+                WHERE numero_paciente = :paciente
+                  AND id_contacto_emergencia = :contacto
+            ");
+            $stmt->bindValue(':parentesco', (int) ($data['id_tipo_parentesco'] ?? 1), PDO::PARAM_INT);
+            $stmt->bindValue(':paciente', $numeroPaciente, PDO::PARAM_INT);
+            $stmt->bindValue(':contacto', $idContacto, PDO::PARAM_INT);
+            $stmt->execute();
         } else {
             // Crear nuevo
             $this->guardarContactoEmergencia($numeroPaciente, $data);
@@ -653,6 +668,8 @@ class Paciente
 
     private function guardarContactoEmergencia($numeroPaciente, $data)
     {
+        $data = $this->normalizarPayloadContactoEmergencia($data);
+
         // Crear contacto de emergencia
         $stmt = $this->conn->prepare("
             INSERT INTO contactosemergencia
@@ -677,6 +694,60 @@ class Paciente
         $stmt->bindValue(':contacto', $idContacto, PDO::PARAM_INT);
         $stmt->bindValue(':parentesco', (int) ($data['id_tipo_parentesco'] ?? 1), PDO::PARAM_INT);
         $stmt->execute();
+    }
+
+    private function normalizarPayloadContactoEmergencia(array $data): array
+    {
+        $nombreCapturado = trim((string) ($data['contacto_nombre'] ?? $data['contacto_emergencia'] ?? ''));
+        $apellidoCapturado = trim((string) ($data['contacto_apellido'] ?? ''));
+        $telefonoEmergencia = trim((string) ($data['telefono_emergencia'] ?? ''));
+        $relacionCapturada = trim((string) ($data['relacion'] ?? $data['parentesco'] ?? ''));
+
+        if ($nombreCapturado !== '' && $apellidoCapturado === '' && !isset($data['contacto_nombre'])) {
+            $partesNombre = preg_split('/\s+/', $nombreCapturado) ?: [];
+            if (count($partesNombre) >= 3) {
+                $apellidoCapturado = implode(' ', array_slice($partesNombre, -2));
+                $nombreCapturado = implode(' ', array_slice($partesNombre, 0, -2));
+            } elseif (count($partesNombre) === 2) {
+                $apellidoCapturado = $partesNombre[1];
+                $nombreCapturado = $partesNombre[0];
+            }
+        }
+
+        $idTipoParentesco = !empty($data['id_tipo_parentesco'])
+            ? (int) $data['id_tipo_parentesco']
+            : $this->buscarIdTipoParentesco($relacionCapturada);
+
+        if (!$idTipoParentesco) {
+            $idTipoParentesco = 1;
+        }
+
+        $data['contacto_nombre'] = $nombreCapturado;
+        $data['contacto_apellido'] = $apellidoCapturado;
+        $data['telefono_emergencia'] = $telefonoEmergencia;
+        $data['relacion'] = $relacionCapturada;
+        $data['id_tipo_parentesco'] = $idTipoParentesco;
+
+        return $data;
+    }
+
+    private function buscarIdTipoParentesco(string $relacion): ?int
+    {
+        if ($relacion === '') {
+            return null;
+        }
+
+        $stmt = $this->conn->prepare("
+            SELECT id_tipo_parentesco
+            FROM tipoparentescos
+            WHERE UPPER(parentesco) = UPPER(:parentesco)
+            LIMIT 1
+        ");
+        $stmt->bindValue(':parentesco', $this->normalizar($relacion));
+        $stmt->execute();
+
+        $id = $stmt->fetchColumn();
+        return $id !== false ? (int) $id : null;
     }
 
     private function crearHistorial($numeroPaciente, $data)
