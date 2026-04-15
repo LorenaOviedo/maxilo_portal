@@ -182,13 +182,16 @@ const odontogramaController = {
                     const set = new Set(editandoEstatus.value);
                     if (set.has(idOdontograma)) {
                         set.delete(idOdontograma);
+                        editandoEstatus.value = set;
                     } else {
                         set.add(idOdontograma);
-                        self._nextTick(() =>
+                        // Actualizar estado reactivo primero para que Vue renderice el select
+                        editandoEstatus.value = set;
+                        // Poblar después de que Vue termine de renderizar
+                        setTimeout(() =>
                             self._poblarSelectEditarEstatus(idOdontograma, idEstatusActual)
-                        );
+                        , 100);
                     }
-                    editandoEstatus.value = set;
                 }
  
                 async function guardarEstatus(idOdontograma) {
