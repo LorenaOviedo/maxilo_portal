@@ -2,38 +2,38 @@
 /**
  * mailer.php — Configuración de PHPMailer
  */
- 
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
- 
+
 require_once __DIR__ . '/../vendor/phpmailer/PHPMailer.php';
 require_once __DIR__ . '/../vendor/phpmailer/SMTP.php';
 require_once __DIR__ . '/../vendor/phpmailer/Exception.php';
- 
+
 function crearMailer(): PHPMailer
 {
     $mail = new PHPMailer(true);
- 
+
     // Servidor SMTP
     $mail->isSMTP();
-    $mail->Host       = $_ENV['MAIL_HOST']     ?? 'smtp.hostinger.com';
-    $mail->SMTPAuth   = true;
-    $mail->Username   = $_ENV['MAIL_USERNAME'] ?? '';
-    $mail->Password   = $_ENV['MAIL_PASSWORD'] ?? '';
+    $mail->Host = $_ENV['MAIL_HOST'] ?? 'smtp.hostinger.com';
+    $mail->SMTPAuth = true;
+    $mail->Username = $_ENV['MAIL_USERNAME'] ?? '';
+    $mail->Password = $_ENV['MAIL_PASSWORD'] ?? '';
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-    $mail->Port       = (int) ($_ENV['MAIL_PORT'] ?? 465);
-    $mail->CharSet    = 'UTF-8';
- 
+    $mail->Port = (int) ($_ENV['MAIL_PORT'] ?? 465);
+    $mail->CharSet = 'UTF-8';
+
     // Remitente
     $fromEmail = $_ENV['MAIL_USERNAME'] ?? '';
-    $fromName  = $_ENV['MAIL_FROM_NAME'] ?? 'Sistema Maxilofacial Texcoco';
+    $fromName = $_ENV['MAIL_FROM_NAME'] ?? 'Sistema Maxilofacial Texcoco';
     $mail->setFrom($fromEmail, $fromName);
     $mail->addReplyTo($fromEmail, $fromName);
- 
+
     return $mail;
 }
- 
+
 /**
  * Enviar correo de recuperación de contraseña
  */
@@ -44,10 +44,10 @@ function enviarCorreoRecuperacion(string $email, string $nombre, string $token):
         $mail->addAddress($email, $nombre);
         $mail->isHTML(true);
         $mail->Subject = 'Recuperación de contraseña — Sistema Maxilofacial Texcoco';
- 
+
         $enlace = SITE_URL . 'views/restablecer_password.php?token=' . urlencode($token);
-        $anio   = date('Y');
- 
+        $anio = date('Y');
+
         $mail->Body = "
 <!DOCTYPE html>
 <html lang='es'>
@@ -126,16 +126,16 @@ function enviarCorreoRecuperacion(string $email, string $nombre, string $token):
     </table>
 </body>
 </html>";
- 
+
         $mail->AltBody = "Hola {$nombre},\n\n"
             . "Para restablecer tu contraseña visita el siguiente enlace:\n{$enlace}\n\n"
             . "Este enlace expirará en 30 minutos.\n\n"
             . "Si no solicitaste este cambio ignora este correo.\n\n"
             . "Sistema Maxilofacial Texcoco";
- 
+
         $mail->send();
         return true;
- 
+
     } catch (Exception $e) {
         error_log('Mailer error: ' . $e->getMessage());
         return false;
