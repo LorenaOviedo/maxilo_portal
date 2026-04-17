@@ -254,6 +254,8 @@
 .form-select,
 .form-textarea {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     padding: 12px 16px;
     border: 1px solid #e8e8e8;
     border-radius: 6px;
@@ -394,14 +396,17 @@
         grid-template-columns: 1fr;
     }
  
-    /* Inputs de fecha — evitar desbordamiento */
+    /* Inputs de fecha — evitar desbordamiento en iOS/Safari */
     .form-input[type="date"],
     .form-input[type="time"],
     .form-input[type="datetime-local"] {
-        width: 100%;
-        min-width: 0;
-        box-sizing: border-box;
-        font-size: 13px;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        font-size: 16px; /* evita zoom en iOS */
+        -webkit-appearance: none;
+        appearance: none;
     }
  
     /* Modal body — reducir padding */
