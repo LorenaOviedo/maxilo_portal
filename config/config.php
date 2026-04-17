@@ -11,6 +11,7 @@ require_once __DIR__ . '/Env.php';
 // Cargar archivo .env
 Env::load(__DIR__ . '/../.env');
 
+//Traductor de fecha al español
 function fechaEnEspanol() {
     $dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
     $meses = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
