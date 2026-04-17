@@ -103,10 +103,6 @@ function enviarCorreoRecuperacion(string $email, string $nombre, string $token):
                             <p style='font-size:12px;color:#6c757d;line-height:1.6;margin:0 0 8px;'>
                                 Este enlace expirará en <strong>30 minutos</strong>.
                             </p>
-                            <p style='font-size:12px;color:#6c757d;line-height:1.6;margin:0;'>
-                                Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
-                                <span style='color:#192D8C;word-break:break-all;'>{$enlace}</span>
-                            </p>
                         </td>
                     </tr>
  
