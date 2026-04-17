@@ -11,7 +11,7 @@ $auth = new AuthController();
 if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
-
+ 
 // Verificar permiso específico al módulo
 verificarPermiso('pagos');
  
@@ -111,15 +111,15 @@ include '../includes/sidebar.php';
             </div>
  
             <!-- ── Filtros ─────────────────────────────────────────────── -->
-            <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;
-                margin-bottom:16px;align-items:flex-end;">
+            <form method="GET" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+                gap:10px;margin-bottom:16px;align-items:flex-end;">
                 <input type="hidden" name="buscar" value="<?php echo htmlspecialchars($buscar); ?>">
  
                 <div>
                     <label style="font-size:12px;color:#6c757d;display:block;margin-bottom:4px;">
                         Estatus
                     </label>
-                    <select name="estatus" class="form-select" style="min-width:140px;">
+                    <select name="estatus" class="form-select" style="width:100%;box-sizing:border-box;">
                         <option value="">Todos</option>
                         <option value="Pagado"    <?php echo $estatus === 'Pagado'    ? 'selected' : ''; ?>>Pagado</option>
                         <option value="Pendiente" <?php echo $estatus === 'Pendiente' ? 'selected' : ''; ?>>Pendiente</option>
@@ -130,24 +130,26 @@ include '../includes/sidebar.php';
                     <label style="font-size:12px;color:#6c757d;display:block;margin-bottom:4px;">Desde</label>
                     <input type="date" name="fecha_desde" class="form-input"
                         value="<?php echo htmlspecialchars($fechaDesde); ?>"
-                        style="min-width:140px;">
+                        style="width:100%;box-sizing:border-box;">
                 </div>
  
                 <div>
                     <label style="font-size:12px;color:#6c757d;display:block;margin-bottom:4px;">Hasta</label>
                     <input type="date" name="fecha_hasta" class="form-input"
                         value="<?php echo htmlspecialchars($fechaHasta); ?>"
-                        style="min-width:140px;">
+                        style="width:100%;box-sizing:border-box;">
                 </div>
  
-                <button type="submit" class="btn-search">
-                    <i class="ri-filter-line"></i> Filtrar
-                </button>
-                <?php if ($estatus || $fechaDesde || $fechaHasta): ?>
-                <a href="?" class="btn-search" style="background:#f1f3f5;color:#495057;">
-                    <i class="ri-close-line"></i> Limpiar
-                </a>
-                <?php endif; ?>
+                <div style="display:flex;gap:8px;align-items:flex-end;">
+                    <button type="submit" class="btn-search" style="flex:1;">
+                        <i class="ri-filter-line"></i> Filtrar
+                    </button>
+                    <?php if ($estatus || $fechaDesde || $fechaHasta): ?>
+                    <a href="?" class="btn-search" style="flex:1;background:#f1f3f5;color:#495057;text-align:center;">
+                        <i class="ri-close-line"></i> Limpiar
+                    </a>
+                    <?php endif; ?>
+                </div>
             </form>
  
             <!-- ── Tabla ───────────────────────────────────────────────── -->

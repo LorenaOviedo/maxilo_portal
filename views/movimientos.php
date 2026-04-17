@@ -93,14 +93,16 @@ include '../includes/sidebar.php';
  
             <!-- ── Filtros ─────────────────────────────────────────────── -->
             <form method="GET" action=""
-                style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;">
+                style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+                    gap:10px;margin-bottom:16px;align-items:flex-end;">
                 <input type="hidden" name="buscar" value="<?php echo htmlspecialchars($buscar); ?>">
  
                 <div>
                     <label style="font-size:12px;color:#6c757d;display:block;margin-bottom:4px;">
                         Tipo de movimiento
                     </label>
-                    <select name="id_tipo_movimiento" class="form-select" style="min-width:160px;">
+                    <select name="id_tipo_movimiento" class="form-select"
+                        style="width:100%;box-sizing:border-box;">
                         <option value="0">Todos</option>
                         <?php foreach ($catalogos['tiposMovimiento'] as $t): ?>
                         <option value="<?php echo $t['id_tipo_movimiento']; ?>"
@@ -117,7 +119,7 @@ include '../includes/sidebar.php';
                     </label>
                     <input type="date" name="fecha_desde" class="form-input"
                         value="<?php echo htmlspecialchars($fechaDesde); ?>"
-                        style="min-width:140px;">
+                        style="width:100%;box-sizing:border-box;">
                 </div>
  
                 <div>
@@ -126,17 +128,20 @@ include '../includes/sidebar.php';
                     </label>
                     <input type="date" name="fecha_hasta" class="form-input"
                         value="<?php echo htmlspecialchars($fechaHasta); ?>"
-                        style="min-width:140px;">
+                        style="width:100%;box-sizing:border-box;">
                 </div>
  
-                <button type="submit" class="btn-search">
-                    <i class="ri-filter-line"></i> Filtrar
-                </button>
-                <?php if ($tipoFiltro || $fechaDesde || $fechaHasta): ?>
-                <a href="?" class="btn-search" style="background:#f1f3f5;color:#495057;">
-                    <i class="ri-close-line"></i> Limpiar
-                </a>
-                <?php endif; ?>
+                <div style="display:flex;gap:8px;align-items:flex-end;">
+                    <button type="submit" class="btn-search" style="flex:1;">
+                        <i class="ri-filter-line"></i> Filtrar
+                    </button>
+                    <?php if ($tipoFiltro || $fechaDesde || $fechaHasta): ?>
+                    <a href="?" class="btn-search"
+                        style="flex:1;background:#f1f3f5;color:#495057;text-align:center;">
+                        <i class="ri-close-line"></i> Limpiar
+                    </a>
+                    <?php endif; ?>
+                </div>
             </form>
  
             <!-- ── Tabla ───────────────────────────────────────────────── -->
