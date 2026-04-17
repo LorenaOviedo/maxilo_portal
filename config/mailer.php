@@ -111,7 +111,6 @@ function enviarCorreoRecuperacion(string $email, string $nombre, string $token):
                         <td style='background:#f8f9fa;padding:16px 32px;border-top:1px solid #e9ecef;'>
                             <p style='margin:0;font-size:11px;color:#adb5bd;text-align:center;'>
                                 Sistema Maxilofacial Texcoco &mdash; {$anio}<br>
-                                Retorno C No. 8 Fracc. San Martín, Texcoco, Estado de México
                             </p>
                         </td>
                     </tr>
