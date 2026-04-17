@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  
                     <button type="submit" class="btn-submit">Ingresar</button>
  
-                    <a href="views/recuperar-password.php" class="link-recuperar">
+                    <a href="views/recuperar_password.php" class="link-recuperar">
                         Recuperar contraseña
                     </a>
                 </form>
