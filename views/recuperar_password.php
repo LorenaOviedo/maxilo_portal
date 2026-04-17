@@ -1,3 +1,59 @@
+<?php
+ob_start();
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/mailer.php';
+ 
+$mensaje = '';
+$tipo    = '';
+$enviado = false;
+ 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = strtolower(trim($_POST['email'] ?? ''));
+ 
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $mensaje = 'Ingresa un correo electrónico válido.';
+        $tipo    = 'error';
+    } else {
+        $db = getDB();
+ 
+        $stmt = $db->prepare(
+            "SELECT id_usuario, nombre_usuario, email FROM usuario WHERE email = :email LIMIT 1"
+        );
+        $stmt->execute([':email' => $email]);
+        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+ 
+        $enviado = true;
+ 
+        if ($usuario) {
+            $db->prepare(
+                "UPDATE tokenrecuperacion SET usado = 1 WHERE id_usuario = :id AND usado = 0"
+            )->execute([':id' => $usuario['id_usuario']]);
+ 
+            $tokenPlano = bin2hex(random_bytes(32));
+            $tokenHash  = hash('sha256', $tokenPlano);
+            $expiracion = date('Y-m-d H:i:s', strtotime('+30 minutes'));
+ 
+            $db->prepare("
+                INSERT INTO tokenrecuperacion
+                    (token_recuperacion, fecha_expiracion, id_usuario)
+                VALUES
+                    (:token, :expiracion, :id)
+            ")->execute([
+                ':token'      => $tokenHash,
+                ':expiracion' => $expiracion,
+                ':id'         => $usuario['id_usuario'],
+            ]);
+ 
+            enviarCorreoRecuperacion(
+                $usuario['email'],
+                $usuario['nombre_usuario'],
+                $tokenPlano
+            );
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -30,70 +86,6 @@
     </style>
 </head>
 <body>
-<?php
-ob_start();
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../config/mailer.php';
- 
-$mensaje = '';
-$tipo    = '';
-$enviado = false;
- 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = strtolower(trim($_POST['email'] ?? ''));
- 
-    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $mensaje = 'Ingresa un correo electrónico válido.';
-        $tipo    = 'error';
-    } else {
-        $db = getDB();
- 
-        // Buscar usuario por email
-        $stmt = $db->prepare(
-            "SELECT id_usuario, nombre_usuario, email FROM usuario WHERE email = :email LIMIT 1"
-        );
-        $stmt->execute([':email' => $email]);
-        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
- 
-        // Siempre mostrar el mismo mensaje por seguridad
-        $enviado = true;
- 
-        if ($usuario) {
-            // Invalidar tokens anteriores
-            $db->prepare(
-                "UPDATE tokenrecuperacion SET usado = 1 WHERE id_usuario = :id AND usado = 0"
-            )->execute([':id' => $usuario['id_usuario']]);
- 
-            // Generar token seguro
-            $tokenPlano = bin2hex(random_bytes(32));
-            $tokenHash  = hash('sha256', $tokenPlano);
-            $expiracion = date('Y-m-d H:i:s', strtotime('+30 minutes'));
- 
-            // Guardar en BD
-            $db->prepare("
-                INSERT INTO tokenrecuperacion
-                    (token_recuperacion, fecha_expiracion, id_usuario)
-                VALUES
-                    (:token, :expiracion, :id)
-            ")->execute([
-                ':token'      => $tokenHash,
-                ':expiracion' => $expiracion,
-                ':id'         => $usuario['id_usuario'],
-            ]);
- 
-            // Enviar correo
-            enviarCorreoRecuperacion(
-                $usuario['email'],
-                $usuario['nombre_usuario'],
-                $tokenPlano
-            );
-        }
-    }
-}
-?>
  
     <div class="container">
         <div class="login-box">
@@ -120,7 +112,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
  
                     <p style="font-size:14px;color:#6c757d;margin-bottom:20px;text-align:center;line-height:1.5;">
-                        Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+                        Ingresa tu correo electrónico y te enviaremos un enlace
+                        para restablecer tu contraseña.
                     </p>
  
                     <form method="POST" action="">

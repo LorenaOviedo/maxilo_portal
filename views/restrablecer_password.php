@@ -1,3 +1,70 @@
+<?php
+ob_start();
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/database.php';
+ 
+$token       = trim($_GET['token'] ?? '');
+$mensaje     = '';
+$exito       = false;
+$tokenValido = false;
+$idUsuario   = null;
+$idToken     = null;
+ 
+if (empty($token)) {
+    $mensaje = 'Enlace inválido o expirado.';
+} else {
+    $db        = getDB();
+    $tokenHash = hash('sha256', $token);
+ 
+    $stmt = $db->prepare("
+        SELECT id_token, id_usuario, fecha_expiracion, usado
+        FROM tokenrecuperacion
+        WHERE token_recuperacion = :token
+        LIMIT 1
+    ");
+    $stmt->execute([':token' => $tokenHash]);
+    $registro = $stmt->fetch(PDO::FETCH_ASSOC);
+ 
+    if (!$registro) {
+        $mensaje = 'El enlace no es válido.';
+    } elseif ($registro['usado']) {
+        $mensaje = 'Este enlace ya fue utilizado. Solicita uno nuevo.';
+    } elseif (strtotime($registro['fecha_expiracion']) < time()) {
+        $mensaje = 'El enlace ha expirado. Solicita uno nuevo.';
+    } else {
+        $tokenValido = true;
+        $idUsuario   = $registro['id_usuario'];
+        $idToken     = $registro['id_token'];
+    }
+}
+ 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValido) {
+    $nueva     = $_POST['nueva']     ?? '';
+    $confirmar = $_POST['confirmar'] ?? '';
+ 
+    if (strlen($nueva) < 8) {
+        $mensaje = 'La contraseña debe tener al menos 8 caracteres.';
+    } elseif ($nueva !== $confirmar) {
+        $mensaje = 'Las contraseñas no coinciden.';
+    } else {
+        $db = getDB();
+ 
+        $db->prepare(
+            "UPDATE usuario SET contrasena = :hash WHERE id_usuario = :id"
+        )->execute([
+            ':hash' => password_hash($nueva, PASSWORD_BCRYPT),
+            ':id'   => $idUsuario,
+        ]);
+ 
+        $db->prepare(
+            "UPDATE tokenrecuperacion SET usado = 1 WHERE id_token = :id"
+        )->execute([':id' => $idToken]);
+ 
+        $exito       = true;
+        $tokenValido = false;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -41,75 +108,6 @@
     </style>
 </head>
 <body>
-<?php
-require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/../config/database.php';
- 
-$token    = trim($_GET['token'] ?? '');
-$mensaje  = '';
-$exito    = false;
-$tokenValido = false;
-$idUsuario   = null;
- 
-if (empty($token)) {
-    $mensaje = 'Enlace inválido o expirado.';
-} else {
-    $db = getDB();
-    $tokenHash = hash('sha256', $token);
- 
-    // Verificar token
-    $stmt = $db->prepare("
-        SELECT id_token, id_usuario, fecha_expiracion, usado
-        FROM tokenrecuperacion
-        WHERE token_recuperacion = :token
-        LIMIT 1
-    ");
-    $stmt->execute([':token' => $tokenHash]);
-    $registro = $stmt->fetch(PDO::FETCH_ASSOC);
- 
-    if (!$registro) {
-        $mensaje = 'El enlace no es válido.';
-    } elseif ($registro['usado']) {
-        $mensaje = 'Este enlace ya fue utilizado. Solicita uno nuevo.';
-    } elseif (strtotime($registro['fecha_expiracion']) < time()) {
-        $mensaje = 'El enlace ha expirado. Solicita uno nuevo.';
-    } else {
-        $tokenValido = true;
-        $idUsuario   = $registro['id_usuario'];
-        $idToken     = $registro['id_token'];
-    }
-}
- 
-// Procesar nueva contraseña
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValido) {
-    $nueva     = $_POST['nueva']     ?? '';
-    $confirmar = $_POST['confirmar'] ?? '';
- 
-    if (strlen($nueva) < 8) {
-        $mensaje = 'La contraseña debe tener al menos 8 caracteres.';
-    } elseif ($nueva !== $confirmar) {
-        $mensaje = 'Las contraseñas no coinciden.';
-    } else {
-        $db = getDB();
- 
-        // Actualizar contraseña
-        $db->prepare(
-            "UPDATE usuario SET contrasena = :hash WHERE id_usuario = :id"
-        )->execute([
-            ':hash' => password_hash($nueva, PASSWORD_BCRYPT),
-            ':id'   => $idUsuario,
-        ]);
- 
-        // Marcar token como usado
-        $db->prepare(
-            "UPDATE tokenrecuperacion SET usado = 1 WHERE id_token = :id"
-        )->execute([':id' => $idToken]);
- 
-        $exito = true;
-        $tokenValido = false;
-    }
-}
-?>
  
     <div class="container">
         <div class="login-box">
@@ -146,8 +144,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValido) {
                     <?php endif; ?>
  
                     <form method="POST" action="">
-                        <input type="hidden" name="token_original" value="">
- 
                         <div class="form-group">
                             <input type="password" name="nueva" class="form-input"
                                 placeholder="Nueva contraseña (mínimo 8 caracteres)"
@@ -175,3 +171,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValido) {
  
 </body>
 </html>
+ 
