@@ -227,7 +227,7 @@ const CatalogTable = {
 
   // ── PAGINACIÓN DEL LADO DEL CLIENTE ──────────────────────────────────────
   pagination: {
-    porPagina: 10,
+    porPagina: 8,
     paginaActual: 1,
     totalFilas: 0,
     filas: [],

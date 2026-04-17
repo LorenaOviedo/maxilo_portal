@@ -292,7 +292,7 @@ switch ($accion) {
     case 'search':
         $buscar = trim($_GET['buscar'] ?? '');
         $pagina = max(1, (int) ($_GET['pagina'] ?? 1));
-        $porPagina = max(1, (int) ($_GET['por_pagina'] ?? 8));
+        $porPagina = max(1, (int) ($_GET['por_pagina'] ?? 10));
 
         $filtros = [];
         if ($buscar !== '')
@@ -687,7 +687,7 @@ switch ($accion) {
     case 'buscar_especialistas':
         $buscar = trim($_GET['buscar'] ?? '');
         $pagina = max(1, (int) ($_GET['pagina'] ?? 1));
-        $porPagina = max(1, (int) ($_GET['por_pagina'] ?? 8));
+        $porPagina = max(1, (int) ($_GET['por_pagina'] ?? 10));
 
         $filtros = [];
         if ($buscar !== '')
