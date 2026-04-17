@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValido) {
                 <img src="../assets/img/logo_maxilo.png" alt="Maxilofacial Texcoco Logo" class="logo">
             </div>
  
-            <h1 class="welcome-title">RESTABLECER<br>CONTRASEÑA</h1>
+            <h1 class="welcome-title">RESTABLECER</h1>
  
             <div class="form-container">
  
