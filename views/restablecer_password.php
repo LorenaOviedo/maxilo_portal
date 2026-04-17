@@ -115,10 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValido) {
                 <img src="../assets/img/logo_maxilo.png" alt="Maxilofacial Texcoco Logo" class="logo">
             </div>
  
-            <h1 class="welcome-title">NUEVA</h1>
+            <h1 class="welcome-title">Restablecer contraseña</h1>
  
             <div class="form-container">
-                <h2 class="form-title">CONTRASEÑA</h2>
  
                 <?php if ($exito): ?>
                     <div class="success-box">

@@ -93,10 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="../assets/img/logo_maxilo.png" alt="Maxilofacial Texcoco Logo" class="logo">
             </div>
  
-            <h1 class="welcome-title">RECUPERAR</h1>
+            <h1 class="welcome-title">Recuperar contraseña</h1>
  
             <div class="form-container">
-                <h2 class="form-title">CONTRASEÑA</h2>
  
                 <?php if ($enviado): ?>
                     <div class="success-box">
