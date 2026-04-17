@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="../assets/img/logo_maxilo.png" alt="Maxilofacial Texcoco Logo" class="logo">
             </div>
  
-            <h1 class="welcome-title">RECUPERAR<br>CONTRASEÑA</h1>
+            <h1 class="welcome-title">RECUPERAR CONTRASEÑA</h1>
  
             <div class="form-container">
  
