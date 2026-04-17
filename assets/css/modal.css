@@ -7,7 +7,7 @@
     --border-radius-md: 8px;
     --color-background-secondary: #f9fafb;
 }
-
+ 
 /*MODAL OVERLAY*/
 .modal-overlay {
     display: none;
@@ -21,11 +21,11 @@
     z-index: 9998;
     animation: fadeIn 0.3s ease;
 }
-
+ 
 .modal-overlay.active {
     display: block;
 }
-
+ 
 /*CONTENEDOR DEL MODAL*/
 .modal-container {
     display: none;
@@ -44,12 +44,12 @@
     overflow: hidden;
     animation: slideDown 0.3s ease;
 }
-
+ 
 .modal-container.active {
     display: flex;
     flex-direction: column;
 }
-
+ 
 /*ENCABEZADO DEL MODAL*/
 .modal-header {
     display: flex;
@@ -59,28 +59,28 @@
     border-bottom: 1px solid #e8e8e8;
     background-color: #ffffff;
 }
-
+ 
 .modal-title-wrapper {
     flex: 1;
 }
-
+ 
 .modal-title {
     font-size: 24px;
     font-weight: 700;
     color: #1a1a1a;
     margin: 0;
 }
-
+ 
 .modal-title .highlight {
     color: #20a89e;
 }
-
+ 
 .modal-actions {
     display: flex;
     gap: 10px;
     align-items: center;
 }
-
+ 
 .btn-modal-add {
     padding: 10px 20px;
     background-color: #20a89e;
@@ -95,13 +95,13 @@
     align-items: center;
     gap: 8px;
 }
-
+ 
 .btn-modal-add:hover {
     background-color: #188a82;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(32, 168, 158, 0.3);
 }
-
+ 
 .btn-modal-close {
     width: 32px;
     height: 32px;
@@ -117,12 +117,12 @@
     justify-content: center;
     padding: 0;
 }
-
+ 
 .btn-modal-close:hover {
     background-color: #f8f9fa;
     color: #1a1a1a;
 }
-
+ 
 /*TABS DEL MODAL*/
 .modal-tabs {
     display: flex;
@@ -132,34 +132,34 @@
     /* Espacio a los lados */
     background-color: #ffffff;
     border-bottom: 2px solid #e8e8e8;
-
+ 
     /* ACTIVAR SCROLL PERO OCULTAR BARRA */
     overflow-x: auto;
     /* Permite deslizar horizontalmente */
     scroll-behavior: smooth;
     /* Hace que el cambio sea suave */
-
+ 
     min-height: 55px;
     align-items: stretch;
-
+ 
     /* Ocultar barra en Firefox */
     scrollbar-width: none;
     /* Ocultar barra en Edge */
     -ms-overflow-style: none;
 }
-
+ 
 .modal-tabs::-webkit-scrollbar {
     display: none;
 }
-
+ 
 .modal-tab {
     display: flex;
     align-items: center;
     justify-content: center;
-
+ 
     padding: 10px 20px;
     min-width: 120px;
-
+ 
     background-color: transparent;
     border: none;
     color: #6c757d;
@@ -170,26 +170,26 @@
     white-space: nowrap;
     border-bottom: 3px solid transparent;
     margin-bottom: -2px;
-
+ 
     flex-shrink: 0;
     /* Evita que los nombres se aplasten */
     white-space: nowrap;
     /* Evita que el texto salte a dos líneas */
-
+ 
     border-bottom: 3px solid transparent;
     transition: all 0.2s ease;
 }
-
+ 
 .modal-tab:hover {
     color: #20a89e;
     background-color: #f8f9fa;
 }
-
+ 
 .modal-tab.active {
     color: #20a89e;
     border-bottom-color: #20a89e;
 }
-
+ 
 /*BODY DEL MODAL*/
 .modal-body {
     flex: 1;
@@ -197,59 +197,59 @@
     padding: 30px;
     background-color: #f8f9fa;
 }
-
+ 
 .modal-tab-content {
     display: none;
 }
-
+ 
 .modal-tab-content.active {
     display: block;
     animation: fadeIn 0.3s ease;
 }
-
+ 
 /*FORMULARIO DEL MODAL*/
 .modal-form {
     background-color: #ffffff;
     border-radius: 8px;
     padding: 25px;
 }
-
+ 
 .form-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
     margin-bottom: 20px;
 }
-
+ 
 .form-row.cols-1 {
     grid-template-columns: 1fr;
 }
-
+ 
 .form-row.cols-2 {
     grid-template-columns: repeat(2, 1fr);
 }
-
+ 
 .form-row.cols-3 {
     grid-template-columns: repeat(3, 1fr);
 }
-
+ 
 .form-row.cols-4 {
     grid-template-columns: repeat(4, 1fr);
 }
-
+ 
 .form-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
-
+ 
 .form-label {
     font-size: 13px;
     font-weight: 600;
     color: #495057;
     margin: 0;
 }
-
+ 
 .form-input,
 .form-select,
 .form-textarea {
@@ -262,7 +262,7 @@
     background-color: #f8f9fa;
     transition: all 0.2s ease;
 }
-
+ 
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
@@ -271,7 +271,7 @@
     background-color: #ffffff;
     box-shadow: 0 0 0 3px rgba(32, 168, 158, 0.1);
 }
-
+ 
 .form-input:disabled,
 .form-select:disabled,
 .form-textarea:disabled {
@@ -279,12 +279,12 @@
     color: #6c757d;
     cursor: not-allowed;
 }
-
+ 
 .form-textarea {
     resize: vertical;
     min-height: 80px;
 }
-
+ 
 /*Input del calendario */
 .form-input[type="date"] {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
@@ -292,11 +292,11 @@
     background-position: right 12px center;
     background-size: 18px;
 }
-
+ 
 .form-input[type="date"]::-webkit-calendar-picker-indicator {
     opacity: 0;
 }
-
+ 
 /*FOOTER MODAL*/
 .modal-footer {
     display: flex;
@@ -306,7 +306,7 @@
     border-top: 1px solid #e8e8e8;
     background-color: #ffffff;
 }
-
+ 
 .btn-modal-cancel,
 .btn-modal-save {
     padding: 12px 24px;
@@ -317,34 +317,34 @@
     cursor: pointer;
     transition: all 0.2s ease;
 }
-
+ 
 .btn-modal-cancel {
     background-color: #f8f9fa;
     color: #495057;
 }
-
+ 
 .btn-modal-cancel:hover {
     background-color: #e8e8e8;
 }
-
+ 
 .btn-modal-save {
     background-color: #20a89e;
     color: white;
 }
-
+ 
 .btn-modal-save:hover {
     background-color: #188a82;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(32, 168, 158, 0.3);
 }
-
+ 
 /*COLUMNA DE ACTIONES*/
 .actions-column {
     background-color: #f8f9fa;
     border-left: 1px solid #e8e8e8;
     padding: 20px;
 }
-
+ 
 .actions-title {
     font-size: 13px;
     font-weight: 700;
@@ -353,135 +353,195 @@
     letter-spacing: 0.5px;
     margin-bottom: 15px;
 }
-
+ 
 .action-item {
     display: flex;
     gap: 10px;
     margin-bottom: 10px;
 }
-
+ 
 /*ANIMACIONES*/
 @keyframes fadeIn {
     from {
         opacity: 0;
     }
-
+ 
     to {
         opacity: 1;
     }
 }
-
+ 
 @keyframes slideDown {
     from {
         opacity: 0;
         transform: translate(-50%, -55%);
     }
-
+ 
     to {
         opacity: 1;
         transform: translate(-50%, -50%);
     }
 }
-
+ 
 /*RESPONSIVE*/
+@media (max-width: 640px) {
+ 
+    /* Formularios — colapsar todas las columnas en móvil */
+    .form-row,
+    .form-row.cols-2,
+    .form-row.cols-3,
+    .form-row.cols-4 {
+        grid-template-columns: 1fr;
+    }
+ 
+    /* Inputs de fecha — evitar desbordamiento */
+    .form-input[type="date"],
+    .form-input[type="time"],
+    .form-input[type="datetime-local"] {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        font-size: 13px;
+    }
+ 
+    /* Modal body — reducir padding */
+    .modal-body {
+        padding: 16px;
+    }
+ 
+    .modal-form {
+        padding: 16px;
+    }
+ 
+    /* Header del modal */
+    .modal-header {
+        padding: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+ 
+    .modal-title {
+        font-size: 18px;
+    }
+ 
+    /* Botón agregar nuevo en header */
+    .btn-modal-add {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+ 
+    /* Footer */
+    .modal-footer {
+        padding: 14px 16px;
+        flex-wrap: wrap;
+    }
+ 
+    .btn-modal-cancel,
+    .btn-modal-save {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+    }
+}
+ 
 @media (max-width: 968px) {
     .modal-container {
         width: 95%;
         max-height: 95vh;
     }
-
+ 
     .modal-header {
         padding: 20px;
     }
-
+ 
     .modal-body {
         padding: 20px;
     }
-
+ 
     .modal-footer {
         padding: 15px 20px;
     }
-
+ 
     .form-row {
         grid-template-columns: 1fr;
     }
-
+ 
     .form-row.cols-2,
     .form-row.cols-3,
     .form-row.cols-4 {
         grid-template-columns: 1fr;
     }
 }
-
+ 
 @media (max-width: 640px) {
     .modal-title {
         font-size: 20px;
     }
-
+ 
     .modal-tabs {
         padding: 0 15px;
     }
-
+ 
     .modal-tab {
         padding: 12px 15px;
         font-size: 13px;
     }
-
+ 
     .btn-modal-add {
         padding: 8px 16px;
         font-size: 13px;
     }
-
+ 
     .modal-footer {
         flex-direction: column;
     }
-
+ 
     .btn-modal-cancel,
     .btn-modal-save {
         width: 100%;
     }
 }
-
+ 
 /*UTILIDADES*/
 .text-muted {
     color: #6c757d;
 }
-
+ 
 .text-small {
     font-size: 12px;
 }
-
+ 
 .mb-0 {
     margin-bottom: 0;
 }
-
+ 
 .mb-2 {
     margin-bottom: 1rem;
 }
-
+ 
 .mb-3 {
     margin-bottom: 1.5rem;
 }
-
+ 
 .mt-3 {
     margin-top: 1.5rem;
 }
-
+ 
 /* ============================================================ */
 /* FORM CARD - caja blanca dentro de tabs                      */
 /* ============================================================ */
-
+ 
 .form-card {
     background: #ffffff;
     border: 1px solid #e8e8e8;
     border-radius: 8px;
     padding: 24px;
 }
-
+ 
 /* ============================================================ */
 /* SECCIÓN TÍTULOS - Historial y Contacto                      */
 /* ============================================================ */
-
+ 
 .form-section-title {
     font-size: 14px;
     font-weight: 600;
@@ -494,22 +554,22 @@
     align-items: center;
     gap: 8px;
 }
-
+ 
 .form-section-title i {
     color: #20a89e;
 }
-
+ 
 /* ============================================================ */
 /* PLANES DE TRATAMIENTO                                        */
 /* ============================================================ */
-
+ 
 /* Toolbar superior (botón Agregar nuevo) */
 .tab-toolbar {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 16px;
 }
-
+ 
 /* Tarjeta de plan */
 .plan-card {
     background-color: #ffffff;
@@ -518,7 +578,7 @@
     padding: 20px;
     margin-bottom: 16px;
 }
-
+ 
 .plan-card-header {
     display: flex;
     justify-content: space-between;
@@ -527,29 +587,29 @@
     gap: 12px;
     margin-bottom: 16px;
 }
-
+ 
 .plan-card-info {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
-
+ 
 .plan-nombre {
     font-size: 15px;
     font-weight: 700;
     color: #20a89e;
 }
-
+ 
 .plan-descripcion {
     font-size: 13px;
     color: #495057;
 }
-
+ 
 .plan-meta {
     font-size: 13px;
     color: #495057;
 }
-
+ 
 .plan-card-totales {
     display: flex;
     flex-direction: column;
@@ -558,19 +618,19 @@
     font-size: 14px;
     color: #212529;
 }
-
+ 
 /* Tabla de procedimientos del plan */
 .plan-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
 }
-
+ 
 .plan-table thead tr {
     border-top: 1px solid #dee2e6;
     border-bottom: 1px solid #dee2e6;
 }
-
+ 
 .plan-table th {
     padding: 10px 12px;
     text-align: left;
@@ -579,17 +639,17 @@
     color: #6c757d;
     letter-spacing: 0.5px;
 }
-
+ 
 .plan-table td {
     padding: 12px;
     border-bottom: 1px solid #f1f3f5;
     color: #495057;
 }
-
+ 
 .plan-table tbody tr:last-child td {
     border-bottom: none;
 }
-
+ 
 /* Badges de estatus */
 .badge-estatus {
     font-size: 11px;
@@ -598,34 +658,34 @@
     border-radius: 4px;
     letter-spacing: 0.3px;
 }
-
+ 
 .badge-estatus.completado {
     background-color: #d1fae5;
     color: #065f46;
 }
-
+ 
 .badge-estatus.pendiente {
     background-color: #fef3c7;
     color: #92400e;
 }
-
+ 
 .badge-estatus.en-progreso {
     background-color: #dbeafe;
     color: #1e40af;
 }
-
+ 
 .badge-estatus.cancelado {
     background-color: #fee2e2;
     color: #991b1b;
 }
-
+ 
 /* Botones de acción dentro de la tabla */
 .acciones-cell {
     display: flex;
     gap: 8px;
     align-items: center;
 }
-
+ 
 .btn-accion {
     background: none;
     border: none;
@@ -635,27 +695,27 @@
     border-radius: 4px;
     transition: opacity 0.2s, background 0.2s;
 }
-
+ 
 .btn-accion:hover {
     opacity: 0.75;
     background-color: #f8f9fa;
 }
-
+ 
 .btn-accion.editar {
     color: #20a89e;
 }
-
+ 
 .btn-accion.eliminar {
     color: #dc3545;
 }
-
+ 
 /* Botón imprimir */
 .tab-footer-actions {
     display: flex;
     justify-content: center;
     margin-top: 24px;
 }
-
+ 
 .btn-imprimir {
     background-color: #20a89e;
     color: white;
@@ -667,60 +727,60 @@
     cursor: pointer;
     transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
-
+ 
 .btn-imprimir:hover {
     background-color: #188a82;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(32, 168, 158, 0.3);
 }
-
+ 
 /* ============================================================ */
 /* ARCHIVOS MÉDICOS                                             */
 /* ============================================================ */
-
+ 
 .archivo-link {
     color: #0d6efd;
     text-decoration: none;
     font-size: 13px;
 }
-
+ 
 .archivo-link:hover {
     text-decoration: underline;
 }
-
+ 
 /* ============================================================ */
 /* RESPONSIVE - Planes de tratamiento                          */
 /* ============================================================ */
-
+ 
 @media (max-width: 640px) {
     .plan-card-header {
         flex-direction: column;
     }
-
+ 
     .plan-card-totales {
         text-align: left;
     }
-
+ 
     .plan-table th,
     .plan-table td {
         padding: 8px;
         font-size: 12px;
     }
-
+ 
     .acciones-cell {
         gap: 4px;
     }
 }
-
+ 
 /*==============================MODAL SIN TABS:catálogos simples =====================================*/
-
-
+ 
+ 
 /* Modal sin tabs*/
 .modal-notabs .modal-body {
     background-color: #ffffff;
     padding: 30px;
 }
-
+ 
 /* El formulario ocupa todo el espacio sin tarjeta extra */
 .modal-notabs .modal-form {
     background-color: #ffffff;
@@ -728,26 +788,26 @@
     padding: 0;
     box-shadow: none;
 }
-
+ 
 /* Separador de secciones dentro del formulario (sin tabs) */
 .modal-notabs .form-section-title {
     margin-top: 24px;
 }
-
+ 
 .modal-notabs .form-section-title:first-child {
     margin-top: 0;
 }
-
+ 
 /* ============================================================ */
 /* ESTADOS DE CARGA EN BOTÓN GUARDAR                           */
 /* ============================================================ */
-
+ 
 .btn-modal-save.loading {
     opacity: 0.75;
     cursor: not-allowed;
     pointer-events: none;
 }
-
+ 
 .btn-modal-save.loading::after {
     content: '';
     display: inline-block;
@@ -760,24 +820,24 @@
     margin-left: 8px;
     vertical-align: middle;
 }
-
+ 
 @keyframes spin {
     to {
         transform: rotate(360deg);
     }
 }
-
+ 
 /* ============================================================ */
 /* VALIDACIÓN — campos con error                               */
 /* ============================================================ */
-
+ 
 .form-input.input-error,
 .form-select.input-error,
 .form-textarea.input-error {
     border-color: #dc3545;
     box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
 }
-
+ 
 .field-error {
     display: block;
     font-size: 12px;
@@ -785,22 +845,22 @@
     margin-top: 4px;
     min-height: 16px;
 }
-
+ 
 .form-label .required {
     color: #dc3545;
     margin-left: 2px;
 }
-
+ 
 /* ============================================================ */
 /* CHECKBOX                                                     */
 /* ============================================================ */
-
+ 
 .form-group-check {
     display: flex;
     align-items: center;
     padding-top: 24px;
 }
-
+ 
 .form-label-check {
     display: flex;
     align-items: center;
@@ -810,7 +870,7 @@
     cursor: pointer;
     font-weight: 500;
 }
-
+ 
 .form-checkbox {
     width: 18px;
     height: 18px;
@@ -818,54 +878,54 @@
     cursor: pointer;
     flex-shrink: 0;
 }
-
+ 
 /* ============================================================ */
 /* BOTÓN ACTIVAR (verde) en tabla                              */
 /* ============================================================ */
-
+ 
 .btn-activate {
     background-color: #e8f6f5;
     color: #20a89e;
 }
-
+ 
 .btn-activate:hover {
     background-color: #20a89e;
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(32, 168, 158, 0.3);
 }
-
+ 
 /* ============================================================ */
 /* RESPONSIVE — modal sin tabs                                 */
 /* ============================================================ */
-
+ 
 @media (max-width: 968px) {
     .modal-notabs .modal-body {
         padding: 20px;
     }
 }
-
+ 
 @media (max-width: 640px) {
     .modal-notabs .modal-body {
         padding: 16px;
     }
-
+ 
     .form-group-check {
         padding-top: 8px;
     }
 }
-
-
+ 
+ 
 /* ============================================================ */
 /* TAB ANAMNESIS */
 /* ============================================================ */
-
+ 
 .form-group--checkbox {
     display: flex;
     align-items: left;
     min-height: 40px;
 }
-
+ 
 .form-checkbox-label {
     display: flex;
     align-items: left;
@@ -875,7 +935,7 @@
     color: var(--color-text-primary, #333);
     user-select: none;
 }
-
+ 
 .form-checkbox {
     width: 18px;
     height: 18px;
@@ -883,15 +943,15 @@
     accent-color: #20a89e;
     flex-shrink: 0;
 }
-
+ 
 .form-checkbox-label span {
     line-height: 1.4;
 }
-
+ 
 /* ============================================================ */
 /* TAB HISTORIAL CLÍNICO CHIPS*/
 /* ============================================================ */
-
+ 
 /* Contenedor principal */
 .contenedor-antecedentes {
     border: 1px solid var(--color-border-tertiary);
@@ -900,22 +960,22 @@
     background: var(--color-background-secondary);
     min-height: 60px;
 }
-
+ 
 .antecedentes-cargando {
     font-size: 13px;
     color: var(--color-text-tertiary);
     margin: 0;
 }
-
+ 
 /* Grupo por tipo */
 .antecedentes-grupo {
     margin-bottom: 12px;
 }
-
+ 
 .antecedentes-grupo:last-child {
     margin-bottom: 0;
 }
-
+ 
 .antecedentes-grupo-titulo {
     font-size: 11px;
     font-weight: 600;
@@ -924,14 +984,14 @@
     color: var(--color-text-secondary);
     margin: 0 0 6px 0;
 }
-
+ 
 /* Contenedor de chips */
 .chips-container {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
 }
-
+ 
 /* Chip base */
 .chip {
     display: inline-flex;
@@ -948,44 +1008,44 @@
     user-select: none;
     transition: all 0.15s ease;
 }
-
+ 
 .chip:hover {
     border-color: #20a89e;
     color: #20a89e;
     background: rgba(32, 168, 158, 0.06);
 }
-
+ 
 /* Chip seleccionado */
 .chip--activo {
     border-color: #20a89e !important;
     background: rgba(32, 168, 158, 0.12) !important;
     color: #0f6e56 !important;
 }
-
+ 
 /* Chip con alerta médica (no seleccionado) */
 .chip--alerta {
     border-color: #f0997b !important;
     background: #faece7 !important;
 }
-
+ 
 .chip--alerta:hover {
     background: rgba(216, 90, 48, 0.08);
     border-color: #d85a30;
 }
-
+ 
 /* Chip con alerta médica Y seleccionado */
 .chip--alerta.chip--activo {
     border-color: #20a89e !important;
     background: rgba(32, 168, 158, 0.12) !important;
     color: #0f6e56 !important;
 }
-
+ 
 /* Ícono de alerta dentro del chip */
 .chip-alerta-icon {
     font-size: 11px;
     opacity: 0.85;
 }
-
+ 
 /* Demo chip en leyenda */
 .chip--demo {
     cursor: default;
@@ -993,23 +1053,23 @@
     font-size: 11px;
     padding: 2px 8px;
 }
-
+ 
 /* Leyenda junto al label */
 .antecedentes-leyenda {
     margin-left: 10px;
     vertical-align: middle;
 }
-
+ 
 /* Readonly: chips no clickeables */
 .modal--readonly .chip {
     cursor: default;
     pointer-events: none;
 }
-
+ 
 /* ==========================================================================
    ESTILOS PARA EL TAB: PLANES DE TRATAMIENTO
    ========================================================================== */
-
+ 
 /* 1. TARJETAS Y CONTENEDORES DE FORMULARIO */
 .plan-form-card,
 .form-card {
@@ -1019,21 +1079,21 @@
     padding: 24px;
     margin-bottom: 16px;
 }
-
+ 
 .plan-form-titulo {
     font-size: 14px;
     font-weight: 600;
     color: var(--color-text-primary);
     margin: 0 0 16px 0;
 }
-
+ 
 /* 2. PROCEDIMIENTOS (INTERFAZ DE AGREGAR) */
 .plan-procedimientos-section {
     margin-top: 16px;
     border-top: 1px solid var(--color-border-tertiary);
     padding-top: 16px;
 }
-
+ 
 .btn-agregar-proc {
     display: inline-flex;
     align-items: center;
@@ -1048,11 +1108,11 @@
     cursor: pointer;
     transition: all 0.15s ease;
 }
-
+ 
 .btn-agregar-proc:hover {
     background: rgba(32, 168, 158, 0.15);
 }
-
+ 
 .proc-add-row,
 .proc-add-inline {
     display: flex;
@@ -1062,22 +1122,22 @@
     flex-wrap: wrap;
     padding: 10px;
 }
-
+ 
 .proc-select {
     flex: 2;
     min-width: 160px;
 }
-
+ 
 .proc-pieza {
     flex: 0.5;
     min-width: 80px;
 }
-
+ 
 .proc-descuento {
     flex: 0.8;
     min-width: 110px;
 }
-
+ 
 .btn-confirmar-proc,
 .btn-cancelar-proc {
     width: 32px;
@@ -1091,22 +1151,22 @@
     justify-content: center;
     flex-shrink: 0;
 }
-
+ 
 .btn-confirmar-proc {
     background: #20a89e;
     color: white;
 }
-
+ 
 .btn-confirmar-proc:hover {
     background: #0f6e56;
 }
-
+ 
 .btn-cancelar-proc {
     background: var(--color-background-primary);
     color: var(--color-text-secondary);
     border: 1px solid var(--color-border-secondary);
 }
-
+ 
 /* 3. TABLA DE PROCEDIMIENTOS (LISTADO) */
 .plan-table {
     width: 100% !important;
@@ -1114,7 +1174,7 @@
     margin-top: 0;
     border-top: none !important;
 }
-
+ 
 .plan-table th {
     text-align: left;
     padding: 15px 20px;
@@ -1125,29 +1185,29 @@
     border-bottom: 1px solid var(--color-border-tertiary);
     border-top: none !important;
 }
-
+ 
 .plan-table td {
     padding: 8px 20px;
     border-bottom: 1px solid var(--color-border-tertiary);
     color: var(--color-text-primary);
 }
-
+ 
 .plan-table tfoot td {
     border-top: 2px solid var(--color-border-secondary);
     border-bottom: none;
 }
-
+ 
 .plan-table .acciones-cell {
     text-align: center;
     width: 50px;
 }
-
+ 
 .plan-table th:last-child,
 .plan-table td:last-child {
     width: auto;
     padding-right: 20px;
 }
-
+ 
 .btn-accion.eliminar {
     background: none;
     border: none;
@@ -1157,11 +1217,11 @@
     border-radius: 4px;
     font-size: 14px;
 }
-
+ 
 .btn-accion.eliminar:hover {
     background: #ffebee;
 }
-
+ 
 /* 4. TARJETAS DE PLAN EXISTENTE (ACORDEÓN) */
 .plan-card {
     margin-bottom: 16px;
@@ -1171,7 +1231,7 @@
     background-color: #ffffff;
     padding: 0;
 }
-
+ 
 .plan-card-header,
 .plan-accordion-header {
     display: flex;
@@ -1187,11 +1247,11 @@
     user-select: none;
     transition: background 0.15s ease;
 }
-
+ 
 .plan-accordion-header:hover {
     background: var(--color-background-tertiary);
 }
-
+ 
 .plan-card-info,
 .plan-accordion-info {
     display: flex;
@@ -1199,24 +1259,24 @@
     gap: 4px;
     flex: 1;
 }
-
+ 
 .plan-nombre {
     font-size: 14px;
     font-weight: 600;
     color: var(--color-text-primary);
 }
-
+ 
 .plan-meta {
     font-size: 12px;
     color: var(--color-text-secondary);
 }
-
+ 
 .plan-descripcion {
     font-size: 12px;
     color: var(--color-text-tertiary);
     font-style: italic;
 }
-
+ 
 .plan-card-totales {
     display: flex;
     flex-direction: column;
@@ -1225,25 +1285,25 @@
     font-size: 13px;
     color: var(--color-text-primary);
 }
-
+ 
 .plan-accordion-actions {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
 }
-
+ 
 .plan-accordion-icon {
     font-size: 18px;
     color: var(--color-text-secondary);
     transition: transform 0.2s ease;
 }
-
+ 
 .plan-accordion-body {
     border-top: 1px solid var(--color-border-tertiary);
     padding: 0 !important;
 }
-
+ 
 .plan-notas {
     padding: 10px 16px;
     font-size: 13px;
@@ -1251,7 +1311,7 @@
     font-style: italic;
     border-bottom: 1px solid var(--color-border-tertiary);
 }
-
+ 
 /* 5. BOTONES Y BADGES */
 .btn-eliminar-plan {
     width: 30px;
@@ -1267,43 +1327,43 @@
     justify-content: center;
     transition: all 0.15s ease;
 }
-
+ 
 .btn-eliminar-plan:hover {
     background: rgba(216, 90, 48, 0.1);
 }
-
+ 
 .badge-estatus {
     padding: 2px 8px;
     border-radius: 12px;
     font-size: 11px;
     font-weight: 600;
 }
-
+ 
 .badge-estatus.programado {
     background: #e6f1fb;
     color: #185fa5;
 }
-
+ 
 .badge-estatus.en-curso {
     background: #e1f5ee;
     color: #0f6e56;
 }
-
+ 
 .badge-estatus.pausado {
     background: #faeeda;
     color: #854f0b;
 }
-
+ 
 .badge-estatus.completado {
     background: #eaf3de;
     color: #3b6d11;
 }
-
+ 
 .badge-estatus.pendiente {
     background: #f1efe8;
     color: #5f5e5a;
 }
-
+ 
 .select-estatus-plan {
     font-size: 12px;
     padding: 3px 8px;
@@ -1314,10 +1374,10 @@
     cursor: pointer;
     margin-top: 6px;
 }
-
+ 
 /* Estilos para compras y proveedores */
 /* Totales */
-
+ 
 .totales-resumen {
     background: #f8f9fa;
     border-radius: 8px;
@@ -1326,7 +1386,7 @@
     /* Incrementado para evitar saltos de línea */
     border: 1px solid #e9ecef;
 }
-
+ 
 .totales-row {
     display: flex;
     justify-content: space-between;
@@ -1338,11 +1398,11 @@
     border-bottom: 1px solid #e9ecef;
     white-space: nowrap;
 }
-
+ 
 .totales-row:last-child {
     border-bottom: none;
 }
-
+ 
 .totales-total {
     font-size: 18px;
     /* Más jerarquía al total */
@@ -1350,28 +1410,28 @@
     color: #212529;
     padding-top: 12px;
 }
-
+ 
 /* --- Modal Layout --- */
 .modal-lg {
     max-width: 860px;
     width: 95vw;
 }
-
+ 
 .text-right {
     text-align: right !important;
 }
-
+ 
 .text-center {
     text-align: center !important;
 }
-
+ 
 /* --- Tabla de Detalle (Corrección de Truncado) --- */
 .plan-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 0;
 }
-
+ 
 /* Ajuste de columnas específicas */
 #tablaDetalle th:last-child,
 #tablaDetalle td:last-child {
@@ -1381,7 +1441,7 @@
     padding-right: 12px;
     /* Espacio de seguridad interno */
 }
-
+ 
 /* Estilo del Botón Eliminar */
 #tablaDetalle .btn-accion.eliminar {
     display: inline-flex;
@@ -1398,13 +1458,13 @@
     transition: all 0.2s ease;
     outline: none;
 }
-
+ 
 #tablaDetalle .btn-accion.eliminar:hover {
     background: #fbc2c2;
     transform: scale(1.05);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
+ 
 /* --- Fila de Edición (Agregar Producto) --- */
 .proc-add-row {
     display: flex;
@@ -1415,7 +1475,7 @@
     background: #f1f3f5;
     border-radius: 6px;
 }
-
+ 
 /* --- Media Queries (Móvil) --- */
 @media (max-width: 600px) {
     .modal-lg {
@@ -1423,24 +1483,24 @@
         max-width: 100vw;
         border-radius: 0;
     }
-
+ 
     .totales-resumen {
         flex: 1 1 100% !important;
         min-width: unset !important;
         margin-top: 15px;
     }
-
+ 
     /* Ocultar columnas secundarias en móviles muy pequeños */
     #tablaDetalle th:nth-child(3),
     #tablaDetalle td:nth-child(3) {
         display: none;
     }
-
+ 
     /* Estilo tipo tarjeta para filas de tabla */
     #tablaDetalle thead {
         display: none;
     }
-
+ 
     #tablaDetalle tbody tr {
         display: flex;
         flex-wrap: wrap;
@@ -1449,12 +1509,12 @@
         border-bottom: 2px solid #e9ecef;
         gap: 8px;
     }
-
+ 
     #tablaDetalle tbody td {
         border: none;
         padding: 4px;
     }
-
+ 
     /* Producto ocupa todo el ancho */
     #tablaDetalle tbody td:nth-child(1) {
         flex: 1 1 100%;
@@ -1462,7 +1522,7 @@
         font-size: 15px;
         color: #212529;
     }
-
+ 
     /* Cantidad y Subtotal con etiquetas dinámicas */
     #tablaDetalle tbody td:nth-child(2)::before {
         content: "Cant: ";
@@ -1470,42 +1530,42 @@
         font-size: 12px;
         font-weight: 400;
     }
-
+ 
     #tablaDetalle tbody td:nth-child(4)::before {
         content: "Subtotal: ";
         color: #6c757d;
         font-size: 12px;
         font-weight: 400;
     }
-
+ 
     #tablaDetalle tbody td:nth-child(2) {
         flex: 1;
     }
-
+ 
     #tablaDetalle tbody td:nth-child(4) {
         flex: 1;
         text-align: right;
         font-weight: 600;
     }
-
+ 
     /* Botón eliminar en móvil */
     #tablaDetalle tbody td:nth-child(5) {
         flex: 0 0 auto;
         width: auto !important;
         padding: 0 10px;
     }
-
+ 
     /* Estilos para inventario */
     .inv-detalle-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 8px;
     }
-
+ 
     .inv-detalle-full {
         grid-column: 1 / -1;
     }
-
+ 
     .inv-detalle-row {
         display: flex;
         flex-direction: column;
@@ -1514,7 +1574,7 @@
         padding: 10px 14px;
         gap: 3px;
     }
-
+ 
     .inv-detalle-label {
         font-size: 11px;
         font-weight: 900;
@@ -1522,18 +1582,18 @@
         text-transform: uppercase;
         letter-spacing: .4px;
     }
-
+ 
     .inv-detalle-value {
         font-size: 14px;
         font-weight: 500;
         color: #212529;
     }
-
+ 
     @media (max-width: 480px) {
         .inv-detalle-grid {
             grid-template-columns: 1fr;
         }
-
+ 
         .inv-detalle-full {
             grid-column: 1;
         }
