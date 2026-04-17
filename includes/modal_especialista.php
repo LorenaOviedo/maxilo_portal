@@ -2,7 +2,7 @@
 /* MODAL DE ESPECIALISTA REUTILIZABLE VER/EDITAR */
 $modal_esp_id = 'modalEspecialista';
 ?>
-
+ 
 <!-- Overlay -->
 <div id="<?php echo $modal_esp_id; ?>-overlay" class="modal-overlay"></div>
  
@@ -181,24 +181,27 @@ $modal_esp_id = 'modalEspecialista';
  
                 <!-- Fila para nueva especialidad (oculta por defecto) -->
                 <div id="rowNuevaEsp" class="proc-add-row" style="display:none; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-                    <select id="espSelectEsp" class="form-select" style="min-width:180px;">
+                    <select id="espSelectEsp" class="form-select" style="flex:1; min-width:0; box-sizing:border-box;">
                         <option value="">Seleccionar especialidad...</option>
                     </select>
                     <input type="text" id="espCedula" class="form-input"
-                        placeholder="Cédula profesional" style="max-width:180px;" autocomplete="off">
+                        placeholder="Cédula profesional" style="flex:1; min-width:0; box-sizing:border-box;" autocomplete="off">
                     <input type="text" id="espInstitucion" class="form-input"
-                        placeholder="Institución de egreso" style="max-width:200px;" autocomplete="off">
-                    <button type="button" class="btn-confirmar-proc"
-                        onclick="especialistaController.confirmarEsp()">
-                        <i class="ri-check-line"></i>
-                    </button>
-                    <button type="button" class="btn-cancelar-proc"
-                        onclick="especialistaController.ocultarFilaEsp()">
-                        <i class="ri-close-line"></i>
-                    </button>
+                        placeholder="Institución de egreso" style="flex:1; min-width:0; box-sizing:border-box;" autocomplete="off">
+                    <div style="display:flex; gap:6px; flex-shrink:0;">
+                        <button type="button" class="btn-confirmar-proc"
+                            onclick="especialistaController.confirmarEsp()">
+                            <i class="ri-check-line"></i>
+                        </button>
+                        <button type="button" class="btn-cancelar-proc"
+                            onclick="especialistaController.ocultarFilaEsp()">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
                 </div>
  
                 <!-- Tabla de especialidades -->
+                <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
                 <table class="plan-table" id="tablaEspecialidades">
                     <thead>
                         <tr>
@@ -217,6 +220,7 @@ $modal_esp_id = 'modalEspecialista';
                     </tbody>
                 </table>
  
+                </div><!-- /overflow-x -->
                 <!-- JSON oculto que se envía al guardar -->
                 <input type="hidden" id="espEspecialidadesJson" name="especialidades_json" value="[]" autocomplete="off">
  
