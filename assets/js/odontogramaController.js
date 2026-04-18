@@ -187,10 +187,24 @@ const odontogramaController = {
                         set.add(idOdontograma);
                         // Actualizar estado reactivo primero para que Vue renderice el select
                         editandoEstatus.value = set;
-                        // Poblar después de que Vue termine de renderizar
-                        setTimeout(() =>
-                            self._poblarSelectEditarEstatus(idOdontograma, idEstatusActual)
-                        , 100);
+                        // Usar MutationObserver para esperar exactamente a que el select exista
+                        const selectId = `odontEditarEstatus_${idOdontograma}`;
+                        const observer = new MutationObserver(() => {
+                            const sel = document.getElementById(selectId);
+                            if (sel) {
+                                observer.disconnect();
+                                self._poblarSelectEditarEstatus(idOdontograma, idEstatusActual);
+                            }
+                        });
+                        observer.observe(
+                            document.getElementById('app-odontograma'),
+                            { childList: true, subtree: true }
+                        );
+                        // Fallback por si el observer no dispara
+                        setTimeout(() => {
+                            observer.disconnect();
+                            self._poblarSelectEditarEstatus(idOdontograma, idEstatusActual);
+                        }, 300);
                     }
                 }
  

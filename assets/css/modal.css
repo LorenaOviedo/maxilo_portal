@@ -388,6 +388,32 @@
 /*RESPONSIVE*/
 @media (max-width: 640px) {
  
+    /* Botones del odontograma — más grandes en móvil */
+    .btn-confirmar-proc,
+    .btn-cancelar-proc {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+    }
+ 
+    .btn-eliminar-registro {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 14px !important;
+        padding: 0 !important;
+    }
+ 
+    /* Registro item — mejor espaciado en móvil */
+    .registro-item-top {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+ 
+    .registro-estatus {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+ 
     /* Tabla de planes — scroll horizontal en móvil */
     .plan-accordion-body {
         overflow-x: auto;
