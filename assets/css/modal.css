@@ -420,10 +420,6 @@
         -webkit-overflow-scrolling: touch;
     }
  
-    .plan-table {
-        min-width: 480px; /* fuerza scroll en lugar de comprimir */
-    }
- 
     /* Cabecera del acordeón — apilar info y acciones */
     .plan-accordion-header {
         flex-direction: column;
