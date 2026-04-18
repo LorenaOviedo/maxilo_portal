@@ -383,7 +383,7 @@ function citaCard(c) {
         <div class="cita-hora">${formatTime(c.hora_inicio)}</div>
         <div class="cita-info">
             <div class="cita-paciente"><i class="ri-user-line"></i> ${c.nombre_paciente ?? "—"}</div>
-            <div class="cita-especialista"><i class="ri-nurse-line"></i> ${c.nombre_especialista ?? "—"}</div>
+            <div class="cita-especialista"><i class="fas fa-user-md"></i> ${c.nombre_especialista ?? "—"}</div>
             <div class="cita-motivo"><i class="ri-tooth-line"></i> ${c.motivo_consulta ?? "—"}</div>
         </div>
         <div class="cita-acciones">
@@ -441,7 +441,7 @@ async function cargarCatalogos() {
       (resEsp.data?.length ?? 0) +
       (resMot.data?.length ?? 0);
     console.log(
-      `✔ Catálogos cargados: ${resPac.data?.length ?? 0} pacientes, ${resEsp.data?.length ?? 0} especialistas, ${resMot.data?.length ?? 0} motivos`,
+      `Catálogos cargados: ${resPac.data?.length ?? 0} pacientes, ${resEsp.data?.length ?? 0} especialistas, ${resMot.data?.length ?? 0} motivos`,
     );
     if (totalOpts === 0)
       toast(
@@ -808,7 +808,7 @@ async function abrirDetalle(id) {
                     <span class="detalle-value">${c.paciente_primera_vez == 1 ? "Primera vez" : "Seguimiento"}</span>
                 </div>
                 <div class="detalle-row">
-                    <span class="detalle-label"><i class="ri-nurse-line"></i> Especialista</span>
+                    <span class="detalle-label"><i class="fas fa-user-md"></i> Especialista</span>
                     <span class="detalle-value">${c.nombre_especialista ?? "—"}</span>
                 </div>
                 <div class="detalle-row">
