@@ -575,7 +575,8 @@ $modal_id = 'modalPaciente';
                                         `estado-${estadoDiente(pieza.numero)}`,
                                         { activo: dienteActivo?.numero === pieza.numero }
                                     ]">
-                                        <img :src="pieza.icono" :alt="pieza.nombre"
+                                        <img :src="pieza.icono"
+                                            :alt="pieza.nombre"
                                             style="width:18px; height:18px; object-fit:contain;">
                                         <span v-if="registros[pieza.numero]?.length" class="diente-badge">
                                             {{ registros[pieza.numero].length }}
@@ -597,7 +598,8 @@ $modal_id = 'modalPaciente';
                                         `estado-${estadoDiente(pieza.numero)}`,
                                         { activo: dienteActivo?.numero === pieza.numero }
                                     ]">
-                                        <img :src="pieza.icono" :alt="pieza.nombre"
+                                        <img :src="pieza.icono"
+                                            :alt="pieza.nombre"
                                             style="width:18px; height:18px; object-fit:contain;">
                                         <span v-if="registros[pieza.numero]?.length" class="diente-badge">
                                             {{ registros[pieza.numero].length }}
@@ -640,7 +642,7 @@ $modal_id = 'modalPaciente';
                                 <!-- Header -->
                                 <div class="odonto-panel-header">
                                     <div class="odonto-panel-header-icon">
-                                        <img :src="dienteActivo.icono" :alt="dienteActivo.nombre"
+                                        <img :src="dienteActivo.iconoActivo" :alt="dienteActivo.nombre"
                                             style="width:22px; height:22px; object-fit:contain;">
                                     </div>
                                     <div class="odonto-panel-header-info">
@@ -680,38 +682,37 @@ $modal_id = 'modalPaciente';
                                                         v-if="!reg._pendiente && estaEditando(reg.id_odontograma)">
                                                         <select :id="`odontEditarEstatus_${reg.id_odontograma}`"
                                                             class="campo-select"
-                                                            style="font-size:12px; padding:4px 6px; min-width:120px; max-width:160px;">
+                                                            style="font-size:11px; padding:2px 4px; height:24px; min-width:100px;">
                                                         </select>
                                                         <!-- Confirmar -->
                                                         <button class="btn-confirmar-proc"
+                                                            style="height:24px; width:24px; padding:0;"
                                                             @click="guardarEstatus(reg.id_odontograma)"
                                                             title="Guardar estatus">
-                                                            <i class="ri-check-line"></i>
+                                                            <i class="ri-check-line" style="font-size:12px;"></i>
                                                         </button>
                                                         <!-- Cancelar edición -->
                                                         <button class="btn-cancelar-proc"
+                                                            style="height:24px; width:24px; padding:0;"
                                                             @click="toggleEditarEstatus(reg.id_odontograma, reg.id_estatus_hallazgo)"
                                                             title="Cancelar">
-                                                            <i class="ri-close-line"></i>
+                                                            <i class="ri-close-line" style="font-size:12px;"></i>
                                                         </button>
                                                     </template>
  
                                                     <!-- Botón editar estatus (lápiz) -->
                                                     <button v-if="!reg._pendiente && !estaEditando(reg.id_odontograma)"
-                                                        class="btn-eliminar-registro"
-                                                        style="color:#20a89e; min-width:28px; min-height:28px;"
+                                                        class="btn-eliminar-registro" style="color:#20a89e;"
                                                         @click="toggleEditarEstatus(reg.id_odontograma, reg.id_estatus_hallazgo)"
                                                         title="Editar estatus">
-                                                        <i class="fas fa-pen" style="font-size:12px;"></i>
+                                                        <i class="fas fa-pen" style="font-size:10px;"></i>
                                                     </button>
  
                                                     <!-- Botón eliminar -->
                                                     <button v-if="!reg._pendiente && !estaEditando(reg.id_odontograma)"
-                                                        class="btn-eliminar-registro"
-                                                        style="min-width:28px; min-height:28px;"
-                                                        @click="eliminarRegistro(idx)"
+                                                        class="btn-eliminar-registro" @click="eliminarRegistro(idx)"
                                                         title="Eliminar registro">
-                                                        <i class="fas fa-times" style="font-size:12px;"></i>
+                                                        <i class="fas fa-times"></i>
                                                     </button>
  
                                                     <!-- Spinner pendiente -->
