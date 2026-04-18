@@ -76,7 +76,6 @@ include '../includes/sidebar.php';
                     <div class="date-input-wrapper">
                         <input type="date" id="fechaInicio" class="filter-date" value="<?php echo date('Y-m-01'); ?>">
                     </div>
-                    <span class="date-separator">—</span>
                     <div class="date-input-wrapper">
                         <input type="date" id="fechaFin" class="filter-date" value="<?php echo date('Y-m-t'); ?>">
                     </div>
