@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </button>
                     </form>
  
-                    <a href="../index.php" class="back-link">← Volver al inicio de sesión</a>
+                    <a href="../index.php" class="back-link">Volver al inicio de sesión</a>
                 <?php endif; ?>
             </div>
         </div>
