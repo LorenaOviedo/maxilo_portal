@@ -8,6 +8,13 @@
  * Se monta sobre: #app-odontograma (dentro del tab del modal de paciente)
  */
 
+//Independiente de planes.js
+function escHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str ?? '';
+    return d.innerHTML;
+}
+ 
 const odontogramaController = {
  
     _numeroPaciente: null,
