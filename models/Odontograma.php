@@ -230,6 +230,53 @@ class Odontograma
             return ['success' => false, 'message' => $e->getMessage()];
         }
     }
+
+    /**
+     * Actualiza el procedimiento asociado a la transaccion dental de un hallazgo.
+     * Verifica que el registro pertenezca al paciente antes de actualizar.
+     */
+    public function actualizarProcedimiento(int $idOdontograma, int $idProcedimiento, int $numeroPaciente): array
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT o.id_transaccion_dental
+                FROM   odontograma           o
+                JOIN   transaccionesdentales td ON td.id_transaccion_dental = o.id_transaccion_dental
+                JOIN   cita                   c ON c.id_cita                = td.id_cita
+                WHERE  o.id_odontograma  = :id
+                  AND  c.numero_paciente = :numero_paciente
+            ");
+            $stmt->execute([':id' => $idOdontograma, ':numero_paciente' => $numeroPaciente]);
+            $fila = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$fila)
+                return ['success' => false, 'message' => 'Registro no encontrado o sin permiso.'];
+
+            $stmtProc = $this->db->prepare("
+                SELECT id_procedimiento
+                FROM   procedimientos
+                WHERE  id_procedimiento = :id
+                LIMIT 1
+            ");
+            $stmtProc->execute([':id' => $idProcedimiento]);
+
+            if (!$stmtProc->fetch())
+                return ['success' => false, 'message' => 'El procedimiento seleccionado no existe.'];
+
+            $this->db->prepare("
+                UPDATE transaccionesdentales
+                SET    id_procedimiento = :id_procedimiento
+                WHERE  id_transaccion_dental = :id_transaccion
+            ")->execute([
+                ':id_procedimiento' => $idProcedimiento,
+                ':id_transaccion'   => (int) $fila['id_transaccion_dental'],
+            ]);
+
+            return ['success' => true];
+        } catch (\Throwable $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
  
     // ─────────────────────────────────────────────────────────────────────────
     // ESCRITURA — eliminar

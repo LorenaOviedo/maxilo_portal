@@ -110,6 +110,16 @@ const odontogramaController = {
              </option>`
         ).join('');
     },
+
+    _poblarSelectEditarProcedimiento(idRegistro, idProcedimientoActual) {
+        const sel = document.getElementById(`odontEditarProc_${idRegistro}`);
+        if (!sel || !this._catalogos?.procedimientos) return;
+        sel.innerHTML = this._catalogos.procedimientos.map(p =>
+            `<option value="${p.id}" ${p.id == idProcedimientoActual ? 'selected' : ''}>
+                ${escHtml(p.nombre)}
+             </option>`
+        ).join('');
+    },
  
     _resetearPanel() {
         ['odontAnomalia', 'odontProc', 'odontEstatus'].forEach(id => {
@@ -146,8 +156,9 @@ const odontogramaController = {
                 const dienteActivo    = ref(null);
                 const registros       = ref({});
                 const cargando        = ref(false);
-                const notif           = ref({ visible: false, texto: '', tipo: 'success' });
-                const editandoEstatus = ref(new Set());
+                const notif                 = ref({ visible: false, texto: '', tipo: 'success' });
+                const editandoEstatus       = ref(new Set());
+                const editandoProcedimiento = ref(new Set());
  
                 const registrosDiente = computed(() =>
                     dienteActivo.value
@@ -166,16 +177,22 @@ const odontogramaController = {
                 function estaEditando(idOdontograma) {
                     return editandoEstatus.value.has(idOdontograma);
                 }
- 
+
+                function estaEditandoProcedimiento(idOdontograma) {
+                    return editandoProcedimiento.value.has(idOdontograma);
+                }
+
                 function seleccionarDiente(pieza) {
-                    dienteActivo.value    = pieza;
-                    editandoEstatus.value = new Set();
+                    dienteActivo.value             = pieza;
+                    editandoEstatus.value          = new Set();
+                    editandoProcedimiento.value    = new Set();
                     self._nextTick(() => self._poblarSelectsPanel());
                 }
- 
+
                 function cancelar() {
-                    dienteActivo.value    = null;
-                    editandoEstatus.value = new Set();
+                    dienteActivo.value             = null;
+                    editandoEstatus.value          = new Set();
+                    editandoProcedimiento.value    = new Set();
                 }
  
                 function toggleEditarEstatus(idOdontograma, idEstatusActual) {
@@ -190,6 +207,20 @@ const odontogramaController = {
                         // Poblar después de que Vue termine de renderizar
                         setTimeout(() =>
                             self._poblarSelectEditarEstatus(idOdontograma, idEstatusActual)
+                        , 100);
+                    }
+                }
+
+                function toggleEditarProcedimiento(idOdontograma, idProcedimientoActual) {
+                    const set = new Set(editandoProcedimiento.value);
+                    if (set.has(idOdontograma)) {
+                        set.delete(idOdontograma);
+                        editandoProcedimiento.value = set;
+                    } else {
+                        set.add(idOdontograma);
+                        editandoProcedimiento.value = set;
+                        setTimeout(() =>
+                            self._poblarSelectEditarProcedimiento(idOdontograma, idProcedimientoActual)
                         , 100);
                     }
                 }
@@ -209,6 +240,26 @@ const odontogramaController = {
                         set.delete(idOdontograma);
                         editandoEstatus.value = set;
                         mostrarNotif('Estatus actualizado', 'success');
+                    } else {
+                        mostrarNotif(resultado?.message ?? 'Error al actualizar', 'error');
+                    }
+                }
+
+                async function guardarProcedimiento(idOdontograma) {
+                    const sel = document.getElementById(`odontEditarProc_${idOdontograma}`);
+                    const nuevoId = parseInt(sel?.value || '0');
+                    if (!nuevoId) { mostrarNotif('Selecciona un procedimiento', 'error'); return; }
+
+                    const resultado = await self._actualizarProcedimientoEnServidor(
+                        idOdontograma, nuevoId, pacienteId
+                    );
+
+                    if (resultado?.success) {
+                        await self._cargarRegistros(registros, cargando, pacienteId);
+                        const set = new Set(editandoProcedimiento.value);
+                        set.delete(idOdontograma);
+                        editandoProcedimiento.value = set;
+                        mostrarNotif('Procedimiento actualizado', 'success');
                     } else {
                         mostrarNotif(resultado?.message ?? 'Error al actualizar', 'error');
                     }
@@ -300,10 +351,11 @@ const odontogramaController = {
                     arcadaSuperior, arcadaInferior,
                     dienteActivo, registros, registrosDiente,
                     cargando, notif,
-                    estadoDiente, estaEditando,
+                    estadoDiente, estaEditando, estaEditandoProcedimiento,
                     seleccionarDiente, cancelar,
                     guardarRegistro, eliminarRegistro,
                     toggleEditarEstatus, guardarEstatus,
+                    toggleEditarProcedimiento, guardarProcedimiento,
                 };
             },
         });
@@ -365,6 +417,24 @@ const odontogramaController = {
                         id_odontograma:      idOdontograma,
                         id_estatus_hallazgo: idEstatus,
                         numero_paciente:     numeroPaciente,
+                    }),
+                }
+            );
+            return await r.json();
+        } catch (err) { return null; }
+    },
+
+    async _actualizarProcedimientoEnServidor(idOdontograma, idProcedimiento, numeroPaciente) {
+        try {
+            const r = await fetch(
+                `${API_URL}?modulo=odontograma&accion=actualizar_procedimiento_odontograma`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id_odontograma:   idOdontograma,
+                        id_procedimiento: idProcedimiento,
+                        numero_paciente:  numeroPaciente,
                     }),
                 }
             );

@@ -155,12 +155,6 @@ $modulos = [
         'archivo' => __DIR__ . '/../models/Configuracion.php',
         'campo_id' => 'id_usuario',
     ],
-
-    // 'especialidades' => [
-    //     'modelo'   => 'Especialidad',
-    //     'archivo'  => __DIR__ . '/../models/Especialidad.php',
-    //     'campo_id' => 'id_especialidad',
-    // ],
 ];
 
 // ── Validar módulo solicitado ─────────────────────────────────────
@@ -573,6 +567,27 @@ switch ($accion) {
         responder(
             $resultado['success'],
             $resultado['message'] ?? 'Estatus actualizado correctamente'
+        );
+        break;
+
+
+    case 'actualizar_procedimiento_odontograma':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+            responder(false, 'MÇ¸todo no permitido');
+
+        $body = json_decode(file_get_contents('php://input'), true) ?? [];
+
+        $idOdontograma = (int) ($body['id_odontograma'] ?? 0);
+        $idProcedimiento = (int) ($body['id_procedimiento'] ?? 0);
+        $numeroPaciente = (int) ($body['numero_paciente'] ?? 0);
+
+        if (!$idOdontograma || !$idProcedimiento || !$numeroPaciente)
+            responder(false, 'id_odontograma, id_procedimiento y numero_paciente son requeridos');
+
+        $resultado = $model->actualizarProcedimiento($idOdontograma, $idProcedimiento, $numeroPaciente);
+        responder(
+            $resultado['success'],
+            $resultado['message'] ?? 'Procedimiento actualizado correctamente'
         );
         break;
 

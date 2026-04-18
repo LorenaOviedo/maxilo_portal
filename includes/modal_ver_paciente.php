@@ -729,11 +729,42 @@ $modal_id = 'modalPaciente';
                                             </div>
  
                                             <!-- Procedimiento -->
-                                            <div class="registro-procedimiento" v-if="reg.nombre_procedimiento &&
-                                                      reg.nombre_procedimiento !== 'Sin procedimiento asignado'">
-                                                <i class="fas fa-stethoscope"
-                                                    style="font-size:9px; margin-right:3px;"></i>
-                                                {{ reg.nombre_procedimiento }}
+                                            <div class="registro-procedimiento" v-if="reg.nombre_procedimiento">
+                                                <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;">
+                                                    <span>
+                                                        <i class="fas fa-stethoscope"
+                                                            style="font-size:9px; margin-right:3px;"></i>
+                                                        {{ reg.nombre_procedimiento }}
+                                                    </span>
+
+                                                    <template
+                                                        v-if="!reg._pendiente && estaEditandoProcedimiento(reg.id_odontograma)">
+                                                        <select :id="`odontEditarProc_${reg.id_odontograma}`"
+                                                            class="campo-select"
+                                                            style="font-size:11px; padding:2px 4px; height:24px; min-width:180px;">
+                                                        </select>
+                                                        <button class="btn-confirmar-proc"
+                                                            style="height:24px; width:24px; padding:0;"
+                                                            @click="guardarProcedimiento(reg.id_odontograma)"
+                                                            title="Guardar procedimiento">
+                                                            <i class="ri-check-line" style="font-size:12px;"></i>
+                                                        </button>
+                                                        <button class="btn-cancelar-proc"
+                                                            style="height:24px; width:24px; padding:0;"
+                                                            @click="toggleEditarProcedimiento(reg.id_odontograma, reg.id_procedimiento)"
+                                                            title="Cancelar">
+                                                            <i class="ri-close-line" style="font-size:12px;"></i>
+                                                        </button>
+                                                    </template>
+
+                                                    <button
+                                                        v-if="!reg._pendiente && !estaEditandoProcedimiento(reg.id_odontograma)"
+                                                        class="btn-eliminar-registro" style="color:#20a89e;"
+                                                        @click="toggleEditarProcedimiento(reg.id_odontograma, reg.id_procedimiento)"
+                                                        title="Editar procedimiento">
+                                                        <i class="fas fa-pen" style="font-size:10px;"></i>
+                                                    </button>
+                                                </div>
                                             </div>
  
                                             <!-- Especialista y fecha -->
