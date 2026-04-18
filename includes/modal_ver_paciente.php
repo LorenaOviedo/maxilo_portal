@@ -732,7 +732,7 @@ $modal_id = 'modalPaciente';
                                             <div class="registro-procedimiento" v-if="reg.nombre_procedimiento">
                                                 <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;">
                                                     <span>
-                                                        <i class="fas fa-stethoscope"
+                                                        <i class="fas fa-teeth"
                                                             style="font-size:9px; margin-right:3px;"></i>
                                                         {{ reg.nombre_procedimiento }}
                                                     </span>
