@@ -835,3 +835,47 @@
         flex: 1;
     }
 }
+/* ── Paginación del panel de citas ───────────────────────────── */
+.citas-pag-controles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px 0 4px;
+    border-top: 1px solid #f3f4f6;
+    margin-top: 6px;
+}
+ 
+.citas-pag-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #e8ecf0;
+    background: #fff;
+    color: #6b7280;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+ 
+.citas-pag-btn:hover:not(:disabled) {
+    border-color: #008B8B;
+    color: #008B8B;
+    background: #f0fafa;
+}
+ 
+.citas-pag-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+ 
+.citas-pag-info {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+    white-space: nowrap;
+}
+ 

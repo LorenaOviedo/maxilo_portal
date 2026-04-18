@@ -3,12 +3,12 @@
  */
 
 "use strict";
-
+ 
 // ─────────────────────────────────────────────
 //  CONFIGURACIÓN
 // ─────────────────────────────────────────────
 const API = "../controllers/CitasController.php";
-
+ 
 // IDs reales de la tabla EstadosCita en BD
 const ESTATUS_MAP = {
   Pendiente: 1,
@@ -21,7 +21,7 @@ const ESTATUS_MAP = {
   Pagada: 8,
   "Registro diagnóstico": 9,
 };
-
+ 
 // ─────────────────────────────────────────────
 //  ESTADO GLOBAL
 // ─────────────────────────────────────────────
@@ -32,36 +32,36 @@ let estadoApp = {
   citaIdEditar: null,
   filtroEstatus: "todas",
 };
-
+ 
 // ─────────────────────────────────────────────
 //  DOM
 // ─────────────────────────────────────────────
 const $ = (id) => document.getElementById(id);
 const $q = (sel) => document.querySelector(sel);
 const $qa = (sel) => document.querySelectorAll(sel);
-
+ 
 // ─────────────────────────────────────────────
 //  UTILIDADES
 // ─────────────────────────────────────────────
-
+ 
 function formatDate(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 }
-
+ 
 function formatDateDisplay(str) {
   if (!str) return "";
   const [y, m, d] = str.split("-");
   return `${d}/${m}/${y}`;
 }
-
+ 
 function formatTime(str) {
   if (!str) return "";
   return str.substring(0, 5);
 }
-
+ 
 function getBadgeClass(estatus) {
   const map = {
     Pendiente: "badge-warning",
@@ -76,11 +76,11 @@ function getBadgeClass(estatus) {
   };
   return map[estatus] ?? "badge-secondary";
 }
-
+ 
 function toast(mensaje, tipo = "info") {
   const container = $("toastContainer");
   if (!container) return;
-
+ 
   const colors = {
     success: "#28a745",
     error: "#dc3545",
@@ -93,7 +93,7 @@ function toast(mensaje, tipo = "info") {
     warning: "ri-alert-line",
     info: "ri-information-line",
   };
-
+ 
   const el = document.createElement("div");
   el.style.cssText = `
         display:flex;align-items:center;gap:10px;
@@ -109,12 +109,12 @@ function toast(mensaje, tipo = "info") {
   container.appendChild(el);
   setTimeout(() => removeToast(el), 4000);
 }
-
+ 
 function removeToast(el) {
   el.style.animation = "toastOut .3s ease forwards";
   setTimeout(() => el.remove(), 300);
 }
-
+ 
 /**
  * Petición al controlador.
  * CRÍTICO: params (action, id) SIEMPRE van en la URL como query string
@@ -123,25 +123,25 @@ function removeToast(el) {
  */
 async function apiFetch(params = {}, method = "GET", body = null) {
   const url = new URL(API, window.location.href);
-
+ 
   // Siempre agregar params a la URL (action, id los necesita el router PHP)
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-
+ 
   const opts = { method, headers: {} };
   if (body) {
     opts.headers["Content-Type"] = "application/json";
     opts.body = JSON.stringify(body);
   }
-
+ 
   const res = await fetch(url.toString(), opts);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
-
+ 
 // ─────────────────────────────────────────────
 //  CALENDARIO
 // ─────────────────────────────────────────────
-
+ 
 const MESES = [
   "Enero",
   "Febrero",
@@ -156,7 +156,7 @@ const MESES = [
   "Noviembre",
   "Diciembre",
 ];
-
+ 
 async function cargarDiasConCitas(mes, anio) {
   try {
     const data = await apiFetch({ action: "dias_con_citas", mes, anio });
@@ -170,48 +170,48 @@ async function cargarDiasConCitas(mes, anio) {
     console.error("Error cargando días con citas:", e);
   }
 }
-
+ 
 function renderCalendario() {
   const mes = estadoApp.mesActual;
   const anio = mes.getFullYear();
   const numMes = mes.getMonth();
-
+ 
   $("calendarTitle").textContent = `${MESES[numMes]} ${anio}`;
-
+ 
   const body = $("calendarBody");
   body.innerHTML = "";
-
+ 
   const primerDia = new Date(anio, numMes, 1);
   const ultimoDia = new Date(anio, numMes + 1, 0);
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
-
+ 
   for (let i = 0; i < primerDia.getDay(); i++) {
     const v = document.createElement("div");
     v.className = "calendar-day empty";
     body.appendChild(v);
   }
-
+ 
   for (let d = 1; d <= ultimoDia.getDate(); d++) {
     const fecha = new Date(anio, numMes, d);
     fecha.setHours(0, 0, 0, 0);
     const fechaStr = formatDate(fecha);
     const info = estadoApp.diasConCitas[fechaStr];
-
+ 
     const btn = document.createElement("button");
     btn.className = "calendar-day";
     btn.textContent = d;
     btn.dataset.fecha = fechaStr;
-
+ 
     if (fecha.getTime() === hoy.getTime()) btn.classList.add("today");
-
+ 
     if (
       estadoApp.fechaSeleccionada &&
       formatDate(estadoApp.fechaSeleccionada) === fechaStr
     ) {
       btn.classList.add("selected");
     }
-
+ 
     if (info) {
       const total = parseInt(info.total ?? 0);
       btn.classList.add(
@@ -221,30 +221,30 @@ function renderCalendario() {
       dot.className = "day-dot";
       btn.appendChild(dot);
     }
-
+ 
     btn.addEventListener("click", () => seleccionarFecha(fecha));
     body.appendChild(btn);
   }
 }
-
+ 
 async function seleccionarFecha(fecha) {
   estadoApp.fechaSeleccionada = fecha;
-
+ 
   $qa(".calendar-day").forEach((b) => b.classList.remove("selected"));
   const fechaStr = formatDate(fecha);
   const btnActivo = $q(`.calendar-day[data-fecha="${fechaStr}"]`);
   if (btnActivo) btnActivo.classList.add("selected");
-
+ 
   $("citasFechaSeleccionada").textContent = fecha.toLocaleDateString("es-MX", {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-
+ 
   await cargarCitasDelDia(fechaStr);
 }
-
+ 
 async function navegarMes(delta) {
   const m = estadoApp.mesActual;
   estadoApp.mesActual = new Date(m.getFullYear(), m.getMonth() + delta, 1);
@@ -254,21 +254,21 @@ async function navegarMes(delta) {
   );
   renderCalendario();
 }
-
+ 
 // ─────────────────────────────────────────────
 //  CITAS DEL DÍA
 // ─────────────────────────────────────────────
-
+ 
 async function cargarCitasDelDia(fecha) {
   const lista = $("citasLista");
   lista.innerHTML =
     '<div style="text-align:center;padding:30px;color:#6c757d;"><i class="ri-loader-4-line spin" style="font-size:28px;"></i></div>';
-
+ 
   try {
     const params = { action: "index", fecha };
     if (estadoApp.filtroEstatus !== "todas")
       params.estatus = estadoApp.filtroEstatus;
-
+ 
     const data = await apiFetch(params);
     if (!data.success) throw new Error(data.message);
     renderCitasLista(data.data ?? []);
@@ -282,10 +282,85 @@ async function cargarCitasDelDia(fecha) {
             </div>`;
   }
 }
-
+ 
+// ─────────────────────────────────────────────
+//  PAGINACIÓN DE CITAS
+// ─────────────────────────────────────────────
+ 
+const citasPag = {
+  POR_PAGINA: 5,
+  _citas: [],
+  _pagina: 1,
+ 
+  set(citas) {
+    this._citas  = citas;
+    this._pagina = 1;
+    this._render();
+  },
+ 
+  _totalPags() {
+    return Math.max(1, Math.ceil(this._citas.length / this.POR_PAGINA));
+  },
+ 
+  _render() {
+    const lista  = $('citasLista');
+    const inicio = (this._pagina - 1) * this.POR_PAGINA;
+    const fin    = inicio + this.POR_PAGINA;
+    const pagina = this._citas.slice(inicio, fin);
+ 
+    lista.innerHTML = pagina.map(c => citaCard(c)).join('');
+ 
+    // Agregar controles si hay más de una página
+    if (this._totalPags() > 1) {
+      lista.insertAdjacentHTML('beforeend', this._htmlControles());
+      lista.querySelector('.citas-pag-ant')
+           ?.addEventListener('click', () => this._ir(this._pagina - 1));
+      lista.querySelector('.citas-pag-sig')
+           ?.addEventListener('click', () => this._ir(this._pagina + 1));
+    }
+ 
+    // Botones editar/eliminar
+    lista.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const { action, id } = btn.dataset;
+        if (action === 'editar')   abrirModalEditar(id);
+        if (action === 'eliminar') confirmarEliminar(id);
+      });
+    });
+ 
+    // Click en card → detalle
+    lista.querySelectorAll('.cita-card').forEach(card => {
+      card.addEventListener('click', () => abrirDetalle(card.dataset.id));
+    });
+  },
+ 
+  _ir(pagina) {
+    if (pagina < 1 || pagina > this._totalPags()) return;
+    this._pagina = pagina;
+    this._render();
+  },
+ 
+  _htmlControles() {
+    const total  = this._totalPags();
+    const inicio = (this._pagina - 1) * this.POR_PAGINA + 1;
+    const fin    = Math.min(this._pagina * this.POR_PAGINA, this._citas.length);
+    return `
+      <div class="citas-pag-controles">
+        <button class="citas-pag-btn citas-pag-ant" ${this._pagina <= 1 ? 'disabled' : ''}>
+          <i class="ri-arrow-left-s-line"></i>
+        </button>
+        <span class="citas-pag-info">${inicio}–${fin} de ${this._citas.length}</span>
+        <button class="citas-pag-btn citas-pag-sig" ${this._pagina >= total ? 'disabled' : ''}>
+          <i class="ri-arrow-right-s-line"></i>
+        </button>
+      </div>`;
+  },
+};
+ 
 function renderCitasLista(citas) {
-  const lista = $("citasLista");
-
+  const lista = $('citasLista');
+ 
   if (!citas.length) {
     lista.innerHTML = `
             <div class="citas-empty">
@@ -295,29 +370,14 @@ function renderCitasLista(citas) {
             </div>`;
     return;
   }
-
-  lista.innerHTML = citas.map((c) => citaCard(c)).join("");
-
-  // Botones editar/eliminar — stopPropagation para no abrir detalle
-  lista.querySelectorAll("[data-action]").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const { action, id } = btn.dataset;
-      if (action === "editar") abrirModalEditar(id);
-      if (action === "eliminar") confirmarEliminar(id);
-    });
-  });
-
-  // Click en card → detalle
-  lista.querySelectorAll(".cita-card").forEach((card) => {
-    card.addEventListener("click", () => abrirDetalle(card.dataset.id));
-  });
+ 
+  citasPag.set(citas);
 }
-
+ 
 function citaCard(c) {
   const estatus = c.estatus_cita ?? "Pendiente";
   const badgeClass = getBadgeClass(estatus);
-
+ 
   return `
     <div class="cita-card" data-id="${c.id_cita}">
         <div class="cita-hora">${formatTime(c.hora_inicio)}</div>
@@ -341,11 +401,11 @@ function citaCard(c) {
         </div>
     </div>`;
 }
-
+ 
 // ─────────────────────────────────────────────
 //  CATÁLOGOS
 // ─────────────────────────────────────────────
-
+ 
 async function cargarCatalogos() {
   try {
     const [resPac, resEsp, resMot] = await Promise.all([
@@ -353,7 +413,7 @@ async function cargarCatalogos() {
       apiFetch({ action: "get_especialistas" }),
       apiFetch({ action: "get_motivos" }),
     ]);
-
+ 
     // Loguear si algún catálogo falla para facilitar diagnóstico
     if (!resPac.success)
       console.error("Catálogo pacientes:", resPac.message ?? resPac);
@@ -361,7 +421,7 @@ async function cargarCatalogos() {
       console.error("Catálogo especialistas:", resEsp.message ?? resEsp);
     if (!resMot.success)
       console.error("Catálogo motivos:", resMot.message ?? resMot);
-
+ 
     initPacienteSearch(resPac.data ?? []); // Búsqueda con autocompletado
     poblarSelect(
       "selectEspecialista",
@@ -375,7 +435,7 @@ async function cargarCatalogos() {
       "id_motivo_consulta",
       "motivo_consulta",
     );
-
+ 
     const totalOpts =
       (resPac.data?.length ?? 0) +
       (resEsp.data?.length ?? 0) +
@@ -393,67 +453,67 @@ async function cargarCatalogos() {
     toast("Error al cargar catálogos", "error");
   }
 }
-
+ 
 // ─────────────────────────────────────────────
 //  BÚSQUEDA DE PACIENTE (autocomplete)
 // ─────────────────────────────────────────────
-
+ 
 let _pacientes = []; // cache del catálogo
 let _pacienteSeleccionado = null; // { numero_paciente, nombre_completo }
-
+ 
 /**
  * Inicializa el componente de búsqueda de paciente.
  * Transforma el <select id="selectPaciente"> en un input + dropdown.
  */
 function initPacienteSearch(pacientes) {
   _pacientes = pacientes;
-
+ 
   const sel = document.getElementById("selectPaciente");
   if (!sel) return;
-
+ 
   // Crear wrapper y reemplazar el select
   const wrapper = document.createElement("div");
   wrapper.className = "pac-search-wrapper";
   wrapper.style.cssText = "position:relative;";
-
+ 
   wrapper.innerHTML = `
         <input type="text" id="pacSearchInput" class="form-input pac-search-input"
                placeholder="Buscar paciente..." autocomplete="off">
         <input type="hidden" id="pacSearchValue" name="id_paciente">
         <div id="pacDropdown" class="pac-dropdown" style="display:none;"></div>
     `;
-
+ 
   sel.replaceWith(wrapper);
   bindPacienteSearch();
 }
-
+ 
 function bindPacienteSearch() {
   const input = document.getElementById("pacSearchInput");
   const hidden = document.getElementById("pacSearchValue");
   const dropdown = document.getElementById("pacDropdown");
   if (!input) return;
-
+ 
   // Filtrar mientras escribe
   input.addEventListener("input", () => {
     const q = input.value.trim().toLowerCase();
     hidden.value = ""; // limpiar selección previa
     _pacienteSeleccionado = null;
-
+ 
     if (q.length < 1) {
       cerrarDropdown();
       return;
     }
-
+ 
     const resultados = _pacientes
       .filter((p) => p.nombre_completo.toLowerCase().includes(q))
       .slice(0, 10); // máximo 10 sugerencias
-
+ 
     renderDropdown(resultados, input, hidden, dropdown);
   });
-
+ 
   // Cerrar al perder foco (con delay para permitir click en dropdown)
   input.addEventListener("blur", () => setTimeout(cerrarDropdown, 200));
-
+ 
   // Abrir al hacer foco si ya hay texto
   input.addEventListener("focus", () => {
     if (input.value.trim().length > 0 && !hidden.value) {
@@ -461,7 +521,7 @@ function bindPacienteSearch() {
     }
   });
 }
-
+ 
 function renderDropdown(resultados, input, hidden, dropdown) {
   if (!resultados.length) {
     dropdown.innerHTML =
@@ -469,7 +529,7 @@ function renderDropdown(resultados, input, hidden, dropdown) {
     dropdown.style.display = "block";
     return;
   }
-
+ 
   dropdown.innerHTML = resultados
     .map(
       (p) => `
@@ -479,7 +539,7 @@ function renderDropdown(resultados, input, hidden, dropdown) {
     `,
     )
     .join("");
-
+ 
   dropdown.querySelectorAll(".pac-drop-item[data-id]").forEach((item) => {
     item.addEventListener("mousedown", () => {
       // mousedown antes de blur
@@ -492,15 +552,15 @@ function renderDropdown(resultados, input, hidden, dropdown) {
       cerrarDropdown();
     });
   });
-
+ 
   dropdown.style.display = "block";
 }
-
+ 
 function cerrarDropdown() {
   const d = document.getElementById("pacDropdown");
   if (d) d.style.display = "none";
 }
-
+ 
 /** Precargar paciente en modo edición */
 function setPacienteSeleccionado(id, nombre) {
   _pacienteSeleccionado = { numero_paciente: id, nombre_completo: nombre };
@@ -509,19 +569,19 @@ function setPacienteSeleccionado(id, nombre) {
   if (input) input.value = nombre;
   if (hidden) hidden.value = id;
 }
-
+ 
 function poblarSelect(selectId, items, valKey, labelKey) {
   const sel = $(selectId);
   if (!sel) return;
-
+ 
   const placeholder = sel.options[0]?.textContent ?? "Seleccionar...";
   sel.innerHTML = "";
-
+ 
   const optDef = document.createElement("option");
   optDef.value = "";
   optDef.textContent = placeholder;
   sel.appendChild(optDef);
-
+ 
   items.forEach((item) => {
     const opt = document.createElement("option");
     opt.value = item[valKey];
@@ -529,7 +589,7 @@ function poblarSelect(selectId, items, valKey, labelKey) {
     sel.appendChild(opt);
   });
 }
-
+ 
 /** Busca la <option> por valor y la selecciona */
 function setSelectValue(selectId, value) {
   const sel = $(selectId);
@@ -541,11 +601,11 @@ function setSelectValue(selectId, value) {
     console.warn(`setSelectValue: "${value}" no encontrado en #${selectId}`);
   }
 }
-
+ 
 // ─────────────────────────────────────────────
 //  MODAL NUEVA CITA
 // ─────────────────────────────────────────────
-
+ 
 function abrirModalNueva() {
   estadoApp.citaIdEditar = null;
   $("modalTitle").textContent = "Nueva Cita";
@@ -553,47 +613,47 @@ function abrirModalNueva() {
   $("citaId").value = "";
   $("groupEstatus").style.display = "none";
   $("alertConflicto").style.display = "none";
-
+ 
   if (estadoApp.fechaSeleccionada) {
     $("inputFecha").value = formatDate(estadoApp.fechaSeleccionada);
   }
-
+ 
   // Limpiar buscador de paciente
   const pacInput = document.getElementById("pacSearchInput");
   const pacHidden = document.getElementById("pacSearchValue");
   if (pacInput) pacInput.value = "";
   if (pacHidden) pacHidden.value = "";
   _pacienteSeleccionado = null;
-
+ 
   abrirModal("modalCita");
 }
-
+ 
 // ─────────────────────────────────────────────
 //  MODAL EDITAR CITA
 // ─────────────────────────────────────────────
-
+ 
 async function abrirModalEditar(id) {
   estadoApp.citaIdEditar = id;
   $("modalTitle").textContent = "Editar Cita";
   $("alertConflicto").style.display = "none";
   $("groupEstatus").style.display = "";
-
+ 
   try {
     const data = await apiFetch({ action: "show", id });
     if (!data.success) throw new Error(data.message);
-
+ 
     const c = data.data;
-
+ 
     // Abrir modal PRIMERO — necesario para que los selects estén en el DOM
     abrirModal("modalCita");
-
+ 
     // Campos de texto/fecha — asignación inmediata
     $("citaId").value = c.id_cita;
     $("inputFecha").value = c.fecha_cita;
     $("inputHora").value = formatTime(c.hora_inicio);
     $("selectDuracion").value = String(c.duracion_aproximada ?? 60);
     $("inputCosto").value = c.costo_total ?? "";
-
+ 
     // Selects con FK — doble requestAnimationFrame para garantizar que
     // el modal esté visible Y los <option> del catálogo ya estén en el DOM
     requestAnimationFrame(() =>
@@ -603,7 +663,7 @@ async function abrirModalEditar(id) {
           String(c.numero_paciente),
           c.nombre_paciente ?? "",
         );
-
+ 
         setSelectValue("selectEspecialista", String(c.id_especialista));
         setSelectValue("selectMotivo", String(c.id_motivo_consulta));
         setSelectValue(
@@ -617,17 +677,17 @@ async function abrirModalEditar(id) {
     toast(`Error al cargar la cita: ${e.message}`, "error");
   }
 }
-
+ 
 // ─────────────────────────────────────────────
 //  GUARDAR CITA
 // ─────────────────────────────────────────────
-
+ 
 async function guardarCita() {
   const form = $("formCita");
   $("alertConflicto").style.display = "none";
-
+ 
   if (!form.reportValidity()) return;
-
+ 
   const payload = {
     id_paciente: document.getElementById("pacSearchValue")?.value ?? "",
     tipoPaciente: $("selectTipoPaciente").value,
@@ -638,28 +698,28 @@ async function guardarCita() {
     duracion_aproximada: $("selectDuracion").value,
     costo_estimado: $("inputCosto").value || null,
   };
-
+ 
   if (estadoApp.citaIdEditar) {
     payload.estatus = $("selectEstatus").value;
   }
-
+ 
   const errores = validarFormCita(payload);
   if (errores.length) {
     mostrarAlerta(errores.join(" · "));
     return;
   }
-
+ 
   const btnGuardar = $("btnGuardarCita");
   btnGuardar.disabled = true;
   btnGuardar.innerHTML = '<i class="ri-loader-4-line spin"></i> Guardando...';
-
+ 
   try {
     const action = estadoApp.citaIdEditar ? "update" : "store";
     const params = { action };
     if (estadoApp.citaIdEditar) params.id = estadoApp.citaIdEditar;
-
+ 
     const data = await apiFetch(params, "POST", payload);
-
+ 
     if (!data.success) {
       if (
         data.message?.toLowerCase().includes("horario") ||
@@ -671,7 +731,7 @@ async function guardarCita() {
       }
       return;
     }
-
+ 
     toast(
       estadoApp.citaIdEditar ? "Cita actualizada" : "Cita creada",
       "success",
@@ -685,7 +745,7 @@ async function guardarCita() {
     btnGuardar.innerHTML = '<i class="ri-save-line"></i> Guardar Cita';
   }
 }
-
+ 
 function validarFormCita(data) {
   const errores = [];
   if (!data.id_paciente) errores.push("Selecciona un paciente.");
@@ -697,30 +757,30 @@ function validarFormCita(data) {
   if (!data.hora_inicio) errores.push("Ingresa la hora.");
   return errores;
 }
-
+ 
 function mostrarAlerta(msg) {
   $("alertMessage").textContent = msg;
   $("alertConflicto").style.display = "flex";
 }
-
+ 
 // ─────────────────────────────────────────────
 //  MODAL DETALLE
 // ─────────────────────────────────────────────
-
+ 
 async function abrirDetalle(id) {
   const content = $("detalleContent");
   content.innerHTML =
     '<div style="text-align:center;padding:30px;"><i class="ri-loader-4-line spin" style="font-size:28px;color:#6c757d;"></i></div>';
   abrirModal("modalDetalle");
-
+ 
   try {
     const data = await apiFetch({ action: "show", id });
     if (!data.success) throw new Error(data.message);
-
+ 
     const c = data.data;
     const estatus = c.estatus_cita ?? "Pendiente";
     const badgeClass = getBadgeClass(estatus);
-
+ 
     const todosEstatus = [
       "Confirmada",
       "Reprogramada",
@@ -736,7 +796,7 @@ async function abrirDetalle(id) {
                 data-estatus="${e}" data-id="${c.id_cita}">${e}</button>`,
       )
       .join("");
-
+ 
     content.innerHTML = `
             <div class="detalle-grid">
                 <div class="detalle-row">
@@ -780,12 +840,12 @@ async function abrirDetalle(id) {
                 <label class="form-label">Cambiar estatus:</label>
                 <div class="estatus-btns">${botonesHtml}</div>
             </div>`;
-
+ 
     $("btnEditarDesdeDetalle").onclick = () => {
       cerrarModal("modalDetalle");
       abrirModalEditar(c.id_cita);
     };
-
+ 
     content.querySelectorAll(".btn-estatus").forEach((btn) => {
       btn.addEventListener("click", async () => {
         await cambiarEstatus(btn.dataset.id, btn.dataset.estatus);
@@ -797,11 +857,11 @@ async function abrirDetalle(id) {
     content.innerHTML = `<p style="color:#dc3545;text-align:center;">Error: ${e.message}</p>`;
   }
 }
-
+ 
 // ─────────────────────────────────────────────
 //  CAMBIAR ESTATUS
 // ─────────────────────────────────────────────
-
+ 
 async function cambiarEstatus(id, nuevoEstatus) {
   try {
     // action e id → URL (PHP los lee de $_GET)
@@ -818,25 +878,25 @@ async function cambiarEstatus(id, nuevoEstatus) {
     toast(`Error: ${e.message}`, "error");
   }
 }
-
+ 
 // ─────────────────────────────────────────────
 //  ELIMINAR CITA
 // ─────────────────────────────────────────────
-
+ 
 let _idPendienteEliminar = null;
-
+ 
 function confirmarEliminar(id) {
   _idPendienteEliminar = id;
   abrirModal("modalEliminar");
 }
-
+ 
 async function eliminarCita() {
   if (!_idPendienteEliminar) return;
-
+ 
   const btn = $("btnConfirmarEliminar");
   btn.disabled = true;
   btn.innerHTML = '<i class="ri-loader-4-line spin"></i> Eliminando...';
-
+ 
   try {
     const data = await apiFetch(
       { action: "destroy", id: _idPendienteEliminar },
@@ -857,18 +917,18 @@ async function eliminarCita() {
     _idPendienteEliminar = null;
   }
 }
-
+ 
 // ─────────────────────────────────────────────
 //  MODALES
 // ─────────────────────────────────────────────
-
+ 
 function abrirModal(id) {
   const modal = $(id);
   if (!modal) return;
   modal.classList.add("active");
   document.body.style.overflow = "hidden";
 }
-
+ 
 function cerrarModal(id) {
   const modal = $(id);
   if (!modal) return;
@@ -877,15 +937,15 @@ function cerrarModal(id) {
     document.body.style.overflow = "";
   }
 }
-
+ 
 document.addEventListener("click", (e) => {
   if (e.target.classList.contains("modal-overlay")) cerrarModal(e.target.id);
 });
-
+ 
 // ─────────────────────────────────────────────
 //  FILTROS
 // ─────────────────────────────────────────────
-
+ 
 function initFiltros() {
   $qa(".filtro-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {
@@ -898,11 +958,11 @@ function initFiltros() {
     });
   });
 }
-
+ 
 // ─────────────────────────────────────────────
 //  REFRESCAR
 // ─────────────────────────────────────────────
-
+ 
 async function refrescarVista() {
   const mes = estadoApp.mesActual.getMonth() + 1;
   const anio = estadoApp.mesActual.getFullYear();
@@ -912,11 +972,11 @@ async function refrescarVista() {
     await cargarCitasDelDia(formatDate(estadoApp.fechaSeleccionada));
   }
 }
-
+ 
 // ─────────────────────────────────────────────
 //  ESTILOS
 // ─────────────────────────────────────────────
-
+ 
 function injectStyles() {
   const style = document.createElement("style");
   style.textContent = `
@@ -1033,26 +1093,26 @@ function injectStyles() {
     `;
   document.head.appendChild(style);
 }
-
+ 
 // ─────────────────────────────────────────────
 //  INICIALIZACIÓN
 // ─────────────────────────────────────────────
-
+ 
 async function init() {
   injectStyles();
   await cargarCatalogos();
-
+ 
   const hoy = new Date();
   await cargarDiasConCitas(hoy.getMonth() + 1, hoy.getFullYear());
   renderCalendario();
   await seleccionarFecha(hoy);
-
+ 
   $("btnPrevMes")?.addEventListener("click", () => navegarMes(-1));
   $("btnNextMes")?.addEventListener("click", () => navegarMes(1));
   $("btnNuevaCita")?.addEventListener("click", abrirModalNueva);
-
+ 
   initFiltros();
-
+ 
   $("btnCerrarModal")?.addEventListener("click", () =>
     cerrarModal("modalCita"),
   );
@@ -1060,14 +1120,14 @@ async function init() {
     cerrarModal("modalCita"),
   );
   $("btnGuardarCita")?.addEventListener("click", guardarCita);
-
+ 
   $("btnCerrarDetalle")?.addEventListener("click", () =>
     cerrarModal("modalDetalle"),
   );
   $("btnCerrarDetalle2")?.addEventListener("click", () =>
     cerrarModal("modalDetalle"),
   );
-
+ 
   $("btnCerrarEliminar")?.addEventListener("click", () =>
     cerrarModal("modalEliminar"),
   );
@@ -1075,10 +1135,10 @@ async function init() {
     cerrarModal("modalEliminar"),
   );
   $("btnConfirmarEliminar")?.addEventListener("click", eliminarCita);
-
+ 
   console.log("✔ Módulo Citas inicializado");
 }
-
+ 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", init);
 } else {
