@@ -28,6 +28,16 @@ $catalogos = [
         'descripcion' => 'Catálogo para procedimientos dentales y sus costos.',
         'url' => 'procedimientos.php'
     ],
+    [
+        'titulo' => 'Motivos de consulta',
+        'descripcion' => 'Catálogo para los motivos de consulta de un paciente.',
+        'url' => 'motivos_consulta.php'
+    ],
+    [
+        'titulo' => 'Antecedentes médicos',
+        'descripcion' => 'Catálogo para registrar los antecedentes médicos más comunes.',
+        'url' => 'antecedentes_medicos.php'
+    ],
 ];
 
 // LLAMAR  HEADER Y SIDEBAR
