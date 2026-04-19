@@ -514,15 +514,14 @@ switch ($accion) {
         $body = json_decode(file_get_contents('php://input'), true) ?? [];
 
         $numeroPaciente = (int) ($body['numero_paciente'] ?? 0);
-        $idEspecialista = (int) ($body['id_especialista'] ?? 0);
         $numeroPieza = (int) ($body['numero_pieza'] ?? 0);
         $idAnomalia = (int) ($body['id_anomalia'] ?? 0);
         $idCaras = $body['id_caras'] ?? [];
         $idProcedimiento = (int) ($body['id_procedimiento'] ?? 0);
         $idEstatus = (int) ($body['id_estatus_hallazgo'] ?? 1);
 
-        if (!$numeroPaciente || !$idEspecialista || !$numeroPieza || !$idAnomalia)
-            responder(false, 'Campos requeridos: numero_paciente, id_especialista, numero_pieza, id_anomalia');
+        if (!$numeroPaciente || !$numeroPieza || !$idAnomalia)
+            responder(false, 'Campos requeridos: numero_paciente, numero_pieza, id_anomalia');
 
         if (empty($idCaras))
             responder(false, 'Se requiere al menos una cara dental (id_caras)');
@@ -532,12 +531,12 @@ switch ($accion) {
 
         $resultado = $model->guardar([
             'numero_paciente' => $numeroPaciente,
-            'id_especialista' => $idEspecialista,
             'numero_pieza' => $numeroPieza,
             'id_anomalia' => $idAnomalia,
             'id_caras' => $idCaras,
             'id_procedimiento' => $idProcedimiento,
             'id_estatus_hallazgo' => $idEstatus,
+            // id_especialista eliminado
         ]);
 
         responder(
@@ -546,7 +545,6 @@ switch ($accion) {
             $resultado
         );
         break;
-
 
     // ── ODONTOGRAMA: actualizar estatus de hallazgo ───────────────────────────
     // POST Body JSON: { id_odontograma, id_estatus_hallazgo, numero_paciente }

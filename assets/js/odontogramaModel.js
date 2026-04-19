@@ -16,7 +16,7 @@ const odontogramaModel = {
   catalogoCaras:          [],
   catalogoProcedimientos: [],  // items también tienen precio_base
   catalogoEstatus:        [],
-  catalogoEspecialistas:  [],  // items tienen nombre_completo en lugar de nombre
+  // catalogoEspecialistas eliminado — ya no se usa en el odontograma
  
   _cargandoCatalogos: false,
   _catalogosCargados: false,
@@ -44,7 +44,7 @@ const odontogramaModel = {
       this.catalogoCaras          = data.caras          ?? [];
       this.catalogoProcedimientos = data.procedimientos ?? [];
       this.catalogoEstatus        = data.estatus        ?? [];
-      this.catalogoEspecialistas  = data.especialistas  ?? [];
+      // data.especialistas ya no existe en la respuesta
  
       this._catalogosCargados = true;
       return true;
@@ -102,7 +102,6 @@ const odontogramaModel = {
  
   _iconoPorNumero(numero, activo = false) {
     const base = (typeof ASSETS_URL !== 'undefined') ? ASSETS_URL : '';
-    // Las imágenes claras tienen sufijo _clear (ej: molar_clear.png)
     const suf  = activo ? '_clear' : '';
     if ([18,28,38,48].includes(numero))                   return `${base}3molar${suf}.png`;
     if ([16,17,26,27,36,37,46,47].includes(numero))       return `${base}molar${suf}.png`;
@@ -113,7 +112,6 @@ const odontogramaModel = {
  
   // ─────────────────────────────────────────────────────────────────────────
   // FORMULARIO VACÍO
-  // Todos los campos son IDs de BD para enviar directamente a la API.
   // ─────────────────────────────────────────────────────────────────────────
  
   registroVacio() {
@@ -121,7 +119,7 @@ const odontogramaModel = {
       id_anomalia:      null,   // int   — FK AnomaliasDentales
       id_caras:         [],     // int[] — FK CarasDentales (múltiple)
       id_procedimiento: null,   // int   — FK Procedimientos (obligatorio)
-      id_estatus:       null,   // int   — FK EstadosTratamiento (visual)
+      id_estatus:       null,   // int   — FK EstadosHallazgos
     };
   },
  
@@ -134,7 +132,6 @@ const odontogramaModel = {
            ?? `Anomalía #${id}`;
   },
  
-  /** Retorna un string con los nombres de las caras separados por coma */
   nombresCaras(ids) {
     return (ids ?? [])
       .map(id => this.catalogoCaras.find(c => +c.id === +id)?.nombre ?? `Cara #${id}`)
@@ -152,10 +149,5 @@ const odontogramaModel = {
     return this.catalogoEstatus.find(e => +e.id === +id)?.nombre
            ?? `Estatus #${id}`;
   },
- 
-  nombreEspecialista(id) {
-    if (!id) return null;
-    const esp = this.catalogoEspecialistas.find(e => +e.id === +id);
-    return esp?.nombre_completo ?? `Especialista #${id}`;
-  },
+  // nombreEspecialista() eliminado — ya no se usa
 };

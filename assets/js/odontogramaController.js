@@ -29,14 +29,11 @@ const odontogramaController = {
             .forEach(el => { el.disabled = false; });
  
         this._montarVue(num);
-        setTimeout(() => this._poblarSelects(), 100);
     },
  
     limpiar() {
         this._numeroPaciente = null;
         this._desmontar();
-        const sel = document.getElementById('odontEspecialista');
-        if (sel) sel.value = '';
     },
  
     async _inicializar() {
@@ -51,19 +48,7 @@ const odontogramaController = {
         }
     },
  
-    _poblarSelects() {
-        const selEsp = document.getElementById('odontEspecialista');
-        if (!selEsp || !this._catalogos?.especialistas) return;
-        const valorActual = selEsp.value;
-        selEsp.innerHTML  = '<option value="">Seleccionar especialista</option>';
-        this._catalogos.especialistas.forEach(e => {
-            const opt       = document.createElement('option');
-            opt.value       = e.id;
-            opt.textContent = e.nombre_completo;
-            selEsp.appendChild(opt);
-        });
-        if (valorActual) selEsp.value = valorActual;
-    },
+    // _poblarSelects() eliminado — solo poblaba el select de especialista
  
     _poblarSelectsPanel() {
         const selAnom = document.getElementById('odontAnomalia');
@@ -110,7 +95,7 @@ const odontogramaController = {
              </option>`
         ).join('');
     },
-
+ 
     _poblarSelectEditarProcedimiento(idRegistro, idProcedimientoActual) {
         const sel = document.getElementById(`odontEditarProc_${idRegistro}`);
         if (!sel || !this._catalogos?.procedimientos) return;
@@ -130,7 +115,6 @@ const odontogramaController = {
     },
  
     _montarVue(numeroPaciente) {
-        // Siempre desmontar la instancia anterior antes de montar
         if (this._appInstance) {
             try { this._appInstance.unmount(); } catch(e) {}
             this._appInstance = null;
@@ -138,9 +122,6 @@ const odontogramaController = {
  
         const { createApp, ref, computed } = Vue;
         const self = this;
- 
-        // Capturar en variable local para que el closure no dependa
-        // de pacienteId que puede cambiar entre pacientes
         const pacienteId = numeroPaciente;
  
         this._appInstance = createApp({
@@ -153,9 +134,9 @@ const odontogramaController = {
                     odontogramaModel.numerosInferior, 'Inferior'
                 );
  
-                const dienteActivo    = ref(null);
-                const registros       = ref({});
-                const cargando        = ref(false);
+                const dienteActivo          = ref(null);
+                const registros             = ref({});
+                const cargando              = ref(false);
                 const notif                 = ref({ visible: false, texto: '', tipo: 'success' });
                 const editandoEstatus       = ref(new Set());
                 const editandoProcedimiento = ref(new Set());
@@ -177,22 +158,22 @@ const odontogramaController = {
                 function estaEditando(idOdontograma) {
                     return editandoEstatus.value.has(idOdontograma);
                 }
-
+ 
                 function estaEditandoProcedimiento(idOdontograma) {
                     return editandoProcedimiento.value.has(idOdontograma);
                 }
-
+ 
                 function seleccionarDiente(pieza) {
-                    dienteActivo.value             = pieza;
-                    editandoEstatus.value          = new Set();
-                    editandoProcedimiento.value    = new Set();
+                    dienteActivo.value          = pieza;
+                    editandoEstatus.value       = new Set();
+                    editandoProcedimiento.value = new Set();
                     self._nextTick(() => self._poblarSelectsPanel());
                 }
-
+ 
                 function cancelar() {
-                    dienteActivo.value             = null;
-                    editandoEstatus.value          = new Set();
-                    editandoProcedimiento.value    = new Set();
+                    dienteActivo.value          = null;
+                    editandoEstatus.value       = new Set();
+                    editandoProcedimiento.value = new Set();
                 }
  
                 function toggleEditarEstatus(idOdontograma, idEstatusActual) {
@@ -202,15 +183,13 @@ const odontogramaController = {
                         editandoEstatus.value = set;
                     } else {
                         set.add(idOdontograma);
-                        // Actualizar estado reactivo primero para que Vue renderice el select
                         editandoEstatus.value = set;
-                        // Poblar después de que Vue termine de renderizar
                         setTimeout(() =>
                             self._poblarSelectEditarEstatus(idOdontograma, idEstatusActual)
                         , 100);
                     }
                 }
-
+ 
                 function toggleEditarProcedimiento(idOdontograma, idProcedimientoActual) {
                     const set = new Set(editandoProcedimiento.value);
                     if (set.has(idOdontograma)) {
@@ -226,8 +205,8 @@ const odontogramaController = {
                 }
  
                 async function guardarEstatus(idOdontograma) {
-                    const sel      = document.getElementById(`odontEditarEstatus_${idOdontograma}`);
-                    const nuevoId  = parseInt(sel?.value || '0');
+                    const sel     = document.getElementById(`odontEditarEstatus_${idOdontograma}`);
+                    const nuevoId = parseInt(sel?.value || '0');
                     if (!nuevoId) { mostrarNotif('Selecciona un estatus', 'error'); return; }
  
                     const resultado = await self._actualizarEstatusEnServidor(
@@ -244,16 +223,16 @@ const odontogramaController = {
                         mostrarNotif(resultado?.message ?? 'Error al actualizar', 'error');
                     }
                 }
-
+ 
                 async function guardarProcedimiento(idOdontograma) {
-                    const sel = document.getElementById(`odontEditarProc_${idOdontograma}`);
+                    const sel     = document.getElementById(`odontEditarProc_${idOdontograma}`);
                     const nuevoId = parseInt(sel?.value || '0');
                     if (!nuevoId) { mostrarNotif('Selecciona un procedimiento', 'error'); return; }
-
+ 
                     const resultado = await self._actualizarProcedimientoEnServidor(
                         idOdontograma, nuevoId, pacienteId
                     );
-
+ 
                     if (resultado?.success) {
                         await self._cargarRegistros(registros, cargando, pacienteId);
                         const set = new Set(editandoProcedimiento.value);
@@ -269,12 +248,11 @@ const odontogramaController = {
                     const idAnomalia      = parseInt(document.getElementById('odontAnomalia')?.value  || '0');
                     const idProcedimiento = parseInt(document.getElementById('odontProc')?.value      || '0');
                     const idEstatus       = parseInt(document.getElementById('odontEstatus')?.value   || '0');
-                    const idEspecialista  = parseInt(document.getElementById('odontEspecialista')?.value || '0');
                     const numeroPieza     = dienteActivo.value?.numero;
                     const idCaras         = [...document.querySelectorAll('.odont-cara-cb:checked')]
                                             .map(cb => parseInt(cb.value));
  
-                    if (!idEspecialista)  { mostrarNotif('Selecciona un especialista', 'error');  return; }
+                    // id_especialista eliminado — ya no se valida ni se envía
                     if (!idAnomalia)      { mostrarNotif('Selecciona una anomalía', 'error');      return; }
                     if (!idCaras.length)  { mostrarNotif('Selecciona al menos una cara', 'error'); return; }
                     if (!idProcedimiento) { mostrarNotif('Selecciona un procedimiento', 'error');  return; }
@@ -289,7 +267,6 @@ const odontogramaController = {
                         nombre_procedimiento: cat.procedimientos.find(p => p.id == idProcedimiento)?.nombre ?? '',
                         id_estatus_hallazgo:  idEstatus,
                         estatus_hallazgo:     cat.estatus.find(e => e.id == idEstatus)?.nombre ?? '',
-                        nombre_especialista:  cat.especialistas.find(e => e.id == idEspecialista)?.nombre_completo ?? '',
                         fecha_cita:           new Date().toISOString().slice(0, 10),
                         _pendiente:           true,
                     }));
@@ -300,12 +277,12 @@ const odontogramaController = {
  
                     const resultado = await self._guardarEnServidor({
                         numero_paciente:     pacienteId,
-                        id_especialista:     idEspecialista,
                         numero_pieza:        numeroPieza,
                         id_anomalia:         idAnomalia,
                         id_caras:            idCaras,
                         id_procedimiento:    idProcedimiento,
                         id_estatus_hallazgo: idEstatus,
+                        // id_especialista eliminado
                     });
  
                     if (resultado?.success) {
@@ -360,7 +337,6 @@ const odontogramaController = {
             },
         });
  
-        // Montar en elemento hijo limpio para evitar conflicto de Vue
         const appEl = document.getElementById('app-odontograma');
         if (appEl._templateOriginal === undefined) {
             appEl._templateOriginal = appEl.innerHTML;
@@ -423,7 +399,7 @@ const odontogramaController = {
             return await r.json();
         } catch (err) { return null; }
     },
-
+ 
     async _actualizarProcedimientoEnServidor(idOdontograma, idProcedimiento, numeroPaciente) {
         try {
             const r = await fetch(
