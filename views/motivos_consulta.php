@@ -99,6 +99,13 @@ include '../includes/sidebar.php';
                                         onclick="abrirModalEditar(<?php echo $m['id_motivo_consulta']; ?>)">
                                         <i class="ri-edit-box-line"></i>
                                     </button>
+                                    <button type="button" class="btn-action btn-delete" title="Eliminar"
+                                        onclick="eliminarConfirmar(
+                                            <?php echo $m['id_motivo_consulta']; ?>,
+                                            '<?php echo htmlspecialchars($m['motivo_consulta']); ?>'
+                                        )">
+                                        <i class="ri-delete-bin-6-line"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -122,7 +129,7 @@ include '../includes/sidebar.php';
     var API_URL = '<?php echo ajax_url('Api.php'); ?>';
 </script>
  
-<?php include '../includes/modal_motivos_consulta.php'; ?>
+<?php include '../includes/modal_motivo_consulta.php'; ?>
 <script src="<?php echo asset('js/motivos_consulta.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
  
 <?php include '../includes/footer.php'; ?>

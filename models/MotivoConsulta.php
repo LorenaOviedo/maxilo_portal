@@ -105,6 +105,21 @@ class MotivoConsulta
         }
     }
  
+    public function delete($id)
+    {
+        $stmt = $this->conn->prepare("
+            DELETE FROM motivoconsulta WHERE id_motivo_consulta = :id
+        ");
+        $stmt->bindValue(':id', (int) $id, PDO::PARAM_INT);
+ 
+        try {
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error en MotivoConsulta::delete: " . $e->getMessage());
+            return false;
+        }
+    }
+ 
     // ==================== VALIDACIÓN ====================
  
     public function validar($data): ?string

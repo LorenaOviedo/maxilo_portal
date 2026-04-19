@@ -15,7 +15,7 @@ function cargarAntecedente(id, callback) {
                 CatalogTable.showNotification('No se pudo cargar el antecedente', 'error');
                 return;
             }
-            callback(data.antecedentes_medicos);
+            callback(data.antecedentes_medico);
         })
         .catch(() => CatalogTable.showNotification('Error al obtener los datos', 'error'));
 }
@@ -91,6 +91,35 @@ document.getElementById('btnGuardarAntecedenteMedico')?.addEventListener('click'
             CatalogTable.showNotification('Error de conexión', 'error');
         });
 });
+ 
+// ── Eliminar ───────────────────────────────────────────────────────
+ 
+function eliminarConfirmar(id, nombre) {
+    if (!confirm(`¿Deseas eliminar el antecedente "${nombre}"?\nEsta acción no se puede deshacer.`)) return;
+ 
+    const formData = new FormData();
+    formData.append('modulo',        'antecedentes_medicos');
+    formData.append('accion',        'delete');
+    formData.append('id_antecedente', id);
+ 
+    CatalogTable.showLoading(true);
+ 
+    fetch(API_URL, { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            CatalogTable.showLoading(false);
+            if (data.success) {
+                CatalogTable.showNotification(data.message, 'success');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                CatalogTable.showNotification(data.message || 'Error al eliminar', 'error');
+            }
+        })
+        .catch(() => {
+            CatalogTable.showLoading(false);
+            CatalogTable.showNotification('Error de conexión', 'error');
+        });
+}
  
 // ── Validación ─────────────────────────────────────────────────────
  

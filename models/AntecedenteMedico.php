@@ -113,6 +113,21 @@ class AntecedenteMedico
         }
     }
  
+    public function delete($id)
+    {
+        $stmt = $this->conn->prepare("
+            DELETE FROM antecedentemedico WHERE id_antecedente = :id
+        ");
+        $stmt->bindValue(':id', (int) $id, PDO::PARAM_INT);
+ 
+        try {
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error en AntecedenteMedico::delete: " . $e->getMessage());
+            return false;
+        }
+    }
+ 
     // ==================== VALIDACIÓN ====================
  
     public function validar($data): ?string

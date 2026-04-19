@@ -323,6 +323,30 @@ switch ($accion) {
         ]);
         break;
 
+    // ── DELETE: eliminar registro físicamente ────────────────────
+    case 'delete':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            responder(false, 'Método no permitido');
+        }
+
+        $id = (int) ($_POST[$config['campo_id']] ?? 0);
+        if (!$id) {
+            responder(false, 'ID inválido');
+        }
+
+        if (!method_exists($model, 'delete')) {
+            responder(false, 'Este módulo no permite eliminación');
+        }
+
+        $ok = $model->delete($id);
+        if ($ok) {
+            responder(true, 'Registro eliminado correctamente');
+        } else {
+            responder(false, 'Error al eliminar. Puede tener registros relacionados.');
+        }
+        break;
+        
+
     case 'next_id':
         $tabla = $config['tabla'];
         $stmt = $db->query("SELECT COALESCE(MAX({$config['campo_id']}), 0) + 1 AS next_id 

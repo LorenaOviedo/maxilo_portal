@@ -83,6 +83,35 @@ document.getElementById('btnGuardarMotivoConsulta')?.addEventListener('click', f
         });
 });
  
+// ── Eliminar ───────────────────────────────────────────────────────
+ 
+function eliminarConfirmar(id, nombre) {
+    if (!confirm(`¿Deseas eliminar el motivo "${nombre}"?\nEsta acción no se puede deshacer.`)) return;
+ 
+    const formData = new FormData();
+    formData.append('modulo',            'motivos_consulta');
+    formData.append('accion',            'delete');
+    formData.append('id_motivo_consulta', id);
+ 
+    CatalogTable.showLoading(true);
+ 
+    fetch(API_URL, { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            CatalogTable.showLoading(false);
+            if (data.success) {
+                CatalogTable.showNotification(data.message, 'success');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                CatalogTable.showNotification(data.message || 'Error al eliminar', 'error');
+            }
+        })
+        .catch(() => {
+            CatalogTable.showLoading(false);
+            CatalogTable.showNotification('Error de conexión', 'error');
+        });
+}
+ 
 // ── Validación ─────────────────────────────────────────────────────
  
 function validarFormulario() {
