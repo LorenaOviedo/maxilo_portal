@@ -1,6 +1,6 @@
 <?php
 /**
- * Especialista.php — Modelo
+ * Modelo para gestionar especialistas: CRUD, validación y consultas.
  *
  * Tablas principales:
  *   especialista, especialidadespecialista, especialidad,

@@ -1,6 +1,6 @@
 <?php
 /**
- * Configuracion.php — Modelo
+ * Modelo de configuración del sistema
  *
  * Gestiona: perfil de usuario, usuarios, roles y permisos por módulo
  * Tablas: usuario, rol, modulos, rolpermiso, estatus

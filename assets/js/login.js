@@ -1,3 +1,5 @@
+/** Login */
+
 document.addEventListener('DOMContentLoaded', function () {
     const loginForm = document.getElementById('loginForm');
     const usuarioInput = document.getElementById('usuario');

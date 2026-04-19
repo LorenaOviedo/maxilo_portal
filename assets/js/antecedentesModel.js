@@ -1,5 +1,5 @@
 /**
- * MODELO - AntecedentesModel.js
+ * MODELO PARA SUBMODULO DE ANTECEDENTES
  *
  * Responsabilidad: datos del catálogo de antecedentes.
  * No conoce la vista ni el controlador..

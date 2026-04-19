@@ -1,6 +1,6 @@
 <?php
 /**
- * Controller: DashboardController
+ * Controlador para el dashboard del sistema.
  *
  * Gestiona la vista del dashboard y expone el método
  * resumen() para que Api.php lo consuma vía AJAX.

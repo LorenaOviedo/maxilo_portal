@@ -1,7 +1,6 @@
 <?php
 /**
- * Model: PlanTratamiento
- * Sistema Maxilofacial Texcoco
+ * Modelo para manejar planes de tratamiento.
  *
  * Tablas: plantratamiento, detalleplantratamiento,
  *         estadostratamiento, procedimientos, especialista.

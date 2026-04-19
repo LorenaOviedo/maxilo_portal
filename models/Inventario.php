@@ -1,6 +1,6 @@
 <?php
 /**
- * Inventario.php — Modelo
+ * Modelo de inventario para gestión de stock.
  *
  * Vista de solo lectura del inventario actual.
  * Tablas: inventario, producto, tipoproducto

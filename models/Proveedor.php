@@ -1,6 +1,6 @@
 <?php
 /**
- * Proveedor.php — Modelo
+ * Modelo de proveedor para gestión de proveedores en un sistema.
  *
  * Tablas principales:
  *   Proveedor, Contactos, TipoContacto, TipoProductoProveedor,

@@ -1,5 +1,5 @@
 /**
- * proveedores.js
+ * Submódulo de proveedores
  *
  * Controlador del módulo de proveedores.
  * Depende de: CatalogTable (catalog-table.js), API_URL, CATALOGOS_PROV

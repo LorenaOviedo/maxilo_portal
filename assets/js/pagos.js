@@ -1,5 +1,5 @@
 /**
- * pagos.js
+ * Módulo de pagos: registro, edición, visualización de detalles, impresión de recibos y gestión de facturación.
  * Controlador del módulo de pagos.
  * Depende de: CatalogTable, API_URL, CATALOGOS_PAGO
  */

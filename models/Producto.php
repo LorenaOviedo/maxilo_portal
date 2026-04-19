@@ -1,6 +1,6 @@
 <?php
 /**
- * Producto.php — Modelo
+ * Modelo para gestionar productos.
  *
  * Tablas: producto, tipoproducto, inventario
  *

@@ -1,5 +1,5 @@
 /**
- * CONTROLADOR - odontogramaController.js
+ * CONTROLADOR DE ODONTOGRAMA
  *
  * Responsabilidad: lógica de negocio, estado reactivo Vue y
  * comunicación con el servidor.

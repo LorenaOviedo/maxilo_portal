@@ -1,6 +1,6 @@
 <?php
 /**
- * Pago.php — Modelo
+ * Modelo para gestionar los pagos de las citas.
  *
  * Tablas: pago, cita, paciente, especialista,
  *         metodopago, estadoscita

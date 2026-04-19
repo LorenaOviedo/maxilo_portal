@@ -1,6 +1,6 @@
 <?php
 /**
- * Odontograma.php — Modelo
+ * Modelo para gestionar el odontograma de un paciente.
  *
  */
 class Odontograma

@@ -1,7 +1,7 @@
 /**
- * MODELO - OdontogramaModel.js
+ * MODELO DEL ODONTOGRAMA
  *
- * Responsabilidad: datos puros, catálogos y estructura de piezas dentales.
+ * Responsabilidad: datos, catálogos y estructura de piezas dentales.
  * No conoce la vista ni el controlador.
  */
 

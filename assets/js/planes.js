@@ -1,5 +1,5 @@
 /**
- * planes.js
+ * Submódulo: Planes de Tratamiento
  *
  * Lógica del tab Planes de Tratamiento dentro del modal de paciente.
  * Depende de: catalogos-tabla.js (CatalogTable), API_URL

@@ -1,5 +1,5 @@
 /**
- * productos.js
+ * Submódulo de productos
  * Controlador del módulo de productos.
  * Depende de: CatalogTable, API_URL, CATALOGOS_PROD
  */

@@ -1,5 +1,5 @@
 /**
- * motivos_consulta.js
+ * Catalogo de Motivos de Consulta
  * Lógica del catálogo de Motivos de Consulta.
  * Depende de: modal.js, catalogos-tabla.js
  */

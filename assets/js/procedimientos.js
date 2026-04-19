@@ -1,5 +1,5 @@
 /**
- * procedimientos.js
+ * Catálogo de Procedimientos Dentales
  *
  * Lógica específica del catálogo de Procedimientos Dentales.
  * Depende de: modal.js, catalogos-tabla.js

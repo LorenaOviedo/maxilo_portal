@@ -1,5 +1,5 @@
 /**
- * configuracion.js
+ * Módulo de Configuración
  * Controlador del módulo de configuración.
  * Depende de: CatalogTable, API_URL, CATALOGOS_CFG, SESION_ID
  */

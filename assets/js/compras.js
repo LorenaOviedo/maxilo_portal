@@ -1,5 +1,5 @@
 /**
- * compras.js
+ * Módulo de compras
  * Controlador del módulo de órdenes de compra.
  * Depende de: CatalogTable, API_URL, CATALOGOS_OC
  */

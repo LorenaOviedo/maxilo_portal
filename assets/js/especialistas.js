@@ -1,5 +1,5 @@
 /**
- * especialistas.js
+ * Módulo de especialistas
  *
  * Controlador del módulo de especialistas.
  * Depende de: CatalogTable (catalog-table.js), API_URL

@@ -1,6 +1,6 @@
 <?php
 /**
- * Model: Dashboard
+ * Modelo para el dashboard.
  *
  * Consultas para los resúmenes del dashboard de citas.
  */

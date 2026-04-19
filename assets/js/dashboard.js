@@ -1,5 +1,5 @@
 /**
- * dashboard.js
+ * Funcionalidad de refresco automático del dashboard.
  *
  * Refresca los datos del dashboard cada 60 segundos mediante AJAX.
  */

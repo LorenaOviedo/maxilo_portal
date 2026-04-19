@@ -1,5 +1,5 @@
 /**
- * inventario.js
+ * Módulo de Inventario
  * Controlador del módulo de inventario — solo lectura.
  * Depende de: CatalogTable, API_URL
  */

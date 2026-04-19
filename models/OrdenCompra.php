@@ -1,6 +1,6 @@
 <?php
 /**
- * OrdenCompra.php — Modelo
+ * Modelo para gestionar órdenes de compra.
  *
  * Tablas: ordencompra, detalleordencompra, producto,
  *         proveedor, tiposcompra, monedas, estadosOrdenCompra

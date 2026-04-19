@@ -1,6 +1,5 @@
 /**
- * pacientes.js
- * Sistema Maxilofacial Texcoco
+ * Módulo de gestión de pacientes: listado, búsqueda, creación, edición y cambio de estatus.
  *
  * Depende de: modal.js, catalogos-tabla.js,
  *             antecedentesModel.js, antecedentesController.js

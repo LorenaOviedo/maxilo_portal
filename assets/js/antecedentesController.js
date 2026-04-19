@@ -1,5 +1,5 @@
 /**
- * CONTROLADOR - AntecedentesController.js
+ * CONTROLADOR DE ANTECEDENTES MÉDICOS
  *
  * Responsabilidad: estado reactivo Vue para el componente
  * de chips de antecedentes médicos..

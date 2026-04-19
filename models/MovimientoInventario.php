@@ -1,6 +1,6 @@
 <?php
 /**
- * MovimientoInventario.php — Modelo
+ * Modelo para gestionar los movimientos de inventario (entradas, salidas, ajustes).
  *
  * Tablas: movimientoinventario, inventario, producto,
  *         tipomovimiento, usuario

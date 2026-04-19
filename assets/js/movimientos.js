@@ -1,5 +1,5 @@
 /**
- * movimientos.js
+ * Submódulo de movimientos de inventario.
  * Controlador del módulo de movimientos de inventario.
  * Depende de: CatalogTable, API_URL, CATALOGOS_MOV, SESSION_USUARIO
  */

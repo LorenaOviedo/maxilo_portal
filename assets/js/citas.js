@@ -1,5 +1,5 @@
 /**
- * Módulo de Citas - JavaScript
+ * Módulo de Citas
  */
 
 "use strict";

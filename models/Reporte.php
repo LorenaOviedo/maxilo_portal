@@ -1,6 +1,6 @@
 <?php
 /**
- * Reporte.php — Modelo
+ * Modelo para generación de reportes.
  *
  * Genera datos para los 5 tipos de reporte:
  *   - pacientes

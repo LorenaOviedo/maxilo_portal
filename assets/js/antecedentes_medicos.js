@@ -1,5 +1,4 @@
 /**
- * antecedentes_medicos.js
  * Lógica del catálogo de Antecedentes Médicos.
  * Depende de: modal.js, catalogos-tabla.js
  */
@@ -16,7 +15,7 @@ function cargarAntecedente(id, callback) {
                 CatalogTable.showNotification('No se pudo cargar el antecedente', 'error');
                 return;
             }
-            callback(data.antecedente_medico);
+            callback(data.antecedentes_medicos);
         })
         .catch(() => CatalogTable.showNotification('Error al obtener los datos', 'error'));
 }

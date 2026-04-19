@@ -1,5 +1,5 @@
 /**
- * reportes.js
+ * Módulo de reportes
  * Controlador del módulo de reportes.
  * Depende de: API_URL, SheetJS (XLSX)
  */
