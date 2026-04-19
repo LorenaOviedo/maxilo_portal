@@ -220,6 +220,11 @@
     text-align: center;
     white-space: nowrap;
 }
+
+.data-table .col-especialidad {
+    min-width: 160px;
+    vertical-align: middle;
+}
  
 /*BADGES ACTIVO/INACTIVO*/
 .badge {
