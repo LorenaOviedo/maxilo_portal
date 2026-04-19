@@ -207,6 +207,10 @@
 .data-table .col-time {
     text-align: center;
 }
+
+.data-table .col-especialidad {
+    text-align: center;
+}
  
 .data-table .col-authorization {
     text-align: center;
