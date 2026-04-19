@@ -644,8 +644,10 @@
     }
 }
 
-/* ── Badge interactivo en pagos (hover como botón) ────────────────────── */
+/* ── Badge interactivo en factura (hover como botón) ────────────────────── */
 .factura-badge {
+    background-color: #e8f8f6;
+    color: #145dda;
     appearance: none;
     border: 0;
     font-family: inherit;
