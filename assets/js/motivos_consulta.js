@@ -16,7 +16,7 @@ function cargarMotivo(id, callback) {
                 CatalogTable.showNotification('No se pudo cargar el motivo', 'error');
                 return;
             }
-            callback(data.motivo_consulta);
+            callback(data.motivos_consulta);
         })
         .catch(() => CatalogTable.showNotification('Error al obtener los datos', 'error'));
 }
