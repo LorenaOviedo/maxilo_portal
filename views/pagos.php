@@ -245,17 +245,16 @@ include '../includes/sidebar.php';
                                               || strpos(strtolower($sf['estatus_factura']), 'emitid') !== false
                                             ? 'badge-success' : 'badge-warning';
                                     ?>
-                                        <span class="badge <?php echo $sfCls; ?> badge-btn"
+                                        <span class="badge factura-badge factura-badge--clickable <?php echo $sfCls; ?>"
                                             title="Ver factura"
                                             onclick="pagoController.verFactura(<?php echo $p['id_pago']; ?>)">
                                             <?php echo htmlspecialchars($sf['estatus_factura']); ?>
                                         </span>
                                     <?php elseif ($p['estatus'] === 'Pagado'): ?>
-                                        <button type="button" class="btn-action btn-view"
+                                        <button type="button" class="badge factura-badge factura-badge--clickable factura-badge--solicitar"
                                             title="Solicitar factura"
-                                            style="font-size:12px;"
                                             onclick="pagoController.abrirFactura(<?php echo $p['id_pago']; ?>, <?php echo $p['id_cita']; ?>)">
-                                            <i class="ri-file-text-line"></i>
+                                            Solicitar
                                         </button>
                                     <?php else: ?>
                                         <span style="color:#adb5bd;font-size:12px;">—</span>
