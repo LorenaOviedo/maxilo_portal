@@ -122,7 +122,7 @@ include '../includes/sidebar.php';
     var API_URL = '<?php echo ajax_url('Api.php'); ?>';
 </script>
  
-<?php include '../includes/modal_motivo_consulta.php'; ?>
+<?php include '../includes/modal_motivos_consulta.php'; ?>
 <script src="<?php echo asset('js/motivos_consulta.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
  
 <?php include '../includes/footer.php'; ?>

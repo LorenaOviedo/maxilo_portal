@@ -4,28 +4,28 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../models/AntecedenteMedico.php';
- 
+
 session_start();
- 
+
 $auth = new AuthController();
 if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
- 
+
 $page_title = 'Antecedentes Médicos';
-$page_css   = ['catalogos-tabla.css', 'modal.css'];
-$page_js    = [];
- 
-$db       = getDB();
-$modelo   = new AntecedenteMedico($db);
+$page_css = ['catalogos-tabla.css', 'modal.css'];
+$page_js = [];
+
+$db = getDB();
+$modelo = new AntecedenteMedico($db);
 $antecedentes = $modelo->getAll();
- 
+
 include '../includes/header.php';
 include '../includes/sidebar.php';
 ?>
- 
+
 <main class="main-content">
- 
+
     <!-- Breadcrumb -->
     <nav class="breadcrumb">
         <div class="breadcrumb-item">
@@ -36,18 +36,17 @@ include '../includes/sidebar.php';
             <span class="breadcrumb-current">Antecedentes médicos</span>
         </div>
     </nav>
- 
+
     <!-- Encabezado -->
     <div class="page-header">
         <h1>Antecedentes médicos</h1>
         <p class="page-description">Catálogo de antecedentes médicos para el historial de pacientes</p>
     </div>
- 
+
     <!-- Búsqueda y agregar -->
     <div class="search-actions-bar">
         <div class="search-box">
-            <input type="text" class="search-input" id="searchInput"
-                placeholder="Buscar por nombre o tipo...">
+            <input type="text" class="search-input" id="searchInput" placeholder="Buscar por nombre o tipo...">
         </div>
         <button type="button" class="btn-search">
             <i class="ri-search-line"></i> Buscar
@@ -56,15 +55,15 @@ include '../includes/sidebar.php';
             <i class="ri-add-line"></i> Agregar nuevo
         </button>
     </div>
- 
+
     <!-- Tabla -->
     <div class="table-container">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th class="col-id"   data-sort="id">NO.</th>
+                    <th class="col-id" data-sort="id">NO.</th>
                     <th class="col-name" data-sort="nombre">NOMBRE DEL ANTECEDENTE</th>
-                    <th                  data-sort="tipo">TIPO</th>
+                    <th data-sort="tipo">TIPO</th>
                     <th class="col-authorization text-center">IMPLICA ALERTA<br>MÉDICA</th>
                     <th class="col-actions">ACCIONES</th>
                 </tr>
@@ -91,7 +90,7 @@ include '../includes/sidebar.php';
                                 <?php echo htmlspecialchars($a['tipo'] ?? '—'); ?>
                             </td>
                             <td class="text-center" data-label="Alerta médica">
-                                <?php if ((int)$a['implica_alerta_medica'] === 1): ?>
+                                <?php if ((int) $a['implica_alerta_medica'] === 1): ?>
                                     <span class="badge badge-yes">SÍ</span>
                                 <?php else: ?>
                                     <span class="badge badge-no">NO</span>
@@ -115,7 +114,7 @@ include '../includes/sidebar.php';
             </tbody>
         </table>
     </div>
- 
+
     <?php if (!empty($antecedentes)): ?>
         <div class="pagination">
             <button class="pagination-btn" disabled><i class="ri-arrow-left-line"></i> Anterior</button>
@@ -123,14 +122,14 @@ include '../includes/sidebar.php';
             <button class="pagination-btn" disabled>Siguiente <i class="ri-arrow-right-line"></i></button>
         </div>
     <?php endif; ?>
- 
+
 </main>
- 
+
 <script>
     var API_URL = '<?php echo ajax_url('Api.php'); ?>';
 </script>
- 
-<?php include '../includes/modal_antecedente_medico.php'; ?>
+
+<?php include '../includes/modal_antecedentes_medicos.php'; ?>
 <script src="<?php echo asset('js/antecedentes_medicos.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
- 
+
 <?php include '../includes/footer.php'; ?>
