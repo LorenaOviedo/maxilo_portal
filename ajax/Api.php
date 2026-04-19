@@ -510,35 +510,35 @@ switch ($accion) {
     case 'guardar_odontograma':
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
             responder(false, 'Método no permitido');
-
+ 
         $body = json_decode(file_get_contents('php://input'), true) ?? [];
-
-        $numeroPaciente = (int) ($body['numero_paciente'] ?? 0);
-        $numeroPieza = (int) ($body['numero_pieza'] ?? 0);
-        $idAnomalia = (int) ($body['id_anomalia'] ?? 0);
-        $idCaras = $body['id_caras'] ?? [];
-        $idProcedimiento = (int) ($body['id_procedimiento'] ?? 0);
-        $idEstatus = (int) ($body['id_estatus_hallazgo'] ?? 1);
-
+ 
+        $numeroPaciente  = (int) ($body['numero_paciente']     ?? 0);
+        $numeroPieza     = (int) ($body['numero_pieza']        ?? 0);
+        $idAnomalia      = (int) ($body['id_anomalia']         ?? 0);
+        $idCaras         = $body['id_caras']                   ?? [];
+        $idProcedimiento = (int) ($body['id_procedimiento']    ?? 0);
+        $idEstatus       = (int) ($body['id_estatus_hallazgo'] ?? 1);
+ 
+        // id_especialista eliminado — ya no se crea cita desde el odontograma
         if (!$numeroPaciente || !$numeroPieza || !$idAnomalia)
             responder(false, 'Campos requeridos: numero_paciente, numero_pieza, id_anomalia');
-
+ 
         if (empty($idCaras))
             responder(false, 'Se requiere al menos una cara dental (id_caras)');
-
+ 
         if (!$idProcedimiento)
             responder(false, 'El procedimiento es obligatorio (id_procedimiento)');
-
+ 
         $resultado = $model->guardar([
-            'numero_paciente' => $numeroPaciente,
-            'numero_pieza' => $numeroPieza,
-            'id_anomalia' => $idAnomalia,
-            'id_caras' => $idCaras,
-            'id_procedimiento' => $idProcedimiento,
+            'numero_paciente'     => $numeroPaciente,
+            'numero_pieza'        => $numeroPieza,
+            'id_anomalia'         => $idAnomalia,
+            'id_caras'            => $idCaras,
+            'id_procedimiento'    => $idProcedimiento,
             'id_estatus_hallazgo' => $idEstatus,
-            // id_especialista eliminado
         ]);
-
+ 
         responder(
             $resultado['success'],
             $resultado['message'] ?? 'Registro guardado correctamente',
