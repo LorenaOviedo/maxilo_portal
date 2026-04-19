@@ -80,7 +80,7 @@ include '../includes/sidebar.php';
                         <tr>
                             <th class="col-id" data-sort="id_especialista">NO. ESPECIALISTA</th>
                             <th class="col-name" data-sort="apellido_paterno">NOMBRE COMPLETO</th>
-                            <th data-sort="especialidades">ESPECIALIDAD(ES)</th>
+                            <th class="col-especialidad" data-sort="especialidades">ESPECIALIDAD(ES)</th>
                             <th class="col-tel">TELÉFONO</th>
                             <th class="col-date" data-sort="fecha_contratacion">FECHA DE CONTRATACIÓN</th>
                             <th class="col-status">ESTATUS</th>
@@ -118,7 +118,8 @@ include '../includes/sidebar.php';
                                     <?php echo htmlspecialchars($e['nombre_completo']); ?>
                                 </td>
 
-                                <td data-label="Especialidad(es)">
+                                <td class="col-especialidad"
+                                    data-label="Especialidad(es)">
                                     <?php if (!empty($e['especialidades'])): ?>
                                         <?php foreach (explode(', ', $e['especialidades']) as $esp): ?>
                                             <span class="badge badge-info"
