@@ -55,10 +55,12 @@ $modal_id = 'modalPaciente';
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabOdontograma')">
             Odontograma
         </button>
+        <!--Tab para archivos médicos, se habilitará en el futuro si se implementa esa funcionalidad
         <button class="modal-tab" data-tab="tabArchivos"
             onclick="cambiarTab('<?php echo $modal_id; ?>', 'tabArchivos')">
             Archivos médicos
         </button>
+        -->
     </div>
  
     <!-- Body -->
