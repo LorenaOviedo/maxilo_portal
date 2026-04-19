@@ -245,8 +245,7 @@ include '../includes/sidebar.php';
                                               || strpos(strtolower($sf['estatus_factura']), 'emitid') !== false
                                             ? 'badge-success' : 'badge-warning';
                                     ?>
-                                        <span class="badge <?php echo $sfCls; ?>"
-                                            style="cursor:pointer;font-size:11px;"
+                                        <span class="badge <?php echo $sfCls; ?> badge-btn"
                                             title="Ver factura"
                                             onclick="pagoController.verFactura(<?php echo $p['id_pago']; ?>)">
                                             <?php echo htmlspecialchars($sf['estatus_factura']); ?>
