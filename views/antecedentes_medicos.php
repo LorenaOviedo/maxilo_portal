@@ -137,7 +137,7 @@ include '../includes/sidebar.php';
     var API_URL = '<?php echo ajax_url('Api.php'); ?>';
 </script>
  
-<?php include '../includes/modal_antecedente_medico.php'; ?>
+<?php include '../includes/modal_antecedentes_medicos.php'; ?>
 <script src="<?php echo asset('js/antecedentes_medicos.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
  
 <?php include '../includes/footer.php'; ?>
