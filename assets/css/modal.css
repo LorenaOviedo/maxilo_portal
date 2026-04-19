@@ -1662,3 +1662,45 @@
         }
     }
 }
+
+/* ── Parche para campos de fecha en móvil ─────────────────────────────── */
+@media (max-width: 768px) {
+    .modal-container {
+        width: 95%;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    /* Contenedor del formulario no puede exceder el modal */
+    .modal-body,
+    .modal-form {
+        overflow-x: hidden;
+        max-width: 100%;
+    }
+
+    /* Los inputs de fecha en iOS/Safari tienen un tamaño mínimo
+       interno que desborda si el padre no tiene min-width: 0 */
+    .form-group {
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .form-input[type="date"],
+    .form-input[type="time"],
+    .form-input[type="datetime-local"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        font-size: 16px;/* evita zoom automático en iOS */
+        -webkit-appearance: none;
+        appearance: none;
+        /* Quita el ícono nativo que agranda el input en Safari */
+        background-image: none;
+    }
+
+    /* El ícono de calendario nativo de WebKit a veces fuerza ancho */
+    .form-input[type="date"]::-webkit-date-and-time-value {
+        text-align: left;
+    }
+}

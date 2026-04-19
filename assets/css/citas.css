@@ -880,3 +880,43 @@
     font-weight: 500;
     white-space: nowrap;
 }
+
+/* ── Parche campos de fecha en móvil (modal de citas) ───────────── */
+@media (max-width: 768px) {
+    .modal {
+        max-width: calc(100vw - 20px);
+        overflow-x: hidden;
+    }
+
+    .modal-body {
+        overflow-x: hidden;
+        max-width: 100%;
+    }
+
+    /* form-group siempre confinado */
+    .form-group {
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .form-row {
+        overflow: hidden;
+    }
+
+    .form-input[type="date"],
+    .form-input[type="time"],
+    .form-input[type="datetime-local"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        font-size: 16px;
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: none;
+    }
+
+    .form-input[type="date"]::-webkit-date-and-time-value {
+        text-align: left;
+    }
+}
