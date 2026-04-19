@@ -647,30 +647,14 @@
 .badge-btn {
     cursor: pointer;
     font-size: 11px;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     user-select: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
- 
-.badge-btn::after {
-    content: '\203A'; /* › */
-    font-size: 13px;
-    opacity: 0;
-    transform: translateX(-4px);
-    transition: all 0.2s ease;
 }
  
 .badge-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-    filter: brightness(0.92);
-}
- 
-.badge-btn:hover::after {
-    opacity: 1;
-    transform: translateX(0);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+    text-decoration: none;
 }
  
 .badge-btn:active {
