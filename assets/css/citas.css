@@ -541,6 +541,7 @@
     flex-direction: column;
     gap: 6px;
     margin-bottom: 0;
+    min-width: 0;
 }
  
 .form-label {
@@ -566,6 +567,7 @@
     outline: none;
     width: 100%;
     max-width: 100%;
+    min-width: 0;
     box-sizing: border-box;
 }
  
@@ -878,4 +880,3 @@
     font-weight: 500;
     white-space: nowrap;
 }
- 
