@@ -93,6 +93,7 @@ nbproject/
 /vendor/
 composer.lock
 composer.phar
+composer.json
 
 # ==========================================
 # NODE (si usas Node.js)
@@ -137,6 +138,7 @@ phpdoc/
 phpunit.xml
 .phpunit.result.cache
 coverage/
+test/
 
 # ==========================================
 # OTROS
