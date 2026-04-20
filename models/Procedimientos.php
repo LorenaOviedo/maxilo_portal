@@ -54,7 +54,7 @@ class Procedimiento {
             $query .= " WHERE " . implode(' AND ', $conditions);
         }
  
-        $query .= " ORDER BY p.id_procedimiento ASC";
+        $query .= " ORDER BY p.id_procedimiento DESC";
  
         $stmt = $this->conn->prepare($query);
  
