@@ -53,7 +53,7 @@ class Especialista
             LEFT JOIN especialidad      esp ON esp.id_especialidad = ee.id_especialidad
             $where
             GROUP BY e.id_especialista
-            ORDER BY e.apellido_paterno, e.nombre
+            ORDER BY e.id_especialista DESC, e.nombre
             LIMIT :limit OFFSET :offset
         ");
 

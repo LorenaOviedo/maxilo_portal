@@ -43,7 +43,7 @@ class Producto
             JOIN  tipoproducto  tp ON tp.id_tipo_producto = p.id_tipo_producto
             LEFT JOIN inventario i  ON i.codigo_producto  = p.codigo_producto
             $where
-            ORDER BY p.nombre_producto ASC
+            ORDER BY p.id_producto DESC
             LIMIT :limit OFFSET :offset
         ");
  

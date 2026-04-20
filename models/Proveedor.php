@@ -68,7 +68,7 @@ class Proveedor
             LEFT JOIN municipios         m   ON m.id_municipio              = cp.id_municipio
             LEFT JOIN estados            e   ON e.id_estado                 = m.id_estado
             $where
-            ORDER BY p.razon_social ASC
+            ORDER BY p.id_proveedor DESC
             LIMIT :limit OFFSET :offset
         ");
 

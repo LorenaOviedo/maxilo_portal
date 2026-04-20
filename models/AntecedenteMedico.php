@@ -39,7 +39,7 @@ class AntecedenteMedico
         if (!empty($conditions))
             $query .= " WHERE " . implode(' AND ', $conditions);
  
-        $query .= " ORDER BY tipo ASC, nombre_antecedente ASC";
+        $query .= " ORDER BY id_antecedente DESC, nombre_antecedente ASC";
  
         $stmt = $this->conn->prepare($query);
  

@@ -80,7 +80,7 @@ class Paciente
             $query .= " WHERE " . implode(' AND ', $conditions);
         }
 
-        $query .= " GROUP BY p.numero_paciente ORDER BY p.fecha_registro DESC";
+        $query .= " GROUP BY p.numero_paciente ORDER BY p.numero_paciente DESC";
 
         $pagina = max(1, (int) $pagina);
         $porPagina = max(1, (int) $porPagina);
