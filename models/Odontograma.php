@@ -3,6 +3,7 @@
  * Modelo para gestionar el odontograma de un paciente.
  *
  */
+
 class Odontograma
 {
     private PDO $db;
@@ -100,28 +101,26 @@ class Odontograma
                 ) AS nombre_especialista
             FROM  odontograma               o
             JOIN  transaccionesdentales     td  ON td.id_transaccion_dental = o.id_transaccion_dental
+            JOIN  cita                       c  ON c.id_cita                = td.id_cita
             JOIN  anomaliasdentales         ad  ON ad.id_anomalia_dental    = o.id_anomalia_dental
             JOIN  carasdentales             cd  ON cd.id_cara_dental        = o.id_cara_dental
             JOIN  estadoshallazgos          eh  ON eh.id_estatus_hallazgo   = o.id_estatus_hallazgo
+            JOIN  especialista             esp  ON esp.id_especialista      = c.id_especialista
             LEFT JOIN procedimientos         p  ON p.id_procedimiento       = td.id_procedimiento
-            LEFT JOIN cita                   c  ON c.id_cita                = td.id_cita
-            LEFT JOIN especialista          esp ON esp.id_especialista      = c.id_especialista
-            WHERE (
-                td.numero_paciente = :np1
-                OR c.numero_paciente = :np2
-            )
+            WHERE c.numero_paciente = :numero_paciente
             ORDER BY o.numero_posicion ASC,
-                     o.id_odontograma  DESC
+                     c.fecha_cita     DESC,
+                     o.id_odontograma DESC
         ");
-        $stmt->execute([':np1' => $numeroPaciente, ':np2' => $numeroPaciente]);
+        $stmt->execute([':numero_paciente' => $numeroPaciente]);
         $filas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+ 
         $agrupado = [];
         foreach ($filas as $fila) {
             $pieza = (int) $fila['numero_posicion'];
             $agrupado[$pieza][] = $fila;
         }
-
+ 
         return $agrupado;
     }
  
@@ -131,29 +130,31 @@ class Odontograma
  
     public function guardar(array $datos): array
     {
-        $numeroPaciente  = (int) ($datos['numero_paciente']     ?? 0);
-        $numeroPieza     = (int) ($datos['numero_pieza']        ?? 0);
-        $idAnomalia      = (int) ($datos['id_anomalia']         ?? 0);
+        $numeroPaciente  = (int) ($datos['numero_paciente']   ?? 0);
+        $idEspecialista  = (int) ($datos['id_especialista']   ?? 0);
+        $numeroPieza     = (int) ($datos['numero_pieza']      ?? 0);
+        $idAnomalia      = (int) ($datos['id_anomalia']       ?? 0);
         $idCaras         = array_filter(array_map('intval', (array) ($datos['id_caras'] ?? [])));
-        $idProcedimiento = (int) ($datos['id_procedimiento']    ?? 0);
+        $idProcedimiento = (int) ($datos['id_procedimiento']  ?? 0);
         $idEstatus       = (int) ($datos['id_estatus_hallazgo'] ?? 1);
-
-        if (!$numeroPaciente || !$numeroPieza || !$idAnomalia)
+ 
+        if (!$numeroPaciente || !$idEspecialista || !$numeroPieza || !$idAnomalia)
             return ['success' => false, 'message' => 'Faltan campos obligatorios.'];
         if (empty($idCaras))
             return ['success' => false, 'message' => 'Se requiere al menos una cara dental.'];
         if (!$idProcedimiento)
             return ['success' => false, 'message' => 'El procedimiento es obligatorio.'];
-
+ 
         $this->db->beginTransaction();
         try {
-            // Sin cita — id_cita queda NULL, trazabilidad por numero_paciente
+            $idCita = $this->_obtenerOCrearCita($numeroPaciente, $idEspecialista);
+ 
             $stmtTx = $this->db->prepare("
-                INSERT INTO transaccionesdentales (id_cita, numero_paciente, id_procedimiento)
-                VALUES (NULL, :numero_paciente, :id_procedimiento)
+                INSERT INTO transaccionesdentales (id_cita, id_procedimiento)
+                VALUES (:id_cita, :id_procedimiento)
             ");
             $stmtTx->execute([
-                ':numero_paciente'  => $numeroPaciente,
+                ':id_cita'          => $idCita,
                 ':id_procedimiento' => $idProcedimiento,
             ]);
             $idTransaccion = (int) $this->db->lastInsertId();
@@ -184,6 +185,7 @@ class Odontograma
             $this->db->commit();
             return [
                 'success'         => true,
+                'id_cita'         => $idCita,
                 'id_transaccion'  => $idTransaccion,
                 'ids_odontograma' => $idsOdontograma,
             ];
@@ -204,16 +206,16 @@ class Odontograma
     public function actualizarEstatus(int $idOdontograma, int $idEstatus, int $numeroPaciente): array
     {
         try {
-            // Verificar propiedad — compatible con registros con y sin cita
+            // Verificar propiedad
             $stmt = $this->db->prepare("
                 SELECT o.id_odontograma
                 FROM   odontograma           o
                 JOIN   transaccionesdentales td ON td.id_transaccion_dental = o.id_transaccion_dental
-                LEFT JOIN cita               c  ON c.id_cita                = td.id_cita
-                WHERE  o.id_odontograma = :id
-                  AND  (td.numero_paciente = :np1 OR c.numero_paciente = :np2)
+                JOIN   cita                   c ON c.id_cita                = td.id_cita
+                WHERE  o.id_odontograma  = :id
+                  AND  c.numero_paciente = :numero_paciente
             ");
-            $stmt->execute([':id' => $idOdontograma, ':np1' => $numeroPaciente, ':np2' => $numeroPaciente]);
+            $stmt->execute([':id' => $idOdontograma, ':numero_paciente' => $numeroPaciente]);
  
             if (!$stmt->fetch())
                 return ['success' => false, 'message' => 'Registro no encontrado o sin permiso.'];
@@ -241,11 +243,11 @@ class Odontograma
                 SELECT o.id_transaccion_dental
                 FROM   odontograma           o
                 JOIN   transaccionesdentales td ON td.id_transaccion_dental = o.id_transaccion_dental
-                LEFT JOIN cita               c  ON c.id_cita                = td.id_cita
-                WHERE  o.id_odontograma = :id
-                  AND  (td.numero_paciente = :np1 OR c.numero_paciente = :np2)
+                JOIN   cita                   c ON c.id_cita                = td.id_cita
+                WHERE  o.id_odontograma  = :id
+                  AND  c.numero_paciente = :numero_paciente
             ");
-            $stmt->execute([':id' => $idOdontograma, ':np1' => $numeroPaciente, ':np2' => $numeroPaciente]);
+            $stmt->execute([':id' => $idOdontograma, ':numero_paciente' => $numeroPaciente]);
             $fila = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$fila)
@@ -285,17 +287,17 @@ class Odontograma
     {
         $this->db->beginTransaction();
         try {
-            // Verificar propiedad — compatible con registros con y sin cita
+            // Verificar propiedad: el registro debe pertenecer al paciente
             $stmt = $this->db->prepare("
                 SELECT o.id_transaccion_dental,
                        td.id_cita
                 FROM   odontograma           o
                 JOIN   transaccionesdentales td ON td.id_transaccion_dental = o.id_transaccion_dental
-                LEFT JOIN cita               c  ON c.id_cita                = td.id_cita
-                WHERE  o.id_odontograma = :id
-                  AND  (td.numero_paciente = :np1 OR c.numero_paciente = :np2)
+                JOIN   cita                   c ON c.id_cita                = td.id_cita
+                WHERE  o.id_odontograma  = :id
+                  AND  c.numero_paciente = :numero_paciente
             ");
-            $stmt->execute([':id' => $idOdontograma, ':np1' => $numeroPaciente, ':np2' => $numeroPaciente]);
+            $stmt->execute([':id' => $idOdontograma, ':numero_paciente' => $numeroPaciente]);
             $fila = $stmt->fetch(PDO::FETCH_ASSOC);
  
             if (!$fila)
