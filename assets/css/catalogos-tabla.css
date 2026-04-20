@@ -136,13 +136,16 @@
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     border: 1px solid #e8e8e8;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
 }
  
 /*DATOS DE LA TABLA*/
 .data-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 700px;
 }
  
 .data-table thead {
@@ -220,7 +223,7 @@
     text-align: center;
     white-space: nowrap;
 }
-
+ 
 /*BADGES ACTIVO/INACTIVO*/
 .badge {
     display: inline-block;
@@ -376,14 +379,26 @@
 }
  
 /*RESPONSIVE*/
+ 
+/* Tamaños intermedios: reducir padding y botones para ganar espacio */
 @media (max-width: 1200px) {
     .data-table {
         font-size: 13px;
     }
-    
+ 
     .data-table thead th,
     .data-table tbody td {
-        padding: 12px 15px;
+        padding: 12px 10px;
+    }
+ 
+    .btn-action {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+ 
+    .action-buttons {
+        gap: 6px;
     }
 }
  
@@ -391,24 +406,15 @@
     .search-actions-bar {
         flex-direction: column;
     }
-    
+ 
     .search-box {
         width: 100%;
     }
-    
+ 
     .btn-search,
     .btn-add-new {
         width: 100%;
         justify-content: center;
-    }
-    
-    /*Hacer tabla scrollable en tablets */
-    .table-container {
-        overflow-x: auto;
-    }
-    
-    .data-table {
-        min-width: 900px;
     }
 }
  
@@ -416,16 +422,11 @@
     .page-header h1 {
         font-size: 24px;
     }
-    
+ 
     .breadcrumb {
         font-size: 13px;
     }
-    
-    /*Tabla en mobile */
-    .data-table {
-        min-width: 800px;
-    }
-    
+ 
     .pagination {
         flex-wrap: wrap;
     }
@@ -469,7 +470,9 @@
 }
  
 .text-truncate {
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 200px;
@@ -510,7 +513,6 @@
     }
  
     .table-container {
-        overflow-x: unset;
         background: transparent;
         box-shadow: none;
         border: none;
@@ -643,7 +645,7 @@
         display: block;
     }
 }
-
+ 
 /* ── Badge interactivo en factura (hover como botón) ────────────────────── */
 .factura-badge {
     background-color: #e8f8f6;
@@ -655,27 +657,27 @@
     text-decoration: none;
     transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 }
-
+ 
 .factura-badge--clickable {
     cursor: pointer;
 }
-
+ 
 .factura-badge--clickable:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 14px rgba(32, 168, 158, 0.16);
     filter: brightness(0.98);
 }
-
+ 
 .factura-badge--clickable:focus-visible {
     outline: 2px solid rgba(32, 168, 158, 0.35);
     outline-offset: 2px;
 }
-
+ 
 .factura-badge--solicitar {
     background-color: #e8f8f6;
     color: #12756d;
 }
-
+ 
 .factura-badge--empty {
     background-color: #f1f3f5;
     color: #adb5bd;
