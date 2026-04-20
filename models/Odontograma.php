@@ -15,7 +15,6 @@ class Odontograma
     public function __construct(PDO $db)
     {
         $this->db = $db;
-        $this->_resolverIds();
     }
 
     public function getCatalogos(): array
@@ -338,6 +337,8 @@ class Odontograma
     {
         $this->db->beginTransaction();
         try {
+            $this->asegurarIdsResueltos();
+
             if ($this->usaNumeroPacienteEnTransacciones()) {
                 $stmt = $this->db->prepare("
                     SELECT o.id_transaccion_dental,
@@ -405,6 +406,7 @@ class Odontograma
 
     private function _obtenerOCrearCita(int $numeroPaciente, int $idEspecialista): int
     {
+        $this->asegurarIdsResueltos();
         $hoy = date('Y-m-d');
 
         $stmt = $this->db->prepare("
@@ -483,6 +485,19 @@ class Odontograma
     private function _fetchAll(string $sql): array
     {
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function asegurarIdsResueltos(): void
+    {
+        if (
+            isset($this->idMotivoOdontograma) &&
+            isset($this->idEstatusCitaDiag) &&
+            isset($this->idProcSinAsignar)
+        ) {
+            return;
+        }
+
+        $this->_resolverIds();
     }
 
     private function usaNumeroPacienteEnTransacciones(): bool
