@@ -79,7 +79,7 @@ include '../includes/sidebar.php';
                             <th class="col-tel">TELÉFONO</th>
                             <th class="col-email">CORREO ELECTRÓNICO</th>
                             <th class="col-edad" data-sort="edad">EDAD</th>
-                            <th class="col-visit">ÚLTIMA VISITA</th>
+                            <th class="col-visit">FECHA REGISTRO</th>
                             <th class="col-status">ESTATUS</th>
                             <th class="col-actions">ACCIONES</th>
                         </tr>
