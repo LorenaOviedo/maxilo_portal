@@ -34,7 +34,7 @@ class MotivoConsulta
         if (!empty($conditions))
             $query .= " WHERE " . implode(' AND ', $conditions);
  
-        $query .= " ORDER BY motivo_consulta ASC";
+        $query .= " ORDER BY id_motivo_consulta DESC";
  
         $stmt = $this->conn->prepare($query);
  
