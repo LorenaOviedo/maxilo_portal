@@ -212,10 +212,10 @@
             onclick="cerrarModal('modalCompra')">
             Cancelar
         </button>
-        <button type="button" class="btn-modal-secondary" id="btnImprimirCompra"
+        <button type="button" class="btn-modal-save" id="btnImprimirCompra"
             onclick="compraController.imprimirCompra()"
             style="display:none;">
-            <i class="ri-printer-line"></i> Imprimir
+            <i class="ri-printer-line"></i> Imprimir orden
         </button>
         <button type="button" class="btn-modal-save" id="btnGuardarCompra">
             <i class="ri-save-line"></i> Guardar orden
