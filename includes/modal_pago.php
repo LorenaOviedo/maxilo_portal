@@ -228,8 +228,7 @@
         <button type="button" class="btn-modal-cancel" onclick="cerrarModal('modalDetallePago')">
             Cancelar
         </button>
-        <button type="button" class="btn-modal-secondary" id="btnImprimirRecibo" style="background:#6c757d;"
-            onclick="pagoController._imprimirActual()" style="display:none;">
+        <button type="button" class="btn-modal-secondary" id="btnImprimirRecibo" onclick="pagoController._imprimirActual()" style="display:none;">
             <i class="ri-printer-line"></i> Imprimir recibo
         </button>
     </div>
