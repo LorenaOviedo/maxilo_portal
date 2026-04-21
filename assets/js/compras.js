@@ -288,6 +288,12 @@ const compraController = {
             '.total-bar { display:flex; justify-content:space-between; font-weight:700; font-size:14px; border-top:2px solid #1a1a1a; border-bottom:2px solid #1a1a1a; padding:8px 0; margin-bottom:16px; }' +
             '.notas-box { background:#fffbeb; border-left:3px solid #f59e0b; border-radius:4px; padding:10px 14px; font-size:11px; color:#495057; margin-bottom:16px; }' +
             '.notas-label { font-weight:700; margin-bottom:4px; }' +
+            '.emisor-envio { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }' +
+            '.emisor-bloque { background:#f8f9fa; border-radius:6px; padding:10px 14px; font-size:11px; color:#212529; }' +
+            '.emisor-titulo { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#555; margin-bottom:6px; border-bottom:1px solid #dee2e6; padding-bottom:4px; }' +
+            '.emisor-row { display:flex; gap:6px; margin-bottom:3px; line-height:1.4; }' +
+            '.emisor-label { font-weight:700; flex-shrink:0; }' +
+            '@media print { .emisor-envio { grid-template-columns:1fr 1fr; } }' +
             '.footer { margin-top:20px; border-top:3px solid #192D8C; padding-top:8px; display:flex; justify-content:space-between; font-size:9px; color:#192D8C; }' +
             '@media print { body { padding:8mm 10mm; } }' +
             '</style></head><body>' +
@@ -298,6 +304,20 @@ const compraController = {
             '<strong>Fecha de impresi&oacute;n:</strong> ' + new Date().toLocaleDateString('es-MX') + '<br>' +
             'Dr. Alfonso Ayala G&oacute;mez</div></div>' +
             '<div class="titulo">Orden de Compra &mdash; ' + escHtml(folio) + '</div>' +
+            '<div class="emisor-envio">' +
+            '<div class="emisor-bloque">' +
+            '<div class="emisor-titulo">Datos del emisor</div>' +
+            '<div class="emisor-row"><span class="emisor-label">Raz&oacute;n social:</span><span>ALFONSO AYALA G&Oacute;MEZ</span></div>' +
+            '<div class="emisor-row"><span class="emisor-label">RFC:</span><span>565689S5S5KLS</span></div>' +
+            '<div class="emisor-row"><span class="emisor-label">Domicilio fiscal:</span><span>Retorno C No. 8 Fracc. San Mart&iacute;n, Texcoco, Estado de M&eacute;xico</span></div>' +
+            '<div class="emisor-row"><span class="emisor-label">Tel&eacute;fono(s):</span><span>5689475263</span></div>' +
+            '</div>' +
+            '<div class="emisor-bloque">' +
+            '<div class="emisor-titulo">Enviar a</div>' +
+            '<div class="emisor-row"><strong>ALFONSO AYALA G&Oacute;MEZ</strong></div>' +
+            '<div class="emisor-row">Retorno C No. 8 Fracc. San Mart&iacute;n, Texcoco, Estado de M&eacute;xico</div>' +
+            '</div>' +
+            '</div>' +
             '<div class="info-grid">' +
             '<div class="info-item"><span class="info-label">Proveedor</span><span class="info-value">' + escHtml(proveedor) + '</span></div>' +
             '<div class="info-item"><span class="info-label">Tipo de compra</span><span class="info-value">' + escHtml(tipo) + '</span></div>' +
