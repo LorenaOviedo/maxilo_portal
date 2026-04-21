@@ -20,7 +20,7 @@ $modal_id = 'modalPaciente';
             </h2>
         </div>
         <div class="modal-actions">
-            <button type="button" class="btn-modal-add" onclick="nuevoEnModal('<?php echo $modal_id; ?>')">
+            <button type="button" class="btn-modal-add" onclick="abrirModalNuevoPaciente()">
                 <i class="fas fa-plus"></i>
                 Agregar nuevo
             </button>
@@ -879,8 +879,8 @@ $modal_id = 'modalPaciente';
             if (typeof _cambiarTabOrig === 'function') _cambiarTabOrig(modalId, tabId);
 
             if (tabId === 'tabOdontograma') {
-                const num = document.getElementById('formPaciente')?.dataset?.numeroPaciente;
-                if (num) odontogramaController.cargar(num);
+                const num = document.getElementById('formPaciente')?.dataset?.numeroPaciente || null;
+                odontogramaController.cargar(num);
             }
 
             if (tabId === 'tabPlanes') {

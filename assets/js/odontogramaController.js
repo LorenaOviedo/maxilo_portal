@@ -14,8 +14,9 @@ const odontogramaController = {
     _catalogos:      null,
     _appInstance:    null,
  
-    async cargar(numeroPaciente) {
-        const num = parseInt(numeroPaciente);
+    async cargar(numeroPaciente = null) {
+        const parsed = parseInt(numeroPaciente, 10);
+        const num = Number.isFinite(parsed) ? parsed : null;
  
         // Siempre desmontar para garantizar estado limpio
         this._desmontar();
@@ -251,8 +252,9 @@ const odontogramaController = {
                     const numeroPieza     = dienteActivo.value?.numero;
                     const idCaras         = [...document.querySelectorAll('.odont-cara-cb:checked')]
                                             .map(cb => parseInt(cb.value));
- 
-                    // id_especialista eliminado — ya no se valida ni se envía
+
+                    if (!pacienteId)      { mostrarNotif('Guarda primero el paciente para registrar hallazgos', 'error'); return; }
+                    // id_especialista eliminado - ya no se valida ni se envía
                     if (!idAnomalia)      { mostrarNotif('Selecciona una anomalía', 'error');      return; }
                     if (!idCaras.length)  { mostrarNotif('Selecciona al menos una cara', 'error'); return; }
                     if (!idProcedimiento) { mostrarNotif('Selecciona un procedimiento', 'error');  return; }
