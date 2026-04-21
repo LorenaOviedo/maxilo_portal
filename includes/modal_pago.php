@@ -229,7 +229,8 @@
             Cerrar
         </button>
         <button type="button" class="btn-modal-save" id="btnImprimirRecibo" style="background:#6c757d;"
-            onclick="pagoController._imprimirActual()">
+            onclick="pagoController._imprimirActual()"
+            style="display:none;">
             <i class="ri-printer-line"></i> Imprimir recibo
         </button>
     </div>
