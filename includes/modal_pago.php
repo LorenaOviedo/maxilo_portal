@@ -375,6 +375,11 @@
         <button type="button" class="btn-modal-cancel" onclick="cerrarModal('modalEditarPago')">
             Cancelar
         </button>
+        <button type="button" class="btn-modal-save" id="btnImprimirRecibo" style="background:#6c757d;"
+            onclick="pagoController._imprimirActual()"
+            style="display:none;">
+            <i class="ri-printer-line"></i> Imprimir recibo
+        </button>
         <button type="button" class="btn-modal-save" id="btnActualizarPago">
             <i class="ri-save-line"></i> Guardar cambios
         </button>
