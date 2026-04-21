@@ -28,13 +28,6 @@ include '../includes/sidebar.php';
 ?>
 
 <main class="main-content">
-
-    <nav class="breadcrumb">
-        <div class="breadcrumb-item">
-            <span class="breadcrumb-current">Reportes</span>
-        </div>
-    </nav>
-
     <div class="page-header">
         <h1>Reportes</h1>
         <p class="page-description">Genera y exporta reportes del sistema</p>
