@@ -143,8 +143,9 @@
                     </div>
                 </div>
  
-                <!-- Tabla de detalle -->
-                <table class="plan-table" id="tablaDetalle">
+                <!-- Tabla de detalle — scroll horizontal en móvil -->
+                <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
+                <table class="plan-table" id="tablaDetalle" style="min-width:480px;">
  
                     <thead>
                         <tr>
@@ -163,6 +164,8 @@
                         </tr>
                     </tbody>
                 </table>
+ 
+                </div><!-- /overflow wrapper -->
  
                 <input type="hidden" id="ocDetalleJson" name="detalle_json" value="[]">
  
@@ -209,10 +212,14 @@
             onclick="cerrarModal('modalCompra')">
             Cancelar
         </button>
+        <button type="button" class="btn-modal-secondary" id="btnImprimirCompra"
+            onclick="compraController.imprimirCompra()"
+            style="display:none;">
+            <i class="ri-printer-line"></i> Imprimir
+        </button>
         <button type="button" class="btn-modal-save" id="btnGuardarCompra">
             <i class="ri-save-line"></i> Guardar orden
         </button>
     </div>
  
 </div><!-- /#modalCompra -->
- 

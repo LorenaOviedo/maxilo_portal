@@ -70,8 +70,11 @@ const compraController = {
  
         const btnGuardar  = document.getElementById('btnGuardarCompra');
         const btnAgregar  = document.getElementById('btnAgregarProducto');
-        if (btnGuardar) btnGuardar.style.display = soloLectura ? 'none' : '';
-        if (btnAgregar) btnAgregar.style.display  = soloLectura ? 'none' : '';
+        const btnImprimir = document.getElementById('btnImprimirCompra');
+        if (btnGuardar)  btnGuardar.style.display  = soloLectura ? 'none' : '';
+        if (btnAgregar)  btnAgregar.style.display   = soloLectura ? 'none' : '';
+        // Mostrar imprimir solo cuando hay una orden existente (edición o lectura)
+        if (btnImprimir) btnImprimir.style.display  = this._idActual ? '' : 'none';
  
         document.querySelectorAll('#bodyDetalle .btn-accion.eliminar')
             .forEach(btn => { btn.style.display = soloLectura ? 'none' : ''; });
@@ -221,6 +224,107 @@ const compraController = {
     // ─────────────────────────────────────────────────────────────────────
     // CANCELAR ORDEN
     // ─────────────────────────────────────────────────────────────────────
+ 
+    imprimirCompra() {
+        if (!this._idActual) return;
+ 
+        const folio     = document.getElementById('ocFolio')?.value || '—';
+        const proveedor = document.querySelector('#ocProveedor option:checked')?.textContent || '—';
+        const tipo      = document.querySelector('#ocTipoCompra option:checked')?.textContent || '—';
+        const moneda    = document.querySelector('#ocMoneda option:checked')?.textContent    || '—';
+        const estatus   = document.querySelector('#ocEstatus option:checked')?.textContent   || '—';
+        const fechaEm   = document.getElementById('ocFechaEmision')?.value    || '';
+        const fechaEnt  = document.getElementById('ocFechaEntregaEst')?.value || '';
+        const obs       = document.getElementById('ocObservaciones')?.value   || '';
+        const anio      = new Date().getFullYear();
+ 
+        const fmt = n => '$' + parseFloat(n || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 });
+        const formatFecha = f => f
+            ? new Date(f + 'T12:00:00').toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' })
+            : '—';
+ 
+        const totales = this._calcularTotales();
+ 
+        const filasDetalle = this._detalle.length
+            ? this._detalle.map(d => `
+                <tr>
+                    <td>${escHtml(d.nombre)}</td>
+                    <td style="text-align:center">${escHtml(d.codigo || '—')}</td>
+                    <td style="text-align:center">${d.cantidad}</td>
+                    <td style="text-align:right">${fmt(d.precio_unitario)}</td>
+                    <td style="text-align:right"><strong>${fmt(d.subtotal_linea)}</strong></td>
+                </tr>`).join('')
+            : '<tr><td colspan="5" style="text-align:center;color:#adb5bd;padding:16px;">Sin productos</td></tr>';
+ 
+        const obsHtml = obs
+            ? '<div class="notas-box"><div class="notas-label">Observaciones</div>' + escHtml(obs) + '</div>'
+            : '';
+ 
+        const ventana = window.open('', '_blank', 'width=900,height=700');
+        ventana.document.write(
+            '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">' +
+            '<title>Orden de Compra ' + escHtml(folio) + '</title>' +
+            '<style>' +
+            '* { box-sizing:border-box; margin:0; padding:0; }' +
+            'html { -webkit-font-smoothing:antialiased; }' +
+            'body { font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#1a1a1a; background:#fff; padding:12mm 14mm; }' +
+            '.header { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #192D8C; padding-bottom:10px; margin-bottom:16px; }' +
+            '.clinica-nombre { font-size:18px; font-weight:900; color:#192D8C; text-transform:uppercase; }' +
+            '.clinica-sub { font-size:9px; color:#555; text-transform:uppercase; margin-top:2px; }' +
+            '.header-meta { text-align:right; font-size:10px; color:#555; line-height:1.6; }' +
+            '.titulo { font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:16px; }' +
+            '.info-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 24px; background:#f8f9fa; border-radius:6px; padding:12px 16px; margin-bottom:16px; }' +
+            '.info-item { display:flex; flex-direction:column; gap:2px; }' +
+            '.info-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#555; }' +
+            '.info-value { font-size:12px; font-weight:600; color:#212529; }' +
+            'table { width:100%; border-collapse:collapse; font-size:11px; margin-bottom:16px; }' +
+            'thead th { background:#192D8C; color:#fff; padding:7px 10px; text-align:left; font-size:10px; text-transform:uppercase; }' +
+            'tbody tr:nth-child(even) { background:#f8f9ff; }' +
+            'tbody td { padding:6px 10px; border-bottom:1px solid #e9ecef; }' +
+            '.totales-box { display:flex; flex-direction:column; align-items:flex-end; gap:4px; margin-bottom:16px; font-size:12px; }' +
+            '.totales-box .fila { display:flex; gap:40px; }' +
+            '.totales-box .fila span:first-child { color:#555; }' +
+            '.totales-box .fila span:last-child { font-weight:600; min-width:80px; text-align:right; }' +
+            '.total-bar { display:flex; justify-content:space-between; font-weight:700; font-size:14px; border-top:2px solid #1a1a1a; border-bottom:2px solid #1a1a1a; padding:8px 0; margin-bottom:16px; }' +
+            '.notas-box { background:#fffbeb; border-left:3px solid #f59e0b; border-radius:4px; padding:10px 14px; font-size:11px; color:#495057; margin-bottom:16px; }' +
+            '.notas-label { font-weight:700; margin-bottom:4px; }' +
+            '.footer { margin-top:20px; border-top:3px solid #192D8C; padding-top:8px; display:flex; justify-content:space-between; font-size:9px; color:#192D8C; }' +
+            '@media print { body { padding:8mm 10mm; } }' +
+            '</style></head><body>' +
+            '<div class="header"><div>' +
+            '<div class="clinica-nombre">Maxilofacial Texcoco</div>' +
+            '<div class="clinica-sub">Ortodoncia &middot; Cirug&iacute;a Maxilofacial &middot; Patolog&iacute;a Oral</div>' +
+            '</div><div class="header-meta">' +
+            '<strong>Fecha de impresi&oacute;n:</strong> ' + new Date().toLocaleDateString('es-MX') + '<br>' +
+            'Dr. Alfonso Ayala G&oacute;mez</div></div>' +
+            '<div class="titulo">Orden de Compra &mdash; ' + escHtml(folio) + '</div>' +
+            '<div class="info-grid">' +
+            '<div class="info-item"><span class="info-label">Proveedor</span><span class="info-value">' + escHtml(proveedor) + '</span></div>' +
+            '<div class="info-item"><span class="info-label">Tipo de compra</span><span class="info-value">' + escHtml(tipo) + '</span></div>' +
+            '<div class="info-item"><span class="info-label">Fecha de emisi&oacute;n</span><span class="info-value">' + formatFecha(fechaEm) + '</span></div>' +
+            '<div class="info-item"><span class="info-label">Entrega estimada</span><span class="info-value">' + formatFecha(fechaEnt) + '</span></div>' +
+            '<div class="info-item"><span class="info-label">Moneda</span><span class="info-value">' + escHtml(moneda) + '</span></div>' +
+            '<div class="info-item"><span class="info-label">Estatus</span><span class="info-value">' + escHtml(estatus) + '</span></div>' +
+            '</div>' +
+            '<table><thead><tr>' +
+            '<th>Producto</th><th style="text-align:center">C&oacute;digo</th>' +
+            '<th style="text-align:center">Cantidad</th><th style="text-align:right">Precio unit.</th><th style="text-align:right">Subtotal</th>' +
+            '</tr></thead><tbody>' + filasDetalle + '</tbody></table>' +
+            '<div class="totales-box">' +
+            '<div class="fila"><span>Subtotal:</span><span>' + fmt(totales.subtotal) + '</span></div>' +
+            '<div class="fila"><span>IVA (16%):</span><span>' + fmt(totales.iva) + '</span></div>' +
+            '</div>' +
+            '<div class="total-bar"><span>TOTAL</span><span>' + fmt(totales.total) + '</span></div>' +
+            obsHtml +
+            '<div class="footer">' +
+            '<span>Sistema Maxilofacial Texcoco &mdash; ' + anio + '</span>' +
+            '<span>Retorno C No. 8 Fracc. San Mart&iacute;n, Texcoco, Estado de M&eacute;xico</span>' +
+            '</div>' +
+            '<script>window.onload=function(){window.print();window.close();};<\/script>' +
+            '</body></html>'
+        );
+        ventana.document.close();
+    },
  
     async cancelar(id, folio) {
         if (!confirm(`¿Cancelar la orden de compra "${folio}"? Esta acción no se puede deshacer.`)) return;
