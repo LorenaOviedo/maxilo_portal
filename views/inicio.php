@@ -3,9 +3,9 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../config/auth.php';
- 
+
 session_start();
- 
+
 $auth = new AuthController();
 if (!$auth->verificarSesion()) {
     redirect('index.php');
@@ -17,16 +17,16 @@ if (strpos($rolSesion, 'admin') !== false) {
     redirect('dashboard.php');
     exit;
 }
- 
+
 $page_title = 'Bienvenido';
-$page_css   = ['inicio.css'];
-$page_js    = [];
- 
+$page_css = ['inicio.css'];
+$page_js = [];
+
 $nombre = $_SESSION['nombre_completo'] ?? $_SESSION['usuario'] ?? 'Usuario';
-$rol    = $_SESSION['rol'] ?? '';
- 
+$rol = $_SESSION['rol'] ?? '';
+
 // Saludo según la hora
-$hora   = (int) date('H');
+$hora = (int) date('H');
 if ($hora >= 6 && $hora < 12) {
     $saludo = 'Buenos días';
 } elseif ($hora >= 12 && $hora < 19) {
@@ -34,15 +34,15 @@ if ($hora >= 6 && $hora < 12) {
 } else {
     $saludo = 'Buenas noches';
 }
- 
+
 include '../includes/header.php';
 include '../includes/sidebar.php';
 ?>
- 
+
 <main class="main-content inicio-main">
- 
+
     <div class="inicio-wrapper">
- 
+
         <!-- Saludo -->
         <div class="inicio-saludo">
             <h1 class="inicio-saludo-texto">
@@ -55,15 +55,11 @@ include '../includes/sidebar.php';
                 <?php echo fechaEnEspanol(); ?>
             </p>
         </div>
- 
+
         <!-- Imagen de la clínica -->
         <div class="inicio-imagen-wrapper">
-            <img
-                src="<?php echo asset('img/clinica.jpg'); ?>"
-                alt="Maxilofacial Texcoco"
-                class="inicio-imagen"
-                onerror="this.closest('.inicio-imagen-wrapper').classList.add('sin-imagen')"
-            >
+            <img src="<?php echo asset('img/clinica.jpg'); ?>" alt="Maxilofacial Texcoco" class="inicio-imagen"
+                onerror="this.closest('.inicio-imagen-wrapper').classList.add('sin-imagen')">
             <div class="inicio-imagen-overlay">
                 <div class="inicio-imagen-texto">
                     <div class="inicio-clinica-nombre">Maxilofacial Texcoco</div>
@@ -73,9 +69,9 @@ include '../includes/sidebar.php';
                 </div>
             </div>
         </div>
- 
+
     </div>
- 
+
 </main>
- 
+
 <?php include '../includes/footer.php'; ?>

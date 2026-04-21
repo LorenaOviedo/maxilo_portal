@@ -61,10 +61,10 @@ include '../includes/sidebar.php';
         <table class="data-table">
             <thead>
                 <tr>
-                    <th class="col-id sortable" data-sort="id">NO.</th>
-                    <th class="col-name sortable" data-sort="nombre">NOMBRE DEL ANTECEDENTE</th>
-                    <th class="sortable" data-sort="tipo">TIPO</th>
-                    <th class="col-authorization text-center" data-sort="implica_alerta_medica">IMPLICA ALERTA<br>MÉDICA</th>
+                    <th class="col-id" data-sort="id">NO.</th>
+                    <th class="col-name" data-sort="nombre">NOMBRE DEL ANTECEDENTE</th>
+                    <th data-sort="tipo">TIPO</th>
+                    <th class="col-authorization text-center">IMPLICA ALERTA<br>MÉDICA</th>
                     <th class="col-actions">ACCIONES</th>
                 </tr>
             </thead>
@@ -82,11 +82,11 @@ include '../includes/sidebar.php';
                 <?php else: ?>
                     <?php foreach ($antecedentes as $a): ?>
                         <tr>
-                            <td class="col-id" data-label="No."><?php echo $a['id_antecedente']; ?></td>
-                            <td class="col-name" data-label="Nombre">
+                            <td class="col-id" data-label="No." data-col="id"><?php echo $a['id_antecedente']; ?></td>
+                            <td class="col-name" data-label="Nombre" data-col="nombre">
                                 <?php echo htmlspecialchars($a['nombre_antecedente']); ?>
                             </td>
-                            <td data-label="Tipo">
+                            <td data-label="Tipo" data-col="tipo">
                                 <?php echo htmlspecialchars($a['tipo'] ?? '—'); ?>
                             </td>
                             <td class="text-center" data-label="Alerta médica">

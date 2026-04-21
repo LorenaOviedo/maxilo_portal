@@ -49,141 +49,135 @@ include '../includes/header.php';
 include '../includes/sidebar.php';
 ?>
 
-        <!-- Contenido principal -->
-        <main class="main-content">
-            <!-- Breadcrumb flechas-->
-            <nav class="breadcrumb">
-                <div class="breadcrumb-item">
-                    <a href="<?php echo view_url('catalogos.php'); ?>">Catálogos</a>
-                </div>
-                <span class="breadcrumb-separator">▶</span>
-                <div class="breadcrumb-item">
-                    <span class="breadcrumb-current">Tratamientos dentales</span>
-                </div>
-            </nav>
+<!-- Contenido principal -->
+<main class="main-content">
+    <!-- Breadcrumb flechas-->
+    <nav class="breadcrumb">
+        <div class="breadcrumb-item">
+            <a href="<?php echo view_url('catalogos.php'); ?>">Catálogos</a>
+        </div>
+        <span class="breadcrumb-separator">▶</span>
+        <div class="breadcrumb-item">
+            <span class="breadcrumb-current">Tratamientos dentales</span>
+        </div>
+    </nav>
 
-            <!-- Encabezado de la página -->
-            <div class="page-header">
-                <h1>Tratamientos dentales</h1>
-                <p class="page-description">Catálogo para tratamientos dentales y sus costos</p>
-            </div>
+    <!-- Encabezado de la página -->
+    <div class="page-header">
+        <h1>Tratamientos dentales</h1>
+        <p class="page-description">Catálogo para tratamientos dentales y sus costos</p>
+    </div>
 
-            <!-- Busqueda y agregar -->
-            <div class="search-actions-bar">
-                <div class="search-box">
-                    <input 
-                        type="text" 
-                        class="search-input" 
-                        placeholder="Buscar por tratamiento, tipo..."
-                        id="searchInput"
-                    >
-                </div>
-                <button type="button" class="btn-search">
-                    <i class="ri-search-line"></i>
-                    Buscar
-                </button>
-                <button type="button" class="btn-add-new" onclick="window.location.href='<?php echo view_url('tratamiento_form.php'); ?>'">
-                    <i class="ri-add-line"></i>
-                    Agregar nuevo
-                </button>
-            </div>
+    <!-- Busqueda y agregar -->
+    <div class="search-actions-bar">
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Buscar por tratamiento, tipo..." id="searchInput">
+        </div>
+        <button type="button" class="btn-search">
+            <i class="ri-search-line"></i>
+            Buscar
+        </button>
+        <button type="button" class="btn-add-new"
+            onclick="window.location.href='<?php echo view_url('tratamiento_form.php'); ?>'">
+            <i class="ri-add-line"></i>
+            Agregar nuevo
+        </button>
+    </div>
 
-            <!-- Contenedor de la tabla -->
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
+    <!-- Contenedor de la tabla -->
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th class="col-id">NÚMERO DE<br>TRATAMIENTO</th>
+                    <th class="col-name" data-sort="nombre">NOMBRE DEL TRATAMIENTO</th>
+                    <th class="col-type" data-sort="tipo">TIPO</th>
+                    <th class="col-description">DESCRIPCIÓN</th>
+                    <th class="col-price" data-sort="precio">PRECIO</th>
+                    <th class="col-time">TIEMPO<br>ESTIMADO</th>
+                    <th class="col-authorization">REQUIERE<br>AUTORIZACIÓN</th>
+                    <th class="col-status">ESTATUS</th>
+                    <th class="col-actions">ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($tratamientos)): ?>
+                    <tr>
+                        <td colspan="9">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="ri-folder-open-line"></i>
+                                </div>
+                                <h3 class="empty-state-title">No hay tratamientos registrados</h3>
+                                <p class="empty-state-text">Comienza agregando tu primer tratamiento dental</p>
+                            </div>
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($tratamientos as $tratamiento): ?>
                         <tr>
-                            <th class="col-id">NÚMERO DE<br>TRATAMIENTO</th>
-                            <th class="col-name" data-sort="nombre">NOMBRE DEL TRATAMIENTO</th>
-                            <th class="col-type" data-sort="tipo">TIPO</th>
-                            <th class="col-description">DESCRIPCIÓN</th>
-                            <th class="col-price" data-sort="precio">PRECIO</th>
-                            <th class="col-time">TIEMPO<br>ESTIMADO</th>
-                            <th class="col-authorization">REQUIERE<br>AUTORIZACIÓN</th>
-                            <th class="col-status">ESTATUS</th>
-                            <th class="col-actions">ACCIONES</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($tratamientos)): ?>
-                        <tr>
-                            <td colspan="9">
-                                <div class="empty-state">
-                                    <div class="empty-state-icon">
-                                        <i class="ri-folder-open-line"></i>
-                                    </div>
-                                    <h3 class="empty-state-title">No hay tratamientos registrados</h3>
-                                    <p class="empty-state-text">Comienza agregando tu primer tratamiento dental</p>
+                            <td class="col-id" data-label="Número de Tratamiento">
+                                <?php echo htmlspecialchars($tratamiento['numero']); ?></td>
+                            <td class="col-name" data-label="Nombre" data-col="nombre">
+                                <?php echo htmlspecialchars($tratamiento['nombre']); ?></td>
+                            <td class="col-type" data-label="Tipo" data-col="tipo">
+                                <?php echo htmlspecialchars($tratamiento['tipo']); ?></td>
+                            <td class="col-description" data-label="Descripción">
+                                <span class="text-truncate"
+                                    title="<?php echo htmlspecialchars($tratamiento['descripcion']); ?>">
+                                    <?php echo htmlspecialchars($tratamiento['descripcion']); ?>
+                                </span>
+                            </td>
+                            <td class="col-price" data-label="Precio" data-col="Precio">
+                                <?php echo htmlspecialchars($tratamiento['precio']); ?></td>
+                            <td class="col-time text-center" data-label="Tiempo">
+                                <?php echo htmlspecialchars($tratamiento['tiempo']); ?></td>
+                            <td class="col-authorization text-center" data-label="Autorización">
+                                <?php if ($tratamiento['autorizacion'] === 'SI'): ?>
+                                    <span class="badge badge-yes">SI</span>
+                                <?php else: ?>
+                                    <span class="badge badge-no">NO</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="col-status text-center" data-label="Estatus">
+                                <?php if ($tratamiento['estatus'] === 'ACTIVO'): ?>
+                                    <span class="badge badge-active">ACTIVO</span>
+                                <?php else: ?>
+                                    <span class="badge badge-inactive">INACTIVO</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="col-actions" data-label="Acciones">
+                                <div class="action-buttons">
+                                    <button type="button" class="btn-action btn-edit" title="Editar tratamiento"
+                                        onclick="editarRegistro('<?php echo $tratamiento['numero']; ?>', '<?php echo view_url('tratamiento_form.php'); ?>')">
+                                        <i class="ri-edit-box-line"></i>
+                                    </button>
+                                    <button type="button" class="btn-action btn-delete" title="Eliminar tratamiento"
+                                        onclick="eliminarRegistro('<?php echo $tratamiento['numero']; ?>', null, '¿Eliminar el tratamiento <?php echo htmlspecialchars($tratamiento['nombre']); ?>?')">
+                                        <i class="ri-delete-bin-6-line"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
-                        <?php else: ?>
-                            <?php foreach ($tratamientos as $tratamiento): ?>
-                            <tr>
-                                <td class="col-id" data-label="Número de Tratamiento"><?php echo htmlspecialchars($tratamiento['numero']); ?></td>
-                                <td class="col-name" data-label="Nombre" data-col="nombre"><?php echo htmlspecialchars($tratamiento['nombre']); ?></td>
-                                <td class="col-type" data-label="Tipo" data-col="tipo"><?php echo htmlspecialchars($tratamiento['tipo']); ?></td>
-                                <td class="col-description" data-label="Descripción">
-                                    <span class="text-truncate" title="<?php echo htmlspecialchars($tratamiento['descripcion']); ?>">
-                                        <?php echo htmlspecialchars($tratamiento['descripcion']); ?>
-                                    </span>
-                                </td>
-                                <td class="col-price" data-label="Precio" data-col="Precio"><?php echo htmlspecialchars($tratamiento['precio']); ?></td>
-                                <td class="col-time text-center" data-label="Tiempo"><?php echo htmlspecialchars($tratamiento['tiempo']); ?></td>
-                                <td class="col-authorization text-center" data-label="Autorización">
-                                    <?php if ($tratamiento['autorizacion'] === 'SI'): ?>
-                                        <span class="badge badge-yes">SI</span>
-                                    <?php else: ?>
-                                        <span class="badge badge-no">NO</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="col-status text-center" data-label="Estatus">
-                                    <?php if ($tratamiento['estatus'] === 'ACTIVO'): ?>
-                                        <span class="badge badge-active">ACTIVO</span>
-                                    <?php else: ?>
-                                        <span class="badge badge-inactive">INACTIVO</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="col-actions" data-label="Acciones">
-                                    <div class="action-buttons">
-                                        <button 
-                                            type="button" 
-                                            class="btn-action btn-edit" 
-                                            title="Editar tratamiento"
-                                            onclick="editarRegistro('<?php echo $tratamiento['numero']; ?>', '<?php echo view_url('tratamiento_form.php'); ?>')"
-                                        >
-                                            <i class="ri-edit-box-line"></i>
-                                        </button>
-                                        <button 
-                                            type="button" 
-                                            class="btn-action btn-delete" 
-                                            title="Eliminar tratamiento"
-                                            onclick="eliminarRegistro('<?php echo $tratamiento['numero']; ?>', null, '¿Eliminar el tratamiento <?php echo htmlspecialchars($tratamiento['nombre']); ?>?')"
-                                        >
-                                            <i class="ri-delete-bin-6-line"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 
-            <!-- Pagination-->
-            <?php if (!empty($tratamientos)): ?>
-            <div class="pagination">
-                <button class="pagination-btn" disabled>
-                    <i class="ri-arrow-left-line"></i> Anterior
-                </button>
-                <span class="pagination-info">Página 1 de 1</span>
-                <button class="pagination-btn" disabled>
-                    Siguiente <i class="ri-arrow-right-line"></i>
-                </button>
-            </div>
-            <?php endif; ?>
-        </main>
+    <!-- Pagination-->
+    <?php if (!empty($tratamientos)): ?>
+        <div class="pagination">
+            <button class="pagination-btn" disabled>
+                <i class="ri-arrow-left-line"></i> Anterior
+            </button>
+            <span class="pagination-info">Página 1 de 1</span>
+            <button class="pagination-btn" disabled>
+                Siguiente <i class="ri-arrow-right-line"></i>
+            </button>
+        </div>
+    <?php endif; ?>
+</main>
 
 <?php
 ////INCLUIR FOOTER (pendiente se carga mediante $page_js)

@@ -61,9 +61,9 @@ include '../includes/sidebar.php';
         <table class="data-table">
             <thead>
                 <tr>
-                    <th class="col-id sortable" data-sort="id">NO.</th>
-                    <th class="col-name sortable" data-sort="motivo">MOTIVO DE CONSULTA</th>
-                    <th class="sortable" data-sort="descripcion">DESCRIPCIÓN</th>
+                    <th class="col-id" data-sort="id">NO.</th>
+                    <th class="col-name" data-sort="motivo">MOTIVO DE CONSULTA</th>
+                    <th data-sort="descripcion">DESCRIPCIÓN</th>
                     <th class="col-actions">ACCIONES</th>
                 </tr>
             </thead>
@@ -81,11 +81,11 @@ include '../includes/sidebar.php';
                 <?php else: ?>
                     <?php foreach ($motivos as $m): ?>
                         <tr>
-                            <td class="col-id" data-label="No."><?php echo $m['id_motivo_consulta']; ?></td>
-                            <td class="col-name" data-label="Motivo">
+                            <td class="col-id" data-label="No." data-col="id"><?php echo $m['id_motivo_consulta']; ?></td>
+                            <td class="col-name" data-label="Motivo" data-col="motivo">
                                 <?php echo htmlspecialchars($m['motivo_consulta']); ?>
                             </td>
-                            <td data-label="Descripción">
+                            <td data-label="Descripción" data-col="descripcion">
                                 <?php echo htmlspecialchars($m['descripcion'] ?? '—'); ?>
                             </td>
                             <td class="col-actions" data-label="Acciones">

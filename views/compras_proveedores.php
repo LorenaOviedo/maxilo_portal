@@ -40,29 +40,29 @@ include '../includes/header.php';
 include '../includes/sidebar.php';
 ?>
 
-        <!-- Contenido principal -->
-        <main class="main-content">
-            <div class="content-header">
-                <h1>Compras y proveedores</h1>
-            </div>
-            
-            <!-- Grid de tarjetas de catálogos -->
-            <div class="catalog-grid">
-                <?php foreach ($catalogos as $catalogo): ?>
-                <div class="catalog-card">
-                    <div class="catalog-card-header">
-                        <h3 class="catalog-card-title"><?php echo htmlspecialchars($catalogo['titulo']); ?></h3>
-                        <p class="catalog-card-description"><?php echo htmlspecialchars($catalogo['descripcion']); ?></p>
-                    </div>
-                    <div class="catalog-card-footer">
-                        <a href="<?php echo view_url($catalogo['url']); ?>" class="btn-catalog">
-                            Gestionar
-                        </a>
-                    </div>
+<!-- Contenido principal -->
+<main class="main-content">
+    <div class="content-header">
+        <h1>Compras y proveedores</h1>
+    </div>
+
+    <!-- Grid de tarjetas de catálogos -->
+    <div class="catalog-grid">
+        <?php foreach ($catalogos as $catalogo): ?>
+            <div class="catalog-card">
+                <div class="catalog-card-header">
+                    <h3 class="catalog-card-title"><?php echo htmlspecialchars($catalogo['titulo']); ?></h3>
+                    <p class="catalog-card-description"><?php echo htmlspecialchars($catalogo['descripcion']); ?></p>
                 </div>
-                <?php endforeach; ?>
+                <div class="catalog-card-footer">
+                    <a href="<?php echo view_url($catalogo['url']); ?>" class="btn-catalog">
+                        Gestionar
+                    </a>
+                </div>
             </div>
-        </main>
+        <?php endforeach; ?>
+    </div>
+</main>
 
 <?php
 //INCLUIR FOOTER
