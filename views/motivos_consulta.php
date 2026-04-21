@@ -4,28 +4,28 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../models/MotivoConsulta.php';
- 
+
 session_start();
- 
+
 $auth = new AuthController();
 if (!$auth->verificarSesion()) {
     redirect('index.php');
 }
- 
+
 $page_title = 'Motivos de Consulta';
-$page_css   = ['catalogos-tabla.css', 'modal.css'];
-$page_js    = [];
- 
-$db     = getDB();
+$page_css = ['catalogos-tabla.css', 'modal.css'];
+$page_js = [];
+
+$db = getDB();
 $modelo = new MotivoConsulta($db);
 $motivos = $modelo->getAll();
- 
+
 include '../includes/header.php';
 include '../includes/sidebar.php';
 ?>
- 
+
 <main class="main-content">
- 
+
     <!-- Breadcrumb -->
     <nav class="breadcrumb">
         <div class="breadcrumb-item">
@@ -36,18 +36,17 @@ include '../includes/sidebar.php';
             <span class="breadcrumb-current">Motivos de consulta</span>
         </div>
     </nav>
- 
+
     <!-- Encabezado -->
     <div class="page-header">
         <h1>Motivos de consulta</h1>
         <p class="page-description">Catálogo de motivos de consulta para las citas</p>
     </div>
- 
+
     <!-- Búsqueda y agregar -->
     <div class="search-actions-bar">
         <div class="search-box">
-            <input type="text" class="search-input" id="searchInput"
-                placeholder="Buscar por motivo o descripción...">
+            <input type="text" class="search-input" id="searchInput" placeholder="Buscar por motivo o descripción...">
         </div>
         <button type="button" class="btn-search">
             <i class="ri-search-line"></i> Buscar
@@ -56,15 +55,15 @@ include '../includes/sidebar.php';
             <i class="ri-add-line"></i> Agregar nuevo
         </button>
     </div>
- 
+
     <!-- Tabla -->
     <div class="table-container">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th class="col-id"   data-sort="id">NO.</th>
-                    <th class="col-name" data-sort="motivo">MOTIVO DE CONSULTA</th>
-                    <th                  data-sort="descripcion">DESCRIPCIÓN</th>
+                    <th class="col-id sortable" data-sort="id">NO.</th>
+                    <th class="col-name sortable" data-sort="motivo">MOTIVO DE CONSULTA</th>
+                    <th class="sortable" data-sort="descripcion">DESCRIPCIÓN</th>
                     <th class="col-actions">ACCIONES</th>
                 </tr>
             </thead>
@@ -99,8 +98,7 @@ include '../includes/sidebar.php';
                                         onclick="abrirModalEditar(<?php echo $m['id_motivo_consulta']; ?>)">
                                         <i class="ri-edit-box-line"></i>
                                     </button>
-                                    <button type="button" class="btn-action btn-delete" title="Eliminar"
-                                        onclick="eliminarConfirmar(
+                                    <button type="button" class="btn-action btn-delete" title="Eliminar" onclick="eliminarConfirmar(
                                             <?php echo $m['id_motivo_consulta']; ?>,
                                             '<?php echo htmlspecialchars($m['motivo_consulta']); ?>'
                                         )">
@@ -114,7 +112,7 @@ include '../includes/sidebar.php';
             </tbody>
         </table>
     </div>
- 
+
     <?php if (!empty($motivos)): ?>
         <div class="pagination">
             <button class="pagination-btn" disabled><i class="ri-arrow-left-line"></i> Anterior</button>
@@ -122,14 +120,14 @@ include '../includes/sidebar.php';
             <button class="pagination-btn" disabled>Siguiente <i class="ri-arrow-right-line"></i></button>
         </div>
     <?php endif; ?>
- 
+
 </main>
- 
+
 <script>
     var API_URL = '<?php echo ajax_url('Api.php'); ?>';
 </script>
- 
+
 <?php include '../includes/modal_motivos_consulta.php'; ?>
 <script src="<?php echo asset('js/motivos_consulta.js'); ?>?v=<?php echo SITE_VERSION; ?>"></script>
- 
+
 <?php include '../includes/footer.php'; ?>
