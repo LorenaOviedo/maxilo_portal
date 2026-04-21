@@ -359,7 +359,9 @@
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
+    text-align: center;
 }
  
 .btn-modal-secondary:hover {
@@ -1699,6 +1701,8 @@
         max-width: 100%;
     }
  
+    /* Los inputs de fecha en iOS/Safari tienen un tamaño mínimo
+       interno que desborda si el padre no tiene min-width: 0 */
     .form-group {
         min-width: 0;
         overflow: hidden;
