@@ -375,7 +375,7 @@
         <button type="button" class="btn-modal-cancel" onclick="cerrarModal('modalEditarPago')">
             Cancelar
         </button>
-        <button type="button" class="btn-modal-save" id="btnActualizarPago">
+        <button type="button" class="btn-modal-secondary" id="btnActualizarPago">
             <i class="ri-save-line"></i> Guardar cambios
         </button>
     </div>

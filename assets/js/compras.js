@@ -97,8 +97,9 @@ const compraController = {
     const btnImprimir = document.getElementById("btnImprimirCompra");
     if (btnGuardar) btnGuardar.style.display = soloLectura ? "none" : "";
     if (btnAgregar) btnAgregar.style.display = soloLectura ? "none" : "";
-    // Mostrar imprimir solo cuando hay una orden existente (edición o lectura)
-    if (btnImprimir) btnImprimir.style.display = this._idActual ? "" : "none";
+    // Imprimir solo disponible en modo ver (soloLectura=true) con orden existente
+    if (btnImprimir)
+      btnImprimir.style.display = soloLectura && this._idActual ? "" : "none";
 
     document
       .querySelectorAll("#bodyDetalle .btn-accion.eliminar")
@@ -339,7 +340,7 @@ const compraController = {
 
     /*const obsHtml = obs
             ? '<div class="notas-box"><div class="notas-label">Observaciones</div>' + escHtml(obs) + '</div>'
-            : ''; No se incliuye en orden*/
+            : ''; No se incluye en la orden*/
 
     const ventana = window.open("", "_blank", "width=900,height=700");
     ventana.document.write(
@@ -442,7 +443,7 @@ const compraController = {
         '<div class="total-bar"><span>TOTAL</span><span>' +
         fmt(totales.total) +
         "</span></div>" +
-        /* obsHtml +*/
+        /*obsHtml +*/
         '<div class="footer">' +
         "<span>Sistema Maxilofacial Texcoco &mdash; " +
         anio +
