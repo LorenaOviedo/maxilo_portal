@@ -472,12 +472,12 @@ class Reporte
         // Resumen — pendientes siempre + timbradas del período
         $resumen = $this->_row("
             SELECT
-                COUNT(*)                                                AS total,
+                COUNT(*) AS total,
                 SUM(ef.estatus_factura LIKE '%timb%'
                     OR ef.estatus_factura LIKE '%complet%'
-                    OR ef.estatus_factura LIKE '%emitid%')              AS timbradas,
-                SUM(ef.estatus_factura LIKE '%pendiente%')              AS pendientes,
-                COALESCE(SUM(pg.monto_neto), 0)                        AS monto_total
+                    OR ef.estatus_factura LIKE '%emitid%') AS timbradas,
+                SUM(ef.estatus_factura LIKE '%pendiente%') AS pendientes,
+                COALESCE(SUM(pg.monto_neto), 0) AS monto_total
             FROM  solicitudfactura  sf
             JOIN  estadosfactura    ef  ON ef.id_estatus_factura   = sf.id_estatus_factura
             JOIN  pago              pg  ON pg.id_pago              = sf.id_pago

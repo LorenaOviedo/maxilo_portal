@@ -123,7 +123,7 @@ const reporteController = {
         const desde = document.getElementById('fechaInicio').value;
         const hasta = document.getElementById('fechaFin').value;
  
-        // Preparar datos: encabezados + filas
+        // Preparar datos: encabezados y filas
         const wsData = [
             this._datos.columnas,
             ...this._datos.filas,
@@ -323,22 +323,22 @@ const reporteController = {
     // ─────────────────────────────────────────────────────────────────────
  
     _aplicarPeriodo(valor) {
-        if (valor === 'personalizado') return; // no tocar las fechas
+        if (valor === 'personalizado') return; // no modificar fechas
         const hoy = new Date();
         const y   = hoy.getFullYear();
         const m   = hoy.getMonth();
         let desde, hasta;
         switch (valor) {
             case 'este_mes':
-                desde = new Date(y, m, 1);
-                hasta = new Date(y, m + 1, 0);
+                desde = new Date(y, m, 1); //1 al último día del mes actual
+                hasta = new Date(y, m + 1, 0); 
                 break;
             case 'mes_anterior':
-                desde = new Date(y, m - 1, 1);
+                desde = new Date(y, m - 1, 1); //mes completo
                 hasta = new Date(y, m, 0);
                 break;
             case 'este_anio':
-                desde = new Date(y, 0, 1);
+                desde = new Date(y, 0, 1); //1 de enero al 31 de diciembre del año actual
                 hasta = new Date(y, 11, 31);
                 break;
             default:
@@ -391,7 +391,7 @@ const reporteController = {
         const sel = document.getElementById(id);
         if (!sel || !items) return;
         sel.innerHTML = `<option value="">${placeholder}</option>`;
-        items.forEach(item => {
+        items.forEach(item => { //crea una opción y la agrega al select
             const opt       = document.createElement('option');
             opt.value       = item[valKey];
             opt.textContent = item[labelKey];
@@ -407,7 +407,7 @@ const reporteController = {
  
         const pacientes = window.CATALOGOS_RPT?.pacientes ?? [];
  
-        input.addEventListener('input', () => {
+        input.addEventListener('input', () => { //Búsqueda en tiempo real sobre la lista de paciente
             const q = input.value.trim().toLowerCase();
             hidden.value = ''; // sin selección = Todos
             if (q.length < 1) { dropdown.style.display = 'none'; return; }
@@ -528,20 +528,20 @@ const reporteController = {
     // ─────────────────────────────────────────────────────────────────────
  
     _toISO(date) {
-        // Usar fecha local para evitar desfase de zona horaria
+        // Usar fecha local para evitar desfase de zona horaria yyyy-mm-dd
         const y = date.getFullYear();
         const m = String(date.getMonth() + 1).padStart(2, '0');
         const d = String(date.getDate()).padStart(2, '0');
         return `${y}-${m}-${d}`;
     },
  
-    _fmtFecha(str) {
+    _fmtFecha(str) { //Convierte 2025-01-31 al formato legible 31/01/2025
         if (!str) return '—';
         const [y, m, d] = str.split('-');
         return `${d}/${m}/${y}`;
     },
  
-    _setLoading(show) {
+    _setLoading(show) { //Muestra estado de carga en el botón de generar y lo deshabilita para evitar múltiples clics
         const btn = document.getElementById('btnGenerar');
         if (!btn) return;
         if (show) {
@@ -553,7 +553,7 @@ const reporteController = {
         }
     },
  
-    _notify(msg, tipo = 'info') {
+    _notify(msg, tipo = 'info') { 
         // Usar CatalogTable si está disponible, si no alert
         if (window.CatalogTable?.showNotification) {
             CatalogTable.showNotification(msg, tipo);
@@ -583,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
             reporteController._aplicarPeriodo(e.target.value)
         );
  
-    // Al cambiar fechas manualmente → poner selector en "personalizado"
+    // Al cambiar fechas manualmente, poner selector en "personalizado"
     document.getElementById('fechaInicio')
         ?.addEventListener('change', () => {
             const sel = document.getElementById('periodo');
@@ -596,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sel) sel.value = 'personalizado';
         });
  
-    // Al cambiar tipo de reporte → mostrar filtros contextuales
+    // Al cambiar tipo de reporte , mostrar filtros contextuales
     document.getElementById('tipoReporte')
         ?.addEventListener('change', e =>
             reporteController._mostrarFiltrosExtra(e.target.value)

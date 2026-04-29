@@ -22,14 +22,14 @@ const odontogramaController = {
         this._desmontar();
  
         this._numeroPaciente = num;
-        await this._inicializar();
+        await this._inicializar(); //carga catálogos
  
         // Re-habilitar inputs dentro de #app-odontograma que Modal.setReadOnly()
-        // pudo haber deshabilitado al abrir el modal en modo lectura
+        // pudo haberse deshabilitado al abrir el modal en modo lectura
         document.querySelectorAll('#app-odontograma input, #app-odontograma select, #app-odontograma textarea')
             .forEach(el => { el.disabled = false; });
  
-        this._montarVue(num);
+        this._montarVue(num); //monta Vue limpio para este paciente y carga registros de este paciente
     },
  
     limpiar() {
@@ -273,10 +273,12 @@ const odontogramaController = {
                         _pendiente:           true,
                     }));
  
+                    // 1. Muestra local al instante
                     if (!registros.value[numeroPieza]) registros.value[numeroPieza] = [];
                     registros.value[numeroPieza].unshift(...filasLocales);
                     mostrarNotif('Guardando...', 'info');
  
+                    // 2. Confirma con el servidor
                     const resultado = await self._guardarEnServidor({
                         numero_paciente:     pacienteId,
                         numero_pieza:        numeroPieza,
@@ -287,6 +289,7 @@ const odontogramaController = {
                         // id_especialista eliminado
                     });
  
+                    // 3. Si falla, revierte
                     if (resultado?.success) {
                         await self._cargarRegistros(registros, cargando, pacienteId);
                         mostrarNotif(`Pieza ${numeroPieza} registrada`, 'success');
@@ -340,10 +343,10 @@ const odontogramaController = {
         });
  
         const appEl = document.getElementById('app-odontograma');
-        if (appEl._templateOriginal === undefined) {
+        if (appEl._templateOriginal === undefined) { //Antes de montar, guarda el HTML original para poder resetearlo al desmontar
             appEl._templateOriginal = appEl.innerHTML;
         }
-        appEl.innerHTML = appEl._templateOriginal;
+        appEl.innerHTML = appEl._templateOriginal; //Lo restaura cada vez antes de montar
         this._appInstance.mount(appEl);
     },
  
