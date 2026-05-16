@@ -9,29 +9,32 @@
 class Cita
 {
     private PDO $db;
- 
+
+    private const HORA_APERTURA_CONSULTORIO = '09:00:00';
+    private const HORA_CIERRE_CONSULTORIO = '19:00:00';
+
     // IDs reales según tabla EstadosCita en BD
     private const ESTATUS_IDS = [
-        'Pendiente'            => 1,
-        'Confirmada'           => 2,
-        'Reprogramada'         => 3,
-        'En curso'             => 4,
-        'No asistió'           => 5,
-        'Cancelada'            => 6,
-        'Atendida'             => 7,
-        'Pagada'               => 8,
+        'Pendiente' => 1,
+        'Confirmada' => 2,
+        'Reprogramada' => 3,
+        'En curso' => 4,
+        'No asistió' => 5,
+        'Cancelada' => 6,
+        'Atendida' => 7,
+        'Pagada' => 8,
         'Registro diagnóstico' => 9,
     ];
- 
+
     public function __construct(PDO $db)
     {
         $this->db = $db;
     }
- 
+
     // ──────────────────────────────────────────────
     //  CONSULTA helpers
     // ──────────────────────────────────────────────
- 
+
     /**
      * Devuelve todas las citas con joins completos.
      * Filtros opcionales:
@@ -42,31 +45,31 @@ class Cita
     {
         $where = ['1=1'];
         $params = [];
- 
+
         if (!empty($filtros['fecha'])) {
-            $where[]              = 'c.fecha_cita = :fecha';
-            $params[':fecha']     = $filtros['fecha'];
+            $where[] = 'c.fecha_cita = :fecha';
+            $params[':fecha'] = $filtros['fecha'];
         }
- 
+
         if (!empty($filtros['estatus'])) {
             $idEstatus = $this->resolverIdEstatus($filtros['estatus']);
             if ($idEstatus) {
-                $where[]              = 'c.id_estatus_cita = :id_estatus';
+                $where[] = 'c.id_estatus_cita = :id_estatus';
                 $params[':id_estatus'] = $idEstatus;
             }
         }
- 
+
         if (!empty($filtros['id_especialista'])) {
-            $where[]                  = 'c.id_especialista = :id_esp';
-            $params[':id_esp']        = (int) $filtros['id_especialista'];
+            $where[] = 'c.id_especialista = :id_esp';
+            $params[':id_esp'] = (int) $filtros['id_especialista'];
         }
- 
+
         if (!empty($filtros['mes']) && !empty($filtros['anio'])) {
-            $where[]          = 'MONTH(c.fecha_cita) = :mes AND YEAR(c.fecha_cita) = :anio';
-            $params[':mes']   = (int) $filtros['mes'];
-            $params[':anio']  = (int) $filtros['anio'];
+            $where[] = 'MONTH(c.fecha_cita) = :mes AND YEAR(c.fecha_cita) = :anio';
+            $params[':mes'] = (int) $filtros['mes'];
+            $params[':anio'] = (int) $filtros['anio'];
         }
- 
+
         $sql = "
             SELECT
                 c.id_cita,
@@ -93,12 +96,12 @@ class Cita
             WHERE " . implode(' AND ', $where) . "
             ORDER BY c.hora_inicio ASC
         ";
- 
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
- 
+
     /** Obtener una cita por ID con todos los datos de joins */
     public function getById(int $id): ?array
     {
@@ -132,10 +135,10 @@ class Cita
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ?: null;
     }
- 
+
     /**
      * Días del mes que tienen citas.
-     * Retorna array de objetos:
+     * Regresa array de objetos:
      *   { fecha: "YYYY-MM-DD", total: N, pendientes: N, confirmadas: N }
      */
     public function getDiasConCitas(int $mes, int $anio): array
@@ -156,17 +159,17 @@ class Cita
         $stmt->execute([':mes' => $mes, ':anio' => $anio]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
- 
+
     // ──────────────────────────────────────────────
     //  ESCRITURA
     // ──────────────────────────────────────────────
- 
-    /** Crear nueva cita. Retorna el ID insertado o false */
+
+    /** Crear nueva cita, regresa el ID insertado o false */
     public function create(array $data)
     {
         $idEstatus = self::ESTATUS_IDS['Pendiente']; // nueva cita siempre Pendiente
         $primeraVez = ($data['tipoPaciente'] ?? '') === 'Primera vez' ? 1 : 0;
- 
+
         $stmt = $this->db->prepare("
             INSERT INTO cita
                 (fecha_cita, hora_inicio, paciente_primera_vez,
@@ -177,35 +180,35 @@ class Cita
                  :duracion, :id_estatus, :costo,
                  :id_motivo, :id_especialista, :numero_paciente)
         ");
- 
+
         $ok = $stmt->execute([
-            ':fecha_cita'       => $data['fecha_cita'],
-            ':hora_inicio'      => $data['hora_inicio'],
-            ':primera_vez'      => $primeraVez,
-            ':duracion'         => (int)   ($data['duracion_aproximada'] ?? 60),
-            ':id_estatus'       => $idEstatus,
-            ':costo'            => isset($data['costo_estimado']) && $data['costo_estimado'] !== ''
-                                        ? (float) $data['costo_estimado'] : null,
-            ':id_motivo'        => (int) $data['id_motivo_consulta'],
-            ':id_especialista'  => (int) $data['id_especialista'],
-            ':numero_paciente'  => (int) $data['id_paciente'],
+            ':fecha_cita' => $data['fecha_cita'],
+            ':hora_inicio' => $data['hora_inicio'],
+            ':primera_vez' => $primeraVez,
+            ':duracion' => (int) ($data['duracion_aproximada'] ?? 60),
+            ':id_estatus' => $idEstatus,
+            ':costo' => isset($data['costo_estimado']) && $data['costo_estimado'] !== ''
+                ? (float) $data['costo_estimado'] : null,
+            ':id_motivo' => (int) $data['id_motivo_consulta'],
+            ':id_especialista' => (int) $data['id_especialista'],
+            ':numero_paciente' => (int) $data['id_paciente'],
         ]);
- 
+
         return $ok ? (int) $this->db->lastInsertId() : false;
     }
- 
+
     /** Actualizar cita existente */
     public function update(int $id, array $data): bool
     {
         $primeraVez = ($data['tipoPaciente'] ?? '') === 'Primera vez' ? 1 : 0;
- 
+
         // Resolver estatus si viene como texto
         $idEstatus = null;
         if (!empty($data['estatus'])) {
             $idEstatus = $this->resolverIdEstatus($data['estatus']);
         }
- 
-        $sets   = [
+
+        $sets = [
             'numero_paciente       = :numero_paciente',
             'id_especialista       = :id_especialista',
             'id_motivo_consulta    = :id_motivo',
@@ -216,29 +219,29 @@ class Cita
             'costo_total           = :costo',
         ];
         $params = [
-            ':numero_paciente'  => (int) $data['id_paciente'],
-            ':id_especialista'  => (int) $data['id_especialista'],
-            ':id_motivo'        => (int) $data['id_motivo_consulta'],
-            ':fecha_cita'       => $data['fecha_cita'],
-            ':hora_inicio'      => $data['hora_inicio'],
-            ':primera_vez'      => $primeraVez,
-            ':duracion'         => (int) ($data['duracion_aproximada'] ?? 60),
-            ':costo'            => isset($data['costo_estimado']) && $data['costo_estimado'] !== ''
-                                        ? (float) $data['costo_estimado'] : null,
-            ':id'               => $id,
+            ':numero_paciente' => (int) $data['id_paciente'],
+            ':id_especialista' => (int) $data['id_especialista'],
+            ':id_motivo' => (int) $data['id_motivo_consulta'],
+            ':fecha_cita' => $data['fecha_cita'],
+            ':hora_inicio' => $data['hora_inicio'],
+            ':primera_vez' => $primeraVez,
+            ':duracion' => (int) ($data['duracion_aproximada'] ?? 60),
+            ':costo' => isset($data['costo_estimado']) && $data['costo_estimado'] !== ''
+                ? (float) $data['costo_estimado'] : null,
+            ':id' => $id,
         ];
- 
+
         if ($idEstatus) {
-            $sets[]              = 'id_estatus_cita = :id_estatus';
+            $sets[] = 'id_estatus_cita = :id_estatus';
             $params[':id_estatus'] = $idEstatus;
         }
- 
+
         $stmt = $this->db->prepare(
             "UPDATE cita SET " . implode(', ', $sets) . " WHERE id_cita = :id"
         );
         return $stmt->execute($params);
     }
- 
+
     /** Cambiar solo el estatus de una cita */
     public function cambiarEstatus(int $id, string $estatusTexto): bool
     {
@@ -247,7 +250,7 @@ class Cita
             error_log("cambiarEstatus: no se pudo resolver estatus '{$estatusTexto}' para cita {$id}");
             return false;
         }
- 
+
         $stmt = $this->db->prepare(
             "UPDATE cita SET id_estatus_cita = :id_estatus WHERE id_cita = :id"
         );
@@ -257,22 +260,58 @@ class Cita
         }
         return $ok;
     }
- 
+
     /** Eliminar cita (CASCADE elimina TransaccionesDentales, Pagos relacionados) */
     public function delete(int $id): bool
     {
         $stmt = $this->db->prepare("DELETE FROM Cita WHERE id_cita = :id");
         return $stmt->execute([':id' => $id]);
     }
- 
+
+    public function validar(array $data): ?string
+    {
+        if (empty($data['fecha_cita'])) {
+            return 'La fecha es requerida';
+        }
+
+        if (empty($data['hora_inicio'])) {
+            return 'La hora es requerida';
+        }
+
+        return $this->validarHorarioConsultorio(
+            (string) $data['hora_inicio'],
+            (int) ($data['duracion_aproximada'] ?? 60)
+        );
+    }
+
+    public function validarHorarioConsultorio(string $horaInicio, int $duracion = 60): ?string
+    {
+        $hora = $this->normalizarHora($horaInicio);
+        if ($hora === null) {
+            return 'La hora de la cita no es valida';
+        }
+
+        $duracion = max(1, $duracion);
+        $inicio = strtotime("1970-01-01 {$hora}");
+        $apertura = strtotime('1970-01-01 ' . self::HORA_APERTURA_CONSULTORIO);
+        $cierre = strtotime('1970-01-01 ' . self::HORA_CIERRE_CONSULTORIO);
+        $fin = $inicio + ($duracion * 60);
+
+        if ($inicio < $apertura || $inicio >= $cierre || $fin > $cierre) {
+            return 'Las citas deben agendarse dentro del horario del consultorio: de 09:00 a 19:00.';
+        }
+
+        return null;
+    }
+
     // ──────────────────────────────────────────────
     //  VALIDACIÓN
     // ──────────────────────────────────────────────
- 
+
     /**
-     * Verificar si existe conflicto de horario para el especialista.
-     * Considera la duración de la cita para detectar solapamientos.
-     * @param int|null $excluirId  ID de cita a excluir (modo edición)
+     * Verificar si existe conflicto de horario para el especialista
+     * Considera la duración de la cita para evitar citas juntas
+     * @param int|null $excluirId  ID de cita a excluir 
      */
     public function existeConflicto(
         int $idEspecialista,
@@ -296,40 +335,40 @@ class Cita
               )
         ";
         $params = [
-            ':id_esp'      => $idEspecialista,
-            ':fecha'       => $fecha,
+            ':id_esp' => $idEspecialista,
+            ':fecha' => $fecha,
             ':hora_inicio' => $horaInicio,
-            ':hora_inicio2'=> $horaInicio,
-            ':duracion'    => $duracion,
+            ':hora_inicio2' => $horaInicio,
+            ':duracion' => $duracion,
         ];
- 
+
         if ($excluirId) {
-            $sql              .= ' AND c.id_cita != :excluir';
+            $sql .= ' AND c.id_cita != :excluir';
             $params[':excluir'] = $excluirId;
         }
- 
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
         return (int) $stmt->fetchColumn() > 0;
     }
- 
+
     // ──────────────────────────────────────────────
     //  HELPERS PRIVADOS
     // ──────────────────────────────────────────────
- 
+
     /**
      * Obtener id_estatus_cita por nombre de estatus.
      */
     private function resolverIdEstatus(string $texto): ?int
     {
         $textoLimpio = trim($texto);
- 
+
         // 1. Buscar en el mapa local primero (más rápido)
         if (isset(self::ESTATUS_IDS[$textoLimpio])) {
             return self::ESTATUS_IDS[$textoLimpio];
         }
- 
-        // 2. Fallback: buscar en BD con TRIM para evitar problemas de espacios
+
+        // buscar en BD con TRIM para evitar problemas de espacios
         $stmt = $this->db->prepare(
             "SELECT id_estatus_cita FROM EstadosCita
              WHERE TRIM(estatus_cita) = TRIM(:texto)
@@ -337,12 +376,32 @@ class Cita
         );
         $stmt->execute([':texto' => $textoLimpio]);
         $row = $stmt->fetchColumn();
- 
+
         if (!$row) {
             error_log("resolverIdEstatus: no se encontró estatus '{$textoLimpio}' en EstadosCita");
             return null;
         }
- 
+
         return (int) $row;
+    }
+
+    private function normalizarHora(string $hora): ?string
+    {
+        $hora = trim($hora);
+
+        if (preg_match('/^\d{2}:\d{2}$/', $hora)) {
+            $hora .= ':00';
+        }
+
+        if (!preg_match('/^\d{2}:\d{2}:\d{2}$/', $hora)) {
+            return null;
+        }
+
+        [$h, $m, $s] = array_map('intval', explode(':', $hora));
+        if ($h > 23 || $m > 59 || $s > 59) {
+            return null;
+        }
+
+        return sprintf('%02d:%02d:%02d', $h, $m, $s);
     }
 }
