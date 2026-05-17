@@ -739,7 +739,7 @@ $modal_id = 'modalPaciente';
                                                         </button>
                                                         <button class="btn-cancelar-proc"
                                                             style="height:24px; width:24px; padding:0;"
-                                                            @click="toggleEditarProcedimiento(reg.id_odontograma, reg.id_procedimiento)"
+                                                            @click="toggleEditarProcedimiento(reg.id_odontograma, reg.id_procedimiento, reg.id_anomalia_dental)"
                                                             title="Cancelar">
                                                             <i class="ri-close-line" style="font-size:12px;"></i>
                                                         </button>
@@ -748,7 +748,7 @@ $modal_id = 'modalPaciente';
                                                     <button
                                                         v-if="!reg._pendiente && !estaEditandoProcedimiento(reg.id_odontograma)"
                                                         class="btn-eliminar-registro" style="color:#20a89e;"
-                                                        @click="toggleEditarProcedimiento(reg.id_odontograma, reg.id_procedimiento)"
+                                                        @click="toggleEditarProcedimiento(reg.id_odontograma, reg.id_procedimiento, reg.id_anomalia_dental)"
                                                         title="Editar procedimiento">
                                                         <i class="fas fa-pen" style="font-size:10px;"></i>
                                                     </button>

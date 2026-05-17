@@ -5,6 +5,8 @@
  */
 class Odontograma
 {
+    private const PROCEDIMIENTOS_GLOBALES = [1, 9, 10, 18, 21];
+
     private PDO $db;
 
     private int $idMotivoOdontograma;
@@ -19,6 +21,16 @@ class Odontograma
 
     public function getCatalogos(): array
     {
+        $procedimientos = $this->_fetchAll("
+            SELECT p.id_procedimiento    AS id,
+                   p.nombre_procedimiento AS nombre,
+                   p.precio_base
+            FROM   procedimientos p
+            JOIN   estatus        s ON s.id_estatus = p.id_estatus
+            WHERE  s.estatus = 'Activo'
+            ORDER BY p.nombre_procedimiento
+        ");
+
         return [
             'anomalias' => $this->_fetchAll("
                 SELECT id_anomalia_dental AS id,
@@ -32,15 +44,9 @@ class Odontograma
                 FROM   carasdentales
                 ORDER BY id_cara_dental
             "),
-            'procedimientos' => $this->_fetchAll("
-                SELECT p.id_procedimiento    AS id,
-                       p.nombre_procedimiento AS nombre,
-                       p.precio_base
-                FROM   procedimientos p
-                JOIN   estatus        s ON s.id_estatus = p.id_estatus
-                WHERE  s.estatus = 'Activo'
-                ORDER BY p.nombre_procedimiento
-            "),
+            'procedimientos' => $procedimientos,
+            'procedimientos_globales' => self::PROCEDIMIENTOS_GLOBALES,
+            'procedimientos_por_anomalia' => $this->getProcedimientosPorAnomalia(),
             'estatus' => $this->_fetchAll("
                 SELECT id_estatus_hallazgo AS id,
                        estatus_hallazgo    AS nombre
@@ -158,12 +164,12 @@ class Odontograma
 
     public function guardar(array $datos): array
     {
-        $numeroPaciente  = (int) ($datos['numero_paciente'] ?? 0);
-        $numeroPieza     = (int) ($datos['numero_pieza'] ?? 0);
-        $idAnomalia      = (int) ($datos['id_anomalia'] ?? 0);
-        $idCaras         = array_filter(array_map('intval', (array) ($datos['id_caras'] ?? [])));
+        $numeroPaciente = (int) ($datos['numero_paciente'] ?? 0);
+        $numeroPieza = (int) ($datos['numero_pieza'] ?? 0);
+        $idAnomalia = (int) ($datos['id_anomalia'] ?? 0);
+        $idCaras = array_filter(array_map('intval', (array) ($datos['id_caras'] ?? [])));
         $idProcedimiento = (int) ($datos['id_procedimiento'] ?? 0);
-        $idEstatus       = (int) ($datos['id_estatus_hallazgo'] ?? 1);
+        $idEstatus = (int) ($datos['id_estatus_hallazgo'] ?? 1);
 
         if (!$numeroPaciente || !$numeroPieza || !$idAnomalia) {
             return ['success' => false, 'message' => 'Faltan campos obligatorios.'];
@@ -173,6 +179,9 @@ class Odontograma
         }
         if (!$idProcedimiento) {
             return ['success' => false, 'message' => 'El procedimiento es obligatorio.'];
+        }
+        if (!$this->procedimientoPermitidoParaAnomalia($idAnomalia, $idProcedimiento)) {
+            return ['success' => false, 'message' => 'El procedimiento seleccionado no corresponde a la anomalia.'];
         }
 
         $this->db->beginTransaction();
@@ -281,7 +290,8 @@ class Odontograma
         try {
             if ($this->usaNumeroPacienteEnTransacciones()) {
                 $stmt = $this->db->prepare("
-                    SELECT o.id_transaccion_dental
+                    SELECT o.id_transaccion_dental,
+                           o.id_anomalia_dental
                     FROM   odontograma           o
                     JOIN   transaccionesdentales td ON td.id_transaccion_dental = o.id_transaccion_dental
                     LEFT JOIN cita               c  ON c.id_cita                = td.id_cita
@@ -291,7 +301,8 @@ class Odontograma
                 $stmt->execute([':id' => $idOdontograma, ':np1' => $numeroPaciente, ':np2' => $numeroPaciente]);
             } else {
                 $stmt = $this->db->prepare("
-                    SELECT o.id_transaccion_dental
+                    SELECT o.id_transaccion_dental,
+                           o.id_anomalia_dental
                     FROM   odontograma           o
                     JOIN   transaccionesdentales td ON td.id_transaccion_dental = o.id_transaccion_dental
                     JOIN   cita                   c ON c.id_cita                = td.id_cita
@@ -304,6 +315,15 @@ class Odontograma
 
             if (!$fila) {
                 return ['success' => false, 'message' => 'Registro no encontrado o sin permiso.'];
+            }
+
+            if (
+                !$this->procedimientoPermitidoParaAnomalia(
+                    (int) $fila['id_anomalia_dental'],
+                    $idProcedimiento
+                )
+            ) {
+                return ['success' => false, 'message' => 'El procedimiento seleccionado no corresponde a la anomalia.'];
             }
 
             $stmtProc = $this->db->prepare("
@@ -323,9 +343,9 @@ class Odontograma
                 SET    id_procedimiento = :id_procedimiento
                 WHERE  id_transaccion_dental = :id_transaccion
             ")->execute([
-                ':id_procedimiento' => $idProcedimiento,
-                ':id_transaccion' => (int) $fila['id_transaccion_dental'],
-            ]);
+                        ':id_procedimiento' => $idProcedimiento,
+                        ':id_transaccion' => (int) $fila['id_transaccion_dental'],
+                    ]);
 
             return ['success' => true];
         } catch (\Throwable $e) {
@@ -485,6 +505,70 @@ class Odontograma
     private function _fetchAll(string $sql): array
     {
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function getProcedimientosPorAnomalia(): array
+    {
+        $idsGlobales = implode(',', self::PROCEDIMIENTOS_GLOBALES);
+        $rows = $this->_fetchAll("
+            SELECT ad.id_anomalia_dental AS id_anomalia,
+                   p.id_procedimiento    AS id,
+                   p.nombre_procedimiento AS nombre,
+                   p.precio_base
+            FROM   anomaliasdentales ad
+            JOIN   procedimientos p
+                   ON p.id_procedimiento IN ({$idsGlobales})
+            JOIN   estatus s
+                   ON s.id_estatus = p.id_estatus
+            WHERE  s.estatus = 'Activo'
+
+            UNION
+
+            SELECT ap.id_anomalia_dental AS id_anomalia,
+                   p.id_procedimiento    AS id,
+                   p.nombre_procedimiento AS nombre,
+                   p.precio_base
+            FROM   anomaliaprocedimiento ap
+            JOIN   procedimientos p
+                   ON p.id_procedimiento = ap.id_procedimiento
+            JOIN   estatus s
+                   ON s.id_estatus = p.id_estatus
+            WHERE  s.estatus = 'Activo'
+
+            ORDER BY id_anomalia, nombre
+        ");
+
+        $porAnomalia = [];
+        foreach ($rows as $row) {
+            $idAnomalia = (int) $row['id_anomalia'];
+            unset($row['id_anomalia']);
+            $porAnomalia[$idAnomalia][] = $row;
+        }
+
+        return $porAnomalia;
+    }
+
+    private function procedimientoPermitidoParaAnomalia(int $idAnomalia, int $idProcedimiento): bool
+    {
+        if (in_array($idProcedimiento, self::PROCEDIMIENTOS_GLOBALES, true)) {
+            return true;
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*)
+            FROM   anomaliaprocedimiento ap
+            JOIN   procedimientos p ON p.id_procedimiento = ap.id_procedimiento
+            JOIN   estatus s        ON s.id_estatus = p.id_estatus
+            WHERE  ap.id_anomalia_dental = :id_anomalia
+              AND  ap.id_procedimiento   = :id_procedimiento
+              AND  s.estatus = 'Activo'
+        ");
+        $stmt->execute([
+            ':id_anomalia' => $idAnomalia,
+            ':id_procedimiento' => $idProcedimiento,
+        ]);
+
+        return (int) $stmt->fetchColumn() > 0;
     }
 
     private function asegurarIdsResueltos(): void
