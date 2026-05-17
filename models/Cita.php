@@ -84,6 +84,20 @@ class Cita
                 c.id_motivo_consulta,
                 TRIM(CONCAT(p.nombre,' ',p.apellido_paterno,' ',COALESCE(p.apellido_materno,'')))
                     AS nombre_paciente,
+                (
+                    SELECT ct.valor
+                    FROM   contactos ct
+                    LEFT JOIN tipocontacto tc ON tc.id_tipo_contacto = ct.id_tipo_contacto
+                    WHERE  ct.numero_paciente = p.numero_paciente
+                      AND  (
+                          ct.id_tipo_contacto IN (1,2,3,4,5)
+                          OR LOWER(tc.tipo_contacto) LIKE '%tel%'
+                          OR LOWER(tc.tipo_contacto) LIKE '%cel%'
+                          OR LOWER(tc.tipo_contacto) LIKE '%whatsapp%'
+                      )
+                    ORDER BY ct.id_tipo_contacto ASC
+                    LIMIT 1
+                ) AS telefono_paciente,
                 TRIM(CONCAT(e.nombre,' ',e.apellido_paterno))
                     AS nombre_especialista,
                 mc.motivo_consulta,
@@ -120,6 +134,20 @@ class Cita
                 c.id_estatus_cita,
                 TRIM(CONCAT(p.nombre,' ',p.apellido_paterno,' ',COALESCE(p.apellido_materno,'')))
                     AS nombre_paciente,
+                (
+                    SELECT ct.valor
+                    FROM   contactos ct
+                    LEFT JOIN tipocontacto tc ON tc.id_tipo_contacto = ct.id_tipo_contacto
+                    WHERE  ct.numero_paciente = p.numero_paciente
+                      AND  (
+                          ct.id_tipo_contacto IN (1,2,3,4,5)
+                          OR LOWER(tc.tipo_contacto) LIKE '%tel%'
+                          OR LOWER(tc.tipo_contacto) LIKE '%cel%'
+                          OR LOWER(tc.tipo_contacto) LIKE '%whatsapp%'
+                      )
+                    ORDER BY ct.id_tipo_contacto ASC
+                    LIMIT 1
+                ) AS telefono_paciente,
                 TRIM(CONCAT(e.nombre,' ',e.apellido_paterno))
                     AS nombre_especialista,
                 mc.motivo_consulta,
@@ -138,7 +166,7 @@ class Cita
 
     /**
      * Días del mes que tienen citas.
-     * Regresa array de objetos:
+     * Retorna array de objetos:
      *   { fecha: "YYYY-MM-DD", total: N, pendientes: N, confirmadas: N }
      */
     public function getDiasConCitas(int $mes, int $anio): array
@@ -164,7 +192,7 @@ class Cita
     //  ESCRITURA
     // ──────────────────────────────────────────────
 
-    /** Crear nueva cita, regresa el ID insertado o false */
+    /** Crear nueva cita. Retorna el ID insertado o false */
     public function create(array $data)
     {
         $idEstatus = self::ESTATUS_IDS['Pendiente']; // nueva cita siempre Pendiente
@@ -309,9 +337,9 @@ class Cita
     // ──────────────────────────────────────────────
 
     /**
-     * Verificar si existe conflicto de horario para el especialista
-     * Considera la duración de la cita para evitar citas juntas
-     * @param int|null $excluirId  ID de cita a excluir 
+     * Verificar si existe conflicto de horario para el especialista.
+     * Considera la duración de la cita para detectar solapamientos.
+     * @param int|null $excluirId  ID de cita a excluir (modo edición)
      */
     public function existeConflicto(
         int $idEspecialista,
@@ -368,7 +396,7 @@ class Cita
             return self::ESTATUS_IDS[$textoLimpio];
         }
 
-        // buscar en BD con TRIM para evitar problemas de espacios
+        // 2. Fallback: buscar en BD con TRIM para evitar problemas de espacios
         $stmt = $this->db->prepare(
             "SELECT id_estatus_cita FROM EstadosCita
              WHERE TRIM(estatus_cita) = TRIM(:texto)

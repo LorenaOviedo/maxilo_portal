@@ -7,6 +7,7 @@
 // ─────────────────────────────────────────────
 //  CONFIGURACIÓN
 // ─────────────────────────────────────────────
+
 const API = "../controllers/CitasController.php";
 const HORA_APERTURA_CONSULTORIO = "09:00";
 const HORA_CIERRE_CONSULTORIO = "19:00";
@@ -62,6 +63,43 @@ function formatDateDisplay(str) {
 function formatTime(str) {
   if (!str) return "";
   return str.substring(0, 5);
+}
+
+function normalizarTelefonoWhatsApp(valor) {
+  const digitos = String(valor ?? "").replace(/\D/g, "");
+  if (!digitos) return "";
+  if (digitos.length === 10) return `52${digitos}`;
+  if (digitos.length === 11 && digitos.startsWith("1"))
+    return `52${digitos.substring(1)}`;
+  return digitos;
+}
+
+function crearMensajeWhatsApp(cita) {
+  const fecha = formatDateDisplay(cita.fecha_cita);
+  const hora = formatTime(cita.hora_inicio);
+  const paciente = cita.nombre_paciente ?? "";
+  const especialista = cita.nombre_especialista ?? "su especialista";
+
+  return [
+    `Hola ${paciente}.`,
+    `Te contactamos de Maxilofacial Texcoco para recordarte tu cita del ${fecha} a las ${hora} con ${especialista}.`,
+    "Por favor confirma tu asistencia. Gracias.",
+  ].join(" ");
+}
+
+function abrirWhatsAppCita(cita) {
+  const telefono = normalizarTelefonoWhatsApp(cita.telefono_paciente);
+  if (!telefono) {
+    toast("El paciente no tiene telefono registrado", "warning");
+    return;
+  }
+
+  const mensaje = encodeURIComponent(crearMensajeWhatsApp(cita));
+  window.open(
+    `https://wa.me/${telefono}?text=${mensaje}`,
+    "_blank",
+    "noopener",
+  );
 }
 
 function timeToMinutes(str) {
@@ -369,6 +407,12 @@ const citasPag = {
         const { action, id } = btn.dataset;
         if (action === "editar") abrirModalEditar(id);
         if (action === "eliminar") confirmarEliminar(id);
+        if (action === "whatsapp") {
+          const cita = this._citas.find(
+            (c) => String(c.id_cita) === String(id),
+          );
+          if (cita) abrirWhatsAppCita(cita);
+        }
       });
     });
 
@@ -432,6 +476,10 @@ function citaCard(c) {
         <div class="cita-acciones">
             <span class="badge ${badgeClass}">${estatus}</span>
             <div class="cita-btns">
+                <button class="btn-action btn-whatsapp" title="Enviar WhatsApp"
+                    data-action="whatsapp" data-id="${c.id_cita}">
+                    <i class="ri-whatsapp-line"></i>
+                </button>
                 <button class="btn-action btn-edit" title="Editar"
                     data-action="editar" data-id="${c.id_cita}">
                     <i class="ri-edit-box-line"></i>
@@ -1077,6 +1125,8 @@ function injectStyles() {
         .btn-action:hover  { transform:scale(1.1); }
         .btn-edit          { background:#e0f7fa;color:#20a89e; }
         .btn-edit:hover    { background:#20a89e;color:#fff; }
+        .btn-whatsapp      { background:#e8f5e9;color:#1f9d55; }
+        .btn-whatsapp:hover{ background:#1f9d55;color:#fff; }
         .btn-delete        { background:#fee2e2;color:#dc2626; }
         .btn-delete:hover  { background:#dc2626;color:#fff; }
  
