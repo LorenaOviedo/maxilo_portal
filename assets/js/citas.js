@@ -403,10 +403,17 @@ const citasPag = {
     // Botones editar/eliminar
     lista.querySelectorAll("[data-action]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
+        e.preventDefault();
         e.stopPropagation();
         const { action, id } = btn.dataset;
-        if (action === "editar") abrirModalEditar(id);
-        if (action === "eliminar") confirmarEliminar(id);
+        if (action === "editar") {
+          abrirModalEditar(id);
+          return;
+        }
+        if (action === "eliminar") {
+          confirmarEliminar(id);
+          return;
+        }
         if (action === "whatsapp") {
           const cita = this._citas.find(
             (c) => String(c.id_cita) === String(id),
@@ -418,7 +425,10 @@ const citasPag = {
 
     // Click en card → detalle
     lista.querySelectorAll(".cita-card").forEach((card) => {
-      card.addEventListener("click", () => abrirDetalle(card.dataset.id));
+      card.addEventListener("click", (e) => {
+        if (e.target.closest("[data-action]")) return;
+        abrirDetalle(card.dataset.id);
+      });
     });
   },
 
@@ -476,15 +486,15 @@ function citaCard(c) {
         <div class="cita-acciones">
             <span class="badge ${badgeClass}">${estatus}</span>
             <div class="cita-btns">
-                <button class="btn-action btn-whatsapp" title="Enviar WhatsApp"
+                <button type="button" class="btn-action btn-whatsapp" title="Enviar WhatsApp"
                     data-action="whatsapp" data-id="${c.id_cita}">
                     <i class="ri-whatsapp-line"></i>
                 </button>
-                <button class="btn-action btn-edit" title="Editar"
+                <button type="button" class="btn-action btn-edit" title="Editar"
                     data-action="editar" data-id="${c.id_cita}">
                     <i class="ri-edit-box-line"></i>
                 </button>
-                <button class="btn-action btn-delete" title="Eliminar"
+                <button type="button" class="btn-action btn-delete" title="Eliminar"
                     data-action="eliminar" data-id="${c.id_cita}">
                     <i class="ri-delete-bin-6-line"></i>
                 </button>
