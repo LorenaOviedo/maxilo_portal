@@ -122,13 +122,18 @@ class CitasController
     /** Eliminar cita */
     public function destroy($id)
     {
-        if (!$this->citaModel->getById($id)) {
-            $this->json(['success' => false, 'message' => 'Cita no encontrada'], 404);
+        try {
+            if (!$this->citaModel->getById($id)) {
+                $this->json(['success' => false, 'message' => 'Cita no encontrada'], 404);
+            }
+            if ($this->citaModel->delete($id)) {
+                $this->json(['success' => true, 'message' => 'Cita eliminada exitosamente']);
+            }
+            $this->json(['success' => false, 'message' => 'Error al eliminar la cita']);
+        } catch (Throwable $e) {
+            error_log('CitasController::destroy - ' . $e->getMessage());
+            $this->json(['success' => false, 'message' => $e->getMessage()]);
         }
-        if ($this->citaModel->delete($id)) {
-            $this->json(['success' => true, 'message' => 'Cita eliminada exitosamente']);
-        }
-        $this->json(['success' => false, 'message' => 'Error al eliminar la cita']);
     }
 
     /** Días con citas del mes (para el calendario) */
@@ -173,7 +178,7 @@ class CitasController
             );
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Si el valor en catálogo estatus es diferente, traer todos
+            // Fallback: si el valor en catálogo Estatus es diferente, traer todos
             if (empty($data)) {
                 $stmt = $this->db->query(
                     "SELECT id_especialista,
