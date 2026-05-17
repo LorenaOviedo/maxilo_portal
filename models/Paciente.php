@@ -1002,8 +1002,11 @@ class Paciente
             $fecha = new DateTime($data['fecha_nacimiento']);
             $hoy = new DateTime();
             $minima = (new DateTime())->modify('-120 years');
+            $edadMin = (new DateTime())->modify('-6 months');
             if ($fecha >= $hoy)
                 return 'La fecha de nacimiento no puede ser futura';
+            if ($fecha > $edadMin)                          
+                return 'El paciente debe tener al menos 6 meses de edad';
             if ($fecha < $minima)
                 return 'La fecha de nacimiento no parece válida';
         } catch (Exception $e) {
