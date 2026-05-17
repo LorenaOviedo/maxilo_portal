@@ -292,7 +292,7 @@ class Cita
     /** Eliminar cita (CASCADE elimina TransaccionesDentales, Pagos relacionados) */
     public function delete(int $id): bool
     {
-        $stmt = $this->db->prepare("DELETE FROM Cita WHERE id_cita = :id");
+        $stmt = $this->db->prepare("DELETE FROM cita WHERE id_cita = :id");
         return $stmt->execute([':id' => $id]);
     }
 
