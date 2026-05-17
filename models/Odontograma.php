@@ -5,7 +5,7 @@
  */
 class Odontograma
 {
-    private const PROCEDIMIENTOS_GLOBALES = [1, 9, 10, 18, 21];
+    private const PROCEDIMIENTOS_GLOBALES = [10, 21];
 
     private PDO $db;
 
