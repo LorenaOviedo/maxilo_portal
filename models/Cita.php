@@ -326,7 +326,7 @@ class Cita
         $fin = $inicio + ($duracion * 60);
 
         if ($inicio < $apertura || $inicio >= $cierre || $fin > $cierre) {
-            return 'Las citas deben agendarse dentro del horario del consultorio: de 09:00 a 19:00.';
+            return 'Las citas deben agendarse dentro del horario de 09:00 a 19:00.';
         }
 
         return null;
