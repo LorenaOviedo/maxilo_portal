@@ -112,8 +112,8 @@ const pagoController = {
     const fmt = (n) => "$" + this._fmtNum(n);
     const fmtF = (s) => this._fmtFecha(s);
 
-    const nombreLimpio = (p.nombre_paciente ?? 'Paciente').replace(/\s+/g, '_');
-    const nombreArchivo = `Recibo_${p.numero_recibo ?? '000'}_${nombreLimpio}`;
+    const nombreLimpio = (p.nombre_paciente ?? "Paciente").replace(/\s+/g, "_");
+    const nombreArchivo = `Recibo_${p.numero_recibo ?? "000"}_${nombreLimpio}`;
 
     const total = parseFloat(p.monto_total || 0);
     const neto = parseFloat(p.monto_neto || 0);
@@ -276,6 +276,21 @@ const pagoController = {
         @media print {
             body { margin: 0; }
             .page { padding: 10mm 14mm 8mm; min-height: unset; }
+        }
+
+        @page {
+        size: A4;
+        margin: 0;
+        }
+
+        @media print {
+        html, body { width: 210mm; height: 297mm; }
+        
+        .page {
+        width: 210mm;
+        height: 297mm;   /* ahora sí, toda la hoja, sin margen del navegador */
+        padding: 10mm 14mm 8mm;
+        }
         }
     </style>
 </head>
