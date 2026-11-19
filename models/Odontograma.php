@@ -357,8 +357,6 @@ class Odontograma
     {
         $this->db->beginTransaction();
         try {
-            $this->asegurarIdsResueltos();
-
             if ($this->usaNumeroPacienteEnTransacciones()) {
                 $stmt = $this->db->prepare("
                     SELECT o.id_transaccion_dental,
@@ -403,16 +401,20 @@ class Odontograma
                     "DELETE FROM transaccionesdentales WHERE id_transaccion_dental = :id"
                 )->execute([':id' => $idTransaccion]);
 
-                $cntTx = (int) $this->db->query(
-                    "SELECT COUNT(*) FROM transaccionesdentales WHERE id_cita = $idCita"
-                )->fetchColumn();
-
-                if ($cntTx === 0) {
+                if ($idCita > 0) {
                     $this->db->prepare("
                         DELETE FROM cita
-                        WHERE  id_cita            = :id
-                          AND  id_motivo_consulta = :motivo
-                    ")->execute([':id' => $idCita, ':motivo' => $this->idMotivoOdontograma]);
+                        WHERE id_cita = :id
+                          AND id_motivo_consulta = (
+                              SELECT id_motivo_consulta
+                              FROM motivoconsulta
+                              WHERE motivo_consulta = 'Registro odontograma'
+                              LIMIT 1
+                          )
+                          AND NOT EXISTS (
+                              SELECT 1 FROM transaccionesdentales WHERE id_cita = :id_cita
+                          )
+                    ")->execute([':id' => $idCita, ':id_cita' => $idCita]);
                 }
             }
 
