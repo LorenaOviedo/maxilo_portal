@@ -216,6 +216,10 @@ class Reporte
         $condExtra = '';
         $paramsBase = [':d' => $desde, ':h' => $hasta];
 
+        if (!empty($extra['id_especialista'])) {
+            $condExtra .= ' AND c.id_especialista = :id_esp';
+            $paramsBase[':id_esp'] = (int) $extra['id_especialista'];
+        }
         if (!empty($extra['id_metodo_pago'])) {
             $condExtra .= ' AND pg.id_metodo_pago = :id_met';
             $paramsBase[':id_met'] = (int) $extra['id_metodo_pago'];
@@ -233,6 +237,7 @@ class Reporte
                 SUM(pg.estatus = 'Pendiente')   AS pendientes,
                 AVG(pg.monto_neto)              AS promedio
             FROM pago pg
+            JOIN cita c ON c.id_cita = pg.id_cita
             WHERE pg.fecha_pago BETWEEN :d AND :h
             $condExtra
         ", $paramsBase);

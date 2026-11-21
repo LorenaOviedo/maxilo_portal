@@ -354,7 +354,7 @@ const reporteController = {
  
     _filtrosConfig: {
         citas:      ['filtroPaciente', 'filtroEspecialista', 'filtroEstatusCita'],
-        pagos:      ['filtroMetodoPago', 'filtroEstatusPago'],
+        pagos:      ['filtroEspecialista', 'filtroMetodoPago', 'filtroEstatusPago'],
         facturas:   ['filtroPacienteFactura', 'filtroEstatusFactura'],
         inventario: ['filtroTipoMovimiento'],
     },

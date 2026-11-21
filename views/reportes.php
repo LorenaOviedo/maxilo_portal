@@ -94,9 +94,9 @@ include '../includes/sidebar.php';
                     </div>
                 </div>
 
-                <!-- Citas: especialista -->
+                <!-- Citas y pagos: especialista -->
                 <div class="filter-group" id="filtroEspecialista" style="display:none;">
-                    <label class="filter-label">Especialista</label>
+                    <label class="filter-label" for="rptEspecialista">Especialista</label>
                     <div class="select-wrapper">
                         <select id="rptEspecialista" class="filter-select">
                             <option value="">Todos</option>
