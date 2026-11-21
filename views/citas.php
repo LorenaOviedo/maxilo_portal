@@ -86,13 +86,13 @@ include '../includes/sidebar.php';
             </div>
 
             <div class="citas-filtros">
+                <select id="filtroEspecialistaCitas" class="form-select citas-filtro-especialista" aria-label="Filtrar citas por especialista">
+                    <option value="">Todos los especialistas</option>
+                </select>
                 <button class="filtro-btn active" data-estatus="todas">Todas</button>
                 <button class="filtro-btn" data-estatus="Confirmada">Confirmadas</button>
                 <button class="filtro-btn" data-estatus="Pendiente">Pendientes</button>
                 <button class="filtro-btn" data-estatus="Cancelada">Canceladas</button>
-                <select id="filtroEspecialistaCitas" class="form-select citas-filtro-especialista" aria-label="Filtrar citas por especialista">
-                    <option value="">Todos los especialistas</option>
-                </select>
             </div>
 
             <div class="citas-lista" id="citasLista">
