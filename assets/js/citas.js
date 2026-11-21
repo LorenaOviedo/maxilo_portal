@@ -338,7 +338,10 @@ async function navegarMes(delta) {
 //  CITAS DEL DÍA
 // ─────────────────────────────────────────────
 
+let ultimaConsultaCitas = 0;
+
 async function cargarCitasDelDia(fecha) {
+  const consulta = ++ultimaConsultaCitas;
   const lista = $("citasLista");
   lista.innerHTML =
     '<div style="text-align:center;padding:30px;color:#6c757d;"><i class="ri-loader-4-line spin" style="font-size:28px;"></i></div>';
@@ -347,11 +350,15 @@ async function cargarCitasDelDia(fecha) {
     const params = { action: "index", fecha };
     if (estadoApp.filtroEstatus !== "todas")
       params.estatus = estadoApp.filtroEstatus;
+    const especialista = $("filtroEspecialistaCitas").value;
+    if (especialista) params.id_especialista = especialista;
 
     const data = await apiFetch(params);
+    if (consulta !== ultimaConsultaCitas) return;
     if (!data.success) throw new Error(data.message);
     renderCitasLista(data.data ?? []);
   } catch (e) {
+    if (consulta !== ultimaConsultaCitas) return;
     console.error("Error cargando citas:", e);
     lista.innerHTML = `
             <div class="citas-empty">
@@ -526,6 +533,12 @@ async function cargarCatalogos() {
     initPacienteSearch(resPac.data ?? []); // Búsqueda con autocompletado
     poblarSelect(
       "selectEspecialista",
+      resEsp.data ?? [],
+      "id_especialista",
+      "nombre_completo",
+    );
+    poblarSelect(
+      "filtroEspecialistaCitas",
       resEsp.data ?? [],
       "id_especialista",
       "nombre_completo",
@@ -1057,6 +1070,12 @@ document.addEventListener("click", (e) => {
 // ─────────────────────────────────────────────
 
 function initFiltros() {
+  $("filtroEspecialistaCitas").addEventListener("change", async () => {
+    if (estadoApp.fechaSeleccionada) {
+      await cargarCitasDelDia(formatDate(estadoApp.fechaSeleccionada));
+    }
+  });
+
   $qa(".filtro-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       $qa(".filtro-btn").forEach((b) => b.classList.remove("active"));
