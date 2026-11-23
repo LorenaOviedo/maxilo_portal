@@ -339,14 +339,18 @@ class Reporte
         if (!$idTipo) {
             $movsPorInv = [];
             $stmtMovs = $this->db->prepare("
-                SELECT id_inventario, COUNT(*) AS total
-                FROM movimientoinventario
-                WHERE fecha_movimiento BETWEEN :d AND :h
-                GROUP BY id_inventario
+                SELECT m.id_inventario,
+                       COUNT(*) AS total,
+                       GROUP_CONCAT(DISTINCT tm.tipo_movimiento
+                           ORDER BY tm.tipo_movimiento SEPARATOR ', ') AS tipos_movimiento
+                FROM movimientoinventario m
+                LEFT JOIN tipomovimiento tm ON tm.id_tipo_movimiento = m.id_tipo_movimiento
+                WHERE m.fecha_movimiento BETWEEN :d AND :h
+                GROUP BY m.id_inventario
             ");
             $stmtMovs->execute([':d' => $desde, ':h' => $hasta]);
             foreach ($stmtMovs->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                $movsPorInv[$row['id_inventario']] = $row['total'];
+                $movsPorInv[$row['id_inventario']] = $row;
             }
 
             $filas = $this->_query("
@@ -386,6 +390,7 @@ class Reporte
                     'Mínimo',
                     'F. Caducidad',
                     'Movimientos',
+                    'Tipo de movimiento',
                 ],
                 'filas' => array_map(function ($r) use ($movsPorInv) {
                     return [
@@ -398,7 +403,8 @@ class Reporte
                         $r['stock_minimo'],
                         $r['fecha_caducidad']
                         ? date('d/m/Y', strtotime($r['fecha_caducidad'])) : '—',
-                        $movsPorInv[$r['id_inventario']] ?? 0,
+                        $movsPorInv[$r['id_inventario']]['total'] ?? 0,
+                        $movsPorInv[$r['id_inventario']]['tipos_movimiento'] ?? '—',
                     ];
                 }, $filas),
             ];
@@ -442,7 +448,7 @@ class Reporte
             ],
             'columnas' => [
                 'Fecha',
-                'Tipo',
+                'Tipo de movimiento',
                 'Producto',
                 'Marca',
                 'Lote',
