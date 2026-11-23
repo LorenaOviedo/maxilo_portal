@@ -122,6 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </a>
                 </form>
             </div>
+
+            <footer class="login-footer">
+                © 2026 Maxilofacial Texcoco. Todos los derechos reservados.
+            </footer>
         </div>
  
         <div class="image-box">

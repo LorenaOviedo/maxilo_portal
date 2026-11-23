@@ -37,6 +37,14 @@ body {
     /* No se usa min-height:100vh aquí porque bloquea el scroll en ventanas pequeñas */
 }
 
+.login-footer {
+    margin-top: 20px;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
 .logo-container {
     margin-bottom: 30px;
 }
