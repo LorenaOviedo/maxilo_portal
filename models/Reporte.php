@@ -248,6 +248,8 @@ class Reporte
                 pg.fecha_pago,
                 TRIM(CONCAT(p.nombre,' ',p.apellido_paterno,' ',
                     COALESCE(p.apellido_materno,'')))    AS paciente,
+                TRIM(CONCAT(e.nombre,' ',e.apellido_paterno,' ',
+                    COALESCE(e.apellido_materno,'')))    AS especialista,
                 mp.metodo_pago,
                 pg.referencia_pago,
                 pg.monto_total,
@@ -256,6 +258,7 @@ class Reporte
             FROM pago          pg
             JOIN cita          c  ON c.id_cita          = pg.id_cita
             JOIN paciente      p  ON p.numero_paciente  = c.numero_paciente
+            LEFT JOIN especialista e ON e.id_especialista = c.id_especialista
             JOIN metodopago    mp ON mp.id_metodo_pago  = pg.id_metodo_pago
             WHERE pg.fecha_pago BETWEEN :d AND :h
             $condExtra
@@ -276,6 +279,7 @@ class Reporte
                 'Recibo',
                 'Fecha',
                 'Paciente',
+                'Especialista',
                 'Método',
                 'Referencia',
                 'Monto total',
@@ -286,6 +290,7 @@ class Reporte
                 $r['numero_recibo'],
                 date('d/m/Y', strtotime($r['fecha_pago'])),
                 $r['paciente'],
+                $r['especialista'] ?? '—',
                 $r['metodo_pago'],
                 $r['referencia_pago'] ?? '—',
                 '$' . number_format((float) $r['monto_total'], 2),
